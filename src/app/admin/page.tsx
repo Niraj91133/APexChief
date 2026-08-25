@@ -584,63 +584,63 @@ export default function AdminDashboard() {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Sidebar Menu */}
-          <div className="lg:col-span-3 bg-[#f3f1e6] border border-[#211d1d]/15 p-4 space-y-2">
-            <h3 className="font-mono text-xs uppercase tracking-widest text-[#575757] font-bold pb-2 border-b border-[#211d1d]/10 mb-3">
+          <div className="lg:col-span-3 bg-[#f3f1e6] border border-[#211d1d]/15 p-4 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 whitespace-nowrap scrollbar-none">
+            <h3 className="hidden lg:block font-mono text-xs uppercase tracking-widest text-[#575757] font-bold pb-2 border-b border-[#211d1d]/10 mb-3">
               Navigation
             </h3>
             <button
               onClick={() => setActiveTab('overview')}
-              className={`w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
+              className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
                 activeTab === 'overview' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
               }`}
             >
               <List className="w-4 h-4" />
-              <span>Dashboard Overview</span>
+              <span>Overview</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('posts');
                 fetchData();
               }}
-              className={`w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
+              className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
                 activeTab === 'posts' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
               }`}
             >
               <BookOpen className="w-4 h-4" />
-              <span>Manage Posts</span>
+              <span>Posts</span>
             </button>
             <button
               onClick={initCreatePost}
-              className={`w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
+              className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
                 activeTab === 'edit-post' && !isEditing ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
               }`}
             >
               <Plus className="w-4 h-4" />
-              <span>Create New Post</span>
+              <span>New Post</span>
             </button>
             <button
               onClick={() => {
                 setActiveTab('sections');
                 fetchData();
               }}
-              className={`w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
+              className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
                 activeTab === 'sections' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
               }`}
             >
               <Layers className="w-4 h-4" />
-              <span>Manage Sections</span>
+              <span>Sections</span>
             </button>
             <button
               onClick={() => setActiveTab('settings')}
-              className={`w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
+              className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 ${
                 activeTab === 'settings' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
               }`}
             >
               <Settings className="w-4 h-4" />
-              <span>Site Config Settings</span>
+              <span>Settings</span>
             </button>
 
-            <div className="pt-6 border-t border-[#211d1d]/10 mt-6">
+            <div className="hidden lg:block pt-6 border-t border-[#211d1d]/10 mt-6">
               <button
                 onClick={fetchData}
                 disabled={isLoading}
@@ -650,6 +650,14 @@ export default function AdminDashboard() {
                 <span>Refresh Data</span>
               </button>
             </div>
+            <button
+              onClick={fetchData}
+              disabled={isLoading}
+              className="lg:hidden flex-shrink-0 w-auto inline-flex justify-center items-center space-x-2 border border-[#211d1d]/15 px-3 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>Refresh</span>
+            </button>
           </div>
 
           {/* Right Main Content */}
@@ -810,8 +818,68 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* Articles Table Grid */}
-                    <div className="overflow-x-auto border border-[#211d1d]/15 bg-[#faf8f2]">
+                    {/* Articles List Layout */}
+                    <div className="block md:hidden space-y-4">
+                      {filteredArticles.length === 0 ? (
+                        <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-8 text-center text-[#575757] font-semibold">
+                          No articles match your search parameters.
+                        </div>
+                      ) : (
+                        filteredArticles.map((art) => (
+                          <div key={art.slug} className="bg-[#faf8f2] border border-[#211d1d]/15 p-4 space-y-3 shadow-sm">
+                            <div className="flex items-start space-x-3">
+                              <div className="relative w-16 h-10 bg-[#eff0e0] border border-[#211d1d]/10 overflow-hidden flex-shrink-0">
+                                {art.image ? (
+                                  <img
+                                    src={art.image.replace(/&amp;/g, '&')}
+                                    alt=""
+                                    className="object-cover w-full h-full"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center font-bold text-[8px] text-[#575757]">
+                                    NO IMG
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-serif font-bold text-[#0a0a0a] text-xs leading-snug break-words">
+                                  {art.title}
+                                </h4>
+                                <div className="flex flex-wrap gap-x-2 gap-y-0.5 text-[9px] text-[#575757] font-mono mt-1">
+                                  <span className="font-bold text-[#002b5c] uppercase">{art.category}</span>
+                                  <span>•</span>
+                                  <span>{art.date}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center justify-between pt-2.5 border-t border-[#211d1d]/10 text-xs">
+                              <span className="text-[#575757] text-[10px] font-semibold">By: <span className="text-[#0a0a0a] font-bold">{art.author}</span></span>
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  type="button"
+                                  onClick={() => initEditPost(art)}
+                                  className="px-2.5 py-1 bg-[#eff0e0] text-[#002b5c] border border-[#211d1d]/15 text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 hover:bg-[#211d1d]/5"
+                                >
+                                  <Edit className="w-3 h-3" />
+                                  <span>Edit</span>
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeletePost(art.slug)}
+                                  className="px-2.5 py-1 bg-rose-50 text-[#f7413e] border border-rose-200 text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 hover:bg-rose-100"
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                  <span>Delete</span>
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="hidden md:block overflow-x-auto border border-[#211d1d]/15 bg-[#faf8f2]">
                       <table className="min-w-full divide-y divide-[#211d1d]/15 text-left text-xs font-sans">
                         <thead className="bg-[#eff0e0] uppercase font-mono font-bold text-[#575757] tracking-wider text-[10px]">
                           <tr>
@@ -1545,92 +1613,176 @@ export default function AdminDashboard() {
                         </div>
                       </form>
                     ) : (
-                      <div className="overflow-x-auto border border-[#211d1d]/15 bg-[#faf8f2]">
-                        <table className="min-w-full divide-y divide-[#211d1d]/15 text-left text-xs font-sans">
-                          <thead className="bg-[#eff0e0] uppercase font-mono font-bold text-[#575757] tracking-wider text-[10px]">
-                            <tr>
-                              <th className="px-4 py-3">Order</th>
-                              <th className="px-4 py-3">Name</th>
-                              <th className="px-4 py-3">Slug</th>
-                              <th className="px-4 py-3">Layout Style (Design)</th>
-                              <th className="px-4 py-3 text-center">Visible</th>
-                              <th className="px-4 py-3 text-right">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-[#211d1d]/10">
-                            {categories.length === 0 ? (
-                              <tr>
-                                <td colSpan={6} className="px-4 py-12 text-center text-[#575757] font-semibold">
-                                  No dynamic sections configured. Click "Add New Section" to create one.
-                                </td>
-                              </tr>
-                            ) : (
-                              categories.map((cat, idx) => (
-                                <tr key={cat.slug} className="hover:bg-[#f3f1e6]/45 transition-colors">
-                                  <td className="px-4 py-3 font-mono font-bold text-[#0a0a0a]">
-                                    <div className="flex items-center space-x-2">
-                                      <span>{cat.order || idx + 1}</span>
-                                      <div className="flex flex-col">
-                                        <button
-                                          onClick={() => moveCategoryUp(idx)}
-                                          disabled={idx === 0}
-                                          className="text-[#211d1d] hover:text-[#f7413e] disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
-                                          title="Move Section Up"
-                                        >
-                                          <ArrowUp className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                          onClick={() => moveCategoryDown(idx)}
-                                          disabled={idx === categories.length - 1}
-                                          className="text-[#211d1d] hover:text-[#f7413e] disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
-                                          title="Move Section Down"
-                                        >
-                                          <ArrowDown className="w-3 h-3" />
-                                        </button>
-                                      </div>
+                      <div className="space-y-6">
+                        {/* Mobile Cards (Visible only on mobile/tablet) */}
+                        <div className="block md:hidden space-y-4">
+                          {categories.length === 0 ? (
+                            <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-8 text-center text-[#575757] font-semibold">
+                              No dynamic sections configured. Click "Add New Section" to create one.
+                            </div>
+                          ) : (
+                            categories.map((cat, idx) => (
+                              <div key={cat.slug} className="bg-[#faf8f2] border border-[#211d1d]/15 p-4 space-y-3 shadow-sm">
+                                <div className="flex items-center justify-between pb-2 border-b border-[#211d1d]/10">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="font-mono text-[10px] font-bold text-[#575757]">Order: {cat.order || idx + 1}</span>
+                                    <div className="flex space-x-1">
+                                      <button
+                                        type="button"
+                                        onClick={() => moveCategoryUp(idx)}
+                                        disabled={idx === 0}
+                                        className="p-1 bg-[#eff0e0] border border-[#211d1d]/15 disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
+                                        title="Move Up"
+                                      >
+                                        <ArrowUp className="w-3.5 h-3.5" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => moveCategoryDown(idx)}
+                                        disabled={idx === categories.length - 1}
+                                        className="p-1 bg-[#eff0e0] border border-[#211d1d]/15 disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
+                                        title="Move Down"
+                                      >
+                                        <ArrowDown className="w-3.5 h-3.5" />
+                                      </button>
                                     </div>
-                                  </td>
-                                  <td className="px-4 py-3 font-serif font-bold text-sm text-[#0a0a0a]">
+                                  </div>
+                                  <span
+                                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                      cat.isVisible !== false
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : 'bg-rose-100 text-rose-800'
+                                    }`}
+                                  >
+                                    {cat.isVisible !== false ? 'Visible' : 'Hidden'}
+                                  </span>
+                                </div>
+                                
+                                <div>
+                                  <h4 className="font-serif font-bold text-[#0a0a0a] text-sm leading-snug">
                                     {cat.name}
-                                  </td>
-                                  <td className="px-4 py-3 font-mono text-[#575757]">
-                                    {cat.slug}
-                                  </td>
-                                  <td className="px-4 py-3 font-semibold text-[#002b5c]">
-                                    {getLayoutLabel(cat.layout || 'world-layout')}
-                                  </td>
-                                  <td className="px-4 py-3 text-center whitespace-nowrap">
-                                    <span
-                                      className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                                        cat.isVisible !== false
-                                          ? 'bg-emerald-100 text-emerald-800'
-                                          : 'bg-rose-100 text-rose-800'
-                                      }`}
-                                    >
-                                      {cat.isVisible !== false ? 'Yes' : 'No'}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-3 whitespace-nowrap text-right space-x-2">
-                                    <button
-                                      onClick={() => initEditCategory(cat)}
-                                      className="p-1.5 hover:bg-[#eff0e0] text-[#002b5c] border border-transparent hover:border-[#211d1d]/10 transition-colors"
-                                      title="Edit Section Details"
-                                    >
-                                      <Edit className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                      onClick={() => handleDeleteCategory(cat.slug)}
-                                      className="p-1.5 hover:bg-[#faf8f2] text-[#f7413e] border border-transparent hover:border-[#f7413e]/20 transition-colors"
-                                      title="Delete Section"
-                                    >
-                                      <Trash2 className="w-4 h-4" />
-                                    </button>
+                                  </h4>
+                                  <p className="text-[9px] text-[#575757] font-mono mt-0.5">Slug: {cat.slug}</p>
+                                  <div className="mt-1 text-[10px] font-semibold text-[#002b5c]">
+                                    Layout: <span className="font-bold">{getLayoutLabel(cat.layout || 'world-layout')}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#211d1d]/10">
+                                  <button
+                                    type="button"
+                                    onClick={() => initEditCategory(cat)}
+                                    className="px-2.5 py-1 bg-[#eff0e0] text-[#002b5c] border border-[#211d1d]/15 text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 hover:bg-[#211d1d]/5"
+                                  >
+                                    <Edit className="w-3 h-3" />
+                                    <span>Edit</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteCategory(cat.slug)}
+                                    className="px-2.5 py-1 bg-rose-50 text-[#f7413e] border border-rose-200 text-[10px] font-bold uppercase tracking-wider flex items-center space-x-1 hover:bg-rose-100"
+                                  >
+                                    <Trash2 className="w-3 h-3" />
+                                    <span>Delete</span>
+                                  </button>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Desktop Table (Hidden on mobile) */}
+                        <div className="hidden md:block overflow-x-auto border border-[#211d1d]/15 bg-[#faf8f2]">
+                          <table className="min-w-full divide-y divide-[#211d1d]/15 text-left text-xs font-sans">
+                            <thead className="bg-[#eff0e0] uppercase font-mono font-bold text-[#575757] tracking-wider text-[10px]">
+                              <tr>
+                                <th className="px-4 py-3">Order</th>
+                                <th className="px-4 py-3">Name</th>
+                                <th className="px-4 py-3">Slug</th>
+                                <th className="px-4 py-3">Layout Style (Design)</th>
+                                <th className="px-4 py-3 text-center">Visible</th>
+                                <th className="px-4 py-3 text-right">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#211d1d]/10">
+                              {categories.length === 0 ? (
+                                <tr>
+                                  <td colSpan={6} className="px-4 py-12 text-center text-[#575757] font-semibold">
+                                    No dynamic sections configured. Click "Add New Section" to create one.
                                   </td>
                                 </tr>
-                              ))
-                            )}
-                          </tbody>
-                        </table>
+                              ) : (
+                                categories.map((cat, idx) => (
+                                  <tr key={cat.slug} className="hover:bg-[#f3f1e6]/45 transition-colors">
+                                    <td className="px-4 py-3 font-mono font-bold text-[#0a0a0a]">
+                                      <div className="flex items-center space-x-2">
+                                        <span>{cat.order || idx + 1}</span>
+                                        <div className="flex flex-col">
+                                          <button
+                                            type="button"
+                                            onClick={() => moveCategoryUp(idx)}
+                                            disabled={idx === 0}
+                                            className="text-[#211d1d] hover:text-[#f7413e] disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
+                                            title="Move Section Up"
+                                          >
+                                            <ArrowUp className="w-3 h-3" />
+                                          </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => moveCategoryDown(idx)}
+                                            disabled={idx === categories.length - 1}
+                                            className="text-[#211d1d] hover:text-[#f7413e] disabled:opacity-30 disabled:hover:text-[#211d1d] transition-colors"
+                                            title="Move Section Down"
+                                          >
+                                            <ArrowDown className="w-3 h-3" />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-3 font-serif font-bold text-sm text-[#0a0a0a]">
+                                      {cat.name}
+                                    </td>
+                                    <td className="px-4 py-3 font-mono text-[#575757]">
+                                      {cat.slug}
+                                    </td>
+                                    <td className="px-4 py-3 font-semibold text-[#002b5c]">
+                                      {getLayoutLabel(cat.layout || 'world-layout')}
+                                    </td>
+                                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                                      <span
+                                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                          cat.isVisible !== false
+                                            ? 'bg-emerald-100 text-emerald-800'
+                                            : 'bg-rose-100 text-rose-800'
+                                        }`}
+                                      >
+                                        {cat.isVisible !== false ? 'Yes' : 'No'}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-3 whitespace-nowrap text-right space-x-2">
+                                      <button
+                                        type="button"
+                                        onClick={() => initEditCategory(cat)}
+                                        className="p-1.5 hover:bg-[#eff0e0] text-[#002b5c] border border-transparent hover:border-[#211d1d]/10 transition-colors"
+                                        title="Edit Section Details"
+                                      >
+                                        <Edit className="w-4 h-4" />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleDeleteCategory(cat.slug)}
+                                        className="p-1.5 hover:bg-[#faf8f2] text-[#f7413e] border border-transparent hover:border-[#f7413e]/20 transition-colors"
+                                        title="Delete Section"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     )}
                   </div>
