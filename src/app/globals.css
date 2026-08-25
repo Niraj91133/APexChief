@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-baskerville: 'Libre Baskerville', Georgia, serif;
+  --font-inter: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-oswald: 'Oswald', sans-serif;
+
+  --color-paper: #faf8f2;
+  --color-paper-card: #f3f1e6;
+  --color-paper-muted: #fafaf7;
+  --color-ink: #211d1d;
+  --color-ink-dark: #0a0a0a;
+  --color-ink-muted: #575757;
+  --color-border: rgba(33, 29, 29, 0.24);
+  --color-border-dark: rgba(255, 255, 255, 0.24);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-inter);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  h1, h3, h4, h5, h6 {
+    font-family: var(--font-playfair);
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-family: var(--font-bebas), sans-serif;
+  }
+}
+
+/* Editorial Newspaper Double Border */
+.border-double-editorial {
+  border-top: 3px double var(--color-border);
+  border-bottom: 3px double var(--color-border);
+}
+
+.border-double-bottom {
+  border-bottom: 3px double var(--color-border);
+}
+
+.border-double-top {
+  border-top: 3px double var(--color-border);
+}
+
+.editorial-divider {
+  position: relative;
+}
+
+.editorial-divider::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-border);
+}
+
+/* Drop cap for editorial story lead */
+.drop-cap::first-letter {
+  font-family: var(--font-playfair);
+  font-size: 3.8rem;
+  line-height: 0.8;
+  float: left;
+  margin-right: 0.75rem;
+  margin-top: 0.2rem;
+  font-weight: 700;
+  color: var(--color-ink-dark);
+}
+
+/* Custom newspaper column rules */
+.newspaper-cols {
+  column-count: 2;
+  column-gap: 2.5rem;
+  column-rule: 1px solid var(--color-border);
+}
+
+@media (max-width: 768px) {
+  .newspaper-cols {
+    column-count: 1;
+    column-rule: none;
+  }
+}
+
+/* Marquee continuous scroll */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f0e4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c7c6b8;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a79a;
+}
