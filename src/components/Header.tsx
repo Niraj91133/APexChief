@@ -53,7 +53,7 @@ function HeaderNav({
       className="category-nav-bar w-full bg-black text-white border-b border-black transition-all relative z-40"
       onMouseLeave={handleMouseLeave}
     >
-      <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between py-1.5 sm:py-2">
+      <div className="w-full px-2 sm:px-4 lg:px-6 flex items-center justify-between py-1.5">
         {/* Mobile-Only Menu Toggle Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -63,11 +63,11 @@ function HeaderNav({
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Desktop Navigation Links (Edge-to-Edge Full Width Justified) */}
-        <nav className="hidden lg:flex items-center justify-between w-full overflow-visible py-0.5">
+        {/* Desktop Navigation Links (Attached Left Corner to Right Corner with Zero Scroll) */}
+        <nav className="hidden lg:flex items-center justify-between w-full py-0.5 gap-0.5 xl:gap-1.5">
           <Link
             href="/news"
-            className="px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap"
+            className="px-1.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white hover:text-[#f7413e] transition-colors whitespace-nowrap shrink-0"
           >
             All Categories
           </Link>
@@ -80,24 +80,24 @@ function HeaderNav({
             return (
               <div
                 key={cat.slug}
-                className="relative group py-0.5"
+                className="relative group py-0.5 shrink-0"
                 onMouseEnter={() => handleMouseEnter(cat.slug)}
               >
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-1 px-1.5 xl:px-2.5 py-1 rounded text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`inline-flex items-center space-x-0.5 px-1 xl:px-1.5 py-1 rounded text-[10px] xl:text-[11px] 2xl:text-[11.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
                       : isHovered
                       ? 'text-[#f7413e] bg-white/5'
-                      : 'text-white/95 hover:text-[#f7413e]'
+                      : 'text-white/90 hover:text-[#f7413e]'
                   }`}
                 >
                   <span>{cat.name}</span>
                   {hasSubs && (
                     <ChevronDown
-                      className={`w-3 h-3 transition-transform duration-200 ${
-                        isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/50 group-hover:text-[#f7413e]'
+                      className={`w-2.5 h-2.5 transition-transform duration-200 ml-0.5 ${
+                        isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
                       }`}
                     />
                   )}
