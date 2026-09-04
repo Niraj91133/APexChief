@@ -53,7 +53,7 @@ function HeaderNav({
       className="category-nav-bar w-full bg-black text-white border-b border-black transition-all relative z-40"
       onMouseLeave={handleMouseLeave}
     >
-      <div className="w-full px-2 sm:px-4 lg:px-6 flex items-center justify-between py-1.5">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2 sm:py-2.5">
         {/* Mobile-Only Menu Toggle Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -63,16 +63,17 @@ function HeaderNav({
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Desktop Navigation Links (Attached Left Corner to Right Corner with Zero Scroll) */}
-        <nav className="hidden lg:flex items-center justify-between w-full py-0.5 gap-0.5 xl:gap-1.5">
+        {/* Desktop Navigation Links with Smart Width Adjustment */}
+        <nav className="hidden lg:flex items-center justify-between w-full py-0.5 space-x-0.5 xl:space-x-1">
           <Link
             href="/news"
-            className="px-1.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white hover:text-[#f7413e] transition-colors whitespace-nowrap shrink-0"
+            className="px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap"
           >
-            All Categories
+            All Stories
           </Link>
 
-          {categories.map((cat) => {
+          {/* Primary 7-8 visible categories */}
+          {categories.slice(0, 8).map((cat) => {
             const hasSubs = cat.subcategories && cat.subcategories.length > 0;
             const isHovered = hoveredCat === cat.slug;
             const isActive = currentCategory?.toLowerCase() === cat.slug.toLowerCase();
@@ -80,12 +81,12 @@ function HeaderNav({
             return (
               <div
                 key={cat.slug}
-                className="relative group py-0.5 shrink-0"
+                className="relative group py-1"
                 onMouseEnter={() => handleMouseEnter(cat.slug)}
               >
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-0.5 px-1 xl:px-1.5 py-1 rounded text-[10px] xl:text-[11px] 2xl:text-[11.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`inline-flex items-center space-x-1 px-2 xl:px-2.5 py-1 rounded text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
                       : isHovered
@@ -96,7 +97,7 @@ function HeaderNav({
                   <span>{cat.name}</span>
                   {hasSubs && (
                     <ChevronDown
-                      className={`w-2.5 h-2.5 transition-transform duration-200 ml-0.5 ${
+                      className={`w-2.5 h-2.5 transition-transform duration-200 ${
                         isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
                       }`}
                     />
@@ -105,6 +106,30 @@ function HeaderNav({
               </div>
             );
           })}
+
+          {/* If there are more than 8 categories, show sleek More dropdown */}
+          {categories.length > 8 && (
+            <div
+              className="relative group py-1"
+              onMouseEnter={() => handleMouseEnter('more-categories')}
+            >
+              <button
+                type="button"
+                className={`inline-flex items-center space-x-1 px-2 xl:px-2.5 py-1 rounded text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                  hoveredCat === 'more-categories'
+                    ? 'text-[#f7413e] bg-white/10'
+                    : 'text-white/90 hover:text-[#f7413e]'
+                }`}
+              >
+                <span>More</span>
+                <ChevronDown
+                  className={`w-2.5 h-2.5 transition-transform duration-200 ${
+                    hoveredCat === 'more-categories' ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
+                  }`}
+                />
+              </button>
+            </div>
+          )}
         </nav>
 
         {/* Mobile search indicator */}
@@ -124,7 +149,7 @@ function HeaderNav({
           }}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-5">
+          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               {/* Left Column: Pillar Title & Description */}
               <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
@@ -171,6 +196,65 @@ function HeaderNav({
                   </Link>
                 ))}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* More Categories Mega Dropdown Panel */}
+      {hoveredCat === 'more-categories' && categories.length > 8 && (
+        <div
+          className="absolute top-full left-0 w-full bg-[#0a0a0a] text-white border-b-2 border-[#f7413e] shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-150"
+          onMouseEnter={() => {
+            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+          }}
+          onMouseLeave={handleMouseLeave}
+        >
+          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+                Additional Editorial Sections & Special Topics
+              </span>
+              <Link
+                href="/news"
+                className="text-xs font-mono uppercase text-gray-400 hover:text-white transition-colors"
+              >
+                View Full Archive →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {categories.slice(8).map((cat) => (
+                <div
+                  key={cat.slug}
+                  className="p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-[#f7413e]/40 transition-all space-y-1.5"
+                >
+                  <Link
+                    href={`/news?category=${cat.slug}`}
+                    className="font-serif text-base font-bold text-white hover:text-[#f7413e] transition-colors flex items-center justify-between"
+                  >
+                    <span>{cat.name}</span>
+                    <ArrowRight className="w-3.5 h-3.5 text-[#f7413e]" />
+                  </Link>
+                  {cat.description && (
+                    <p className="text-[11px] text-gray-400 line-clamp-2 leading-relaxed font-sans">
+                      {cat.description}
+                    </p>
+                  )}
+                  {cat.subcategories && cat.subcategories.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {cat.subcategories.slice(0, 3).map((sub) => (
+                        <Link
+                          key={sub.slug}
+                          href={`/news?category=${cat.slug}&sub=${sub.slug}`}
+                          className="px-1.5 py-0.5 rounded bg-white/5 hover:bg-[#f7413e] hover:text-white text-[9px] font-mono uppercase text-gray-300 transition-colors"
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         </div>
