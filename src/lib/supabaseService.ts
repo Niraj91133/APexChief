@@ -110,10 +110,14 @@ export async function upsertArticleInDB(article: Article): Promise<boolean> {
 
 export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
   try {
-    const { error } = await supabaseAdmin
-      .from('articles')
-      .delete()
-      .or(`slug.eq.${idOrSlug},id.eq.${idOrSlug}`);
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+    let query = supabaseAdmin.from('articles').delete();
+    if (isUuid) {
+      query = query.or(`slug.eq.${idOrSlug},id.eq.${idOrSlug}`);
+    } else {
+      query = query.eq('slug', idOrSlug);
+    }
+    const { error } = await query;
 
     if (error) {
       console.error('Supabase deleteArticle error:', error.message);

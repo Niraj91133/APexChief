@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { getArticles, getArticleBySlug, getRelatedArticles, getSiteConfig } from '@/data/db';
+import { getArticlesFromDB } from '@/lib/supabaseService';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterBanner from '@/components/NewsletterBanner';
 import {
@@ -27,7 +28,8 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const articles = getArticles();
+  const dbArticles = await getArticlesFromDB();
+  const articles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
   return articles.map((article) => ({
     slug: article.slug,
   }));
@@ -35,7 +37,8 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const dbArticles = await getArticlesFromDB();
+  const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
   const siteConfig = getSiteConfig();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3007';
 
@@ -113,7 +116,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function ArticleDetailPage({ params }: PageProps) {
   const { slug } = await params;
-  const article = getArticleBySlug(slug);
+  const dbArticles = await getArticlesFromDB();
+  const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
   const siteConfig = getSiteConfig();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3007';
 
