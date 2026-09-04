@@ -7,7 +7,7 @@ import { Search, Menu, X, Moon, Sun, ChevronDown, ArrowRight } from 'lucide-reac
 import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
 import { CATEGORIES } from '@/data/categories';
-import { Category } from '@/types';
+import { Category, Article } from '@/types';
 
 function HeaderNav({
   onOpenSearch,

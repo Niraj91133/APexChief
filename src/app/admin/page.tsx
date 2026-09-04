@@ -118,7 +118,7 @@ const CURATED_STOCK_PHOTOS = [
   { label: 'Clean Energy Infrastructure', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200' },
 ];
 
-export const GOOGLE_FONTS_COLLECTION = [
+const GOOGLE_FONTS_COLLECTION = [
   // 1. MODERN SANS-SERIF (35 FONTS)
   { name: 'Inter', category: 'Sans-Serif (Clean & Modern)' },
   { name: 'Roboto', category: 'Sans-Serif (Clean & Modern)' },
@@ -685,7 +685,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState({ text: '', type: 'success' as 'success' | 'error' });
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' }>({ text: '', type: 'success' });
 
   // Post Editor State
   const [isEditing, setIsEditing] = useState(false);
@@ -1437,7 +1437,7 @@ export default function AdminDashboard() {
   };
 
   // Toast Helper
-  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToastMessage({ text, type });
     setTimeout(() => {
       setToastMessage({ text: '', type: 'success' });
@@ -2022,9 +2022,7 @@ export default function AdminDashboard() {
 
               <button
                 onClick={initCreatePost}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer ${
-                  activeTab === 'edit-post' && !isEditing ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
-                }`}
+                className="flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer text-[#211d1d] hover:bg-[#211d1d]/5"
               >
                 <Plus className="w-4 h-4" />
                 <span>Nayi Story Likhein</span>
