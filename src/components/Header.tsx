@@ -53,7 +53,7 @@ function HeaderNav({
       className="category-nav-bar w-full bg-black text-white border-b border-black transition-all relative z-40"
       onMouseLeave={handleMouseLeave}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-2 sm:py-2.5">
+      <div className="w-full px-3 sm:px-6 lg:px-8 xl:px-10 flex items-center justify-between py-1.5 sm:py-2">
         {/* Mobile-Only Menu Toggle Button */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -63,13 +63,13 @@ function HeaderNav({
           {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
 
-        {/* Desktop Navigation Links with Hover Subcategory Triggers */}
-        <nav className="hidden lg:flex items-center space-x-1 xl:space-x-2 overflow-visible py-1 flex-1 justify-center">
+        {/* Desktop Navigation Links (Edge-to-Edge Full Width Justified) */}
+        <nav className="hidden lg:flex items-center justify-between w-full overflow-visible py-0.5">
           <Link
             href="/news"
-            className="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap"
+            className="px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap"
           >
-            All Stories
+            All Categories
           </Link>
 
           {categories.map((cat) => {
@@ -80,12 +80,12 @@ function HeaderNav({
             return (
               <div
                 key={cat.slug}
-                className="relative group py-1"
+                className="relative group py-0.5"
                 onMouseEnter={() => handleMouseEnter(cat.slug)}
               >
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`inline-flex items-center space-x-1 px-1.5 xl:px-2.5 py-1 rounded text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
                       : isHovered
@@ -124,7 +124,7 @@ function HeaderNav({
           }}
           onMouseLeave={handleMouseLeave}
         >
-          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="w-full px-4 sm:px-6 lg:px-8 xl:px-10 py-5">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
               {/* Left Column: Pillar Title & Description */}
               <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
