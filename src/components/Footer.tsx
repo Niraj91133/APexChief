@@ -2,9 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/data/siteConfig';
 
 export default function Footer() {
+  const pathname = usePathname();
+  if (pathname && pathname.startsWith('/admin')) {
+    return null;
+  }
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {

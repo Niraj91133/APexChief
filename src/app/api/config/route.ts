@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getSiteConfig, saveSiteConfig } from '@/data/db';
+import { getSiteConfigFromDB, saveSiteConfigInDB } from '@/lib/supabaseService';
 
 export async function GET() {
+  const dbConfig = await getSiteConfigFromDB();
+  if (dbConfig) {
+    return NextResponse.json(dbConfig);
+  }
   const config = getSiteConfig();
   return NextResponse.json(config);
 }
@@ -13,12 +18,13 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Missing site name' }, { status: 400 });
     }
 
-    const success = saveSiteConfig(newConfig);
-    if (success) {
-      return NextResponse.json(newConfig);
-    } else {
-      return NextResponse.json({ error: 'Failed to save configuration to file' }, { status: 500 });
-    }
+    // 1. Save to Supabase
+    await saveSiteConfigInDB(newConfig);
+
+    // 2. Backup to local JSON
+    saveSiteConfig(newConfig);
+
+    return NextResponse.json(newConfig);
   } catch (e) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }

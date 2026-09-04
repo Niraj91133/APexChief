@@ -1,9 +1,18 @@
 import { NextResponse } from 'next/server';
 import { getCategories, saveCategories } from '@/data/db';
 import { CategoryInfo } from '@/types';
+import {
+  getCategoriesFromDB,
+  upsertCategoryInDB,
+  bulkSaveCategoriesInDB,
+} from '@/lib/supabaseService';
 
 export async function GET() {
   try {
+    const dbCategories = await getCategoriesFromDB();
+    if (dbCategories && dbCategories.length > 0) {
+      return NextResponse.json(dbCategories);
+    }
     const categories = getCategories();
     return NextResponse.json(categories);
   } catch (error: any) {
@@ -17,11 +26,9 @@ export async function POST(request: Request) {
 
     // Check if it's a bulk save (for reordering or status toggle)
     if (Array.isArray(data)) {
-      const success = saveCategories(data);
-      if (success) {
-        return NextResponse.json({ success: true, categories: data });
-      }
-      return NextResponse.json({ error: 'Failed to save categories' }, { status: 500 });
+      await bulkSaveCategoriesInDB(data);
+      saveCategories(data);
+      return NextResponse.json({ success: true, categories: data });
     }
 
     // Single category create
@@ -30,7 +37,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing name or slug' }, { status: 400 });
     }
 
-    const categories = getCategories();
+    const categories = (await getCategoriesFromDB()) || getCategories();
     if (categories.some((cat) => cat.slug.toLowerCase() === slug.toLowerCase())) {
       return NextResponse.json({ error: 'Category with this slug already exists' }, { status: 400 });
     }
@@ -44,12 +51,12 @@ export async function POST(request: Request) {
       isVisible: isVisible !== undefined ? isVisible : true,
     };
 
+    await upsertCategoryInDB(newCategory);
+
     categories.push(newCategory);
-    const success = saveCategories(categories);
-    if (success) {
-      return NextResponse.json(newCategory);
-    }
-    return NextResponse.json({ error: 'Failed to save new category' }, { status: 500 });
+    saveCategories(categories);
+
+    return NextResponse.json(newCategory);
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }

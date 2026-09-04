@@ -4,6 +4,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchModal from '@/components/SearchModal';
+import Analytics from '@/components/Analytics';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -60,14 +61,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${baskerville.variable} ${inter.variable} ${oswald.variable} ${bebas.variable}`}>
-      <body className="min-h-screen bg-[#faf8f2] text-[#211d1d] flex flex-col font-sans selection:bg-[#f7413e] selection:text-[#faf8f2]">
+    <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${baskerville.variable} ${inter.variable} ${oswald.variable} ${bebas.variable}`}>
+      <body
+        suppressHydrationWarning
+        className="min-h-screen bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
+      >
         <Header />
         <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {children}
         </main>
         <Footer />
         <SearchModal />
+        <Analytics />
       </body>
     </html>
   );

@@ -29,25 +29,34 @@ export default function HomePage() {
       .catch((err) => console.error('Failed to load articles', err));
   }, []);
 
-  const getArt = (slug: string) => {
+  const getArt = (slug: string): Article => {
     const art = articles.find((a) => a.slug === slug || a.id === slug);
     if (!art) {
-      return {
-        slug,
-        title: 'Article Not Found',
-        category: 'News',
-        tag: 'News',
-        author: 'Unknown',
-        date: 'Jun 28, 2026',
-        excerpt: 'Content not found.',
-        image: 'https://framerusercontent.com/images/87UsHGxJX2wRJHjboqDkwSmqS8.jpg',
-        authorAvatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300',
+      const fallback = articles[0] || ARTICLES[0] || {
+        id: 'default-art',
+        slug: 'enterprise-ai-reshapes-global-supply-chain-logistics',
+        title: 'Enterprise AI Reshapes Global Supply Chain Logistics',
+        category: 'Business',
+        tag: 'Business',
+        date: 'Sep 02, 2026',
+        author: 'Elena Rostova',
+        authorRole: 'Editor',
+        authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+        image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
+        readTime: '5 min read',
+        excerpt: 'Global supply chain transformation powered by predictive AI.',
+        paragraphs: [],
+        sections: [],
       };
+      return fallback;
     }
-    
-    // Unescape &amp; in image/avatar URLs
-    const cleanImage = art.image ? art.image.replace(/&amp;/g, '&') : '';
-    const cleanAvatar = art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : '';
+
+    const cleanImage = art.image
+      ? art.image.replace(/&amp;/g, '&')
+      : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
+    const cleanAvatar = art.authorAvatar
+      ? art.authorAvatar.replace(/&amp;/g, '&')
+      : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300';
 
     return {
       ...art,
@@ -60,13 +69,27 @@ export default function HomePage() {
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
+  // Dynamic Placements with fallback
+  const top3Assigned = articles.filter((a) => a.placement === 'top3');
+  const hero1 = top3Assigned[0] || getArt('enterprise-ai-reshapes-global-supply-chain-logistics');
+  const hero2 = top3Assigned[1] || getArt('the-rise-of-fractional-executives-in-modern-workforce');
+  const hero3 = top3Assigned[2] || getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams');
 
-  const bestThisMonthArticles = [
-    getArt('adventure-tourism-continues-growing-among-young-travelers'),
-    getArt('train-travel-sees-renewed-popularity-across-europe'),
+  // Latest News dynamic assignments
+  const latestAssigned = articles.filter((a) => a.placement === 'latest-news');
+  const newsMain = latestAssigned[0] || getArt('space-agencies-plan-joint-lunar-exploration-mission');
+  const newsRightTop = latestAssigned[1] || getArt('interview-sarah-chen-on-building-ai-native-operating-systems');
+  const newsRightBottom = latestAssigned[2] || getArt('programmatic-brand-storytelling-in-the-age-of-algorithmic-feeds');
+  const newsRightBottom2 = latestAssigned[3] || getArt('corporate-treasuries-diversify-into-green-infrastructure-bonds');
+
+  // Best This Month dynamic assignments
+  const bestAssigned = articles.filter((a) => a.placement === 'best-month');
+  const bestThisMonthArticles = bestAssigned.length > 0 ? bestAssigned : [
+    getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams'),
+    getArt('interview-sarah-chen-on-building-ai-native-operating-systems'),
   ];
 
-  const currentBestArticle = bestThisMonthArticles[carouselIndex];
+  const currentBestArticle = bestThisMonthArticles[carouselIndex] || bestThisMonthArticles[0];
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,15 +98,6 @@ export default function HomePage() {
       setNewsletterEmail('');
     }
   };
-
-  const hero1 = getArt('street-photography-exhibitions-gain-growing-public-attention');
-  const hero2 = getArt('plant-based-diets-continue-gaining-mainstream-popularity');
-  const hero3 = getArt('voice-cloning-technology-raises-new-ethical-questions');
-
-  // Latest News articles
-  const newsMain = getArt('space-agencies-plan-joint-lunar-exploration-mission');
-  const newsRightTop = getArt('smart-city-projects-expand-across-major-regions');
-  const newsRightBottom = getArt('independent-bookstores-experience-surprising-sales-revival');
 
   // Fetch dynamic categories on mount
   const [categories, setCategories] = useState<any[]>([]);
@@ -130,7 +144,7 @@ export default function HomePage() {
                 </h3>
               </Link>
               <div className="text-xs font-serif italic text-[#575757] mt-2">
-                By {hero1.author} • {hero1.date}
+                {hero1.date}
               </div>
             </div>
           </div>
@@ -147,7 +161,7 @@ export default function HomePage() {
                 </h3>
               </Link>
               <div className="text-xs font-serif italic text-[#575757] mt-2">
-                By {hero2.author} • {hero2.date}
+                {hero2.date}
               </div>
             </div>
             <Link
@@ -188,7 +202,7 @@ export default function HomePage() {
                 </h3>
               </Link>
               <div className="text-xs font-serif italic text-[#575757] mt-2">
-                By {hero3.author} • {hero3.date}
+                {hero3.date}
               </div>
             </div>
           </div>
@@ -199,13 +213,22 @@ export default function HomePage() {
       {/* 1. LATEST NEWS                                                            */}
       {/* ========================================================================= */}
       <section id="latest-news" className="w-full border-b border-[#211d1d]/20 pb-8">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          Latest News
-        </h2>
+        <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
+          <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+            LATEST NEWS
+          </h2>
+          <Link
+            href="/news"
+            className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider"
+          >
+            <span>Full Editorial Archive</span>
+            <span className="text-base leading-none">→</span>
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           {/* Left Column: Big Lead Story (7 cols) */}
-          <div className="lg:col-span-7 group flex flex-col">
+          <div className="lg:col-span-7 group flex flex-col lg:border-r lg:border-[#211d1d]/20 lg:pr-8">
             <Link
               href={`/news/${newsMain.slug}`}
               className="block overflow-hidden relative aspect-[16/11] mb-4 bg-[#eff0e0]"
@@ -218,20 +241,23 @@ export default function HomePage() {
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </Link>
-            <div>
-              <span className="text-xs font-mono uppercase font-semibold text-[#575757]">
+            <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans mb-1.5">
+              <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
+              <span className="font-serif italic text-[13px] text-[#575757]">
                 {newsMain.tag || newsMain.category}
               </span>
-              <Link href={`/news/${newsMain.slug}`}>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
-                  {newsMain.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-3">
-                {newsMain.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757]">
-                By {newsMain.author} • {newsMain.date}
+            </div>
+            <Link href={`/news/${newsMain.slug}`}>
+              <h3 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mb-3">
+                {newsMain.title}
+              </h3>
+            </Link>
+            <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-4 line-clamp-3">
+              {newsMain.excerpt}
+            </p>
+            <div className="flex items-center space-x-3 pt-3 border-t border-[#211d1d]/10">
+              <div className="text-[11px] font-serif text-[#575757]">
+                {newsMain.date}
               </div>
             </div>
           </div>
@@ -239,26 +265,10 @@ export default function HomePage() {
           {/* Right Column: Top Horizontal + Bottom 2-Col Grid (5 cols) */}
           <div className="lg:col-span-5 flex flex-col justify-between h-full">
             {/* Top: Horizontal Card */}
-            <div className="group flex items-start space-x-4 border-b border-[#211d1d]/15 pb-5">
-              <div className="flex-1">
-                <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                  {newsRightTop.tag || newsRightTop.category}
-                </span>
-                <Link href={`/news/${newsRightTop.slug}`}>
-                  <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5 line-clamp-3">
-                    {newsRightTop.title}
-                  </h4>
-                </Link>
-                <Link
-                  href={`/news/${newsRightTop.slug}`}
-                  className="inline-block text-[11px] font-mono text-[#211d1d] font-bold hover:underline mt-1.5"
-                >
-                  Read more →
-                </Link>
-              </div>
+            <div className="group flex items-start space-x-6 pb-6 border-b border-[#211d1d]/20 mb-6">
               <Link
                 href={`/news/${newsRightTop.slug}`}
-                className="w-24 h-24 relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
+                className="w-[40%] aspect-square relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
               >
                 <Image
                   src={newsRightTop.image}
@@ -267,51 +277,100 @@ export default function HomePage() {
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                 />
               </Link>
+              <div className="flex-1 flex flex-col justify-between min-h-[140px]">
+                <div>
+                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
+                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
+                    <span className="font-serif italic text-[13px] text-[#575757]">
+                      {newsRightTop.tag || newsRightTop.category}
+                    </span>
+                  </div>
+                  <Link href={`/news/${newsRightTop.slug}`}>
+                    <h4 className="font-oswald text-[18px] sm:text-[22px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
+                      {newsRightTop.title}
+                    </h4>
+                  </Link>
+                  <div className="text-[12px] font-serif italic text-[#575757] mt-1">
+                    {newsRightTop.date}
+                  </div>
+                </div>
+                <Link
+                  href={`/news/${newsRightTop.slug}`}
+                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-3"
+                >
+                  Read more
+                </Link>
+              </div>
             </div>
 
             {/* Bottom Grid: 2 Cards */}
-            <div className="grid grid-cols-2 gap-4 pt-5">
-              {/* Promo Card: Blue Promo Card */}
-              <div className="relative overflow-hidden aspect-[4/3] bg-gradient-to-br from-[#002b5c] to-[#001733] text-[#faf8f2] p-4 flex flex-col justify-between border border-[#211d1d]/15">
-                <div className="text-[10px] font-mono uppercase tracking-widest text-[#eff0e0]/70">
-                  Special Edition
-                </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {/* Bottom Left Card */}
+              <div className="group flex flex-col justify-between border-b sm:border-b-0 sm:border-r border-[#211d1d]/20 pb-6 sm:pb-0 sm:pr-6 h-full">
                 <div>
-                  <h4 className="font-serif text-base font-bold text-[#faf8f2] leading-snug">
-                    Explore Weekly In-Depth Dispatches
-                  </h4>
                   <Link
-                    href="/news"
-                    className="inline-block mt-2 bg-[#faf8f2] text-[#002b5c] hover:bg-[#f7413e] hover:text-[#faf8f2] text-[10px] font-oswald uppercase px-3 py-1 font-bold tracking-wider rounded transition-colors"
+                    href={`/news/${newsRightBottom.slug}`}
+                    className="block overflow-hidden relative aspect-[4/3] mb-3 bg-[#eff0e0]"
                   >
-                    Read Archive
+                    <Image
+                      src={newsRightBottom.image}
+                      alt={newsRightBottom.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </Link>
-                </div>
-              </div>
-
-              {/* Bottom Right: Bookstore Story */}
-              <div className="group flex flex-col justify-between">
-                <Link
-                  href={`/news/${newsRightBottom.slug}`}
-                  className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0] border border-[#211d1d]/10"
-                >
-                  <Image
-                    src={newsRightBottom.image}
-                    alt={newsRightBottom.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </Link>
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#575757] font-semibold">
-                    {newsRightBottom.tag || newsRightBottom.category}
-                  </span>
+                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
+                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
+                    <span className="font-serif italic text-[13px] text-[#575757]">
+                      {newsRightBottom.tag || newsRightBottom.category}
+                    </span>
+                  </div>
                   <Link href={`/news/${newsRightBottom.slug}`}>
-                    <h4 className="font-serif text-xs sm:text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5">
+                    <h4 className="font-oswald text-[15px] sm:text-[17px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
                       {newsRightBottom.title}
                     </h4>
                   </Link>
                 </div>
+                <Link
+                  href={`/news/${newsRightBottom.slug}`}
+                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-2"
+                >
+                  Read more
+                </Link>
+              </div>
+
+              {/* Bottom Right Card */}
+              <div className="group flex flex-col justify-between sm:pl-6 h-full">
+                <div>
+                  <Link
+                    href={`/news/${newsRightBottom2.slug}`}
+                    className="block overflow-hidden relative aspect-[4/3] mb-3 bg-[#eff0e0]"
+                  >
+                    <Image
+                      src={newsRightBottom2.image}
+                      alt={newsRightBottom2.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
+                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
+                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
+                    <span className="font-serif italic text-[13px] text-[#575757]">
+                      {newsRightBottom2.tag || newsRightBottom2.category}
+                    </span>
+                  </div>
+                  <Link href={`/news/${newsRightBottom2.slug}`}>
+                    <h4 className="font-oswald text-[15px] sm:text-[17px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
+                      {newsRightBottom2.title}
+                    </h4>
+                  </Link>
+                </div>
+                <Link
+                  href={`/news/${newsRightBottom2.slug}`}
+                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-2"
+                >
+                  Read more
+                </Link>
               </div>
             </div>
           </div>
@@ -329,9 +388,18 @@ export default function HomePage() {
       {/* 9. BEST THIS MONTH (Interactive Carousel Card)                            */}
       {/* ========================================================================= */}
       <section id="best-this-month" className="w-full pt-4 border-b border-[#211d1d]/20 pb-8">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          Best This Month
-        </h2>
+        <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
+          <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+            Best This Month
+          </h2>
+          <Link
+            href="/news"
+            className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider"
+          >
+            <span>Editorial Archive</span>
+            <span className="text-base leading-none">→</span>
+          </Link>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#fefdf3] border border-[#211d1d]/20 p-6 sm:p-8 relative">
           {/* Left: Large Image (5 cols) */}
@@ -362,7 +430,7 @@ export default function HomePage() {
                 {currentBestArticle.excerpt}
               </p>
               <div className="text-xs font-serif italic text-[#575757]">
-                By {currentBestArticle.author} • {currentBestArticle.date}
+                {currentBestArticle.date}
               </div>
             </div>
 
@@ -394,6 +462,48 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ========================================================================= */}
+      {/* 10. NEWSLETTER DISPATCH BANNER                                            */}
+      {/* ========================================================================= */}
+      <section className="w-full bg-[#211d1d] text-[#fefdf3] p-8 sm:p-12 text-center relative overflow-hidden">
+        <div className="max-w-2xl mx-auto relative z-10">
+          <Mail className="w-8 h-8 text-[#f7413e] mx-auto mb-3 animate-bounce" />
+          <span className="text-[11px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+            Weekly Editorial Briefing
+          </span>
+          <h3 className="font-serif text-3xl sm:text-4xl font-bold mt-2 mb-4 text-[#fefdf3]">
+            Curated Journalism Delivered Directly
+          </h3>
+          <p className="text-xs sm:text-sm text-[#eff0e0]/80 leading-relaxed mb-6 font-sans">
+            Join over 45,000 discerning readers receiving our weekly digest of original reporting, investigative cultural essays, and global industry intelligence.
+          </p>
+
+          {newsletterSubscribed ? (
+            <div className="bg-[#f7413e]/20 border border-[#f7413e] p-4 rounded text-sm text-[#fefdf3] flex items-center justify-center space-x-2">
+              <CheckCircle2 className="w-5 h-5 text-[#f7413e]" />
+              <span>Thank you for subscribing! Your briefing will arrive every Friday.</span>
+            </div>
+          ) : (
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+              <input
+                type="email"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                placeholder="Enter your email address..."
+                required
+                className="bg-[#fefdf3] text-[#211d1d] px-4 py-3 text-xs rounded-none border-0 focus:outline-none focus:ring-2 focus:ring-[#f7413e] flex-1 font-sans"
+              />
+              <button
+                type="submit"
+                className="bg-[#f7413e] hover:bg-[#d92d2a] text-[#fefdf3] font-oswald text-xs uppercase px-6 py-3 font-bold tracking-widest transition-colors rounded-none"
+              >
+                Subscribe
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
@@ -404,14 +514,11 @@ export default function HomePage() {
 function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   // Filter articles in this category case-insensitively
   const categoryArticles = articles.filter((art) => {
-    const normArtCat = art.category.toLowerCase().trim();
-    const normCatName = cat.name.toLowerCase().trim();
-    const normCatSlug = cat.slug.toLowerCase().trim();
+    const normArtCat = art.category.toLowerCase().trim().replace(/[-\s]/g, '');
+    const normCatSlug = cat.slug.toLowerCase().trim().replace(/[-\s]/g, '');
+    const normCatName = cat.name.toLowerCase().trim().replace(/[-\s]/g, '');
     
-    if (normCatSlug === 'ai' || normCatSlug === 'ai-news' || normCatName === 'ai news') {
-      return normArtCat.includes('ai') || normArtCat.includes('artificial');
-    }
-    return normArtCat === normCatName || normArtCat === normCatSlug;
+    return normArtCat === normCatSlug || normArtCat === normCatName;
   });
 
   // If there are 0 articles, hide the section entirely
@@ -423,37 +530,42 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   const getArtAt = (index: number): Article => {
     if (index < categoryArticles.length) {
       const art = categoryArticles[index];
-      const cleanImage = art.image ? art.image.replace(/&amp;/g, '&') : 'https://framerusercontent.com/images/87UsHGxJX2wRJHjboqDkwSmqS8.jpg';
-      const cleanAvatar = art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300';
+      const cleanImage = art.image ? art.image.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
+      const cleanAvatar = art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300';
       return {
         ...art,
         image: cleanImage,
         authorAvatar: cleanAvatar
       };
     }
-    // Return dummy article matching style
+    const fallback = categoryArticles[0];
     return {
-      id: `dummy-${cat.slug}-${index}`,
-      slug: '#',
-      title: 'Publication Pending',
-      category: cat.name,
-      tag: cat.name,
-      date: 'Jun 28, 2026',
-      author: 'Staff Writer',
-      authorRole: 'Editorial Staff',
-      authorAvatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300',
-      image: 'https://framerusercontent.com/images/87UsHGxJX2wRJHjboqDkwSmqS8.jpg',
-      readTime: '2 min read',
-      excerpt: 'More stories and editorial features in this section are currently being composed for publication.',
-      paragraphs: [],
-      sections: []
+      ...fallback,
+      id: `fallback-${cat.slug}-${index}`,
+      title: `${cat.name} Editorial Feature`,
     };
   };
 
   const layout = cat.layout || 'world-layout';
 
-  // Render correct layout structure
-  if (layout === 'world-layout') {
+  // Section Header with red direct link to archive
+  const renderHeader = () => (
+    <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
+      <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+        {cat.name}
+      </h2>
+      <Link
+        href={`/news?category=${cat.slug}`}
+        className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider"
+      >
+        <span>Explore {cat.name} Archive</span>
+        <span className="text-base leading-none">→</span>
+      </Link>
+    </div>
+  );
+
+  // 1. World & News Layout (Hero banner on top + 3 cards below)
+  if (layout === 'world-layout' || layout === 'news-layout') {
     const featured = getArtAt(0);
     const col1 = getArtAt(1);
     const col2 = getArtAt(2);
@@ -461,9 +573,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
+        {renderHeader()}
         {/* Top Wide Featured Banner */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 border-b border-[#211d1d]/20 mb-6 group items-center">
           <Link
@@ -490,7 +600,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               {featured.excerpt}
             </p>
             <div className="text-xs font-serif italic text-[#575757]">
-              By {featured.author} • {featured.date}
+              {featured.date}
             </div>
           </div>
         </div>
@@ -519,7 +629,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   </h4>
                 </Link>
                 <div className="text-xs font-serif italic text-[#575757] mt-1.5">
-                  By {col.author} • {col.date}
+                  {col.date}
                 </div>
               </div>
             </div>
@@ -529,23 +639,19 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     );
   }
 
+  // 2. Tech / Innovation / Technology / Start Up / Career layout (Split list + Right lead)
   if (layout === 'tech-layout') {
     const left1 = getArtAt(0);
     const left2 = getArtAt(1);
-    const left3 = getArtAt(2);
-    const center = getArtAt(3);
-    const right = getArtAt(4);
+    const center = getArtAt(2);
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
+        {renderHeader()}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20">
-          {/* Left Column (3 Horizontal List Cards) - 4 cols */}
-          <div className="lg:col-span-4 space-y-4 divide-y divide-[#211d1d]/15 pb-6 lg:pb-0">
-            {[left1, left2, left3].map((art, idx) => (
-              <div key={idx} className={`${idx === 0 ? 'pt-3 first:pt-0' : 'pt-4'} group flex items-start space-x-3`}>
+          <div className="lg:col-span-5 space-y-4 divide-y divide-[#211d1d]/15 pb-6 lg:pb-0">
+            {[left1, left2].map((art, idx) => (
+              <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-4'} group flex items-start space-x-3`}>
                 <Link
                   href={`/news/${art.slug}`}
                   className="w-24 h-24 relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
@@ -558,27 +664,26 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   />
                 </Link>
                 <div className="flex-1">
-                  <span className="text-[10px] font-mono uppercase text-[#575757] font-semibold">
+                  <span className="text-[10px] font-mono uppercase text-[#575757]">
                     {art.tag || art.category}
                   </span>
                   <Link href={`/news/${art.slug}`}>
-                    <h4 className="font-serif text-xs sm:text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5">
+                    <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug">
                       {art.title}
                     </h4>
                   </Link>
-                  <div className="text-[10px] font-serif italic text-[#575757] mt-1">
-                    By {art.author}
+                  <div className="text-[11px] font-serif italic text-[#575757] mt-1">
+                    {art.date}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Center Column: Big Image Feature - 5 cols */}
-          <div className="lg:col-span-5 group flex flex-col justify-between py-6 lg:py-0 lg:px-6">
+          <div className="lg:col-span-7 lg:pl-6 group flex flex-col justify-between">
             <Link
               href={`/news/${center.slug}`}
-              className="block overflow-hidden relative aspect-[16/11] mb-3 bg-[#eff0e0]"
+              className="block overflow-hidden relative aspect-[16/9] mb-4 bg-[#eff0e0]"
             >
               <Image
                 src={center.image}
@@ -588,489 +693,41 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               />
             </Link>
             <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
+              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
                 {center.tag || center.category}
               </span>
               <Link href={`/news/${center.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
                   {center.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs text-[#575757] line-clamp-2 leading-relaxed">
+              <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 mb-3">
                 {center.excerpt}
               </p>
-              <div className="text-xs font-serif italic text-[#575757] mt-3">
-                By {center.author} • {center.date}
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Medium Image Feature - 3 cols */}
-          <div className="lg:col-span-3 group flex flex-col justify-between pt-6 lg:pt-0 lg:pl-6">
-            <Link
-              href={`/news/${right.slug}`}
-              className="block overflow-hidden relative aspect-[4/3] mb-3 bg-[#eff0e0]"
-            >
-              <Image
-                src={right.image}
-                alt={right.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                {right.tag || right.category}
-              </span>
-              <Link href={`/news/${right.slug}`}>
-                <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                  {right.title}
-                </h4>
-              </Link>
-              <p className="font-sans text-xs text-[#575757] line-clamp-2 leading-relaxed mt-1">
-                {right.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757] mt-2.5">
-                By {right.author} • {right.date}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === 'culture-layout') {
-    const left1 = getArtAt(0);
-    const center1 = getArtAt(1);
-    const right1 = getArtAt(2);
-    const left2 = getArtAt(3);
-    const right2 = getArtAt(4);
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        {/* Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 border-b border-[#211d1d]/15 mb-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20">
-          <div className="lg:col-span-3 group flex flex-col justify-between pb-6 lg:pb-0">
-            <Link
-              href={`/news/${left1.slug}`}
-              className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0]"
-            >
-              <Image
-                src={left1.image}
-                alt={left1.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                {left1.tag || left1.category}
-              </span>
-              <Link href={`/news/${left1.slug}`}>
-                <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                  {left1.title}
-                </h4>
-              </Link>
-              <div className="text-[11px] font-serif italic text-[#575757] mt-1">
-                By {left1.author}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 group flex flex-col justify-between py-6 lg:py-0 lg:px-6">
-            <Link
-              href={`/news/${center1.slug}`}
-              className="block overflow-hidden relative aspect-[16/9] mb-3 bg-[#eff0e0]"
-            >
-              <Image
-                src={center1.image}
-                alt={center1.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
-                {center1.tag || center1.category}
-              </span>
-              <Link href={`/news/${center1.slug}`}>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1">
-                  {center1.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mt-1">
-                {center1.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757] mt-2">
-                By {center1.author} • {center1.date}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-3 group flex flex-col justify-between pt-6 lg:pt-0 lg:pl-6">
-            <Link
-              href={`/news/${right1.slug}`}
-              className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0]"
-            >
-              <Image
-                src={right1.image}
-                alt={right1.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                {right1.tag || right1.category}
-              </span>
-              <Link href={`/news/${right1.slug}`}>
-                <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                  {right1.title}
-                </h4>
-              </Link>
-              <div className="text-[11px] font-serif italic text-[#575757] mt-1">
-                By {right1.author}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2 */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20">
-          <div className="lg:col-span-3 group flex flex-col justify-between pb-6 lg:pb-0">
-            <Link
-              href={`/news/${left2.slug}`}
-              className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0]"
-            >
-              <Image
-                src={left2.image}
-                alt={left2.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                {left2.tag || left2.category}
-              </span>
-              <Link href={`/news/${left2.slug}`}>
-                <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                  {left2.title}
-                </h4>
-              </Link>
-              <div className="text-[11px] font-serif italic text-[#575757] mt-1">
-                By {left2.author}
-              </div>
-            </div>
-          </div>
-
-          <div className="lg:col-span-6 bg-[#faf8f2] border border-[#211d1d]/20 p-5 flex flex-col justify-center items-center text-center py-6 lg:py-0">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
-              Exclusive Dispatch
-            </span>
-            <h4 className="font-serif text-base font-bold text-[#0a0a0a] mt-2 max-w-sm leading-snug">
-              Curated Community Showcases, Galleries & Global Cultural Reports
-            </h4>
-            <Link
-              href="/news"
-              className="mt-3.5 border border-[#211d1d] hover:bg-[#211d1d] hover:text-[#fefdf3] text-[#211d1d] font-oswald text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 transition-colors"
-            >
-              See All Reviews
-            </Link>
-          </div>
-
-          <div className="lg:col-span-3 group flex flex-col justify-between pt-6 lg:pt-0 lg:pl-6">
-            <Link
-              href={`/news/${right2.slug}`}
-              className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0]"
-            >
-              <Image
-                src={right2.image}
-                alt={right2.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                {right2.tag || right2.category}
-              </span>
-              <Link href={`/news/${right2.slug}`}>
-                <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                  {right2.title}
-                </h4>
-              </Link>
-              <div className="text-[11px] font-serif italic text-[#575757] mt-1">
-                By {right2.author}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === 'business-layout') {
-    const row1 = [getArtAt(0), getArtAt(1), getArtAt(2)];
-    const row2 = [getArtAt(3), getArtAt(4), getArtAt(5)];
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-6 border-b border-[#211d1d]/15 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {row1.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                    {art.title}
-                  </h4>
-                </Link>
-                <div className="text-xs font-serif italic text-[#575757] mt-1.5">
-                  By {art.author} • {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {row2.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                    {art.title}
-                  </h4>
-                </Link>
-                <div className="text-xs font-serif italic text-[#575757] mt-1.5">
-                  By {art.author} • {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === 'lifestyle-layout') {
-    const main = getArtAt(0);
-    const r1 = getArtAt(1);
-    const r2 = getArtAt(2);
-    const b1 = getArtAt(3);
-    const b2 = getArtAt(4);
-    const b3 = getArtAt(5);
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-6 border-b border-[#211d1d]/15 mb-6">
-          <div className="lg:col-span-8 group flex flex-col justify-between">
-            <Link
-              href={`/news/${main.slug}`}
-              className="block overflow-hidden relative aspect-[16/9] mb-3 bg-[#eff0e0]"
-            >
-              <Image
-                src={main.image}
-                alt={main.title}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
-                {main.tag || main.category}
-              </span>
-              <Link href={`/news/${main.slug}`}>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
-                  {main.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-3">
-                {main.excerpt}
-              </p>
               <div className="text-xs font-serif italic text-[#575757]">
-                By {main.author} • {main.date}
+                {center.date}
               </div>
             </div>
           </div>
-
-          <div className="lg:col-span-4 space-y-4 divide-y divide-[#211d1d]/15 pl-0 lg:pl-6 lg:border-l border-[#211d1d]/20">
-            {[r1, r2].map((art, idx) => (
-              <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-4'} group flex flex-col justify-between`}>
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="block overflow-hidden relative aspect-[16/10] mb-2 bg-[#eff0e0]"
-                >
-                  <Image
-                    src={art.image}
-                    alt={art.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </Link>
-                <div>
-                  <span className="text-[10px] font-mono uppercase text-[#575757] font-semibold">
-                    {art.tag || art.category}
-                  </span>
-                  <Link href={`/news/${art.slug}`}>
-                    <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5">
-                      {art.title}
-                    </h4>
-                  </Link>
-                  <div className="text-[10px] font-serif italic text-[#575757] mt-1">
-                    By {art.author}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {[b1, b2, b3].map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-2 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5">
-                    {art.title}
-                  </h4>
-                </Link>
-                <div className="text-[10px] font-serif italic text-[#575757] mt-1.5">
-                  By {art.author}
-                </div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
     );
   }
 
-  if (layout === 'travel-layout') {
-    const col1 = getArtAt(0);
-    const col2 = getArtAt(1);
-    const col3 = getArtAt(2);
+  // 3. Business / Finance / Real Estate layout (2 prominent split cards)
+  if (layout === 'business-layout') {
+    const main1 = getArtAt(0);
+    const main2 = getArtAt(1);
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          <div className="lg:col-span-8 flex flex-col divide-y divide-[#211d1d]/15 pr-0 lg:pr-8">
-            {[col1, col2, col3].map((art, idx) => (
-              <div key={idx} className={`${idx === 0 ? 'pb-6' : idx === 1 ? 'py-6' : 'pt-6'} group flex flex-col sm:flex-row items-start gap-4`}>
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="w-full sm:w-48 h-36 relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
-                >
-                  <Image
-                    src={art.image}
-                    alt={art.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                </Link>
-                <div className="flex-1 flex flex-col justify-between h-full">
-                  <div>
-                    <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                      {art.tag || art.category}
-                    </span>
-                    <Link href={`/news/${art.slug}`}>
-                      <h3 className="font-serif text-lg font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                        {art.title}
-                      </h3>
-                    </Link>
-                    <p className="font-sans text-xs text-[#575757] line-clamp-2 leading-relaxed mt-1.5">
-                      {art.excerpt}
-                    </p>
-                  </div>
-                  <div className="text-xs font-serif italic text-[#575757] mt-3">
-                    By {art.author} • {art.date}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="lg:col-span-4 relative aspect-[9/16] max-h-[500px] w-full overflow-hidden bg-[#1f3822] border border-[#211d1d]/20 pt-6 lg:pt-0 lg:pl-8">
-            <Image
-              src="https://framerusercontent.com/images/sMKkUwn9argwO6dfwsjAilgVX64.jpg?width=2000&height=3395"
-              alt="Green Nature / Travel Guide"
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === 'health-layout') {
-    const row1 = [getArtAt(0), getArtAt(1)];
-    const row2 = [getArtAt(2), getArtAt(3), getArtAt(4), getArtAt(5)];
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-[#211d1d]/20 mb-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {row1.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : 'pt-6 md:pt-0 md:pl-8'}`}>
+        {renderHeader()}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20">
+          {[main1, main2].map((art, idx) => (
+            <div key={idx} className={`group flex flex-col justify-between ${idx === 1 ? 'md:pl-8 pt-6 md:pt-0' : 'pb-6 md:pb-0'}`}>
               <Link
                 href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
+                className="block overflow-hidden relative aspect-[16/10] mb-4 bg-[#eff0e0]"
               >
                 <Image
                   src={art.image}
@@ -1088,41 +745,11 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     {art.title}
                   </h3>
                 </Link>
-                <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 leading-relaxed mb-3">
+                <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 mb-3">
                   {art.excerpt}
                 </p>
                 <div className="text-xs font-serif italic text-[#575757]">
-                  By {art.author} • {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {row2.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between pb-6 sm:pb-0 ${idx > 0 ? (idx === 1 ? 'sm:pl-6 sm:border-l' : idx === 2 ? 'lg:pl-6 lg:border-l' : 'sm:pl-6 sm:border-l lg:border-l') : ''} border-[#211d1d]/20`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[4/3] mb-2 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-[10px] font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5 line-clamp-2">
-                    {art.title}
-                  </h4>
-                </Link>
-                <div className="text-[11px] font-serif italic text-[#575757] mt-1">
-                  By {art.author} • {art.date}
+                  {art.date}
                 </div>
               </div>
             </div>
@@ -1132,100 +759,23 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     );
   }
 
-  if (layout === 'ai-layout') {
-    const row1 = [getArtAt(0), getArtAt(1)];
-    const row2 = [getArtAt(2), getArtAt(3)];
+  // 4. Default / Lifestyle / Creative / Culture / Health (3-Column Grid)
+  const art1 = getArtAt(0);
+  const art2 = getArtAt(1);
+  const art3 = getArtAt(2);
 
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 pb-8 scroll-mt-20">
-        <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-          {cat.name}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-8 border-b border-[#211d1d]/15 mb-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {row1.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-8 md:pb-0' : 'pt-8 md:pt-0 md:pl-8'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
-                    {art.title}
-                  </h3>
-                </Link>
-                <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 leading-relaxed mb-3">
-                  {art.excerpt}
-                </p>
-                <div className="text-xs font-serif italic text-[#575757]">
-                  By {art.author} • {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {row2.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-8 md:pb-0' : 'pt-8 md:pt-0 md:pl-8'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
-                    {art.title}
-                  </h3>
-                </Link>
-                <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 leading-relaxed mb-3">
-                  {art.excerpt}
-                </p>
-                <div className="text-xs font-serif italic text-[#575757]">
-                  By {art.author} • {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  // Fallback grid-layout
   return (
     <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
-      <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-[#0a0a0a] pb-2 border-b border-[#211d1d]/30 mb-6">
-        {cat.name}
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {categoryArticles.map((art) => (
-          <div key={art.id} className="group flex flex-col justify-between">
+      {renderHeader()}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20">
+        {[art1, art2, art3].map((art, idx) => (
+          <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
             <Link
               href={`/news/${art.slug}`}
-              className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
+              className="block overflow-hidden relative aspect-[16/10] mb-3.5 bg-[#eff0e0]"
             >
               <Image
-                src={art.image ? art.image.replace(/&amp;/g, '&') : ''}
+                src={art.image}
                 alt={art.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -1236,12 +786,15 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 {art.tag || art.category}
               </span>
               <Link href={`/news/${art.slug}`}>
-                <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
+                <h3 className="font-serif text-lg font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2 line-clamp-2">
                   {art.title}
-                </h4>
+                </h3>
               </Link>
-              <div className="text-xs font-serif italic text-[#575757] mt-1.5">
-                By {art.author} • {art.date}
+              <p className="font-sans text-xs text-[#575757] line-clamp-2 mb-3">
+                {art.excerpt}
+              </p>
+              <div className="text-xs font-serif italic text-[#575757]">
+                {art.date}
               </div>
             </div>
           </div>

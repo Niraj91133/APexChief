@@ -1,44 +1,254 @@
-import { CategoryInfo } from '@/types';
+import { Category } from '@/types';
 
-export const CATEGORIES: CategoryInfo[] = [
+export const CATEGORIES: Category[] = [
   {
-    name: 'World',
-    slug: 'world',
-    description: 'Global affairs, diplomatic summits, international relations, and worldwide developments.',
+    "name": "Business",
+    "slug": "business",
+    "description": "Corporate strategy, global trade logistics, macroeconomic policies, enterprise leadership, and industrial innovation.",
+    "layout": "business-layout",
+    "order": 1,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Companies",
+        "slug": "companies",
+        "description": "Enterprise earnings, corporate restructuring, and multinational strategy."
+      },
+      {
+        "name": "Strategy",
+        "slug": "strategy",
+        "description": "Board-level execution, post-merger integration, and operational frameworks."
+      },
+      {
+        "name": "Economy",
+        "slug": "economy",
+        "description": "Central bank policies, inflation dynamics, global trade flows, and GDP metrics."
+      },
+      {
+        "name": "Industry",
+        "slug": "industry",
+        "description": "Manufacturing supply chains, aviation, energy transition, and infrastructure."
+      }
+    ]
   },
   {
-    name: 'Technology',
-    slug: 'technology',
-    description: 'Emerging tech breakthroughs, smart hardware, cloud computing, and digital innovation.',
+    "name": "Markets",
+    "slug": "markets",
+    "description": "Capital markets, private equity allocations, sovereign wealth funds, bond yields, and commercial real estate.",
+    "layout": "business-layout",
+    "order": 2,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Finance",
+        "slug": "finance",
+        "description": "Banking networks, monetary liquidity, and decentralized financial instruments."
+      },
+      {
+        "name": "Investment",
+        "slug": "investment",
+        "description": "Sovereign wealth deployments, asset allocation, and institutional portfolios."
+      },
+      {
+        "name": "Stocks & Bonds",
+        "slug": "stocks",
+        "description": "Public equities, debt issuances, green infrastructure bonds, and yield curves."
+      },
+      {
+        "name": "Capital",
+        "slug": "capital",
+        "description": "Private credit, leveraged buyouts, and institutional liquidity syndication."
+      },
+      {
+        "name": "Real Estate",
+        "slug": "real-estate",
+        "description": "Prime residential towers, commercial REITs, and smart-city urban planning."
+      }
+    ]
   },
   {
-    name: 'Culture',
-    slug: 'culture',
-    description: 'Artistic movements, literary revivals, community exhibitions, cinema, and modern expression.',
+    "name": "Technology",
+    "slug": "technology",
+    "description": "Frontier artificial intelligence, deep-tech hardware, quantum cryptography, cloud computing, and semiconductor engineering.",
+    "layout": "tech-layout",
+    "order": 3,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "AI",
+        "slug": "ai",
+        "description": "Frontier reasoning models, autonomous multi-agent networks, and neural chips."
+      },
+      {
+        "name": "Innovation",
+        "slug": "innovation",
+        "description": "Solid-state energy storage, photonics, and quantum sensor breakthroughs."
+      },
+      {
+        "name": "Cybersecurity",
+        "slug": "cybersecurity",
+        "description": "Post-quantum encryption, zero-trust architectures, and critical infra defense."
+      },
+      {
+        "name": "Digital",
+        "slug": "digital",
+        "description": "Enterprise SaaS, cloud infrastructure, and distributed edge computing."
+      }
+    ]
   },
   {
-    name: 'Business',
-    slug: 'business',
-    description: 'Market trends, corporate strategy, workplace evolution, startup growth, and economic analysis.',
+    "name": "Startups",
+    "slug": "startups",
+    "description": "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
+    "layout": "tech-layout",
+    "order": 4,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Founders",
+        "slug": "founders",
+        "description": "Early-stage building retrospectives, founder mindset, and product iteration."
+      },
+      {
+        "name": "Funding",
+        "slug": "funding",
+        "description": "Seed pitch deck teardowns, Series A/B term sheets, and valuation trends."
+      },
+      {
+        "name": "Venture Capital",
+        "slug": "venture-capital",
+        "description": "Fund economics, LP allocations, and deep-tech sovereign venture funds."
+      },
+      {
+        "name": "Entrepreneurship",
+        "slug": "entrepreneurship",
+        "description": "Bootstrapped scaling to $10M ARR, lean micro-teams, and unit economics."
+      }
+    ]
   },
   {
-    name: 'Lifestyle',
-    slug: 'lifestyle',
-    description: 'Mindful living, urban design, modern home trends, wellness practices, and everyday balance.',
+    "name": "Leadership",
+    "slug": "leadership",
+    "description": "Exclusive executive dialogues, CEO strategies, visionary profiles, and the ApexChief annual rankings.",
+    "layout": "culture-layout",
+    "order": 5,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "CEOs",
+        "slug": "ceos",
+        "description": "C-suite decision frameworks, corporate crisis management, and culture."
+      },
+      {
+        "name": "Executives",
+        "slug": "executives",
+        "description": "Fractional leadership models, CTO technical roadmaps, and COO strategy."
+      },
+      {
+        "name": "Interviews",
+        "slug": "interviews",
+        "description": "Intimate, unvarnished conversations with the architects of the modern economy."
+      },
+      {
+        "name": "Profiles",
+        "slug": "profiles",
+        "description": "In-depth historical and contemporary biographies of transformative pioneers."
+      },
+      {
+        "name": "Lists & Rankings",
+        "slug": "lists-rankings",
+        "description": "Top 50 Visionary CEOs, Top 25 Founders, and Power 100 Indexes."
+      }
+    ]
   },
   {
-    name: 'Travel',
-    slug: 'travel',
-    description: 'Destination spotlights, sustainable tourism, historic rail journeys, and scenic getaways.',
+    "name": "Marketing",
+    "slug": "marketing",
+    "description": "Algorithmic brand positioning, high-converting storytelling, zero-party data, and performance growth science.",
+    "layout": "lifestyle-layout",
+    "order": 6,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Branding",
+        "slug": "branding",
+        "description": "Corporate identity, visual aesthetics, and cultural resonance."
+      },
+      {
+        "name": "Advertising",
+        "slug": "advertising",
+        "description": "Programmatic media bidding, attribution models, and omnichannel reach."
+      },
+      {
+        "name": "Growth",
+        "slug": "growth",
+        "description": "Customer acquisition cost (CAC) optimization, viral loops, and retention."
+      },
+      {
+        "name": "Consumer",
+        "slug": "consumer",
+        "description": "Micro-community evangelism, behavioral psychology, and consumer sentiment."
+      }
+    ]
   },
   {
-    name: 'Health',
-    slug: 'health',
-    description: 'Medical research, preventative wellness, fitness routines, mental health, and longevity.',
+    "name": "Career",
+    "slug": "career",
+    "description": "Executive mobility, remote salary parity, high-leverage skill acquisition, and the modern workplace.",
+    "layout": "tech-layout",
+    "order": 7,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Jobs & Hiring",
+        "slug": "jobs",
+        "description": "Executive talent market shifts, AI engineering demand, and talent retention."
+      },
+      {
+        "name": "Skills",
+        "slug": "skills",
+        "description": "High-income capability stacks, AI orchestration, and strategic communication."
+      },
+      {
+        "name": "Workplace",
+        "slug": "workplace",
+        "description": "Asynchronous culture, global remote operations, and organizational design."
+      },
+      {
+        "name": "Leadership Careers",
+        "slug": "leadership-careers",
+        "description": "Board seat transitions, advisory portfolios, and fractional executive moves."
+      }
+    ]
   },
   {
-    name: 'AI News',
-    slug: 'ai',
-    description: 'Artificial intelligence research, voice technologies, machine learning, and ethical frontiers.',
-  },
+    "name": "Future",
+    "slug": "future",
+    "description": "Emerging global macro trends, sustainability transitions, spatial design, and the next-generation economy.",
+    "layout": "world-layout",
+    "order": 8,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Emerging Trends",
+        "slug": "emerging-trends",
+        "description": "Commercial space treaties, aerial eVTOL transit, and generative arts."
+      },
+      {
+        "name": "Sustainability",
+        "slug": "sustainability",
+        "description": "Decarbonization benchmarks, clean hydrogen corridors, and grid storage."
+      },
+      {
+        "name": "HealthTech & Bio",
+        "slug": "healthtech",
+        "description": "Metabolic longevity protocols, surgical robotics, and personalized mRNA."
+      },
+      {
+        "name": "New Economy",
+        "slug": "new-economy",
+        "description": "UAE & MENA sovereign corridors, smart cities, and biophilic architecture."
+      }
+    ]
+  }
 ];
