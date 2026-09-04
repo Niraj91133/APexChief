@@ -18,6 +18,7 @@ import {
   BookOpen,
 } from 'lucide-react';
 import ShareButtons from './ShareButtons';
+import ArticleViewTracker from '@/components/ArticleViewTracker';
 
 export const dynamic = 'force-dynamic';
 
@@ -197,6 +198,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
   return (
     <>
+      {/* Real-time Article View & Visitor Tracker */}
+      <ArticleViewTracker slug={article.slug} />
+
       {/* Search Engine Structured Data (JSON-LD) */}
       <script
         type="application/ld+json"

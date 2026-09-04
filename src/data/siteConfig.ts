@@ -28,5 +28,5 @@ export const siteConfig = {
     linkedin: 'https://linkedin.com',
     facebook: 'https://facebook.com',
   },
-  copyright: '© 2026 All Right Reserved by Reddevs',
+  copyright: '© 2026 ApexChief. All Rights Reserved.',
 };

@@ -142,6 +142,15 @@ export default function Footer() {
                   404
                 </Link>
               </li>
+              <li className="pt-1">
+                <Link
+                  href="/admin"
+                  className="inline-flex items-center space-x-1.5 text-[#eff0e0]/90 hover:text-white transition-colors group font-mono text-[11px] uppercase tracking-wider"
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                  <span className="group-hover:underline">🔒 Admin Portal</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -170,9 +179,19 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-8 text-xs text-[#eff0e0]/50 text-center font-mono">
-          {siteConfig.copyright}
+        {/* Bottom Copyright & Staff Access */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#eff0e0]/60 font-mono">
+          <div>
+            © {new Date().getFullYear()} {siteConfig.name}. All Rights Reserved.
+          </div>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/admin"
+              className="inline-flex items-center space-x-1.5 text-[#eff0e0]/70 hover:text-[#eff0e0] transition-colors hover:underline"
+            >
+              <span>🔒 Staff Login / Editorial Access</span>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

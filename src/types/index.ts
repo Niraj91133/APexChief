@@ -26,6 +26,8 @@ export interface Article {
   sections: ArticleSection[];
   featured?: boolean;
   trending?: boolean;
+  viewsCount?: number;
+  likesCount?: number;
 }
 
 export interface SubCategory {
