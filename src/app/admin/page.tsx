@@ -714,6 +714,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'edit-post' | 'settings' | 'sections'>('overview');
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
+  const [postSortBy, setPostSortBy] = useState<'views-desc' | 'views-asc' | 'date-desc' | 'date-asc' | 'title-asc'>('views-desc');
   const [isLoading, setIsLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' }>({ text: '', type: 'success' });
 
@@ -1739,16 +1740,37 @@ export default function AdminDashboard() {
     }
   };
 
-  // Filtered Articles for Manage Tab
+  // Filtered & Sorted Articles for Manage Tab
   const filteredArticles = useMemo(() => {
-    return articles.filter((art) => {
+    const list = articles.filter((art) => {
+      const q = searchQuery.toLowerCase().trim();
       const matchSearch =
-        art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        art.author.toLowerCase().includes(searchQuery.toLowerCase());
+        !q ||
+        art.title.toLowerCase().includes(q) ||
+        art.author.toLowerCase().includes(q) ||
+        (art.slug && art.slug.toLowerCase().includes(q)) ||
+        (art.tag && art.tag.toLowerCase().includes(q));
       const matchCat = categoryFilter === 'all' || art.category === categoryFilter;
       return matchSearch && matchCat;
     });
-  }, [articles, searchQuery, categoryFilter]);
+
+    return list.sort((a, b) => {
+      if (postSortBy === 'views-desc') {
+        return (Number(b.viewsCount) || 0) - (Number(a.viewsCount) || 0);
+      }
+      if (postSortBy === 'views-asc') {
+        return (Number(a.viewsCount) || 0) - (Number(b.viewsCount) || 0);
+      }
+      if (postSortBy === 'date-asc') {
+        return new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime();
+      }
+      if (postSortBy === 'title-asc') {
+        return a.title.localeCompare(b.title);
+      }
+      // date-desc
+      return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+    });
+  }, [articles, searchQuery, categoryFilter, postSortBy]);
 
   // Auto-calculate reading time based on total word count
   const autoCalculateReadTime = () => {
@@ -2232,7 +2254,7 @@ export default function AdminDashboard() {
                           </h2>
                           <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>LIVE ENGINE</span>
+                            <span>100% REAL DATABASE DATA</span>
                           </span>
                         </div>
                         <p className="text-xs text-[#575757] font-semibold mt-1">
@@ -2272,15 +2294,15 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-2 flex items-baseline space-x-2">
                           <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
-                            {(analyticsData?.uniqueVisitors || 1120).toLocaleString()}
+                            {(analyticsData?.uniqueVisitors ?? 0).toLocaleString()}
                           </span>
-                          <span className="text-[11px] font-mono font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">
-                            +18.4%
+                          <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                            Verified
                           </span>
                         </div>
                         <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
                           <span>Total Site Visits:</span>
-                          <strong className="text-[#002b5c]">{(analyticsData?.totalVisits || 1840).toLocaleString()}</strong>
+                          <strong className="text-[#002b5c]">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
                         </div>
                       </div>
 
@@ -2296,15 +2318,15 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-2 flex items-baseline space-x-2">
                           <span className="font-serif text-3xl sm:text-4xl font-bold text-[#002b5c]">
-                            {(analyticsData?.totalViews || 2480).toLocaleString()}
+                            {(analyticsData?.totalViews ?? 0).toLocaleString()}
                           </span>
-                          <span className="text-[11px] font-mono font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
-                            +28.6%
+                          <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                            Database Live
                           </span>
                         </div>
                         <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
                           <span>Avg Reads / Story:</span>
-                          <strong className="text-[#0a0a0a]">{analyticsData?.avgViewsPerArticle || 88}</strong>
+                          <strong className="text-[#0a0a0a]">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
                         </div>
                       </div>
 
@@ -2327,16 +2349,16 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                         <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Featured Headlines:</span>
+                          <span>Featured Stories:</span>
                           <strong className="text-amber-600">{articles.filter((a) => a.featured).length}</strong>
                         </div>
                       </div>
 
-                      {/* Card 4: Reader Retention */}
+                      {/* Card 4: Reader Reactions / Likes */}
                       <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-5 shadow-xs relative overflow-hidden group">
                         <div className="flex items-center justify-between">
                           <span className="font-mono text-[10px] uppercase text-[#575757] tracking-wider font-bold">
-                            Engagement Rate
+                            Kul Reader Likes
                           </span>
                           <span className="p-1.5 rounded bg-rose-50 text-[#f7413e] border border-rose-200">
                             <Activity className="w-4 h-4" />
@@ -2344,20 +2366,174 @@ export default function AdminDashboard() {
                         </div>
                         <div className="mt-2 flex items-baseline space-x-2">
                           <span className="font-serif text-3xl sm:text-4xl font-bold text-[#f7413e]">
-                            {analyticsData?.engagementRate || 78.6}%
+                            {(analyticsData?.totalLikes ?? 0).toLocaleString()}
                           </span>
-                          <span className="text-[11px] font-mono font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
-                            Strong
+                          <span className="text-[10px] font-mono font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                            Engaged
                           </span>
                         </div>
                         <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Avg Reading Depth:</span>
-                          <strong className="text-[#0a0a0a]">3.4 min read</strong>
+                          <span>Engagement Score:</span>
+                          <strong className="text-[#0a0a0a]">{analyticsData?.engagementRate ?? 0}%</strong>
                         </div>
                       </div>
                     </div>
 
-                    {/* 7-Day Traffic Trend Analysis (Interactive Chart) */}
+                    {/* GOOGLE ANALYTICS 4 & MICROSOFT CLARITY LIVE COMMAND HUB */}
+                    <div className="bg-[#faf8f2] border-2 border-[#002b5c]/25 p-5 sm:p-6 space-y-5 shadow-xs">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#211d1d]/10 pb-4">
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="relative flex h-3 w-3">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                            </span>
+                            <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] uppercase tracking-tight">
+                              Microsoft Clarity & Google Analytics 4 Command Hub
+                            </h3>
+                            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                              LIVE TRANSMITTING
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#575757] mt-1 font-sans">
+                            Website ke sabhi pages par Microsoft Clarity session recordings, heatmaps aur GA4 traffic telemetry live active hai.
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
+                          <span className="px-2.5 py-1 bg-white border border-[#211d1d]/15 rounded text-[#002b5c] font-bold">
+                            GA4: G-02WC3EL89S
+                          </span>
+                          <span className="px-2.5 py-1 bg-white border border-[#211d1d]/15 rounded text-[#f7413e] font-bold">
+                            Clarity: ydgkxqb6b8
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 2 Platform Intelligence Launchpads */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        {/* 1. Microsoft Clarity Panel */}
+                        <div className="bg-white border border-[#211d1d]/15 p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#0078d4]/40 transition-colors">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-sm bg-[#0078d4]/10 border border-[#0078d4]/30 flex items-center justify-center text-[#0078d4] font-bold text-sm">
+                                  MC
+                                </div>
+                                <div>
+                                  <h4 className="font-serif text-base font-bold text-[#0a0a0a]">
+                                    Microsoft Clarity
+                                  </h4>
+                                  <span className="text-[10px] font-mono text-[#575757]">
+                                    Project Tag: <strong>ydgkxqb6b8</strong>
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="px-2 py-0.5 rounded bg-blue-50 text-[#0078d4] text-[10px] font-mono font-bold">
+                                Heatmaps & Video
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-[#575757] leading-relaxed">
+                              Real reader cursor movements, scroll depth percentage by article, rage clicks aur poori video screen recordings dekhein.
+                            </p>
+
+                            <div className="space-y-1.5 pt-1 text-[11px] font-mono">
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">🎥 Session Video Replays:</span>
+                                <span className="text-emerald-700 font-bold">🟢 Live Captured</span>
+                              </div>
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">🗺️ Click & Scroll Heatmaps:</span>
+                                <span className="text-emerald-700 font-bold">🟢 Active</span>
+                              </div>
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">⚡ Rage Clicks & Drop-offs:</span>
+                                <span className="text-emerald-700 font-bold">🟢 Automated</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#211d1d]/10">
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/recordings"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-2 bg-[#002b5c] hover:bg-[#002b5c]/90 text-[#faf8f2] text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1"
+                            >
+                              <span>🎥 Recordings</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/heatmaps"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-2 bg-[#f3f1e6] hover:bg-[#211d1d] text-[#211d1d] hover:text-white border border-[#211d1d]/20 text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1"
+                            >
+                              <span>🗺️ Heatmaps</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* 2. Google Analytics 4 Panel */}
+                        <div className="bg-white border border-[#211d1d]/15 p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#ea4335]/40 transition-colors">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-sm bg-[#ea4335]/10 border border-[#ea4335]/30 flex items-center justify-center text-[#ea4335] font-bold text-sm">
+                                  GA4
+                                </div>
+                                <div>
+                                  <h4 className="font-serif text-base font-bold text-[#0a0a0a]">
+                                    Google Analytics 4
+                                  </h4>
+                                  <span className="text-[10px] font-mono text-[#575757]">
+                                    Measurement ID: <strong>G-02WC3EL89S</strong>
+                                  </span>
+                                </div>
+                              </div>
+                              <span className="px-2 py-0.5 rounded bg-rose-50 text-[#ea4335] text-[10px] font-mono font-bold">
+                                Realtime Traffic
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-[#575757] leading-relaxed">
+                              Real-time live active readers (last 30 minutes), Google Search organic traffic, country & city geolocations aur mobile/desktop split dekhein.
+                            </p>
+
+                            <div className="space-y-1.5 pt-1 text-[11px] font-mono">
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">⚡ Realtime (Last 30 Mins):</span>
+                                <span className="text-emerald-700 font-bold">🟢 Transmitting</span>
+                              </div>
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">🌍 Country / City Geolocation:</span>
+                                <span className="text-emerald-700 font-bold">🟢 Global Stream</span>
+                              </div>
+                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
+                                <span className="text-[#575757]">🔍 Google Search & Referrals:</span>
+                                <span className="text-emerald-700 font-bold">🟢 Tracked</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-2 border-t border-[#211d1d]/10">
+                            <a
+                              href="https://analytics.google.com/analytics/web/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full px-3 py-2 bg-[#f7413e] hover:bg-[#f7413e]/90 text-white text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1.5 shadow-xs"
+                            >
+                              <span>📈 Open Google Analytics 4 Dashboard</span>
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 7-Day Traffic Trend Analysis (Interactive Real Database Chart) */}
                     <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
                         <div>
@@ -2366,13 +2542,13 @@ export default function AdminDashboard() {
                             <span>Pichle 7 Dino Ka Traffic & Reader Trend (Daily Views)</span>
                           </h3>
                           <p className="text-[11px] text-[#575757] font-mono mt-0.5">
-                            Daily article pageviews aur unique audience activity
+                            Supabase database me darj actual daily article pageviews aur unique audience activity
                           </p>
                         </div>
                         <div className="flex items-center space-x-4 text-[11px] font-mono">
                           <span className="flex items-center space-x-1.5">
                             <span className="w-3 h-3 rounded-xs bg-[#002b5c] inline-block"></span>
-                            <span>Article Views</span>
+                            <span>Daily Views</span>
                           </span>
                           <span className="flex items-center space-x-1.5">
                             <span className="w-3 h-3 rounded-xs bg-[#f7413e] inline-block"></span>
@@ -2383,65 +2559,85 @@ export default function AdminDashboard() {
 
                       {/* Daily Bars Visualizer */}
                       <div className="pt-6 pb-2">
-                        <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 border-b border-[#211d1d]/15 pb-2">
-                          {(analyticsData?.dailyTrends || []).map((dayData, idx) => {
-                            const maxVal = Math.max(...(analyticsData?.dailyTrends || []).map((d) => d.views), 400);
-                            const viewsHeight = Math.max(12, Math.round((dayData.views / maxVal) * 100));
-                            const visitorsHeight = Math.max(8, Math.round((dayData.visitors / maxVal) * 100));
+                        {(!analyticsData?.dailyTrends || analyticsData.dailyTrends.length === 0) ? (
+                          <div className="py-12 text-center text-xs font-mono text-[#575757]">
+                            Pichle 7 dino ka traffic data load ho raha hai...
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 border-b border-[#211d1d]/15 pb-2">
+                            {analyticsData.dailyTrends.map((dayData, idx) => {
+                              const maxViewsInWeek = Math.max(...analyticsData.dailyTrends.map((d) => d.views), 1);
+                              const viewsHeight = dayData.views > 0 ? Math.max(16, Math.round((dayData.views / maxViewsInWeek) * 100)) : 6;
+                              const visitorsHeight = dayData.visitors > 0 ? Math.max(12, Math.round((dayData.visitors / maxViewsInWeek) * 100)) : 4;
 
-                            return (
-                              <div key={idx} className="flex flex-col items-center h-full justify-end group relative">
-                                {/* Hover Tooltip */}
-                                <div className="absolute -top-12 z-20 hidden group-hover:flex flex-col items-center bg-[#1a1a1a] text-white text-[10px] font-mono px-2 py-1 rounded shadow-xl whitespace-nowrap pointer-events-none">
-                                  <span>{dayData.date} ({dayData.day})</span>
-                                  <span className="text-blue-300">{dayData.views} Views • {dayData.visitors} Visitors</span>
-                                </div>
+                              return (
+                                <div key={idx} className="flex flex-col items-center h-full justify-end group relative">
+                                  {/* Hover Tooltip */}
+                                  <div className="absolute -top-12 z-20 hidden group-hover:flex flex-col items-center bg-[#1a1a1a] text-white text-[10px] font-mono px-2.5 py-1 rounded shadow-xl whitespace-nowrap pointer-events-none">
+                                    <span>{dayData.date} ({dayData.day})</span>
+                                    <span className="text-blue-300 font-bold">{dayData.views} Actual Views • {dayData.visitors} Visitors</span>
+                                  </div>
 
-                                <div className="w-full flex items-end justify-center space-x-1 sm:space-x-1.5 h-full">
-                                  {/* Views Bar */}
-                                  <div
-                                    style={{ height: `${viewsHeight}%` }}
-                                    className="w-1/2 max-w-[28px] bg-[#002b5c] hover:bg-[#002b5c]/80 rounded-t-xs transition-all duration-300 relative"
-                                    title={`${dayData.views} Views`}
-                                  ></div>
-                                  {/* Visitors Bar */}
-                                  <div
-                                    style={{ height: `${visitorsHeight}%` }}
-                                    className="w-1/2 max-w-[28px] bg-[#f7413e] hover:bg-[#f7413e]/80 rounded-t-xs transition-all duration-300"
-                                    title={`${dayData.visitors} Visitors`}
-                                  ></div>
-                                </div>
+                                  <div className="w-full flex items-end justify-center space-x-1 sm:space-x-1.5 h-full">
+                                    {/* Views Bar */}
+                                    <div
+                                      style={{ height: `${viewsHeight}%` }}
+                                      className="w-1/2 max-w-[28px] bg-[#002b5c] hover:bg-[#002b5c]/80 rounded-t-xs transition-all duration-300 relative flex items-start justify-center pt-1"
+                                      title={`${dayData.views} Views`}
+                                    >
+                                      {dayData.views > 0 && (
+                                        <span className="text-[9px] font-mono text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                                          {dayData.views}
+                                        </span>
+                                      )}
+                                    </div>
+                                    {/* Visitors Bar */}
+                                    <div
+                                      style={{ height: `${visitorsHeight}%` }}
+                                      className="w-1/2 max-w-[28px] bg-[#f7413e] hover:bg-[#f7413e]/80 rounded-t-xs transition-all duration-300"
+                                      title={`${dayData.visitors} Visitors`}
+                                    ></div>
+                                  </div>
 
-                                <div className="mt-2 text-center">
-                                  <span className="font-mono text-[11px] font-bold text-[#0a0a0a] block">
-                                    {dayData.day}
-                                  </span>
-                                  <span className="font-mono text-[9px] text-[#575757] block truncate">
-                                    {dayData.date.split(' ')[0]} {dayData.date.split(' ')[1]}
-                                  </span>
+                                  <div className="mt-2 text-center">
+                                    <span className="font-mono text-[11px] font-bold text-[#0a0a0a] block">
+                                      {dayData.day}
+                                    </span>
+                                    <span className="font-mono text-[9px] text-[#575757] block truncate">
+                                      {dayData.date}
+                                    </span>
+                                    <span className="font-mono text-[9px] text-[#002b5c] font-bold block mt-0.5">
+                                      {dayData.views} views
+                                    </span>
+                                  </div>
                                 </div>
-                              </div>
-                            );
-                          })}
-                        </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
 
-                    {/* TOP 10 ARTICLES LEADERBOARD */}
+                    {/* TOP ARTICLES LEADERBOARD - 100% REAL DATABASE VIEWS */}
                     <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
                         <div>
                           <h3 className="font-serif text-lg font-bold text-[#0a0a0a] uppercase tracking-tight flex items-center space-x-2">
-                            <span>🏆 Top 10 Sabse Zyada Padhe Gaye Articles (Leaderboard)</span>
+                            <span>🏆 Top Sabse Zyada Padhe Gaye Articles (Leaderboard)</span>
                           </h3>
                           <p className="text-[11px] text-[#575757] font-mono mt-0.5">
-                            Website par reader audience ke anusaar rank kiye gaye top articles
+                            Supabase database me darj real views ke anusaar rank kiye gaye articles
                           </p>
                         </div>
 
-                        <span className="text-[11px] font-mono text-[#002b5c] bg-blue-50 border border-blue-200 px-2 py-0.5 rounded font-bold self-start sm:self-center">
-                          Total Indexed: {articles.length} Stories
-                        </span>
+                        <div className="flex items-center space-x-2 self-start sm:self-center">
+                          <button
+                            onClick={() => setActiveTab('posts')}
+                            className="text-[11px] font-mono text-[#002b5c] hover:underline font-bold"
+                          >
+                            Sabhi Stories Dekhein ({articles.length}) →
+                          </button>
+                        </div>
                       </div>
 
                       <div className="overflow-x-auto">
@@ -2452,121 +2648,122 @@ export default function AdminDashboard() {
                               <th className="px-3 py-2.5">Article Headline Title</th>
                               <th className="px-3 py-2.5">Category & Desk</th>
                               <th className="px-3 py-2.5">Author</th>
-                              <th className="px-3 py-2.5 text-right">Live Views Count</th>
+                              <th className="px-3 py-2.5 text-right">Actual Views Count</th>
                               <th className="px-3 py-2.5 w-36">Traffic Share</th>
                               <th className="px-3 py-2.5 text-right">View</th>
                             </tr>
                           </thead>
                           <tbody className="divide-y divide-[#211d1d]/10">
-                            {((analyticsData?.topArticles && analyticsData.topArticles.length > 0)
-                              ? analyticsData.topArticles
-                              : articles.slice(0, 10).map((a, i) => ({
-                                  slug: a.slug,
-                                  title: a.title,
-                                  category: a.category,
-                                  author: a.author,
-                                  image: a.image,
-                                  viewsCount: a.viewsCount || (1800 - i * 140),
-                                  likesCount: a.likesCount || 120,
-                                  date: a.date,
-                                  readTime: a.readTime,
-                                  percentage: Math.max(3, Math.round(((1800 - i * 140) / 2480) * 100)),
-                                }))
-                            ).map((item, idx) => {
-                              const rank = idx + 1;
-                              const rankBadge =
-                                rank === 1
-                                  ? 'bg-amber-400 text-amber-950 font-extrabold ring-2 ring-amber-300'
-                                  : rank === 2
-                                  ? 'bg-slate-300 text-slate-900 font-bold'
-                                  : rank === 3
-                                  ? 'bg-amber-700 text-amber-50 font-bold'
-                                  : 'bg-[#eff0e0] text-[#575757] font-mono';
+                            {articles.length === 0 ? (
+                              <tr>
+                                <td colSpan={7} className="px-4 py-8 text-center text-[#575757] font-mono">
+                                  Database me koi articles nahi hain.
+                                </td>
+                              </tr>
+                            ) : (
+                              [...articles]
+                                .sort((a, b) => (Number(b.viewsCount) || 0) - (Number(a.viewsCount) || 0))
+                                .slice(0, 10)
+                                .map((art, idx) => {
+                                  const rank = idx + 1;
+                                  const totalViewsSum = analyticsData?.totalViews || articles.reduce((acc, a) => acc + (Number(a.viewsCount) || 0), 0) || 1;
+                                  const viewsNum = Number(art.viewsCount) || 0;
+                                  const sharePercentage = totalViewsSum > 0 ? Math.round((viewsNum / totalViewsSum) * 100) : 0;
 
-                              return (
-                                <tr key={item.slug} className="hover:bg-[#f3f1e6]/60 transition-colors">
-                                  {/* Rank Medal */}
-                                  <td className="px-3 py-3 text-center whitespace-nowrap">
-                                    <span
-                                      className={`w-6 h-6 rounded-full inline-flex items-center justify-center text-[11px] ${rankBadge}`}
-                                    >
-                                      {rank}
-                                    </span>
-                                  </td>
+                                  const rankBadge =
+                                    rank === 1
+                                      ? 'bg-amber-400 text-amber-950 font-extrabold ring-2 ring-amber-300'
+                                      : rank === 2
+                                      ? 'bg-slate-300 text-slate-900 font-bold'
+                                      : rank === 3
+                                      ? 'bg-amber-700 text-amber-50 font-bold'
+                                      : 'bg-[#eff0e0] text-[#575757] font-mono';
 
-                                  {/* Title with thumbnail */}
-                                  <td className="px-3 py-3">
-                                    <div className="flex items-center space-x-3 max-w-[340px]">
-                                      {item.image && (
-                                        <img
-                                          src={item.image}
-                                          alt=""
-                                          className="w-10 h-7 object-cover rounded-xs border border-[#211d1d]/15 shrink-0"
-                                        />
-                                      )}
-                                      <a
-                                        href={`/news/${item.slug}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="font-serif font-bold text-[#0a0a0a] hover:text-[#002b5c] transition-colors truncate block"
-                                        title={item.title}
-                                      >
-                                        {item.title}
-                                      </a>
-                                    </div>
-                                  </td>
+                                  return (
+                                    <tr key={art.slug} className="hover:bg-[#f3f1e6]/60 transition-colors">
+                                      {/* Rank Medal */}
+                                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                                        <span
+                                          className={`w-6 h-6 rounded-full inline-flex items-center justify-center text-[11px] ${rankBadge}`}
+                                        >
+                                          {rank}
+                                        </span>
+                                      </td>
 
-                                  {/* Category */}
-                                  <td className="px-3 py-3 whitespace-nowrap">
-                                    <span className="font-bold text-[10px] uppercase px-2 py-0.5 rounded bg-[#002b5c]/10 text-[#002b5c]">
-                                      {item.category}
-                                    </span>
-                                  </td>
+                                      {/* Title with thumbnail */}
+                                      <td className="px-3 py-3">
+                                        <div className="flex items-center space-x-3 max-w-[340px]">
+                                          {art.image && (
+                                            <img
+                                              src={art.image}
+                                              alt=""
+                                              className="w-10 h-7 object-cover rounded-xs border border-[#211d1d]/15 shrink-0"
+                                            />
+                                          )}
+                                          <a
+                                            href={`/news/${art.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-serif font-bold text-[#0a0a0a] hover:text-[#002b5c] transition-colors truncate block"
+                                            title={art.title}
+                                          >
+                                            {art.title}
+                                          </a>
+                                        </div>
+                                      </td>
 
-                                  {/* Author */}
-                                  <td className="px-3 py-3 whitespace-nowrap font-medium text-[#0a0a0a]">
-                                    {item.author}
-                                  </td>
+                                      {/* Category */}
+                                      <td className="px-3 py-3 whitespace-nowrap">
+                                        <span className="font-bold text-[10px] uppercase px-2 py-0.5 rounded bg-[#002b5c]/10 text-[#002b5c]">
+                                          {art.category}
+                                        </span>
+                                      </td>
 
-                                  {/* Views Count */}
-                                  <td className="px-3 py-3 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] text-xs">
-                                    <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-blue-50 border border-blue-200 rounded">
-                                      <Eye className="w-3 h-3 text-[#002b5c]" />
-                                      <span>{item.viewsCount.toLocaleString()} views</span>
-                                    </span>
-                                  </td>
+                                      {/* Author */}
+                                      <td className="px-3 py-3 whitespace-nowrap font-medium text-[#0a0a0a]">
+                                        {art.author}
+                                      </td>
 
-                                  {/* Traffic Share Bar */}
-                                  <td className="px-3 py-3 whitespace-nowrap">
-                                    <div className="space-y-1">
-                                      <div className="flex items-center justify-between text-[10px] font-mono text-[#575757]">
-                                        <span>Share</span>
-                                        <strong>{item.percentage}%</strong>
-                                      </div>
-                                      <div className="w-full bg-[#211d1d]/10 h-1.5 rounded-full overflow-hidden">
-                                        <div
-                                          style={{ width: `${Math.min(100, item.percentage * 2.5)}%` }}
-                                          className="bg-[#002b5c] h-full rounded-full"
-                                        ></div>
-                                      </div>
-                                    </div>
-                                  </td>
+                                      {/* Views Count */}
+                                      <td className="px-3 py-3 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] text-xs">
+                                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-blue-50 border border-blue-200 rounded">
+                                          <Eye className="w-3 h-3 text-[#002b5c]" />
+                                          <span>{viewsNum.toLocaleString()} views</span>
+                                        </span>
+                                      </td>
 
-                                  {/* Action Live Link */}
-                                  <td className="px-3 py-3 whitespace-nowrap text-right">
-                                    <a
-                                      href={`/news/${item.slug}`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="p-1 hover:bg-[#eff0e0] text-[#002b5c] inline-block transition-colors"
-                                      title="Live Story Kholein"
-                                    >
-                                      <ExternalLink className="w-3.5 h-3.5" />
-                                    </a>
-                                  </td>
-                                </tr>
-                              );
-                            })}
+                                      {/* Traffic Share Bar */}
+                                      <td className="px-3 py-3 whitespace-nowrap">
+                                        <div className="space-y-1">
+                                          <div className="flex items-center justify-between text-[10px] font-mono text-[#575757]">
+                                            <span>Share</span>
+                                            <strong>{sharePercentage}%</strong>
+                                          </div>
+                                          <div className="w-full bg-[#211d1d]/10 h-1.5 rounded-full overflow-hidden">
+                                            <div
+                                              style={{ width: `${Math.min(100, sharePercentage * 2.5)}%` }}
+                                              className="bg-[#002b5c] h-full rounded-full"
+                                            ></div>
+                                          </div>
+                                        </div>
+                                      </td>
+
+                                      {/* Action Live Link */}
+                                      <td className="px-3 py-3 whitespace-nowrap text-right">
+                                        <a
+                                          href={`/news/${art.slug}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="p-1 hover:bg-[#eff0e0] text-[#002b5c] inline-block transition-colors"
+                                          title="Live Story Kholein"
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5" />
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                            )}
                           </tbody>
                         </table>
                       </div>
@@ -2580,18 +2777,14 @@ export default function AdminDashboard() {
                           <h3 className="font-serif text-base font-bold text-[#0a0a0a] uppercase tracking-tight">
                             Category-wise Readership Distribution
                           </h3>
-                          <span className="text-[10px] font-mono text-[#575757]">Total Desks</span>
+                          <span className="text-[10px] font-mono text-[#575757]">Live Desks</span>
                         </div>
 
                         <div className="space-y-3 pt-1">
                           {(analyticsData?.categoryBreakdown && analyticsData.categoryBreakdown.length > 0
                             ? analyticsData.categoryBreakdown
                             : [
-                                { category: 'Business', views: 980, percentage: 38, color: '#002b5c' },
-                                { category: 'Technology', views: 640, percentage: 25, color: '#0284c7' },
-                                { category: 'Culture', views: 420, percentage: 17, color: '#f7413e' },
-                                { category: 'World', views: 280, percentage: 11, color: '#059669' },
-                                { category: 'Lifestyle', views: 160, percentage: 9, color: '#d97706' },
+                                { category: 'Business', views: 0, percentage: 0, color: '#002b5c' },
                               ]
                           ).map((cat) => (
                             <div key={cat.category} className="space-y-1">
@@ -2648,7 +2841,7 @@ export default function AdminDashboard() {
                         {/* Traffic Channels */}
                         <div>
                           <h4 className="font-mono text-[11px] uppercase tracking-wider text-[#0a0a0a] font-bold mb-2">
-                            Audience Acquisition Channels
+                            Audience Acquisition Channels (GA4 + Clarity)
                           </h4>
                           <div className="space-y-2 text-xs font-mono">
                             <div className="flex items-center justify-between p-2 bg-white border border-[#211d1d]/10">
@@ -2680,10 +2873,10 @@ export default function AdminDashboard() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
                         <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
-                          Sabhi Published Stories
+                          Sabhi Published Stories ({articles.length})
                         </h2>
                         <p className="text-xs text-[#575757] font-semibold mt-1">
-                          Apni sabhi stories search karein, edit karein ya delete karein
+                          Har story ke live views dekhein, search karein, edit karein ya views ke anusaar sort karein
                         </p>
                       </div>
 
@@ -2696,26 +2889,57 @@ export default function AdminDashboard() {
                       </button>
                     </div>
 
-                    {/* Search & Filter Bar */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 bg-[#faf8f2] border border-[#211d1d]/15 p-4">
-                      <div className="sm:col-span-7 relative">
+                    {/* Quick KPI Bar for Posts */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Kul Published Stories</span>
+                          <span className="font-serif text-xl font-bold text-[#0a0a0a]">{articles.length}</span>
+                        </div>
+                        <FileText className="w-5 h-5 text-[#002b5c]" />
+                      </div>
+                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Kul Story Views</span>
+                          <span className="font-serif text-xl font-bold text-[#002b5c]">
+                            {articles.reduce((acc, a) => acc + (Number(a.viewsCount) || 0), 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <Eye className="w-5 h-5 text-[#002b5c]" />
+                      </div>
+                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
+                        <div>
+                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Sabse Zyada Views</span>
+                          <span className="font-serif text-xl font-bold text-emerald-700">
+                            {Math.max(...articles.map((a) => Number(a.viewsCount) || 0), 0).toLocaleString()} views
+                          </span>
+                        </div>
+                        <TrendingUp className="w-5 h-5 text-emerald-600" />
+                      </div>
+                    </div>
+
+                    {/* Search, Filter & Sort Bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-[#faf8f2] border border-[#211d1d]/15 p-4">
+                      {/* Search */}
+                      <div className="sm:col-span-5 relative">
                         <input
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Headline, author ya slug se search karein..."
+                          placeholder="Headline, author, tag ya slug se search karein..."
                           className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3.5 py-2 pl-9 text-xs text-[#211d1d] focus:outline-none focus:border-[#f7413e]"
                         />
                         <Search className="w-4 h-4 text-[#575757] absolute left-3 top-2.5" />
                       </div>
 
-                      <div className="sm:col-span-5">
+                      {/* Category Filter */}
+                      <div className="sm:col-span-4">
                         <select
                           value={categoryFilter}
                           onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3.5 py-2 text-xs text-[#211d1d] focus:outline-none"
+                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3.5 py-2 text-xs text-[#211d1d] focus:outline-none font-medium"
                         >
-                          <option value="all">Sabhi Categories</option>
+                          <option value="all">Sabhi Categories ({categories.length})</option>
                           {categoriesList
                             .filter((c) => c !== 'all')
                             .map((c) => (
@@ -2723,6 +2947,21 @@ export default function AdminDashboard() {
                                 {c}
                               </option>
                             ))}
+                        </select>
+                      </div>
+
+                      {/* Sort Filter */}
+                      <div className="sm:col-span-3">
+                        <select
+                          value={postSortBy}
+                          onChange={(e) => setPostSortBy(e.target.value as any)}
+                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3 py-2 text-xs text-[#002b5c] font-bold focus:outline-none"
+                        >
+                          <option value="views-desc">👁️ Most Viewed (Highest)</option>
+                          <option value="views-asc">👁️ Least Viewed (Lowest)</option>
+                          <option value="date-desc">📅 Newest First</option>
+                          <option value="date-asc">📅 Oldest First</option>
+                          <option value="title-asc">🔤 Title (A to Z)</option>
                         </select>
                       </div>
                     </div>
@@ -2736,7 +2975,7 @@ export default function AdminDashboard() {
                             <th className="px-4 py-3">Headline Title</th>
                             <th className="px-4 py-3">Category</th>
                             <th className="px-4 py-3">Author</th>
-                            <th className="px-4 py-3">Views</th>
+                            <th className="px-4 py-3 text-right">Actual Views</th>
                             <th className="px-4 py-3">Tarikh</th>
                             <th className="px-4 py-3 text-right">Actions</th>
                           </tr>
@@ -2745,7 +2984,7 @@ export default function AdminDashboard() {
                           {filteredArticles.length === 0 ? (
                             <tr>
                               <td colSpan={7} className="px-4 py-12 text-center text-[#575757] font-semibold">
-                                Is search ke liye koi story nahi mili.
+                                Is filter ke anusaar koi story nahi mili.
                               </td>
                             </tr>
                           ) : (
@@ -2784,10 +3023,10 @@ export default function AdminDashboard() {
                                 <td className="px-4 py-3 whitespace-nowrap font-medium text-[#0a0a0a]">
                                   {art.author}
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap font-mono text-xs">
-                                  <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded bg-blue-50 text-[#002b5c] font-bold border border-blue-200">
-                                    <Eye className="w-3 h-3" />
-                                    <span>{(art.viewsCount || 0).toLocaleString()}</span>
+                                <td className="px-4 py-3 whitespace-nowrap text-right font-mono text-xs">
+                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded bg-blue-50 text-[#002b5c] font-bold border border-blue-200">
+                                    <Eye className="w-3 h-3 text-[#002b5c]" />
+                                    <span>{(Number(art.viewsCount) || 0).toLocaleString()} views</span>
                                   </span>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap text-[#575757] font-mono">

@@ -1,10 +1,35 @@
 'use client';
 
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 
 export default function Analytics() {
+  const pathname = usePathname();
   const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'ydgkxqb6b8';
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-02WC3EL89S';
+
+  useEffect(() => {
+    if (!pathname || pathname.startsWith('/admin') || typeof window === 'undefined') return;
+
+    const visitorKey = 'apex_visitor_tracked';
+    const isNewVisitor = !localStorage.getItem(visitorKey);
+    if (isNewVisitor) {
+      localStorage.setItem(visitorKey, Date.now().toString());
+    }
+
+    // Ping site analytics tracker for daily visits / pageviews
+    // For specific articles, ArticleViewTracker will also pass the slug
+    if (!pathname.startsWith('/news/')) {
+      fetch('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          isUnique: isNewVisitor,
+        }),
+      }).catch((err) => console.warn('Analytics ping error:', err));
+    }
+  }, [pathname]);
 
   return (
     <>
