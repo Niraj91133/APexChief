@@ -2035,20 +2035,18 @@ export default function AdminDashboard() {
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757]">
-                  Admin Password
-                </label>
-                <span className="text-[10px] font-mono text-[#002b5c] font-semibold bg-blue-50 px-1.5 py-0.5 border border-blue-200 rounded">
-                  Default: Apexchief2026@
-                </span>
-              </div>
+              <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] mb-1.5">
+                Admin Password
+              </label>
               <div className="relative">
                 <input
                   type={showLoginPassword ? 'text' : 'password'}
+                  name="adminPassword"
+                  id="adminPassword"
+                  autoComplete="current-password"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="Apexchief2026@"
+                  placeholder="••••••••••••"
                   className="w-full p-3 pr-10 border border-[#211d1d]/30 bg-white text-sm text-[#0a0a0a] focus:outline-none focus:border-[#002b5c] transition-colors"
                   autoFocus
                 />
@@ -4729,9 +4727,12 @@ export default function AdminDashboard() {
                             <input
                               type={showCurrentPass ? 'text' : 'password'}
                               required
+                              name="currentAdminPassword"
+                              id="currentAdminPassword"
+                              autoComplete="current-password"
                               value={currentPasswordInput}
                               onChange={(e) => setCurrentPasswordInput(e.target.value)}
-                              placeholder="Puraana password daalein (Default: Apexchief2026@)"
+                              placeholder="••••••••••••"
                               className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
                             />
                             <button
@@ -4753,9 +4754,12 @@ export default function AdminDashboard() {
                             <input
                               type={showNewPass ? 'text' : 'password'}
                               required
+                              name="newAdminPassword"
+                              id="newAdminPassword"
+                              autoComplete="new-password"
                               value={newPasswordInput}
                               onChange={(e) => setNewPasswordInput(e.target.value)}
-                              placeholder="Naya majboot password (min 6 chars)"
+                              placeholder="••••••••••••"
                               className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
                             />
                             <button
@@ -4776,9 +4780,12 @@ export default function AdminDashboard() {
                           <input
                             type="password"
                             required
+                            name="confirmAdminPassword"
+                            id="confirmAdminPassword"
+                            autoComplete="new-password"
                             value={confirmPasswordInput}
                             onChange={(e) => setConfirmPasswordInput(e.target.value)}
-                            placeholder="Naya password dobara daalein"
+                            placeholder="••••••••••••"
                             className="block w-full px-3 py-2.5 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
                           />
                         </div>
