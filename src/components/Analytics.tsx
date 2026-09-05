@@ -3,7 +3,7 @@
 import Script from 'next/script';
 
 export default function Analytics() {
-  const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID;
+  const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'ydgkxqb6b8';
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
