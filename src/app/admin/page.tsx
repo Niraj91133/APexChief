@@ -1020,7 +1020,95 @@ export default function AdminDashboard() {
     showToast('AI suggestion discarded. Original content preserved.', 'info');
   };
 
-  // ImageKit File Upload Handler
+  // Helper to compress/optimize image client-side to prevent 413 Payload Too Large
+  const compressImageForUpload = async (file: File): Promise<{ blob: Blob; base64: string; fileName: string }> => {
+    return new Promise((resolve, reject) => {
+      const cleanName = (file.name || `image-${Date.now()}.jpg`)
+        .toLowerCase()
+        .replace(/[^a-z0-9.-]/g, '-');
+
+      if (file.type === 'image/svg+xml' || file.size < 400 * 1024) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve({
+            blob: file,
+            base64: reader.result as string,
+            fileName: cleanName,
+          });
+        };
+        reader.onerror = () => reject(new Error('File read failed'));
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 1920;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+          reader.onerror = () => reject(new Error('File read failed'));
+          reader.readAsDataURL(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const quality = 0.88;
+        const base64 = canvas.toDataURL(mimeType, quality);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve({
+                blob,
+                base64,
+                fileName: cleanName.replace(/\.[^/.]+$/, mimeType === 'image/png' ? '.png' : '.jpg'),
+              });
+            } else {
+              const reader = new FileReader();
+              reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+              reader.readAsDataURL(file);
+            }
+          },
+          mimeType,
+          quality
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        const reader = new FileReader();
+        reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+        reader.onerror = () => reject(new Error('Image decode error'));
+        reader.readAsDataURL(file);
+      };
+
+      img.src = objectUrl;
+    });
+  };
+
+  // ImageKit File Upload Handler (Direct CDN + Fallback)
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1028,30 +1116,92 @@ export default function AdminDashboard() {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      showToast('Kripya valid image file (JPG, PNG, WebP) chunein', 'error');
+      return;
+    }
+
     setIsUploadingImage(true);
-    showToast('ImageKit CDN par photo upload ho rahi hai...', 'info');
+    showToast('Image process aur ImageKit CDN par upload ho rahi hai...', 'info');
+
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('folder', '/articles');
+      // 1. Optimize & compress image in browser
+      const { blob, base64, fileName } = await compressImageForUpload(file);
 
-      const res = await fetch('/api/imagekit/upload', {
-        method: 'POST',
-        body: formData,
-      });
+      let uploadedUrl = '';
 
-      const data = await res.json();
-      if (data.url) {
+      // Method 1: Try direct upload to ImageKit CDN via Auth signature (bypasses server body limits)
+      try {
+        const authRes = await fetch('/api/imagekit/auth');
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData.token && authData.signature && authData.expire && authData.publicKey) {
+            const directForm = new FormData();
+            directForm.append('file', blob, fileName);
+            directForm.append('fileName', fileName);
+            directForm.append('publicKey', authData.publicKey);
+            directForm.append('signature', authData.signature);
+            directForm.append('expire', String(authData.expire));
+            directForm.append('token', authData.token);
+            directForm.append('folder', '/articles');
+            directForm.append('useUniqueFileName', 'true');
+
+            const directUploadRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+              method: 'POST',
+              body: directForm,
+            });
+
+            if (directUploadRes.ok) {
+              const directData = await directUploadRes.json();
+              if (directData.url) {
+                uploadedUrl = directData.url;
+              }
+            }
+          }
+        }
+      } catch (directErr) {
+        console.warn('Direct upload attempt failed, falling back to server route:', directErr);
+      }
+
+      // Method 2: If direct upload didn't succeed, use server endpoint
+      if (!uploadedUrl) {
+        const serverRes = await fetch('/api/imagekit/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64,
+            fileName,
+            folder: '/articles',
+          }),
+        });
+
+        const rawText = await serverRes.text();
+        let serverData: any = {};
+        try {
+          serverData = JSON.parse(rawText);
+        } catch {
+          throw new Error(rawText.slice(0, 100) || `Server upload error (${serverRes.status})`);
+        }
+
+        if (serverRes.ok && serverData.url) {
+          uploadedUrl = serverData.url;
+        } else {
+          throw new Error(serverData.error || 'Server upload failed');
+        }
+      }
+
+      if (uploadedUrl) {
         setEditingArticle((prev) => ({
           ...prev,
-          image: data.url,
+          image: uploadedUrl,
         }));
         showToast('✓ Photo ImageKit CDN par live upload ho gayi!', 'success');
       } else {
-        showToast(data.error || 'Upload failed', 'error');
+        throw new Error('Image URL prapt nahi hua');
       }
     } catch (err: any) {
-      showToast('Upload error: ' + err.message, 'error');
+      console.error('Image upload error:', err);
+      showToast('Upload error: ' + (err.message || 'Unknown error'), 'error');
     } finally {
       setIsUploadingImage(false);
       if (imageFileInputRef.current) imageFileInputRef.current.value = '';

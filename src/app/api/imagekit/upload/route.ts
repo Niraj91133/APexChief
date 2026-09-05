@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { uploadImage } from '@/lib/imagekit';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get('content-type') || '';
@@ -11,7 +14,7 @@ export async function POST(req: NextRequest) {
       const folder = (formData.get('folder') as string) || '/articles';
 
       if (!file) {
-        return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
+        return NextResponse.json({ success: false, error: 'No file uploaded' }, { status: 400 });
       }
 
       const buffer = Buffer.from(await file.arrayBuffer());
@@ -19,22 +22,22 @@ export async function POST(req: NextRequest) {
 
       const uploadResult = await uploadImage(buffer, fileName, folder);
       if (!uploadResult.success) {
-        return NextResponse.json({ error: uploadResult.error }, { status: 500 });
+        return NextResponse.json({ success: false, error: uploadResult.error }, { status: 500 });
       }
 
       return NextResponse.json(uploadResult);
     } else {
-      // JSON body (base64 or image url)
+      // JSON body (base64 or remote image URL)
       const body = await req.json();
       const { file, fileName = `img-${Date.now()}.jpg`, folder = '/articles' } = body;
 
       if (!file) {
-        return NextResponse.json({ error: 'Missing file payload' }, { status: 400 });
+        return NextResponse.json({ success: false, error: 'Missing file payload' }, { status: 400 });
       }
 
       const uploadResult = await uploadImage(file, fileName, folder);
       if (!uploadResult.success) {
-        return NextResponse.json({ error: uploadResult.error }, { status: 500 });
+        return NextResponse.json({ success: false, error: uploadResult.error }, { status: 500 });
       }
 
       return NextResponse.json(uploadResult);
@@ -42,7 +45,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Image upload route error:', error);
     return NextResponse.json(
-      { error: error.message || 'Internal server error' },
+      { success: false, error: error.message || 'Internal server error during upload' },
       { status: 500 }
     );
   }
