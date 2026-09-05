@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import SearchModal from '@/components/SearchModal';
 import Analytics from '@/components/Analytics';
+import MainWrapper from '@/components/MainWrapper';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -67,9 +68,9 @@ export default function RootLayout({
         className="min-h-screen bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
       >
         <Header />
-        <main className="flex-1 w-full max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <MainWrapper>
           {children}
-        </main>
+        </MainWrapper>
         <Footer />
         <SearchModal />
         <Analytics />

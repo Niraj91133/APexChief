@@ -77,7 +77,9 @@ import {
   Smartphone,
   Monitor,
   Tablet,
-  Globe2
+  Globe2,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { Article, ArticleSection, CategoryInfo, SubCategory } from '@/types';
 import { CATEGORIES } from '@/data/categories';
@@ -676,6 +678,42 @@ export default function AdminDashboard() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  // Dark / Light Theme Mode State
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === 'dark' || document.documentElement.classList.contains('dark')) {
+        setIsDarkMode(true);
+        document.documentElement.classList.add('dark');
+      } else {
+        setIsDarkMode(false);
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {
+      setIsDarkMode(false);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      try {
+        if (next) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+      } catch (e) {
+        console.error('Error toggling theme', e);
+      }
+      return next;
+    });
+  };
 
   // Password Management State (Settings Tab)
   const [currentPasswordInput, setCurrentPasswordInput] = useState('');
@@ -2034,30 +2072,43 @@ export default function AdminDashboard() {
   // Render Login Form if explicitly logged out
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#faf8f2] flex flex-col items-center justify-center p-4 font-sans selection:bg-[#002b5c] selection:text-white">
-        <div className="max-w-md w-full bg-[#f3f1e6] border-2 border-[#211d1d]/20 p-8 shadow-2xl space-y-6">
-          <div className="text-center space-y-2 border-b border-[#211d1d]/15 pb-5">
-            <div className="w-14 h-14 mx-auto rounded-full bg-[#002b5c] text-white flex items-center justify-center font-serif text-xl font-bold shadow-md border-2 border-white">
+      <div className="min-h-screen bg-[#faf8f2] dark:bg-[#0b0f19] flex flex-col items-center justify-center p-4 font-sans selection:bg-[#002b5c] selection:text-white transition-colors duration-200">
+        <div className="max-w-md w-full bg-[#f3f1e6] dark:bg-[#111625] border-2 border-[#211d1d]/20 dark:border-white/10 p-8 shadow-2xl space-y-6 rounded-xs relative">
+          {/* Top Right Dark Mode Toggle */}
+          <div className="absolute top-4 right-4">
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="p-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[#211d1d] dark:text-yellow-400 bg-[#faf8f2] dark:bg-[#1c202d] hover:bg-[#211d1d]/10 dark:hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center rounded-xs"
+              title={isDarkMode ? "Light Mode" : "Dark Mode"}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-[#002b5c]" />}
+            </button>
+          </div>
+
+          <div className="text-center space-y-2 border-b border-[#211d1d]/15 dark:border-white/10 pb-5">
+            <div className="w-14 h-14 mx-auto rounded-full bg-[#002b5c] text-white flex items-center justify-center font-serif text-xl font-bold shadow-md border-2 border-white/80">
               AC
             </div>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#0a0a0a]">
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#0a0a0a] dark:text-white">
               ApexChief Admin Portal
             </h2>
-            <p className="text-xs text-[#575757] font-mono leading-relaxed">
+            <p className="text-xs text-[#575757] dark:text-gray-400 font-mono leading-relaxed">
               Editorial CMS & Newsroom Control Access
             </p>
           </div>
 
           {loginError && (
-            <div className="p-3.5 bg-rose-50 border border-rose-300 text-rose-800 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
-              <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
+              <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
               <div className="flex-1 font-medium">{loginError}</div>
             </div>
           )}
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] mb-1.5">
+              <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300 mb-1.5">
                 Admin Password
               </label>
               <div className="relative">
@@ -2069,13 +2120,13 @@ export default function AdminDashboard() {
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full p-3 pr-10 border border-[#211d1d]/30 bg-white text-sm text-[#0a0a0a] focus:outline-none focus:border-[#002b5c] transition-colors"
+                  className="w-full p-3 pr-10 border border-[#211d1d]/30 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#0a0a0a] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 transition-colors rounded-xs"
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  className="absolute right-3 top-3 text-[#575757] hover:text-[#002b5c] transition-colors cursor-pointer"
+                  className="absolute right-3 top-3 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
                   title={showLoginPassword ? 'Password Chhupayein' : 'Password Dekhein'}
                 >
                   {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -2086,7 +2137,7 @@ export default function AdminDashboard() {
             <button
               type="submit"
               disabled={isVerifyingAuth}
-              className="w-full py-3 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-60 text-white font-bold uppercase tracking-wider text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2"
+              className="w-full py-3 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-60 text-white font-bold uppercase tracking-wider text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2 rounded-xs"
             >
               {isVerifyingAuth ? (
                 <>
@@ -2102,10 +2153,10 @@ export default function AdminDashboard() {
             </button>
           </form>
 
-          <div className="pt-3 border-t border-[#211d1d]/10 text-center">
+          <div className="pt-3 border-t border-[#211d1d]/10 dark:border-white/10 text-center">
             <Link
               href="/"
-              className="inline-flex items-center space-x-1 text-xs font-mono text-[#575757] hover:text-[#002b5c] transition-colors hover:underline"
+              className="inline-flex items-center space-x-1 text-xs font-mono text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors hover:underline"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Website Par Wapas Jayein</span>
@@ -2117,51 +2168,62 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf8f2] text-[#211d1d] font-sans pb-16 selection:bg-[#f7413e] selection:text-white">
+    <div className="min-h-screen bg-[#faf8f2] dark:bg-[#0b0f19] text-[#211d1d] dark:text-gray-100 font-sans pb-16 selection:bg-[#f7413e] selection:text-white transition-colors duration-200">
       {/* Toast Alert */}
       {toastMessage.text && (
         <div
           className={`fixed top-4 right-4 z-[100] px-4 py-3 shadow-2xl text-xs font-mono uppercase font-bold border flex items-center space-x-2 animate-in slide-in-from-top duration-300 ${
             toastMessage.type === 'success'
-              ? 'bg-[#eff0e0] border-[#211d1d]/30 text-[#002b5c]'
-              : 'bg-[#faf8f2] border-[#f7413e] text-[#f7413e]'
+              ? 'bg-[#eff0e0] dark:bg-[#161c2e] border-[#211d1d]/30 dark:border-white/20 text-[#002b5c] dark:text-sky-400'
+              : 'bg-[#faf8f2] dark:bg-[#161c2e] border-[#f7413e] text-[#f7413e]'
           }`}
         >
-          {toastMessage.type === 'success' && <Check className="w-4 h-4 text-emerald-600" />}
-          {toastMessage.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-600" />}
+          {toastMessage.type === 'success' && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+          {toastMessage.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />}
           <span>{toastMessage.text}</span>
         </div>
       )}
 
       {/* Main Admin Panel Header */}
-      <div className="w-full border-b border-[#211d1d]/15 bg-[#f3f1e6] py-3.5 sticky top-0 z-30">
+      <div className="w-full border-b border-[#211d1d]/15 dark:border-white/10 bg-[#f3f1e6] dark:bg-[#111625] py-3.5 sticky top-0 z-30 transition-colors duration-200">
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded-full border border-[#211d1d] flex items-center justify-center font-serif text-xs font-bold text-[#111111]">
+            <span className="w-8 h-8 rounded-full border border-[#211d1d] dark:border-white/30 flex items-center justify-center font-serif text-xs font-bold text-[#111111] dark:text-white dark:bg-[#1c202d]">
               AC
             </span>
             <div>
-              <h1 className="font-serif text-base font-bold text-[#0a0a0a] uppercase tracking-tight leading-none">
+              <h1 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white uppercase tracking-tight leading-none">
                 {siteConfig.name} Admin Panel
               </h1>
-              <span className="text-[9px] font-mono font-semibold text-[#575757] uppercase tracking-wider">
+              <span className="text-[9px] font-mono font-semibold text-[#575757] dark:text-gray-400 uppercase tracking-wider">
                 Editorial Management CMS
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2.5 sm:space-x-3">
+            {/* Dark / Light Mode Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="p-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[#211d1d] dark:text-yellow-400 bg-[#faf8f2] dark:bg-[#1c202d] hover:bg-[#211d1d]/10 dark:hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center rounded-xs shadow-2xs"
+              title={isDarkMode ? "Light Mode par switch karein" : "Dark Mode par switch karein"}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#002b5c]" />}
+            </button>
+
             <Link
               href="/"
               target="_blank"
-              className="inline-flex items-center space-x-1 border border-[#211d1d]/20 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 text-[#211d1d] transition-all bg-[#faf8f2]"
+              className="inline-flex items-center space-x-1 border border-[#211d1d]/20 dark:border-white/20 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-all bg-[#faf8f2] dark:bg-[#1c202d] rounded-xs"
             >
               <span>Website Dekhein</span>
               <Eye className="w-3.5 h-3.5" />
             </Link>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center space-x-1 bg-[#211d1d] text-[#faf8f2] px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1 bg-[#211d1d] dark:bg-[#1c202d] dark:border dark:border-white/20 text-[#faf8f2] dark:text-gray-200 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white transition-colors cursor-pointer rounded-xs"
             >
               <span>Logout Karein</span>
               <LogOut className="w-3.5 h-3.5" />
@@ -2176,15 +2238,17 @@ export default function AdminDashboard() {
           
           {/* Left Sidebar Menu */}
           {activeTab !== 'edit-post' && (
-            <div className="lg:col-span-3 bg-[#f3f1e6] border border-[#211d1d]/15 p-4 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 whitespace-nowrap scrollbar-none">
-              <h3 className="hidden lg:block font-mono text-[10px] uppercase tracking-widest text-[#575757] font-bold pb-2 border-b border-[#211d1d]/10 mb-3">
+            <div className="lg:col-span-3 bg-[#f3f1e6] dark:bg-[#111625] border border-[#211d1d]/15 dark:border-white/10 p-4 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 whitespace-nowrap scrollbar-none rounded-xs">
+              <h3 className="hidden lg:block font-mono text-[10px] uppercase tracking-widest text-[#575757] dark:text-gray-400 font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 mb-3">
                 Workspace Tabs
               </h3>
 
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer ${
-                  activeTab === 'overview' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'overview'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
                 }`}
               >
                 <Layout className="w-4 h-4" />
@@ -2193,8 +2257,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('posts')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer ${
-                  activeTab === 'posts' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'posts'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
                 }`}
               >
                 <FileText className="w-4 h-4" />
@@ -2203,7 +2269,7 @@ export default function AdminDashboard() {
 
               <button
                 onClick={initCreatePost}
-                className="flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer text-[#211d1d] hover:bg-[#211d1d]/5"
+                className="flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5 rounded-xs"
               >
                 <Plus className="w-4 h-4" />
                 <span>Nayi Story Likhein</span>
@@ -2211,8 +2277,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('sections')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer ${
-                  activeTab === 'sections' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'sections'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
                 }`}
               >
                 <Layers className="w-4 h-4" />
@@ -2221,8 +2289,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer ${
-                  activeTab === 'settings' ? 'bg-[#211d1d] text-[#faf8f2]' : 'text-[#211d1d] hover:bg-[#211d1d]/5'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'settings'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
                 }`}
               >
                 <Settings className="w-4 h-4" />
@@ -2232,11 +2302,11 @@ export default function AdminDashboard() {
           )}
 
           {/* Right Main Content */}
-          <div className={`${activeTab === 'edit-post' ? 'lg:col-span-12' : 'lg:col-span-9'} bg-[#f3f1e6] border border-[#211d1d]/15 p-4 sm:p-6 shadow-sm`}>
+          <div className={`${activeTab === 'edit-post' ? 'lg:col-span-12' : 'lg:col-span-9'} bg-[#f3f1e6] dark:bg-[#111625] border border-[#211d1d]/15 dark:border-white/10 p-4 sm:p-6 shadow-sm rounded-xs`}>
             {isLoading ? (
               <div className="py-24 text-center">
-                <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#002b5c] mb-3" />
-                <p className="font-mono text-xs uppercase text-[#575757] font-semibold">
+                <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#002b5c] dark:text-sky-400 mb-3" />
+                <p className="font-mono text-xs uppercase text-[#575757] dark:text-gray-400 font-semibold">
                   Database se data load ho raha hai...
                 </p>
               </div>
@@ -2246,33 +2316,33 @@ export default function AdminDashboard() {
                 {activeTab === 'overview' && (
                   <div className="space-y-6">
                     {/* Header Bar */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#211d1d]/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#211d1d]/10 dark:border-white/10">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a]">
+                          <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a] dark:text-white">
                             Audience & Editorial Intelligence
                           </h2>
-                          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold border border-emerald-200">
+                          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-bold border border-emerald-200 dark:border-emerald-800">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                             <span>LIVE DATA</span>
                           </span>
                         </div>
-                        <p className="text-xs text-[#666666] font-sans mt-0.5">
+                        <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
                           Real-time database records, per-article readership metrics aur audience engagement overview
                         </p>
                       </div>
 
                       <div className="flex items-center space-x-3 self-start sm:self-center">
                         {lastAnalyticsSync && (
-                          <span className="text-[11px] font-mono text-[#777777]">
-                            Synced: <strong className="text-[#111111]">{lastAnalyticsSync}</strong>
+                          <span className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                            Synced: <strong className="text-[#111111] dark:text-white">{lastAnalyticsSync}</strong>
                           </span>
                         )}
                         <button
                           type="button"
                           onClick={fetchAnalytics}
                           disabled={isAnalyticsLoading}
-                          className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] disabled:opacity-50 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+                          className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-2xs"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${isAnalyticsLoading ? 'animate-spin' : ''}`} />
                           <span>Refresh</span>
@@ -2283,98 +2353,98 @@ export default function AdminDashboard() {
                     {/* 4 Minimalist KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       {/* Card 1: Total Views */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
                             Total Article Reads
                           </span>
-                          <Eye className="w-4 h-4 text-[#002b5c]" />
+                          <Eye className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
                         </div>
                         <div className="flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#002b5c]">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#002b5c] dark:text-sky-400">
                             {(analyticsData?.totalViews ?? 0).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-[#777777]">
-                          Avg reads / story: <strong className="text-[#111111]">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Avg reads / story: <strong className="text-[#111111] dark:text-white">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
                         </p>
                       </div>
 
                       {/* Card 2: Unique Readers */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
                             Unique Readers
                           </span>
-                          <Users className="w-4 h-4 text-emerald-600" />
+                          <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div className="flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a] dark:text-white">
                             {(analyticsData?.uniqueVisitors ?? 0).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-[#777777]">
-                          Total site visits: <strong className="text-[#111111]">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Total site visits: <strong className="text-[#111111] dark:text-white">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
                         </p>
                       </div>
 
                       {/* Card 3: Published Stories */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
                             Published Stories
                           </span>
-                          <FileText className="w-4 h-4 text-amber-600" />
+                          <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
                         </div>
                         <div className="flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a] dark:text-white">
                             {articles.length}
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-[#777777]">
-                          Across <strong className="text-[#111111]">{categories.length} editorial desks</strong>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Across <strong className="text-[#111111] dark:text-white">{categories.length} editorial desks</strong>
                         </p>
                       </div>
 
                       {/* Card 4: Reader Reactions */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
                             Reader Reactions
                           </span>
-                          <Activity className="w-4 h-4 text-rose-600" />
+                          <Activity className="w-4 h-4 text-rose-600 dark:text-rose-400" />
                         </div>
                         <div className="flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-600">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-600 dark:text-rose-400">
                             {(analyticsData?.totalLikes ?? 0).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-[11px] font-mono text-[#777777]">
-                          Engagement score: <strong className="text-[#111111]">{analyticsData?.engagementRate ?? 0}%</strong>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Engagement score: <strong className="text-[#111111] dark:text-white">{analyticsData?.engagementRate ?? 0}%</strong>
                         </p>
                       </div>
                     </div>
 
                     {/* 7-DAY TRAFFIC & DAILY VIEWS TREND (CLEAN MINIMALIST CHART) */}
-                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
                         <div>
-                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
-                            <TrendingUp className="w-4 h-4 text-[#002b5c]" />
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
+                            <TrendingUp className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
                             <span>Pichle 7 Dino Ka Traffic & Daily Views</span>
                           </h3>
-                          <p className="text-xs text-[#777777] font-sans mt-0.5">
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
                             Supabase database me darj actual daily pageviews aur unique visitors
                           </p>
                         </div>
                         <div className="flex items-center space-x-4 text-[11px] font-mono">
                           <span className="flex items-center space-x-1.5">
-                            <span className="w-2.5 h-2.5 rounded-xs bg-[#002b5c]"></span>
-                            <span className="text-[#555555]">Daily Views</span>
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#002b5c] dark:bg-sky-500"></span>
+                            <span className="text-[#555555] dark:text-gray-300">Daily Views</span>
                           </span>
                           <span className="flex items-center space-x-1.5">
-                            <span className="w-2.5 h-2.5 rounded-xs bg-[#f7413e]"></span>
-                            <span className="text-[#555555]">Visitors</span>
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#f7413e] dark:bg-rose-500"></span>
+                            <span className="text-[#555555] dark:text-gray-300">Visitors</span>
                           </span>
                         </div>
                       </div>
@@ -2382,11 +2452,11 @@ export default function AdminDashboard() {
                       {/* Minimalist Bars */}
                       <div className="pt-8 pb-2">
                         {(!analyticsData?.dailyTrends || analyticsData.dailyTrends.length === 0) ? (
-                          <div className="py-10 text-center text-xs font-mono text-[#777777]">
+                          <div className="py-10 text-center text-xs font-mono text-[#777777] dark:text-gray-400">
                             Pichle 7 dino ka traffic data load ho raha hai...
                           </div>
                         ) : (
-                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-40 border-b border-[#211d1d]/10 pb-2">
+                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-40 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
                             {analyticsData.dailyTrends.map((dayData, idx) => {
                               const maxViewsInWeek = Math.max(...analyticsData.dailyTrends.map((d) => d.views), 1);
                               const viewsHeight = dayData.views > 0 ? Math.max(16, Math.round((dayData.views / maxViewsInWeek) * 100)) : 6;
@@ -2395,12 +2465,12 @@ export default function AdminDashboard() {
                               return (
                                 <div key={idx} className="flex flex-col items-center h-full justify-end group relative">
                                   {/* Minimalist Hover Tooltip */}
-                                  <div className="absolute -top-10 z-20 hidden group-hover:flex flex-col items-center bg-[#111111] text-white text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+                                  <div className="absolute -top-10 z-20 hidden group-hover:flex flex-col items-center bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
                                     <span>{dayData.date} ({dayData.day}): {dayData.views} Views • {dayData.visitors} Visitors</span>
                                   </div>
 
                                   {/* Views number above bar */}
-                                  <span className="text-[10px] font-mono font-bold text-[#002b5c] mb-1">
+                                  <span className="text-[10px] font-mono font-bold text-[#002b5c] dark:text-sky-400 mb-1">
                                     {dayData.views > 0 ? dayData.views : ''}
                                   </span>
 
@@ -2408,22 +2478,22 @@ export default function AdminDashboard() {
                                     {/* Views Bar */}
                                     <div
                                       style={{ height: `${viewsHeight}%` }}
-                                      className="w-1/2 max-w-[24px] bg-[#002b5c] hover:bg-[#002b5c]/80 rounded-t-xs transition-all duration-200"
+                                      className="w-1/2 max-w-[24px] bg-[#002b5c] dark:bg-sky-500 hover:bg-[#002b5c]/80 dark:hover:bg-sky-400 rounded-t-xs transition-all duration-200"
                                       title={`${dayData.views} Views`}
                                     ></div>
                                     {/* Visitors Bar */}
                                     <div
                                       style={{ height: `${visitorsHeight}%` }}
-                                      className="w-1/2 max-w-[24px] bg-[#f7413e] hover:bg-[#f7413e]/80 rounded-t-xs transition-all duration-200"
+                                      className="w-1/2 max-w-[24px] bg-[#f7413e] dark:bg-rose-500 hover:bg-[#f7413e]/80 dark:hover:bg-rose-400 rounded-t-xs transition-all duration-200"
                                       title={`${dayData.visitors} Visitors`}
                                     ></div>
                                   </div>
 
                                   <div className="mt-2 text-center">
-                                    <span className="font-mono text-[11px] font-bold text-[#111111] block">
+                                    <span className="font-mono text-[11px] font-bold text-[#111111] dark:text-white block">
                                       {dayData.day}
                                     </span>
-                                    <span className="font-mono text-[9px] text-[#777777] block truncate">
+                                    <span className="font-mono text-[9px] text-[#777777] dark:text-gray-400 block truncate">
                                       {dayData.date}
                                     </span>
                                   </div>
@@ -2436,22 +2506,22 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* LIVE AUDIENCE TELEMETRY: GOOGLE ANALYTICS 4 & MICROSOFT CLARITY */}
-                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
                         <div className="space-y-0.5">
-                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
                             <span>Google Analytics 4 & Microsoft Clarity Telemetry</span>
                             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
                           </h3>
-                          <p className="text-xs text-[#777777] font-sans">
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans">
                             Website par live session recordings, heatmaps aur global audience telemetry active hai
                           </p>
                         </div>
                         <div className="flex items-center space-x-2 text-[11px] font-mono">
-                          <span className="px-2 py-0.5 bg-[#faf8f2] border border-[#211d1d]/10 rounded text-[#002b5c] font-bold">
+                          <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#002b5c] dark:text-sky-400 font-bold">
                             GA4: G-02WC3EL89S
                           </span>
-                          <span className="px-2 py-0.5 bg-[#faf8f2] border border-[#211d1d]/10 rounded text-[#f7413e] font-bold">
+                          <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#f7413e] dark:text-rose-400 font-bold">
                             Clarity: ydgkxqb6b8
                           </span>
                         </div>
@@ -2459,16 +2529,16 @@ export default function AdminDashboard() {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
                         {/* Box 1: Microsoft Clarity */}
-                        <div className="p-4 bg-[#faf8f2] border border-[#211d1d]/10 rounded-xs space-y-3">
+                        <div className="p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/10 rounded-xs space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="font-serif font-bold text-sm text-[#0a0a0a]">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a] dark:text-white">
                               Microsoft Clarity (Session Replays & Heatmaps)
                             </span>
-                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">
+                            <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
                               Live Tag
                             </span>
                           </div>
-                          <p className="text-xs text-[#666666] leading-relaxed">
+                          <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
                             Har reader ka mouse scroll depth %, cursor click heatmaps, dead clicks aur full screen recordings.
                           </p>
                           <div className="flex items-center space-x-2 pt-1">
@@ -2476,7 +2546,7 @@ export default function AdminDashboard() {
                               href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/recordings"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                              className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
                             >
                               <span>🎥 Video Replays</span>
                               <ExternalLink className="w-3 h-3" />
@@ -2485,7 +2555,7 @@ export default function AdminDashboard() {
                               href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/heatmaps"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1.5 bg-white hover:bg-[#f3f1e6] text-[#211d1d] border border-[#211d1d]/20 text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                              className="px-3 py-1.5 bg-white dark:bg-[#161c2e] hover:bg-[#f3f1e6] dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 border border-[#211d1d]/20 dark:border-white/15 text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
                             >
                               <span>🗺️ Heatmaps</span>
                               <ExternalLink className="w-3 h-3" />
@@ -2494,16 +2564,16 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Box 2: Google Analytics 4 */}
-                        <div className="p-4 bg-[#faf8f2] border border-[#211d1d]/10 rounded-xs space-y-3">
+                        <div className="p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/10 rounded-xs space-y-3">
                           <div className="flex items-center justify-between">
-                            <span className="font-serif font-bold text-sm text-[#0a0a0a]">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a] dark:text-white">
                               Google Analytics 4 (Realtime Traffic & Channels)
                             </span>
-                            <span className="text-[10px] font-mono text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded font-bold">
+                            <span className="text-[10px] font-mono text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded font-bold">
                               Stream Active
                             </span>
                           </div>
-                          <p className="text-xs text-[#666666] leading-relaxed">
+                          <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
                             Pichle 30 minutes ke active live readers, Google Search organic keywords, country/city locations aur device metrics.
                           </p>
                           <div className="pt-1">
@@ -2511,7 +2581,7 @@ export default function AdminDashboard() {
                               href="https://analytics.google.com/analytics/web/"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="px-3 py-1.5 bg-[#f7413e] hover:bg-[#d83230] text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5"
+                              className="px-3 py-1.5 bg-[#f7413e] hover:bg-[#d83230] dark:bg-rose-600 dark:hover:bg-rose-500 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5"
                             >
                               <span>📈 Open Google Analytics 4 Dashboard</span>
                               <ExternalLink className="w-3 h-3" />
@@ -2522,27 +2592,27 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* HAR ARTICLE KA REAL DATABASE DATA (COMPLETE LEADERBOARD) */}
-                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
                         <div>
-                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
                             <span>Har Article Ka Performance & Live Views (Database Records)</span>
                           </h3>
-                          <p className="text-xs text-[#777777] font-sans mt-0.5">
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
                             Supabase database me darj sabhi stories ke exact view counts aur traffic share
                           </p>
                         </div>
                         <button
                           onClick={() => setActiveTab('posts')}
-                          className="text-xs font-mono font-bold text-[#002b5c] hover:underline self-start sm:self-center"
+                          className="text-xs font-mono font-bold text-[#002b5c] dark:text-sky-400 hover:underline self-start sm:self-center cursor-pointer"
                         >
                           Manage All Stories ({articles.length}) →
                         </button>
                       </div>
 
                       <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-[#211d1d]/10 text-left text-xs">
-                          <thead className="bg-[#faf8f2] font-mono uppercase font-bold text-[#666666] text-[10px]">
+                        <table className="min-w-full divide-y divide-[#211d1d]/10 dark:divide-white/10 text-left text-xs">
+                          <thead className="bg-[#faf8f2] dark:bg-[#0e1322] font-mono uppercase font-bold text-[#666666] dark:text-gray-400 text-[10px]">
                             <tr>
                               <th className="px-3 py-2.5 w-10 text-center">#</th>
                               <th className="px-3 py-2.5">Article Headline</th>
@@ -2554,10 +2624,10 @@ export default function AdminDashboard() {
                               <th className="px-3 py-2.5 text-right">Open</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#211d1d]/5 font-sans">
+                          <tbody className="divide-y divide-[#211d1d]/5 dark:divide-white/5 font-sans">
                             {articles.length === 0 ? (
                               <tr>
-                                <td colSpan={8} className="px-4 py-8 text-center text-[#777777] font-mono">
+                                <td colSpan={8} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
                                   Koi article nahi mila.
                                 </td>
                               </tr>
@@ -2571,16 +2641,16 @@ export default function AdminDashboard() {
                                   const sharePercentage = totalViewsSum > 0 ? Math.round((viewsNum / totalViewsSum) * 100) : 0;
 
                                   return (
-                                    <tr key={art.slug} className="hover:bg-[#faf8f2] transition-colors">
+                                    <tr key={art.slug} className="hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
                                       {/* Rank */}
-                                      <td className="px-3 py-2.5 text-center font-mono text-xs font-bold text-[#666666]">
+                                      <td className="px-3 py-2.5 text-center font-mono text-xs font-bold text-[#666666] dark:text-gray-400">
                                         {idx + 1}
                                       </td>
 
                                       {/* Title */}
                                       <td className="px-3 py-2.5">
                                         <div className="flex items-center space-x-2.5 max-w-[360px]">
-                                          <div className="w-8 h-6 bg-[#211d1d]/5 border border-[#211d1d]/10 rounded-xs overflow-hidden shrink-0 flex items-center justify-center">
+                                          <div className="w-8 h-6 bg-[#211d1d]/5 dark:bg-white/5 border border-[#211d1d]/10 dark:border-white/10 rounded-xs overflow-hidden shrink-0 flex items-center justify-center">
                                             {art.image ? (
                                               <img
                                                 src={art.image.replace(/&amp;/g, '&')}
@@ -2591,14 +2661,14 @@ export default function AdminDashboard() {
                                                 }}
                                               />
                                             ) : (
-                                              <FileText className="w-3 h-3 text-[#777777]" />
+                                              <FileText className="w-3 h-3 text-[#777777] dark:text-gray-400" />
                                             )}
                                           </div>
                                           <a
                                             href={`/news/${art.slug}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="font-medium text-[#111111] hover:text-[#002b5c] transition-colors truncate block"
+                                            className="font-medium text-[#111111] dark:text-gray-100 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors truncate block"
                                             title={art.title}
                                           >
                                             {art.title}
@@ -2608,36 +2678,36 @@ export default function AdminDashboard() {
 
                                       {/* Category */}
                                       <td className="px-3 py-2.5 whitespace-nowrap">
-                                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-xs bg-[#faf8f2] border border-[#211d1d]/10 text-[#002b5c] font-bold">
+                                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-xs bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 text-[#002b5c] dark:text-sky-400 font-bold">
                                           {art.category}
                                         </span>
                                       </td>
 
                                       {/* Author */}
-                                      <td className="px-3 py-2.5 whitespace-nowrap text-[#555555] text-xs">
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-[#555555] dark:text-gray-400 text-xs">
                                         {art.author}
                                       </td>
 
                                       {/* Actual Views Count */}
-                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] text-xs">
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] dark:text-sky-400 text-xs">
                                         {viewsNum.toLocaleString()}
                                       </td>
 
                                       {/* Likes */}
-                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono text-xs text-rose-600">
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono text-xs text-rose-600 dark:text-rose-400">
                                         {likesNum.toLocaleString()}
                                       </td>
 
                                       {/* Traffic Share */}
                                       <td className="px-3 py-2.5 whitespace-nowrap">
                                         <div className="flex items-center space-x-1.5">
-                                          <div className="w-16 bg-[#211d1d]/10 h-1 rounded-full overflow-hidden">
+                                          <div className="w-16 bg-[#211d1d]/10 dark:bg-white/10 h-1 rounded-full overflow-hidden">
                                             <div
                                               style={{ width: `${Math.min(100, sharePercentage * 2.5)}%` }}
-                                              className="bg-[#002b5c] h-full rounded-full"
+                                              className="bg-[#002b5c] dark:bg-sky-500 h-full rounded-full"
                                             ></div>
                                           </div>
-                                          <span className="text-[10px] font-mono text-[#777777] font-semibold">{sharePercentage}%</span>
+                                          <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400 font-semibold">{sharePercentage}%</span>
                                         </div>
                                       </td>
 
@@ -2647,7 +2717,7 @@ export default function AdminDashboard() {
                                           href={`/news/${art.slug}`}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors"
+                                          className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
                                           title="Live Story Kholein"
                                         >
                                           <ExternalLink className="w-3.5 h-3.5" />
@@ -2665,12 +2735,12 @@ export default function AdminDashboard() {
                     {/* 2-Column Row: Category Breakdown & Device/Traffic Channels */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {/* Left: Category-wise Readership Breakdown */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-3">
-                        <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-2.5">
-                          <h3 className="font-serif text-sm font-bold text-[#0a0a0a]">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#211d1d]/10 dark:border-white/10 pb-2.5">
+                          <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white">
                             Category-wise Readership Distribution
                           </h3>
-                          <span className="text-[10px] font-mono text-[#777777]">Live Desks</span>
+                          <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400">Live Desks</span>
                         </div>
 
                         <div className="space-y-2.5 pt-1">
@@ -2682,12 +2752,12 @@ export default function AdminDashboard() {
                           ).map((cat) => (
                             <div key={cat.category} className="space-y-1">
                               <div className="flex items-center justify-between text-xs">
-                                <span className="font-medium text-[#111111]">{cat.category}</span>
-                                <span className="font-mono text-[#666666] text-[11px]">
-                                  <strong>{cat.views.toLocaleString()} views</strong> ({cat.percentage}%)
+                                <span className="font-medium text-[#111111] dark:text-gray-200">{cat.category}</span>
+                                <span className="font-mono text-[#666666] dark:text-gray-400 text-[11px]">
+                                  <strong className="dark:text-gray-200">{cat.views.toLocaleString()} views</strong> ({cat.percentage}%)
                                 </span>
                               </div>
-                              <div className="w-full bg-[#211d1d]/5 h-1.5 rounded-full overflow-hidden">
+                              <div className="w-full bg-[#211d1d]/5 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
                                 <div
                                   style={{
                                     width: `${cat.percentage}%`,
@@ -2702,52 +2772,52 @@ export default function AdminDashboard() {
                       </div>
 
                       {/* Right: Device Insights & Traffic Channels */}
-                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-4">
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-4">
                         {/* Devices */}
                         <div>
-                          <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-2.5 mb-2.5">
-                            <h3 className="font-serif text-sm font-bold text-[#0a0a0a]">
+                          <div className="flex items-center justify-between border-b border-[#211d1d]/10 dark:border-white/10 pb-2.5 mb-2.5">
+                            <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white">
                               Reader Devices & Platforms
                             </h3>
-                            <span className="text-[10px] font-mono text-[#777777]">Device Split</span>
+                            <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400">Device Split</span>
                           </div>
 
                           <div className="grid grid-cols-3 gap-2 text-center">
-                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
-                              <Smartphone className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Mobile</span>
-                              <span className="font-serif text-base font-bold text-[#111111]">62%</span>
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Smartphone className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Mobile</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">62%</span>
                             </div>
-                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
-                              <Monitor className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Desktop</span>
-                              <span className="font-serif text-base font-bold text-[#111111]">31%</span>
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Monitor className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Desktop</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">31%</span>
                             </div>
-                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
-                              <Tablet className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Tablet</span>
-                              <span className="font-serif text-base font-bold text-[#111111]">7%</span>
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Tablet className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Tablet</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">7%</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Traffic Channels */}
                         <div>
-                          <h4 className="font-mono text-[10px] uppercase tracking-wider text-[#666666] font-bold mb-1.5">
+                          <h4 className="font-mono text-[10px] uppercase tracking-wider text-[#666666] dark:text-gray-400 font-bold mb-1.5">
                             Audience Acquisition Corridors
                           </h4>
                           <div className="space-y-1.5 text-xs font-mono">
-                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
-                              <span className="text-[#555555]">Direct Masthead Readers</span>
-                              <strong className="text-[#002b5c]">48%</strong>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Direct Masthead Readers</span>
+                              <strong className="text-[#002b5c] dark:text-sky-400">48%</strong>
                             </div>
-                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
-                              <span className="text-[#555555]">Google Search & Discover</span>
-                              <strong className="text-emerald-700">32%</strong>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Google Search & Discover</span>
+                              <strong className="text-emerald-700 dark:text-emerald-400">32%</strong>
                             </div>
-                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
-                              <span className="text-[#555555]">Social Media Corridors</span>
-                              <strong className="text-[#f7413e]">14%</strong>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Social Media Corridors</span>
+                              <strong className="text-[#f7413e] dark:text-rose-400">14%</strong>
                             </div>
                           </div>
                         </div>
@@ -2759,19 +2829,19 @@ export default function AdminDashboard() {
                 {/* TAB 2: MANAGE POSTS (MINIMALIST CLEAN STORIES TABLE) */}
                 {activeTab === 'posts' && (
                   <div className="space-y-5">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#211d1d]/10">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#211d1d]/10 dark:border-white/10">
                       <div>
-                        <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a]">
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a] dark:text-white">
                           Published Stories ({articles.length})
                         </h2>
-                        <p className="text-xs text-[#666666] font-sans mt-0.5">
+                        <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
                           Har story ke live views dekhein, search karein, edit karein ya views ke anusaar sort karein
                         </p>
                       </div>
 
                       <button
                         onClick={initCreatePost}
-                        className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] text-white px-3.5 py-1.5 text-xs font-mono font-medium uppercase tracking-wider rounded-xs transition-colors cursor-pointer shadow-2xs"
+                        className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white px-3.5 py-1.5 text-xs font-mono font-medium uppercase tracking-wider rounded-xs transition-colors cursor-pointer shadow-2xs"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Nayi Story Likhein</span>
@@ -2779,7 +2849,7 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Minimal Search & Sort Bar */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-white border border-[#211d1d]/10 p-3 rounded-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-3 rounded-xs">
                       {/* Search */}
                       <div className="sm:col-span-5 relative">
                         <input
@@ -2787,9 +2857,9 @@ export default function AdminDashboard() {
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           placeholder="Headline, author ya slug se search karein..."
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-3 py-1.5 pl-8 text-xs text-[#211d1d] focus:outline-none focus:border-[#002b5c] rounded-xs font-sans"
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 pl-8 text-xs text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs font-sans placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         />
-                        <Search className="w-3.5 h-3.5 text-[#777777] absolute left-2.5 top-2.5" />
+                        <Search className="w-3.5 h-3.5 text-[#777777] dark:text-gray-400 absolute left-2.5 top-2.5" />
                       </div>
 
                       {/* Category Filter */}
@@ -2797,7 +2867,7 @@ export default function AdminDashboard() {
                         <select
                           value={categoryFilter}
                           onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-3 py-1.5 text-xs text-[#211d1d] focus:outline-none rounded-xs font-sans"
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 text-xs text-[#211d1d] dark:text-white focus:outline-none rounded-xs font-sans"
                         >
                           <option value="all">Sabhi Categories ({categories.length})</option>
                           {categoriesList
@@ -2815,7 +2885,7 @@ export default function AdminDashboard() {
                         <select
                           value={postSortBy}
                           onChange={(e) => setPostSortBy(e.target.value as any)}
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-2.5 py-1.5 text-xs text-[#002b5c] font-mono font-bold focus:outline-none rounded-xs"
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-2.5 py-1.5 text-xs text-[#002b5c] dark:text-sky-400 font-mono font-bold focus:outline-none rounded-xs"
                         >
                           <option value="views-desc">👁️ Most Viewed</option>
                           <option value="views-asc">👁️ Least Viewed</option>
@@ -2827,9 +2897,9 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Articles List Table */}
-                    <div className="overflow-x-auto border border-[#211d1d]/10 bg-white rounded-xs">
-                      <table className="min-w-full divide-y divide-[#211d1d]/10 text-left text-xs font-sans">
-                        <thead className="bg-[#faf8f2] uppercase font-mono font-bold text-[#666666] text-[10px]">
+                    <div className="overflow-x-auto border border-[#211d1d]/10 dark:border-white/10 bg-white dark:bg-[#161c2e] rounded-xs">
+                      <table className="min-w-full divide-y divide-[#211d1d]/10 dark:divide-white/10 text-left text-xs font-sans">
+                        <thead className="bg-[#faf8f2] dark:bg-[#0e1322] uppercase font-mono font-bold text-[#666666] dark:text-gray-400 text-[10px]">
                           <tr>
                             <th className="px-3.5 py-2.5">Photo</th>
                             <th className="px-3.5 py-2.5">Headline</th>
@@ -2840,18 +2910,18 @@ export default function AdminDashboard() {
                             <th className="px-3.5 py-2.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#211d1d]/5">
+                        <tbody className="divide-y divide-[#211d1d]/5 dark:divide-white/5">
                           {filteredArticles.length === 0 ? (
                             <tr>
-                              <td colSpan={7} className="px-4 py-8 text-center text-[#777777] font-mono">
+                              <td colSpan={7} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
                                 Is search ke liye koi story nahi mili.
                               </td>
                             </tr>
                           ) : (
                             filteredArticles.map((art) => (
-                              <tr key={art.slug} className="hover:bg-[#faf8f2] transition-colors">
+                              <tr key={art.slug} className="hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
                                 <td className="px-3.5 py-2.5 whitespace-nowrap">
-                                  <div className="relative w-10 h-7 bg-[#211d1d]/5 border border-[#211d1d]/10 overflow-hidden rounded-xs flex items-center justify-center">
+                                  <div className="relative w-10 h-7 bg-[#211d1d]/5 dark:bg-white/5 border border-[#211d1d]/10 dark:border-white/10 overflow-hidden rounded-xs flex items-center justify-center">
                                     {art.image ? (
                                       <img
                                         src={art.image.replace(/&amp;/g, '&')}
@@ -2862,27 +2932,27 @@ export default function AdminDashboard() {
                                         }}
                                       />
                                     ) : (
-                                      <FileText className="w-3.5 h-3.5 text-[#777777]" />
+                                      <FileText className="w-3.5 h-3.5 text-[#777777] dark:text-gray-400" />
                                     )}
                                   </div>
                                 </td>
                                 <td className="px-3.5 py-2.5">
-                                  <div className="max-w-[300px] truncate font-medium text-[#111111]" title={art.title}>
+                                  <div className="max-w-[300px] truncate font-medium text-[#111111] dark:text-gray-100" title={art.title}>
                                     {art.title}
                                   </div>
                                 </td>
                                 <td className="px-3.5 py-2.5 whitespace-nowrap">
-                                  <span className="inline-block px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs bg-[#faf8f2] border border-[#211d1d]/10 text-[#002b5c]">
+                                  <span className="inline-block px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 text-[#002b5c] dark:text-sky-400">
                                     {art.category}
                                   </span>
                                 </td>
-                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#555555]">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#555555] dark:text-gray-400">
                                   {art.author}
                                 </td>
-                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right font-mono text-xs font-bold text-[#002b5c]">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right font-mono text-xs font-bold text-[#002b5c] dark:text-sky-400">
                                   {(Number(art.viewsCount) || 0).toLocaleString()} views
                                 </td>
-                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#777777] font-mono text-[11px]">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#777777] dark:text-gray-400 font-mono text-[11px]">
                                   {art.date}
                                 </td>
                                 <td className="px-3.5 py-2.5 whitespace-nowrap text-right space-x-1.5">
@@ -2890,21 +2960,21 @@ export default function AdminDashboard() {
                                     href={`/news/${art.slug}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors"
+                                    className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
                                     title="Story Website Par Dekhein"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
                                   </a>
                                   <button
                                     onClick={() => initEditPost(art)}
-                                    className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors cursor-pointer"
+                                    className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors cursor-pointer"
                                     title="Story Edit Karein"
                                   >
                                     <Edit className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeletePost(art.slug)}
-                                    className="p-1 hover:bg-rose-50 text-rose-600 inline-block transition-colors cursor-pointer"
+                                    className="p-1 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 inline-block transition-colors cursor-pointer"
                                     title="Story Delete Karein"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
@@ -2923,30 +2993,30 @@ export default function AdminDashboard() {
                 {activeTab === 'edit-post' && (
                   <form onSubmit={handleSavePost} className="space-y-6">
                     {/* Top Studio Action Bar */}
-                    <div className="pb-3 border-b border-[#211d1d]/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-[52px] bg-[#f3f1e6] z-30 py-2">
+                    <div className="pb-3 border-b border-[#211d1d]/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-[52px] bg-[#f3f1e6] dark:bg-[#111625] z-30 py-2">
                       <div className="flex items-center space-x-3">
                         <button
                           type="button"
                           onClick={() => setActiveTab('posts')}
-                          className="px-3 py-1.5 border border-[#211d1d]/20 text-[10px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 transition-colors bg-[#faf8f2] inline-flex items-center space-x-1 cursor-pointer rounded"
+                          className="px-3 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[10px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] inline-flex items-center space-x-1 cursor-pointer rounded"
                         >
                           <ArrowLeft className="w-3.5 h-3.5" />
                           <span>Sabhi Stories</span>
                         </button>
                         <div>
-                          <h2 className="font-serif text-lg sm:text-xl font-bold uppercase text-[#0a0a0a] leading-none">
+                          <h2 className="font-serif text-lg sm:text-xl font-bold uppercase text-[#0a0a0a] dark:text-white leading-none">
                             {isEditing ? 'Story Edit Karein' : 'Nayi Story Likhein'}
                           </h2>
-                          <div className="flex items-center space-x-2 text-[10px] text-[#575757] font-mono mt-0.5">
-                            <span>Category: <strong className="text-[#002b5c]">{editingArticle.category}</strong></span>
+                          <div className="flex items-center space-x-2 text-[10px] text-[#575757] dark:text-gray-400 font-mono mt-0.5">
+                            <span>Category: <strong className="text-[#002b5c] dark:text-sky-400">{editingArticle.category}</strong></span>
                             {editingArticle.subcategory && (
                               <>
                                 <span>›</span>
-                                <span className="text-[#f7413e] font-semibold">{editingArticle.subcategory}</span>
+                                <span className="text-[#f7413e] dark:text-rose-400 font-semibold">{editingArticle.subcategory}</span>
                               </>
                             )}
                             <span>•</span>
-                            <span className="text-emerald-700 font-bold">{cmsMetadata.status || 'Published'}</span>
+                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">{cmsMetadata.status || 'Published'}</span>
                           </div>
                         </div>
                       </div>
@@ -2956,9 +3026,9 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           onClick={() => setShowPreviewModal(true)}
-                          className="px-3.5 py-1.5 border border-[#211d1d]/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 transition-colors bg-[#faf8f2] cursor-pointer rounded inline-flex items-center space-x-1 shadow-xs"
+                          className="px-3.5 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] cursor-pointer rounded inline-flex items-center space-x-1 shadow-xs"
                         >
-                          <Eye className="w-3.5 h-3.5 text-[#002b5c]" />
+                          <Eye className="w-3.5 h-3.5 text-[#002b5c] dark:text-sky-400" />
                           <span>Preview Dekhein</span>
                         </button>
 
@@ -2970,7 +3040,7 @@ export default function AdminDashboard() {
                             handleSavePost(e);
                           }}
                           disabled={isPublishing}
-                          className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm flex items-center space-x-1.5 cursor-pointer rounded disabled:opacity-50"
+                          className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm flex items-center space-x-1.5 cursor-pointer rounded disabled:opacity-50"
                         >
                           {isPublishing ? (
                             <>
@@ -4530,17 +4600,17 @@ export default function AdminDashboard() {
                   <div className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
+                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
                           Homepage Sections & Categories Manager
                         </h2>
-                        <p className="text-xs text-[#575757] font-semibold mt-1">
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
                           Apne editorial sections ko banayein, edit karein, rename karein aur layout redesign karein
                         </p>
                       </div>
 
                       <button
                         onClick={initCreateCategory}
-                        className="inline-flex items-center space-x-1 px-4 py-2 bg-[#002b5c] hover:bg-[#f7413e] text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
+                        className="inline-flex items-center space-x-1 px-4 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                       >
                         <Plus className="w-4 h-4" />
                         <span>+ Naya Section Jodein</span>
@@ -4548,14 +4618,14 @@ export default function AdminDashboard() {
                     </div>
 
                     {showCategoryForm ? (
-                      <form onSubmit={handleSaveCategory} className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-6">
-                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] font-bold pb-2 border-b border-[#211d1d]/10">
+                      <form onSubmit={handleSaveCategory} className="bg-[#faf8f2] dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 space-y-6 rounded-xs">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10">
                           {isEditingCategory ? 'Section Details Update Karein' : 'Naya Section Configure Karein'}
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6">
                           <div className="sm:col-span-6">
-                            <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                               Section Ka Naam (Display Name)
                             </label>
                             <input
@@ -4574,12 +4644,12 @@ export default function AdminDashboard() {
                                   });
                                 }
                               }}
-                              className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                             />
                           </div>
 
                           <div className="sm:col-span-6">
-                            <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                               Section Slug (URL Identifier)
                             </label>
                             <input
@@ -4588,18 +4658,18 @@ export default function AdminDashboard() {
                               disabled={isEditingCategory}
                               value={editingCategory.slug}
                               onChange={(e) => setEditingCategory({ ...editingCategory, slug: generateSlug(e.target.value) })}
-                              className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#eff0e0]/50 text-sm text-[#575757] focus:outline-none disabled:cursor-not-allowed font-mono"
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/15 bg-[#eff0e0]/50 dark:bg-white/5 text-sm text-[#575757] dark:text-gray-400 focus:outline-none disabled:cursor-not-allowed font-mono rounded-xs"
                             />
                           </div>
 
                           <div className="sm:col-span-8">
-                            <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                               Layout Style (Design Chunein)
                             </label>
                             <select
                               value={editingCategory.layout}
                               onChange={(e) => setEditingCategory({ ...editingCategory, layout: e.target.value })}
-                              className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none rounded-xs"
                             >
                               {LAYOUT_OPTIONS.map((opt) => (
                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -4608,33 +4678,33 @@ export default function AdminDashboard() {
                           </div>
                         </div>
 
-                        <div className="pt-4 border-t border-[#211d1d]/10 flex justify-end space-x-2">
+                        <div className="pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex justify-end space-x-2">
                           <button
                             type="button"
                             onClick={() => setShowCategoryForm(false)}
-                            className="px-4 py-2 border border-[#211d1d]/25 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 transition-colors cursor-pointer"
+                            className="px-4 py-2 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors cursor-pointer rounded-xs"
                           >
                             Cancel Karein
                           </button>
                           <button
                             type="submit"
-                            className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
+                            className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                           >
                             {isEditingCategory ? 'Section Update Karein' : 'Section Banayein'}
                           </button>
                         </div>
                       </form>
                     ) : (
-                      <div className="border border-[#211d1d]/15 bg-[#faf8f2] divide-y divide-[#211d1d]/15">
+                      <div className="border border-[#211d1d]/15 dark:border-white/10 bg-white dark:bg-[#161c2e] divide-y divide-[#211d1d]/15 dark:divide-white/10 rounded-xs">
                         {categories.map((cat, idx) => (
-                          <div key={cat.slug} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#f3f1e6]/45 transition-colors">
+                          <div key={cat.slug} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
                             <div className="flex items-center space-x-4">
                               <div className="flex flex-col space-y-1">
                                 <button
                                   type="button"
                                   onClick={() => moveCategoryUp(idx)}
                                   disabled={idx === 0}
-                                  className="p-1 hover:bg-[#eff0e0] border border-[#211d1d]/20 disabled:opacity-30 text-[#0a0a0a] cursor-pointer"
+                                  className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
                                   title="Upar Karein"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
@@ -4643,7 +4713,7 @@ export default function AdminDashboard() {
                                   type="button"
                                   onClick={() => moveCategoryDown(idx)}
                                   disabled={idx === categories.length - 1}
-                                  className="p-1 hover:bg-[#eff0e0] border border-[#211d1d]/20 disabled:opacity-30 text-[#0a0a0a] cursor-pointer"
+                                  className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
                                   title="Niche Karein"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
@@ -4652,15 +4722,15 @@ export default function AdminDashboard() {
 
                               <div>
                                 <div className="flex items-center space-x-2">
-                                  <span className="font-serif text-base font-bold text-[#0a0a0a]">
+                                  <span className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white">
                                     {cat.name}
                                   </span>
-                                  <span className="font-mono text-[10px] uppercase bg-[#eff0e0] px-2 py-0.5 rounded text-[#575757]">
+                                  <span className="font-mono text-[10px] uppercase bg-[#eff0e0] dark:bg-[#0e1322] border border-transparent dark:border-white/10 px-2 py-0.5 rounded text-[#575757] dark:text-gray-300">
                                     /{cat.slug}
                                   </span>
                                 </div>
-                                <div className="flex items-center space-x-2 text-xs text-[#575757] mt-1">
-                                  <span>Layout: <strong className="text-[#002b5c]">{getLayoutLabel(cat.layout || 'world-layout')}</strong></span>
+                                <div className="flex items-center space-x-2 text-xs text-[#575757] dark:text-gray-400 mt-1">
+                                  <span>Layout: <strong className="text-[#002b5c] dark:text-sky-400">{getLayoutLabel(cat.layout || 'world-layout')}</strong></span>
                                   {cat.subcategories && (
                                     <span>• {cat.subcategories.length} subcategories</span>
                                   )}
@@ -4672,14 +4742,14 @@ export default function AdminDashboard() {
                               <button
                                 type="button"
                                 onClick={() => initEditCategory(cat)}
-                                className="px-3 py-1.5 border border-[#211d1d]/25 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 text-[#002b5c] transition-colors cursor-pointer"
+                                className="px-3 py-1.5 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 transition-colors cursor-pointer rounded-xs"
                               >
                                 Layout Badlein
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleDeleteCategory(cat.slug)}
-                                className="p-1.5 border border-[#211d1d]/25 text-[#f7413e] hover:bg-[#f7413e]/10 transition-colors cursor-pointer"
+                                className="p-1.5 border border-[#211d1d]/25 dark:border-white/20 text-[#f7413e] dark:text-rose-400 hover:bg-[#f7413e]/10 transition-colors cursor-pointer rounded-xs"
                                 title="Section Delete Karein"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -4698,20 +4768,20 @@ export default function AdminDashboard() {
                     {/* Part 1: Global Identity Settings */}
                     <form onSubmit={handleSaveConfig} className="space-y-6">
                       <div>
-                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
+                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
                           Website Global Settings
                         </h2>
-                        <p className="text-xs text-[#575757] font-semibold mt-1">
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
                           Website ka naam, tagline, edition aur global masthead details update karein
                         </p>
                       </div>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-[#faf8f2] border border-[#211d1d]/15 p-6">
-                        <h4 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] font-bold pb-2 border-b border-[#211d1d]/10 sm:col-span-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 rounded-xs">
+                        <h4 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 sm:col-span-2">
                           Website Identity & Branding
                         </h4>
                         <div>
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Website Logo Title (e.g. ApexChief)
                           </label>
                           <input
@@ -4719,11 +4789,11 @@ export default function AdminDashboard() {
                             required
                             value={siteConfig.name}
                             onChange={(e) => setSiteConfig({ ...siteConfig, name: e.target.value })}
-                            className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Short Name / Abbreviation
                           </label>
                           <input
@@ -4731,11 +4801,11 @@ export default function AdminDashboard() {
                             required
                             value={siteConfig.shortName}
                             onChange={(e) => setSiteConfig({ ...siteConfig, shortName: e.target.value })}
-                            className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Tagline Headline Text
                           </label>
                           <input
@@ -4743,11 +4813,11 @@ export default function AdminDashboard() {
                             required
                             value={siteConfig.tagline}
                             onChange={(e) => setSiteConfig({ ...siteConfig, tagline: e.target.value })}
-                            className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Current Date Header Text
                           </label>
                           <input
@@ -4755,11 +4825,11 @@ export default function AdminDashboard() {
                             required
                             value={siteConfig.currentDate}
                             onChange={(e) => setSiteConfig({ ...siteConfig, currentDate: e.target.value })}
-                            className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Current Newspaper Edition Info
                           </label>
                           <input
@@ -4767,7 +4837,7 @@ export default function AdminDashboard() {
                             required
                             value={siteConfig.edition}
                             onChange={(e) => setSiteConfig({ ...siteConfig, edition: e.target.value })}
-                            className="block w-full px-3 py-2 border border-[#211d1d]/25 bg-[#faf8f2] text-sm text-[#211d1d] focus:outline-none"
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
                       </div>
@@ -4775,7 +4845,7 @@ export default function AdminDashboard() {
                       <div className="pt-2 flex justify-end">
                         <button
                           type="submit"
-                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer"
+                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                         >
                           Global Settings Save Karein
                         </button>
@@ -4783,36 +4853,36 @@ export default function AdminDashboard() {
                     </form>
 
                     {/* Part 2: Database-Connected Admin Password & Security */}
-                    <form onSubmit={handlePasswordChange} className="space-y-6 pt-6 border-t-2 border-[#211d1d]/20">
+                    <form onSubmit={handlePasswordChange} className="space-y-6 pt-6 border-t-2 border-[#211d1d]/20 dark:border-white/10">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <ShieldCheck className="w-5 h-5 text-[#002b5c]" />
-                          <h3 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
+                          <ShieldCheck className="w-5 h-5 text-[#002b5c] dark:text-sky-400" />
+                          <h3 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
                             Admin Password & Security Settings
                           </h3>
                         </div>
-                        <p className="text-xs text-[#575757] font-semibold mt-1">
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
                           Admin login password badlein (Ye seedhe Supabase database se connected hai aur wahi save hota hai)
                         </p>
                       </div>
 
                       {passwordChangeError && (
-                        <div className="p-3.5 bg-rose-50 border border-rose-300 text-rose-800 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
-                          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                        <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
+                          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                           <div className="flex-1 font-medium">{passwordChangeError}</div>
                         </div>
                       )}
 
                       {passwordChangeSuccess && (
-                        <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-800 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                        <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
                           <div className="flex-1 font-medium">{passwordChangeSuccess}</div>
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-[#faf8f2] border border-[#211d1d]/15 p-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 rounded-xs">
                         <div className="sm:col-span-2">
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Vartamaan (Current) Admin Password
                           </label>
                           <div className="relative max-w-md">
@@ -4825,12 +4895,12 @@ export default function AdminDashboard() {
                               value={currentPasswordInput}
                               onChange={(e) => setCurrentPasswordInput(e.target.value)}
                               placeholder="••••••••••••"
-                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
+                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                             />
                             <button
                               type="button"
                               onClick={() => setShowCurrentPass(!showCurrentPass)}
-                              className="absolute right-3 top-2.5 text-[#575757] hover:text-[#002b5c] transition-colors cursor-pointer"
+                              className="absolute right-3 top-2.5 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
                               title={showCurrentPass ? 'Hide' : 'Show'}
                             >
                               {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -4839,7 +4909,7 @@ export default function AdminDashboard() {
                         </div>
 
                         <div>
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Naya (New) Admin Password
                           </label>
                           <div className="relative">
@@ -4852,12 +4922,12 @@ export default function AdminDashboard() {
                               value={newPasswordInput}
                               onChange={(e) => setNewPasswordInput(e.target.value)}
                               placeholder="••••••••••••"
-                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
+                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                             />
                             <button
                               type="button"
                               onClick={() => setShowNewPass(!showNewPass)}
-                              className="absolute right-3 top-2.5 text-[#575757] hover:text-[#002b5c] transition-colors cursor-pointer"
+                              className="absolute right-3 top-2.5 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
                               title={showNewPass ? 'Hide' : 'Show'}
                             >
                               {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -4866,7 +4936,7 @@ export default function AdminDashboard() {
                         </div>
 
                         <div>
-                          <label className="block text-xs font-mono font-bold text-[#575757] uppercase tracking-wider mb-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Naya Password Confirm Karein
                           </label>
                           <input
@@ -4878,26 +4948,26 @@ export default function AdminDashboard() {
                             value={confirmPasswordInput}
                             onChange={(e) => setConfirmPasswordInput(e.target.value)}
                             placeholder="••••••••••••"
-                            className="block w-full px-3 py-2.5 border border-[#211d1d]/25 bg-white text-sm text-[#211d1d] focus:outline-none focus:border-[#002b5c]"
+                            className="block w-full px-3 py-2.5 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
 
                         {/* Password Strength Checklist */}
-                        <div className="sm:col-span-2 pt-2 border-t border-[#211d1d]/10">
-                          <span className="text-[11px] font-mono uppercase font-bold text-[#575757] block mb-2">
+                        <div className="sm:col-span-2 pt-2 border-t border-[#211d1d]/10 dark:border-white/10">
+                          <span className="text-[11px] font-mono uppercase font-bold text-[#575757] dark:text-gray-400 block mb-2">
                             Security Checklist:
                           </span>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
-                            <div className={`flex items-center space-x-1.5 ${newPasswordInput.length >= 6 ? 'text-emerald-700' : 'text-gray-400'}`}>
-                              <Check className={`w-3.5 h-3.5 ${newPasswordInput.length >= 6 ? 'text-emerald-600' : 'text-gray-300'}`} />
+                            <div className={`flex items-center space-x-1.5 ${newPasswordInput.length >= 6 ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${newPasswordInput.length >= 6 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
                               <span>Min. 6 Characters</span>
                             </div>
-                            <div className={`flex items-center space-x-1.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-700' : 'text-gray-400'}`}>
-                              <Check className={`w-3.5 h-3.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-600' : 'text-gray-300'}`} />
+                            <div className={`flex items-center space-x-1.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
                               <span>Number (0-9)</span>
                             </div>
-                            <div className={`flex items-center space-x-1.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-700' : 'text-gray-400'}`}>
-                              <Check className={`w-3.5 h-3.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-600' : 'text-gray-300'}`} />
+                            <div className={`flex items-center space-x-1.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
                               <span>Special Symbol (@, $, #, !)</span>
                             </div>
                           </div>
@@ -4908,7 +4978,7 @@ export default function AdminDashboard() {
                         <button
                           type="submit"
                           disabled={isChangingPassword}
-                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer flex items-center space-x-2"
+                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer flex items-center space-x-2 rounded-xs"
                         >
                           {isChangingPassword ? (
                             <>
