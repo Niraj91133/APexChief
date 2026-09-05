@@ -2242,329 +2242,151 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <>
-                {/* TAB 1: OVERVIEW - DEEP EDITORIAL & TRAFFIC ANALYTICS */}
+                {/* TAB 1: OVERVIEW - MINIMALIST EDITORIAL & AUDIENCE INTELLIGENCE */}
                 {activeTab === 'overview' && (
-                  <div className="space-y-8">
-                    {/* Header & Live Sync Status */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#211d1d]/15">
+                  <div className="space-y-6">
+                    {/* Header Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#211d1d]/10">
                       <div>
                         <div className="flex items-center space-x-2">
-                          <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
-                            Editorial & Traffic Analytics Command Center
+                          <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a]">
+                            Audience & Editorial Intelligence
                           </h2>
-                          <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
+                          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-mono font-bold border border-emerald-200">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>100% REAL DATABASE DATA</span>
+                            <span>LIVE DATA</span>
                           </span>
                         </div>
-                        <p className="text-xs text-[#575757] font-semibold mt-1">
-                          Website visitors, article view metrics, reader engagement aur category performance ka deep analysis
+                        <p className="text-xs text-[#666666] font-sans mt-0.5">
+                          Real-time database records, per-article readership metrics aur audience engagement overview
                         </p>
                       </div>
 
                       <div className="flex items-center space-x-3 self-start sm:self-center">
                         {lastAnalyticsSync && (
-                          <span className="text-[11px] font-mono text-[#575757]">
-                            Synced: <strong className="text-[#0a0a0a]">{lastAnalyticsSync}</strong>
+                          <span className="text-[11px] font-mono text-[#777777]">
+                            Synced: <strong className="text-[#111111]">{lastAnalyticsSync}</strong>
                           </span>
                         )}
                         <button
                           type="button"
                           onClick={fetchAnalytics}
                           disabled={isAnalyticsLoading}
-                          className="px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-50 text-[#faf8f2] text-xs font-mono font-bold uppercase tracking-wider transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] disabled:opacity-50 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-2xs"
                         >
                           <RefreshCw className={`w-3.5 h-3.5 ${isAnalyticsLoading ? 'animate-spin' : ''}`} />
-                          <span>Stats Refresh</span>
+                          <span>Refresh</span>
                         </button>
                       </div>
                     </div>
 
-                    {/* 4 Hero KPI Cards */}
+                    {/* 4 Minimalist KPI Cards */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {/* Card 1: Unique Visitors */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-5 shadow-xs relative overflow-hidden group">
+                      {/* Card 1: Total Views */}
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] uppercase text-[#575757] tracking-wider font-bold">
-                            Kul Unique Visitors
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                            Total Article Reads
                           </span>
-                          <span className="p-1.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            <Users className="w-4 h-4" />
-                          </span>
+                          <Eye className="w-4 h-4 text-[#002b5c]" />
                         </div>
-                        <div className="mt-2 flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
-                            {(analyticsData?.uniqueVisitors ?? 0).toLocaleString()}
-                          </span>
-                          <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
-                            Verified
-                          </span>
-                        </div>
-                        <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Total Site Visits:</span>
-                          <strong className="text-[#002b5c]">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
-                        </div>
-                      </div>
-
-                      {/* Card 2: Total Article Views */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-5 shadow-xs relative overflow-hidden group">
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] uppercase text-[#575757] tracking-wider font-bold">
-                            Kul Article Reads / Views
-                          </span>
-                          <span className="p-1.5 rounded bg-blue-50 text-[#002b5c] border border-blue-200">
-                            <Eye className="w-4 h-4" />
-                          </span>
-                        </div>
-                        <div className="mt-2 flex items-baseline space-x-2">
+                        <div className="flex items-baseline space-x-2">
                           <span className="font-serif text-3xl sm:text-4xl font-bold text-[#002b5c]">
                             {(analyticsData?.totalViews ?? 0).toLocaleString()}
                           </span>
-                          <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
-                            Database Live
-                          </span>
                         </div>
-                        <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Avg Reads / Story:</span>
-                          <strong className="text-[#0a0a0a]">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
-                        </div>
+                        <p className="text-[11px] font-mono text-[#777777]">
+                          Avg reads / story: <strong className="text-[#111111]">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
+                        </p>
                       </div>
 
-                      {/* Card 3: Total Published Stories */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-5 shadow-xs relative overflow-hidden group">
+                      {/* Card 2: Unique Readers */}
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] uppercase text-[#575757] tracking-wider font-bold">
-                            Published Stories
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                            Unique Readers
                           </span>
-                          <span className="p-1.5 rounded bg-amber-50 text-amber-700 border border-amber-200">
-                            <FileText className="w-4 h-4" />
+                          <Users className="w-4 h-4 text-emerald-600" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
+                            {(analyticsData?.uniqueVisitors ?? 0).toLocaleString()}
                           </span>
                         </div>
-                        <div className="mt-2 flex items-baseline space-x-2">
+                        <p className="text-[11px] font-mono text-[#777777]">
+                          Total site visits: <strong className="text-[#111111]">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
+                        </p>
+                      </div>
+
+                      {/* Card 3: Published Stories */}
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                            Published Stories
+                          </span>
+                          <FileText className="w-4 h-4 text-amber-600" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
                           <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a]">
                             {articles.length}
                           </span>
-                          <span className="text-[11px] font-mono text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded font-bold">
-                            {categories.length} Categories
-                          </span>
                         </div>
-                        <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Featured Stories:</span>
-                          <strong className="text-amber-600">{articles.filter((a) => a.featured).length}</strong>
-                        </div>
+                        <p className="text-[11px] font-mono text-[#777777]">
+                          Across <strong className="text-[#111111]">{categories.length} editorial desks</strong>
+                        </p>
                       </div>
 
-                      {/* Card 4: Reader Reactions / Likes */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-5 shadow-xs relative overflow-hidden group">
+                      {/* Card 4: Reader Reactions */}
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 transition-colors">
                         <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] uppercase text-[#575757] tracking-wider font-bold">
-                            Kul Reader Likes
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] font-semibold">
+                            Reader Reactions
                           </span>
-                          <span className="p-1.5 rounded bg-rose-50 text-[#f7413e] border border-rose-200">
-                            <Activity className="w-4 h-4" />
-                          </span>
+                          <Activity className="w-4 h-4 text-rose-600" />
                         </div>
-                        <div className="mt-2 flex items-baseline space-x-2">
-                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#f7413e]">
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-600">
                             {(analyticsData?.totalLikes ?? 0).toLocaleString()}
                           </span>
-                          <span className="text-[10px] font-mono font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
-                            Engaged
-                          </span>
                         </div>
-                        <div className="mt-2 text-[11px] text-[#575757] font-mono flex items-center justify-between border-t border-[#211d1d]/10 pt-2">
-                          <span>Engagement Score:</span>
-                          <strong className="text-[#0a0a0a]">{analyticsData?.engagementRate ?? 0}%</strong>
-                        </div>
+                        <p className="text-[11px] font-mono text-[#777777]">
+                          Engagement score: <strong className="text-[#111111]">{analyticsData?.engagementRate ?? 0}%</strong>
+                        </p>
                       </div>
                     </div>
 
-                    {/* GOOGLE ANALYTICS 4 & MICROSOFT CLARITY LIVE COMMAND HUB */}
-                    <div className="bg-[#faf8f2] border-2 border-[#002b5c]/25 p-5 sm:p-6 space-y-5 shadow-xs">
-                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-[#211d1d]/10 pb-4">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="relative flex h-3 w-3">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                            </span>
-                            <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] uppercase tracking-tight">
-                              Microsoft Clarity & Google Analytics 4 Command Hub
-                            </h3>
-                            <span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-mono font-bold">
-                              LIVE TRANSMITTING
-                            </span>
-                          </div>
-                          <p className="text-xs text-[#575757] mt-1 font-sans">
-                            Website ke sabhi pages par Microsoft Clarity session recordings, heatmaps aur GA4 traffic telemetry live active hai.
-                          </p>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono">
-                          <span className="px-2.5 py-1 bg-white border border-[#211d1d]/15 rounded text-[#002b5c] font-bold">
-                            GA4: G-02WC3EL89S
-                          </span>
-                          <span className="px-2.5 py-1 bg-white border border-[#211d1d]/15 rounded text-[#f7413e] font-bold">
-                            Clarity: ydgkxqb6b8
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* 2 Platform Intelligence Launchpads */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {/* 1. Microsoft Clarity Panel */}
-                        <div className="bg-white border border-[#211d1d]/15 p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#0078d4]/40 transition-colors">
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-sm bg-[#0078d4]/10 border border-[#0078d4]/30 flex items-center justify-center text-[#0078d4] font-bold text-sm">
-                                  MC
-                                </div>
-                                <div>
-                                  <h4 className="font-serif text-base font-bold text-[#0a0a0a]">
-                                    Microsoft Clarity
-                                  </h4>
-                                  <span className="text-[10px] font-mono text-[#575757]">
-                                    Project Tag: <strong>ydgkxqb6b8</strong>
-                                  </span>
-                                </div>
-                              </div>
-                              <span className="px-2 py-0.5 rounded bg-blue-50 text-[#0078d4] text-[10px] font-mono font-bold">
-                                Heatmaps & Video
-                              </span>
-                            </div>
-
-                            <p className="text-xs text-[#575757] leading-relaxed">
-                              Real reader cursor movements, scroll depth percentage by article, rage clicks aur poori video screen recordings dekhein.
-                            </p>
-
-                            <div className="space-y-1.5 pt-1 text-[11px] font-mono">
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">🎥 Session Video Replays:</span>
-                                <span className="text-emerald-700 font-bold">🟢 Live Captured</span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">🗺️ Click & Scroll Heatmaps:</span>
-                                <span className="text-emerald-700 font-bold">🟢 Active</span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">⚡ Rage Clicks & Drop-offs:</span>
-                                <span className="text-emerald-700 font-bold">🟢 Automated</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#211d1d]/10">
-                            <a
-                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/recordings"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-2 bg-[#002b5c] hover:bg-[#002b5c]/90 text-[#faf8f2] text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1"
-                            >
-                              <span>🎥 Recordings</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                            <a
-                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/heatmaps"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-2 bg-[#f3f1e6] hover:bg-[#211d1d] text-[#211d1d] hover:text-white border border-[#211d1d]/20 text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1"
-                            >
-                              <span>🗺️ Heatmaps</span>
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                        </div>
-
-                        {/* 2. Google Analytics 4 Panel */}
-                        <div className="bg-white border border-[#211d1d]/15 p-5 flex flex-col justify-between space-y-4 shadow-2xs hover:border-[#ea4335]/40 transition-colors">
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-sm bg-[#ea4335]/10 border border-[#ea4335]/30 flex items-center justify-center text-[#ea4335] font-bold text-sm">
-                                  GA4
-                                </div>
-                                <div>
-                                  <h4 className="font-serif text-base font-bold text-[#0a0a0a]">
-                                    Google Analytics 4
-                                  </h4>
-                                  <span className="text-[10px] font-mono text-[#575757]">
-                                    Measurement ID: <strong>G-02WC3EL89S</strong>
-                                  </span>
-                                </div>
-                              </div>
-                              <span className="px-2 py-0.5 rounded bg-rose-50 text-[#ea4335] text-[10px] font-mono font-bold">
-                                Realtime Traffic
-                              </span>
-                            </div>
-
-                            <p className="text-xs text-[#575757] leading-relaxed">
-                              Real-time live active readers (last 30 minutes), Google Search organic traffic, country & city geolocations aur mobile/desktop split dekhein.
-                            </p>
-
-                            <div className="space-y-1.5 pt-1 text-[11px] font-mono">
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">⚡ Realtime (Last 30 Mins):</span>
-                                <span className="text-emerald-700 font-bold">🟢 Transmitting</span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">🌍 Country / City Geolocation:</span>
-                                <span className="text-emerald-700 font-bold">🟢 Global Stream</span>
-                              </div>
-                              <div className="flex items-center justify-between p-2 bg-[#f3f1e6]/60 rounded-xs">
-                                <span className="text-[#575757]">🔍 Google Search & Referrals:</span>
-                                <span className="text-emerald-700 font-bold">🟢 Tracked</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="pt-2 border-t border-[#211d1d]/10">
-                            <a
-                              href="https://analytics.google.com/analytics/web/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="w-full px-3 py-2 bg-[#f7413e] hover:bg-[#f7413e]/90 text-white text-center text-[11px] font-mono font-bold uppercase rounded-xs transition-colors flex items-center justify-center space-x-1.5 shadow-xs"
-                            >
-                              <span>📈 Open Google Analytics 4 Dashboard</span>
-                              <ExternalLink className="w-3.5 h-3.5" />
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* 7-Day Traffic Trend Analysis (Interactive Real Database Chart) */}
-                    <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-4">
+                    {/* 7-DAY TRAFFIC & DAILY VIEWS TREND (CLEAN MINIMALIST CHART) */}
+                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
                         <div>
-                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] uppercase tracking-tight flex items-center space-x-2">
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
                             <TrendingUp className="w-4 h-4 text-[#002b5c]" />
-                            <span>Pichle 7 Dino Ka Traffic & Reader Trend (Daily Views)</span>
+                            <span>Pichle 7 Dino Ka Traffic & Daily Views</span>
                           </h3>
-                          <p className="text-[11px] text-[#575757] font-mono mt-0.5">
-                            Supabase database me darj actual daily article pageviews aur unique audience activity
+                          <p className="text-xs text-[#777777] font-sans mt-0.5">
+                            Supabase database me darj actual daily pageviews aur unique visitors
                           </p>
                         </div>
                         <div className="flex items-center space-x-4 text-[11px] font-mono">
                           <span className="flex items-center space-x-1.5">
-                            <span className="w-3 h-3 rounded-xs bg-[#002b5c] inline-block"></span>
-                            <span>Daily Views</span>
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#002b5c]"></span>
+                            <span className="text-[#555555]">Daily Views</span>
                           </span>
                           <span className="flex items-center space-x-1.5">
-                            <span className="w-3 h-3 rounded-xs bg-[#f7413e] inline-block"></span>
-                            <span>Unique Visitors</span>
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#f7413e]"></span>
+                            <span className="text-[#555555]">Visitors</span>
                           </span>
                         </div>
                       </div>
 
-                      {/* Daily Bars Visualizer */}
-                      <div className="pt-6 pb-2">
+                      {/* Minimalist Bars */}
+                      <div className="pt-8 pb-2">
                         {(!analyticsData?.dailyTrends || analyticsData.dailyTrends.length === 0) ? (
-                          <div className="py-12 text-center text-xs font-mono text-[#575757]">
+                          <div className="py-10 text-center text-xs font-mono text-[#777777]">
                             Pichle 7 dino ka traffic data load ho raha hai...
                           </div>
                         ) : (
-                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-44 border-b border-[#211d1d]/15 pb-2">
+                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-40 border-b border-[#211d1d]/10 pb-2">
                             {analyticsData.dailyTrends.map((dayData, idx) => {
                               const maxViewsInWeek = Math.max(...analyticsData.dailyTrends.map((d) => d.views), 1);
                               const viewsHeight = dayData.views > 0 ? Math.max(16, Math.round((dayData.views / maxViewsInWeek) * 100)) : 6;
@@ -2572,42 +2394,37 @@ export default function AdminDashboard() {
 
                               return (
                                 <div key={idx} className="flex flex-col items-center h-full justify-end group relative">
-                                  {/* Hover Tooltip */}
-                                  <div className="absolute -top-12 z-20 hidden group-hover:flex flex-col items-center bg-[#1a1a1a] text-white text-[10px] font-mono px-2.5 py-1 rounded shadow-xl whitespace-nowrap pointer-events-none">
-                                    <span>{dayData.date} ({dayData.day})</span>
-                                    <span className="text-blue-300 font-bold">{dayData.views} Actual Views • {dayData.visitors} Visitors</span>
+                                  {/* Minimalist Hover Tooltip */}
+                                  <div className="absolute -top-10 z-20 hidden group-hover:flex flex-col items-center bg-[#111111] text-white text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+                                    <span>{dayData.date} ({dayData.day}): {dayData.views} Views • {dayData.visitors} Visitors</span>
                                   </div>
+
+                                  {/* Views number above bar */}
+                                  <span className="text-[10px] font-mono font-bold text-[#002b5c] mb-1">
+                                    {dayData.views > 0 ? dayData.views : ''}
+                                  </span>
 
                                   <div className="w-full flex items-end justify-center space-x-1 sm:space-x-1.5 h-full">
                                     {/* Views Bar */}
                                     <div
                                       style={{ height: `${viewsHeight}%` }}
-                                      className="w-1/2 max-w-[28px] bg-[#002b5c] hover:bg-[#002b5c]/80 rounded-t-xs transition-all duration-300 relative flex items-start justify-center pt-1"
+                                      className="w-1/2 max-w-[24px] bg-[#002b5c] hover:bg-[#002b5c]/80 rounded-t-xs transition-all duration-200"
                                       title={`${dayData.views} Views`}
-                                    >
-                                      {dayData.views > 0 && (
-                                        <span className="text-[9px] font-mono text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
-                                          {dayData.views}
-                                        </span>
-                                      )}
-                                    </div>
+                                    ></div>
                                     {/* Visitors Bar */}
                                     <div
                                       style={{ height: `${visitorsHeight}%` }}
-                                      className="w-1/2 max-w-[28px] bg-[#f7413e] hover:bg-[#f7413e]/80 rounded-t-xs transition-all duration-300"
+                                      className="w-1/2 max-w-[24px] bg-[#f7413e] hover:bg-[#f7413e]/80 rounded-t-xs transition-all duration-200"
                                       title={`${dayData.visitors} Visitors`}
                                     ></div>
                                   </div>
 
                                   <div className="mt-2 text-center">
-                                    <span className="font-mono text-[11px] font-bold text-[#0a0a0a] block">
+                                    <span className="font-mono text-[11px] font-bold text-[#111111] block">
                                       {dayData.day}
                                     </span>
-                                    <span className="font-mono text-[9px] text-[#575757] block truncate">
+                                    <span className="font-mono text-[9px] text-[#777777] block truncate">
                                       {dayData.date}
-                                    </span>
-                                    <span className="font-mono text-[9px] text-[#002b5c] font-bold block mt-0.5">
-                                      {dayData.views} views
                                     </span>
                                   </div>
                                 </div>
@@ -2618,93 +2435,170 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* TOP ARTICLES LEADERBOARD - 100% REAL DATABASE VIEWS */}
-                    <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-4">
+                    {/* LIVE AUDIENCE TELEMETRY: GOOGLE ANALYTICS 4 & MICROSOFT CLARITY */}
+                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
-                        <div>
-                          <h3 className="font-serif text-lg font-bold text-[#0a0a0a] uppercase tracking-tight flex items-center space-x-2">
-                            <span>🏆 Top Sabse Zyada Padhe Gaye Articles (Leaderboard)</span>
+                        <div className="space-y-0.5">
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
+                            <span>Google Analytics 4 & Microsoft Clarity Telemetry</span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
                           </h3>
-                          <p className="text-[11px] text-[#575757] font-mono mt-0.5">
-                            Supabase database me darj real views ke anusaar rank kiye gaye articles
+                          <p className="text-xs text-[#777777] font-sans">
+                            Website par live session recordings, heatmaps aur global audience telemetry active hai
                           </p>
                         </div>
-
-                        <div className="flex items-center space-x-2 self-start sm:self-center">
-                          <button
-                            onClick={() => setActiveTab('posts')}
-                            className="text-[11px] font-mono text-[#002b5c] hover:underline font-bold"
-                          >
-                            Sabhi Stories Dekhein ({articles.length}) →
-                          </button>
+                        <div className="flex items-center space-x-2 text-[11px] font-mono">
+                          <span className="px-2 py-0.5 bg-[#faf8f2] border border-[#211d1d]/10 rounded text-[#002b5c] font-bold">
+                            GA4: G-02WC3EL89S
+                          </span>
+                          <span className="px-2 py-0.5 bg-[#faf8f2] border border-[#211d1d]/10 rounded text-[#f7413e] font-bold">
+                            Clarity: ydgkxqb6b8
+                          </span>
                         </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        {/* Box 1: Microsoft Clarity */}
+                        <div className="p-4 bg-[#faf8f2] border border-[#211d1d]/10 rounded-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a]">
+                              Microsoft Clarity (Session Replays & Heatmaps)
+                            </span>
+                            <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-bold">
+                              Live Tag
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#666666] leading-relaxed">
+                            Har reader ka mouse scroll depth %, cursor click heatmaps, dead clicks aur full screen recordings.
+                          </p>
+                          <div className="flex items-center space-x-2 pt-1">
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/recordings"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                            >
+                              <span>🎥 Video Replays</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/heatmaps"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-white hover:bg-[#f3f1e6] text-[#211d1d] border border-[#211d1d]/20 text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                            >
+                              <span>🗺️ Heatmaps</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Box 2: Google Analytics 4 */}
+                        <div className="p-4 bg-[#faf8f2] border border-[#211d1d]/10 rounded-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a]">
+                              Google Analytics 4 (Realtime Traffic & Channels)
+                            </span>
+                            <span className="text-[10px] font-mono text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded font-bold">
+                              Stream Active
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#666666] leading-relaxed">
+                            Pichle 30 minutes ke active live readers, Google Search organic keywords, country/city locations aur device metrics.
+                          </p>
+                          <div className="pt-1">
+                            <a
+                              href="https://analytics.google.com/analytics/web/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-[#f7413e] hover:bg-[#d83230] text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5"
+                            >
+                              <span>📈 Open Google Analytics 4 Dashboard</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* HAR ARTICLE KA REAL DATABASE DATA (COMPLETE LEADERBOARD) */}
+                    <div className="bg-white border border-[#211d1d]/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 pb-3">
+                        <div>
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] flex items-center space-x-2">
+                            <span>Har Article Ka Performance & Live Views (Database Records)</span>
+                          </h3>
+                          <p className="text-xs text-[#777777] font-sans mt-0.5">
+                            Supabase database me darj sabhi stories ke exact view counts aur traffic share
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setActiveTab('posts')}
+                          className="text-xs font-mono font-bold text-[#002b5c] hover:underline self-start sm:self-center"
+                        >
+                          Manage All Stories ({articles.length}) →
+                        </button>
                       </div>
 
                       <div className="overflow-x-auto">
                         <table className="min-w-full divide-y divide-[#211d1d]/10 text-left text-xs">
-                          <thead className="bg-[#eff0e0] font-mono uppercase font-bold text-[#575757] text-[10px]">
+                          <thead className="bg-[#faf8f2] font-mono uppercase font-bold text-[#666666] text-[10px]">
                             <tr>
-                              <th className="px-3 py-2.5 w-12 text-center">Rank</th>
-                              <th className="px-3 py-2.5">Article Headline Title</th>
-                              <th className="px-3 py-2.5">Category & Desk</th>
+                              <th className="px-3 py-2.5 w-10 text-center">#</th>
+                              <th className="px-3 py-2.5">Article Headline</th>
+                              <th className="px-3 py-2.5">Category</th>
                               <th className="px-3 py-2.5">Author</th>
-                              <th className="px-3 py-2.5 text-right">Actual Views Count</th>
-                              <th className="px-3 py-2.5 w-36">Traffic Share</th>
-                              <th className="px-3 py-2.5 text-right">View</th>
+                              <th className="px-3 py-2.5 text-right">Actual Views</th>
+                              <th className="px-3 py-2.5 text-right">Likes</th>
+                              <th className="px-3 py-2.5 w-28">Share %</th>
+                              <th className="px-3 py-2.5 text-right">Open</th>
                             </tr>
                           </thead>
-                          <tbody className="divide-y divide-[#211d1d]/10">
+                          <tbody className="divide-y divide-[#211d1d]/5 font-sans">
                             {articles.length === 0 ? (
                               <tr>
-                                <td colSpan={7} className="px-4 py-8 text-center text-[#575757] font-mono">
-                                  Database me koi articles nahi hain.
+                                <td colSpan={8} className="px-4 py-8 text-center text-[#777777] font-mono">
+                                  Koi article nahi mila.
                                 </td>
                               </tr>
                             ) : (
                               [...articles]
                                 .sort((a, b) => (Number(b.viewsCount) || 0) - (Number(a.viewsCount) || 0))
-                                .slice(0, 10)
                                 .map((art, idx) => {
-                                  const rank = idx + 1;
                                   const totalViewsSum = analyticsData?.totalViews || articles.reduce((acc, a) => acc + (Number(a.viewsCount) || 0), 0) || 1;
                                   const viewsNum = Number(art.viewsCount) || 0;
+                                  const likesNum = Number(art.likesCount) || 0;
                                   const sharePercentage = totalViewsSum > 0 ? Math.round((viewsNum / totalViewsSum) * 100) : 0;
 
-                                  const rankBadge =
-                                    rank === 1
-                                      ? 'bg-amber-400 text-amber-950 font-extrabold ring-2 ring-amber-300'
-                                      : rank === 2
-                                      ? 'bg-slate-300 text-slate-900 font-bold'
-                                      : rank === 3
-                                      ? 'bg-amber-700 text-amber-50 font-bold'
-                                      : 'bg-[#eff0e0] text-[#575757] font-mono';
-
                                   return (
-                                    <tr key={art.slug} className="hover:bg-[#f3f1e6]/60 transition-colors">
-                                      {/* Rank Medal */}
-                                      <td className="px-3 py-3 text-center whitespace-nowrap">
-                                        <span
-                                          className={`w-6 h-6 rounded-full inline-flex items-center justify-center text-[11px] ${rankBadge}`}
-                                        >
-                                          {rank}
-                                        </span>
+                                    <tr key={art.slug} className="hover:bg-[#faf8f2] transition-colors">
+                                      {/* Rank */}
+                                      <td className="px-3 py-2.5 text-center font-mono text-xs font-bold text-[#666666]">
+                                        {idx + 1}
                                       </td>
 
-                                      {/* Title with thumbnail */}
-                                      <td className="px-3 py-3">
-                                        <div className="flex items-center space-x-3 max-w-[340px]">
-                                          {art.image && (
-                                            <img
-                                              src={art.image}
-                                              alt=""
-                                              className="w-10 h-7 object-cover rounded-xs border border-[#211d1d]/15 shrink-0"
-                                            />
-                                          )}
+                                      {/* Title */}
+                                      <td className="px-3 py-2.5">
+                                        <div className="flex items-center space-x-2.5 max-w-[360px]">
+                                          <div className="w-8 h-6 bg-[#211d1d]/5 border border-[#211d1d]/10 rounded-xs overflow-hidden shrink-0 flex items-center justify-center">
+                                            {art.image ? (
+                                              <img
+                                                src={art.image.replace(/&amp;/g, '&')}
+                                                alt=""
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                  (e.currentTarget as HTMLElement).style.display = 'none';
+                                                }}
+                                              />
+                                            ) : (
+                                              <FileText className="w-3 h-3 text-[#777777]" />
+                                            )}
+                                          </div>
                                           <a
                                             href={`/news/${art.slug}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="font-serif font-bold text-[#0a0a0a] hover:text-[#002b5c] transition-colors truncate block"
+                                            className="font-medium text-[#111111] hover:text-[#002b5c] transition-colors truncate block"
                                             title={art.title}
                                           >
                                             {art.title}
@@ -2713,48 +2607,47 @@ export default function AdminDashboard() {
                                       </td>
 
                                       {/* Category */}
-                                      <td className="px-3 py-3 whitespace-nowrap">
-                                        <span className="font-bold text-[10px] uppercase px-2 py-0.5 rounded bg-[#002b5c]/10 text-[#002b5c]">
+                                      <td className="px-3 py-2.5 whitespace-nowrap">
+                                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-xs bg-[#faf8f2] border border-[#211d1d]/10 text-[#002b5c] font-bold">
                                           {art.category}
                                         </span>
                                       </td>
 
                                       {/* Author */}
-                                      <td className="px-3 py-3 whitespace-nowrap font-medium text-[#0a0a0a]">
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-[#555555] text-xs">
                                         {art.author}
                                       </td>
 
-                                      {/* Views Count */}
-                                      <td className="px-3 py-3 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] text-xs">
-                                        <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-blue-50 border border-blue-200 rounded">
-                                          <Eye className="w-3 h-3 text-[#002b5c]" />
-                                          <span>{viewsNum.toLocaleString()} views</span>
-                                        </span>
+                                      {/* Actual Views Count */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] text-xs">
+                                        {viewsNum.toLocaleString()}
                                       </td>
 
-                                      {/* Traffic Share Bar */}
-                                      <td className="px-3 py-3 whitespace-nowrap">
-                                        <div className="space-y-1">
-                                          <div className="flex items-center justify-between text-[10px] font-mono text-[#575757]">
-                                            <span>Share</span>
-                                            <strong>{sharePercentage}%</strong>
-                                          </div>
-                                          <div className="w-full bg-[#211d1d]/10 h-1.5 rounded-full overflow-hidden">
+                                      {/* Likes */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono text-xs text-rose-600">
+                                        {likesNum.toLocaleString()}
+                                      </td>
+
+                                      {/* Traffic Share */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap">
+                                        <div className="flex items-center space-x-1.5">
+                                          <div className="w-16 bg-[#211d1d]/10 h-1 rounded-full overflow-hidden">
                                             <div
                                               style={{ width: `${Math.min(100, sharePercentage * 2.5)}%` }}
                                               className="bg-[#002b5c] h-full rounded-full"
                                             ></div>
                                           </div>
+                                          <span className="text-[10px] font-mono text-[#777777] font-semibold">{sharePercentage}%</span>
                                         </div>
                                       </td>
 
-                                      {/* Action Live Link */}
-                                      <td className="px-3 py-3 whitespace-nowrap text-right">
+                                      {/* Action */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right">
                                         <a
                                           href={`/news/${art.slug}`}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="p-1 hover:bg-[#eff0e0] text-[#002b5c] inline-block transition-colors"
+                                          className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors"
                                           title="Live Story Kholein"
                                         >
                                           <ExternalLink className="w-3.5 h-3.5" />
@@ -2769,18 +2662,18 @@ export default function AdminDashboard() {
                       </div>
                     </div>
 
-                    {/* 2-Column Row: Category Breakdown & Device/Traffic Demographics */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* 2-Column Row: Category Breakdown & Device/Traffic Channels */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       {/* Left: Category-wise Readership Breakdown */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-4">
-                        <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-3">
-                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] uppercase tracking-tight">
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-2.5">
+                          <h3 className="font-serif text-sm font-bold text-[#0a0a0a]">
                             Category-wise Readership Distribution
                           </h3>
-                          <span className="text-[10px] font-mono text-[#575757]">Live Desks</span>
+                          <span className="text-[10px] font-mono text-[#777777]">Live Desks</span>
                         </div>
 
-                        <div className="space-y-3 pt-1">
+                        <div className="space-y-2.5 pt-1">
                           {(analyticsData?.categoryBreakdown && analyticsData.categoryBreakdown.length > 0
                             ? analyticsData.categoryBreakdown
                             : [
@@ -2789,18 +2682,18 @@ export default function AdminDashboard() {
                           ).map((cat) => (
                             <div key={cat.category} className="space-y-1">
                               <div className="flex items-center justify-between text-xs">
-                                <span className="font-bold text-[#0a0a0a]">{cat.category}</span>
-                                <span className="font-mono text-[#575757]">
+                                <span className="font-medium text-[#111111]">{cat.category}</span>
+                                <span className="font-mono text-[#666666] text-[11px]">
                                   <strong>{cat.views.toLocaleString()} views</strong> ({cat.percentage}%)
                                 </span>
                               </div>
-                              <div className="w-full bg-[#211d1d]/10 h-2 rounded-full overflow-hidden">
+                              <div className="w-full bg-[#211d1d]/5 h-1.5 rounded-full overflow-hidden">
                                 <div
                                   style={{
                                     width: `${cat.percentage}%`,
                                     backgroundColor: cat.color || '#002b5c',
                                   }}
-                                  className="h-full rounded-full transition-all duration-500"
+                                  className="h-full rounded-full transition-all duration-300"
                                 ></div>
                               </div>
                             </div>
@@ -2808,57 +2701,53 @@ export default function AdminDashboard() {
                         </div>
                       </div>
 
-                      {/* Right: Device Insights & Traffic Corridors */}
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-6 space-y-6">
+                      {/* Right: Device Insights & Traffic Channels */}
+                      <div className="bg-white border border-[#211d1d]/10 p-5 rounded-xs space-y-4">
                         {/* Devices */}
                         <div>
-                          <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-3 mb-3">
-                            <h3 className="font-serif text-base font-bold text-[#0a0a0a] uppercase tracking-tight">
+                          <div className="flex items-center justify-between border-b border-[#211d1d]/10 pb-2.5 mb-2.5">
+                            <h3 className="font-serif text-sm font-bold text-[#0a0a0a]">
                               Reader Devices & Platforms
                             </h3>
-                            <span className="text-[10px] font-mono text-[#575757]">Device Split</span>
+                            <span className="text-[10px] font-mono text-[#777777]">Device Split</span>
                           </div>
 
-                          <div className="grid grid-cols-3 gap-3">
-                            <div className="p-3 bg-white border border-[#211d1d]/10 rounded-xs text-center space-y-1">
-                              <Smartphone className="w-4 h-4 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[10px] uppercase text-[#575757] block font-bold">Mobile</span>
-                              <span className="font-serif text-xl font-bold text-[#0a0a0a]">62%</span>
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
+                              <Smartphone className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Mobile</span>
+                              <span className="font-serif text-base font-bold text-[#111111]">62%</span>
                             </div>
-                            <div className="p-3 bg-white border border-[#211d1d]/10 rounded-xs text-center space-y-1">
-                              <Monitor className="w-4 h-4 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[10px] uppercase text-[#575757] block font-bold">Desktop</span>
-                              <span className="font-serif text-xl font-bold text-[#0a0a0a]">31%</span>
+                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
+                              <Monitor className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Desktop</span>
+                              <span className="font-serif text-base font-bold text-[#111111]">31%</span>
                             </div>
-                            <div className="p-3 bg-white border border-[#211d1d]/10 rounded-xs text-center space-y-1">
-                              <Tablet className="w-4 h-4 mx-auto text-[#002b5c]" />
-                              <span className="font-mono text-[10px] uppercase text-[#575757] block font-bold">Tablet</span>
-                              <span className="font-serif text-xl font-bold text-[#0a0a0a]">7%</span>
+                            <div className="p-2.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs space-y-0.5">
+                              <Tablet className="w-3.5 h-3.5 mx-auto text-[#002b5c]" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] block font-semibold">Tablet</span>
+                              <span className="font-serif text-base font-bold text-[#111111]">7%</span>
                             </div>
                           </div>
                         </div>
 
                         {/* Traffic Channels */}
                         <div>
-                          <h4 className="font-mono text-[11px] uppercase tracking-wider text-[#0a0a0a] font-bold mb-2">
-                            Audience Acquisition Channels (GA4 + Clarity)
+                          <h4 className="font-mono text-[10px] uppercase tracking-wider text-[#666666] font-bold mb-1.5">
+                            Audience Acquisition Corridors
                           </h4>
-                          <div className="space-y-2 text-xs font-mono">
-                            <div className="flex items-center justify-between p-2 bg-white border border-[#211d1d]/10">
-                              <span>Direct Masthead Readers</span>
+                          <div className="space-y-1.5 text-xs font-mono">
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
+                              <span className="text-[#555555]">Direct Masthead Readers</span>
                               <strong className="text-[#002b5c]">48%</strong>
                             </div>
-                            <div className="flex items-center justify-between p-2 bg-white border border-[#211d1d]/10">
-                              <span>Google Search & Discover</span>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
+                              <span className="text-[#555555]">Google Search & Discover</span>
                               <strong className="text-emerald-700">32%</strong>
                             </div>
-                            <div className="flex items-center justify-between p-2 bg-white border border-[#211d1d]/10">
-                              <span>Social Media Corridors</span>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] border border-[#211d1d]/5 rounded-xs">
+                              <span className="text-[#555555]">Social Media Corridors</span>
                               <strong className="text-[#f7413e]">14%</strong>
-                            </div>
-                            <div className="flex items-center justify-between p-2 bg-white border border-[#211d1d]/10">
-                              <span>Editorial Newsletters</span>
-                              <strong className="text-amber-700">6%</strong>
                             </div>
                           </div>
                         </div>
@@ -2867,69 +2756,40 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
-                {/* TAB 2: MANAGE POSTS */}
+                {/* TAB 2: MANAGE POSTS (MINIMALIST CLEAN STORIES TABLE) */}
                 {activeTab === 'posts' && (
-                  <div className="space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="space-y-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#211d1d]/10">
                       <div>
-                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a]">
-                          Sabhi Published Stories ({articles.length})
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a]">
+                          Published Stories ({articles.length})
                         </h2>
-                        <p className="text-xs text-[#575757] font-semibold mt-1">
+                        <p className="text-xs text-[#666666] font-sans mt-0.5">
                           Har story ke live views dekhein, search karein, edit karein ya views ke anusaar sort karein
                         </p>
                       </div>
 
                       <button
                         onClick={initCreatePost}
-                        className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-[#faf8f2] px-4 py-2 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                        className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] text-white px-3.5 py-1.5 text-xs font-mono font-medium uppercase tracking-wider rounded-xs transition-colors cursor-pointer shadow-2xs"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-3.5 h-3.5" />
                         <span>Nayi Story Likhein</span>
                       </button>
                     </div>
 
-                    {/* Quick KPI Bar for Posts */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Kul Published Stories</span>
-                          <span className="font-serif text-xl font-bold text-[#0a0a0a]">{articles.length}</span>
-                        </div>
-                        <FileText className="w-5 h-5 text-[#002b5c]" />
-                      </div>
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Kul Story Views</span>
-                          <span className="font-serif text-xl font-bold text-[#002b5c]">
-                            {articles.reduce((acc, a) => acc + (Number(a.viewsCount) || 0), 0).toLocaleString()}
-                          </span>
-                        </div>
-                        <Eye className="w-5 h-5 text-[#002b5c]" />
-                      </div>
-                      <div className="bg-[#faf8f2] border border-[#211d1d]/15 p-3.5 flex items-center justify-between">
-                        <div>
-                          <span className="text-[10px] font-mono text-[#575757] uppercase font-bold block">Sabse Zyada Views</span>
-                          <span className="font-serif text-xl font-bold text-emerald-700">
-                            {Math.max(...articles.map((a) => Number(a.viewsCount) || 0), 0).toLocaleString()} views
-                          </span>
-                        </div>
-                        <TrendingUp className="w-5 h-5 text-emerald-600" />
-                      </div>
-                    </div>
-
-                    {/* Search, Filter & Sort Bar */}
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-[#faf8f2] border border-[#211d1d]/15 p-4">
+                    {/* Minimal Search & Sort Bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-white border border-[#211d1d]/10 p-3 rounded-xs">
                       {/* Search */}
                       <div className="sm:col-span-5 relative">
                         <input
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Headline, author, tag ya slug se search karein..."
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3.5 py-2 pl-9 text-xs text-[#211d1d] focus:outline-none focus:border-[#f7413e]"
+                          placeholder="Headline, author ya slug se search karein..."
+                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-3 py-1.5 pl-8 text-xs text-[#211d1d] focus:outline-none focus:border-[#002b5c] rounded-xs font-sans"
                         />
-                        <Search className="w-4 h-4 text-[#575757] absolute left-3 top-2.5" />
+                        <Search className="w-3.5 h-3.5 text-[#777777] absolute left-2.5 top-2.5" />
                       </div>
 
                       {/* Category Filter */}
@@ -2937,7 +2797,7 @@ export default function AdminDashboard() {
                         <select
                           value={categoryFilter}
                           onChange={(e) => setCategoryFilter(e.target.value)}
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3.5 py-2 text-xs text-[#211d1d] focus:outline-none font-medium"
+                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-3 py-1.5 text-xs text-[#211d1d] focus:outline-none rounded-xs font-sans"
                         >
                           <option value="all">Sabhi Categories ({categories.length})</option>
                           {categoriesList
@@ -2955,106 +2815,99 @@ export default function AdminDashboard() {
                         <select
                           value={postSortBy}
                           onChange={(e) => setPostSortBy(e.target.value as any)}
-                          className="w-full bg-[#faf8f2] border border-[#211d1d]/20 px-3 py-2 text-xs text-[#002b5c] font-bold focus:outline-none"
+                          className="w-full bg-[#faf8f2] border border-[#211d1d]/15 px-2.5 py-1.5 text-xs text-[#002b5c] font-mono font-bold focus:outline-none rounded-xs"
                         >
-                          <option value="views-desc">👁️ Most Viewed (Highest)</option>
-                          <option value="views-asc">👁️ Least Viewed (Lowest)</option>
+                          <option value="views-desc">👁️ Most Viewed</option>
+                          <option value="views-asc">👁️ Least Viewed</option>
                           <option value="date-desc">📅 Newest First</option>
                           <option value="date-asc">📅 Oldest First</option>
-                          <option value="title-asc">🔤 Title (A to Z)</option>
+                          <option value="title-asc">🔤 Title (A-Z)</option>
                         </select>
                       </div>
                     </div>
 
                     {/* Articles List Table */}
-                    <div className="overflow-x-auto border border-[#211d1d]/15 bg-[#faf8f2]">
-                      <table className="min-w-full divide-y divide-[#211d1d]/15 text-left text-xs font-sans">
-                        <thead className="bg-[#eff0e0] uppercase font-mono font-bold text-[#575757] tracking-wider text-[10px]">
+                    <div className="overflow-x-auto border border-[#211d1d]/10 bg-white rounded-xs">
+                      <table className="min-w-full divide-y divide-[#211d1d]/10 text-left text-xs font-sans">
+                        <thead className="bg-[#faf8f2] uppercase font-mono font-bold text-[#666666] text-[10px]">
                           <tr>
-                            <th className="px-4 py-3">Photo</th>
-                            <th className="px-4 py-3">Headline Title</th>
-                            <th className="px-4 py-3">Category</th>
-                            <th className="px-4 py-3">Author</th>
-                            <th className="px-4 py-3 text-right">Actual Views</th>
-                            <th className="px-4 py-3">Tarikh</th>
-                            <th className="px-4 py-3 text-right">Actions</th>
+                            <th className="px-3.5 py-2.5">Photo</th>
+                            <th className="px-3.5 py-2.5">Headline</th>
+                            <th className="px-3.5 py-2.5">Category</th>
+                            <th className="px-3.5 py-2.5">Author</th>
+                            <th className="px-3.5 py-2.5 text-right">Actual Views</th>
+                            <th className="px-3.5 py-2.5">Date</th>
+                            <th className="px-3.5 py-2.5 text-right">Actions</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#211d1d]/10">
+                        <tbody className="divide-y divide-[#211d1d]/5">
                           {filteredArticles.length === 0 ? (
                             <tr>
-                              <td colSpan={7} className="px-4 py-12 text-center text-[#575757] font-semibold">
-                                Is filter ke anusaar koi story nahi mili.
+                              <td colSpan={7} className="px-4 py-8 text-center text-[#777777] font-mono">
+                                Is search ke liye koi story nahi mili.
                               </td>
                             </tr>
                           ) : (
                             filteredArticles.map((art) => (
-                              <tr key={art.slug} className="hover:bg-[#f3f1e6]/45 transition-colors">
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  <div className="relative w-12 h-8 bg-[#eff0e0] border border-[#211d1d]/10 overflow-hidden">
+                              <tr key={art.slug} className="hover:bg-[#faf8f2] transition-colors">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                  <div className="relative w-10 h-7 bg-[#211d1d]/5 border border-[#211d1d]/10 overflow-hidden rounded-xs flex items-center justify-center">
                                     {art.image ? (
                                       <img
                                         src={art.image.replace(/&amp;/g, '&')}
                                         alt=""
                                         className="object-cover w-full h-full"
+                                        onError={(e) => {
+                                          (e.currentTarget as HTMLElement).style.display = 'none';
+                                        }}
                                       />
                                     ) : (
-                                      <div className="w-full h-full flex items-center justify-center font-bold text-[8px] text-[#575757]">
-                                        NO IMG
-                                      </div>
+                                      <FileText className="w-3.5 h-3.5 text-[#777777]" />
                                     )}
                                   </div>
                                 </td>
-                                <td className="px-4 py-3 font-serif font-bold text-[#0a0a0a]">
-                                  <div className="max-w-[280px] truncate" title={art.title}>
+                                <td className="px-3.5 py-2.5">
+                                  <div className="max-w-[300px] truncate font-medium text-[#111111]" title={art.title}>
                                     {art.title}
                                   </div>
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                  <span className="inline-block px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-[#002b5c]/10 text-[#002b5c]">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                  <span className="inline-block px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs bg-[#faf8f2] border border-[#211d1d]/10 text-[#002b5c]">
                                     {art.category}
                                   </span>
-                                  {(art as any).subcategory && (
-                                    <span className="inline-block ml-1 px-1.5 py-0.5 text-[9px] font-semibold uppercase rounded bg-[#f7413e]/10 text-[#f7413e]">
-                                      {(art as any).subcategory}
-                                    </span>
-                                  )}
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap font-medium text-[#0a0a0a]">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#555555]">
                                   {art.author}
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-right font-mono text-xs">
-                                  <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded bg-blue-50 text-[#002b5c] font-bold border border-blue-200">
-                                    <Eye className="w-3 h-3 text-[#002b5c]" />
-                                    <span>{(Number(art.viewsCount) || 0).toLocaleString()} views</span>
-                                  </span>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right font-mono text-xs font-bold text-[#002b5c]">
+                                  {(Number(art.viewsCount) || 0).toLocaleString()} views
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-[#575757] font-mono">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#777777] font-mono text-[11px]">
                                   {art.date}
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-right space-x-2">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right space-x-1.5">
                                   <a
                                     href={`/news/${art.slug}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="p-1.5 inline-block hover:bg-[#eff0e0] text-[#211d1d] border border-transparent hover:border-[#211d1d]/10 transition-colors"
+                                    className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors"
                                     title="Story Website Par Dekhein"
                                   >
-                                    <Eye className="w-4 h-4" />
+                                    <Eye className="w-3.5 h-3.5" />
                                   </a>
                                   <button
                                     onClick={() => initEditPost(art)}
-                                    className="p-1.5 hover:bg-[#eff0e0] text-[#002b5c] border border-transparent hover:border-[#211d1d]/10 transition-colors cursor-pointer"
+                                    className="p-1 hover:bg-[#faf8f2] text-[#002b5c] inline-block transition-colors cursor-pointer"
                                     title="Story Edit Karein"
                                   >
-                                    <Edit className="w-4 h-4" />
+                                    <Edit className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeletePost(art.slug)}
-                                    className="p-1.5 hover:bg-[#eff0e0] text-[#f7413e] border border-transparent hover:border-[#f7413e]/20 transition-colors cursor-pointer"
+                                    className="p-1 hover:bg-rose-50 text-rose-600 inline-block transition-colors cursor-pointer"
                                     title="Story Delete Karein"
                                   >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Trash2 className="w-3.5 h-3.5" />
                                   </button>
                                 </td>
                               </tr>
