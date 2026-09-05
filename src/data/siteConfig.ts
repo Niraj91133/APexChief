@@ -1,6 +1,7 @@
 export const siteConfig = {
   name: 'ApexChief',
   shortName: 'ApexChief',
+  logo: '',
   tagline: 'Modern media stories & weekly editorial features — EST. 2023',
   description: 'A modern newspaper and editorial publication delivering curated daily journalism, deep-dive features, culture analysis, and global reporting.',
   establishedYear: '2023',

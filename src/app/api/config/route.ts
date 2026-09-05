@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { getSiteConfig, saveSiteConfig } from '@/data/db';
 import { getSiteConfigFromDB, saveSiteConfigInDB } from '@/lib/supabaseService';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   const dbConfig = await getSiteConfigFromDB();
   if (dbConfig) {
@@ -28,4 +30,8 @@ export async function PUT(request: Request) {
   } catch (e) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
   }
+}
+
+export async function POST(request: Request) {
+  return PUT(request);
 }

@@ -318,9 +318,17 @@ export default function Header() {
         {/* Center: ApexChief Logo */}
         <div className="flex items-center justify-center text-center px-2">
           <Link href="/" className="inline-block group">
-            <h1 className="font-bebas text-2xl sm:text-3xl md:text-4xl tracking-widest text-black dark:text-white uppercase leading-none transition-colors group-hover:text-[#f7413e]">
-              {config.name}
-            </h1>
+            {config.logo ? (
+              <img
+                src={config.logo}
+                alt={config.name || 'ApexChief'}
+                className="h-8 sm:h-10 md:h-12 w-auto max-w-[260px] object-contain transition-transform group-hover:scale-[1.02]"
+              />
+            ) : (
+              <h1 className="font-bebas text-2xl sm:text-3xl md:text-4xl tracking-widest text-black dark:text-white uppercase leading-none transition-colors group-hover:text-[#f7413e]">
+                {config.name}
+              </h1>
+            )}
           </Link>
         </div>
 
@@ -418,7 +426,15 @@ export default function Header() {
           <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-[#161616] p-6 shadow-2xl flex flex-col justify-between border-r border-gray-200 dark:border-white/10 transition-colors overflow-y-auto">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/10">
-                <span className="font-bebas text-2xl tracking-wider text-black dark:text-white">{config.name}</span>
+                {config.logo ? (
+                  <img
+                    src={config.logo}
+                    alt={config.name || 'ApexChief'}
+                    className="h-7 w-auto max-w-[160px] object-contain"
+                  />
+                ) : (
+                  <span className="font-bebas text-2xl tracking-wider text-black dark:text-white">{config.name}</span>
+                )}
                 <button
                   onClick={() => setMobileMenuOpen(false)}
                   className="p-1.5 text-gray-600 dark:text-gray-300 hover:text-[#f7413e] cursor-pointer"

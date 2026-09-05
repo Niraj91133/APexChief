@@ -255,7 +255,7 @@ const GOOGLE_FONTS_COLLECTION = [
   { name: 'Indie Flower', category: 'Handwriting & Signature' }
 ];
 
-// Interactive Hinglish Info Tooltip Component for Editors
+// Interactive Editorial Info Tooltip Component
 function InfoTooltip({ text }: { text: string }) {
   const [show, setShow] = useState(false);
   return (
@@ -270,7 +270,7 @@ function InfoTooltip({ text }: { text: string }) {
           setShow(!show);
         }}
         className="w-3.5 h-3.5 rounded-full bg-gray-200 hover:bg-[#002b5c] hover:text-white text-gray-700 text-[9px] font-mono font-bold inline-flex items-center justify-center cursor-pointer transition-colors focus:outline-none"
-        title="Information in Hinglish"
+        title="Editorial Info"
       >
         i
       </button>
@@ -1112,17 +1112,114 @@ export default function AdminDashboard() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
+  // Logo Upload Handler in Settings Tab
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (PNG, SVG, WebP, JPG)', 'error');
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    showToast('Uploading brand logo to ImageKit CDN...', 'info');
+
+    try {
+      const { blob, base64, fileName } = await compressImageForUpload(file);
+      let uploadedUrl = '';
+
+      // Direct ImageKit upload via auth
+      try {
+        const authRes = await fetch('/api/imagekit/auth');
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData.token && authData.signature && authData.expire && authData.publicKey) {
+            const directForm = new FormData();
+            directForm.append('file', blob, fileName);
+            directForm.append('fileName', fileName);
+            directForm.append('publicKey', authData.publicKey);
+            directForm.append('signature', authData.signature);
+            directForm.append('expire', String(authData.expire));
+            directForm.append('token', authData.token);
+            directForm.append('folder', '/branding');
+            directForm.append('useUniqueFileName', 'true');
+
+            const directUploadRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+              method: 'POST',
+              body: directForm,
+            });
+
+            if (directUploadRes.ok) {
+              const directData = await directUploadRes.json();
+              if (directData.url) {
+                uploadedUrl = directData.url;
+              }
+            }
+          }
+        }
+      } catch (directErr) {
+        console.warn('Direct logo upload failed, trying server fallback:', directErr);
+      }
+
+      if (!uploadedUrl) {
+        const serverRes = await fetch('/api/imagekit/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64,
+            fileName,
+            folder: '/branding',
+          }),
+        });
+
+        const rawText = await serverRes.text();
+        let serverData: any = {};
+        try {
+          serverData = JSON.parse(rawText);
+        } catch {
+          throw new Error(rawText.slice(0, 100) || `Server upload error (${serverRes.status})`);
+        }
+
+        if (serverRes.ok && serverData.url) {
+          uploadedUrl = serverData.url;
+        } else {
+          throw new Error(serverData.error || 'Server upload failed');
+        }
+      }
+
+      if (uploadedUrl) {
+        setSiteConfig((prev: any) => ({
+          ...prev,
+          logo: uploadedUrl,
+        }));
+        showToast('✓ Brand Logo uploaded successfully! Click Save to apply.', 'success');
+      } else {
+        throw new Error('Image URL was not returned');
+      }
+    } catch (err: any) {
+      console.error('Logo upload error:', err);
+      showToast('Upload error: ' + (err.message || 'Unknown error'), 'error');
+    } finally {
+      setIsUploadingLogo(false);
+      if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+    }
+  };
+
   const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showToast('Kripya valid image file (JPG, PNG, WebP) chunein', 'error');
+      showToast('Please select a valid image file (JPG, PNG, WebP)', 'error');
       return;
     }
 
     setIsUploadingImage(true);
-    showToast('Image process aur ImageKit CDN par upload ho rahi hai...', 'info');
+    showToast('Processing and uploading image to ImageKit CDN...', 'info');
 
     try {
       // 1. Optimize & compress image in browser
@@ -1195,9 +1292,9 @@ export default function AdminDashboard() {
           ...prev,
           image: uploadedUrl,
         }));
-        showToast('✓ Photo ImageKit CDN par live upload ho gayi!', 'success');
+        showToast('✓ Photo successfully uploaded to ImageKit CDN!', 'success');
       } else {
-        throw new Error('Image URL prapt nahi hua');
+        throw new Error('Image URL was not returned');
       }
     } catch (err: any) {
       console.error('Image upload error:', err);
@@ -1657,7 +1754,7 @@ export default function AdminDashboard() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordInput) {
-      setLoginError('Kripya admin password daalein.');
+      setLoginError('Please enter the admin password.');
       return;
     }
 
@@ -1676,13 +1773,13 @@ export default function AdminDashboard() {
         setIsLoggedIn(true);
         setLoginError('');
         localStorage.setItem('admin_logged_in', 'true');
-        showToast('Admin panel me safaltapoorvak login ho gaye!', 'success');
+        showToast('Successfully logged in to Admin Panel!', 'success');
         fetchData();
       } else {
-        setLoginError(data.error || 'Galat password! Kripya sahi admin password daalein (Default: Apexchief2026@)');
+        setLoginError(data.error || 'Incorrect password! Please enter the valid admin password.');
       }
     } catch (err) {
-      setLoginError('Server se connect karne me dikkat hui. Kripya dubara koshish karein.');
+      setLoginError('Failed to connect to authentication server. Please try again.');
     } finally {
       setIsVerifyingAuth(false);
     }
@@ -1692,7 +1789,7 @@ export default function AdminDashboard() {
     setIsLoggedIn(false);
     localStorage.setItem('admin_logged_in', 'false');
     setPasswordInput('');
-    showToast('Admin panel se logout kar diya gaya.', 'info');
+    showToast('Signed out of admin panel.', 'info');
   };
 
   // Database-Connected Password Change Handler
@@ -1702,17 +1799,17 @@ export default function AdminDashboard() {
     setPasswordChangeSuccess('');
 
     if (!currentPasswordInput) {
-      setPasswordChangeError('Kripya apna vartamaan (current) password daalein.');
+      setPasswordChangeError('Please enter your current master password.');
       return;
     }
 
     if (!newPasswordInput || newPasswordInput.length < 6) {
-      setPasswordChangeError('Naya password kam se kam 6 aksharo (characters) ka hona chahiye.');
+      setPasswordChangeError('New password must be at least 6 characters long.');
       return;
     }
 
     if (newPasswordInput !== confirmPasswordInput) {
-      setPasswordChangeError('Naya password aur confirm password match nahi ho rahe hain.');
+      setPasswordChangeError('New password and confirmation password do not match.');
       return;
     }
 
@@ -1731,16 +1828,16 @@ export default function AdminDashboard() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setPasswordChangeSuccess('Admin Password Database me safaltapoorvak update ho gaya!');
-        showToast('Password badal diya gaya! Naya password live hai.', 'success');
+        setPasswordChangeSuccess('Admin master password successfully updated in database!');
+        showToast('Password updated! New credentials are now active.', 'success');
         setCurrentPasswordInput('');
         setNewPasswordInput('');
         setConfirmPasswordInput('');
       } else {
-        setPasswordChangeError(data.error || 'Password update karne me error aaya.');
+        setPasswordChangeError(data.error || 'Failed to update password.');
       }
     } catch (err) {
-      setPasswordChangeError('Database server se connect karne me error aaya.');
+      setPasswordChangeError('Failed to connect to database server.');
     } finally {
       setIsChangingPassword(false);
     }
@@ -2112,7 +2209,7 @@ export default function AdminDashboard() {
 
       const data = await res.json();
       if (res.ok) {
-        showToast(isEditing ? 'Story badlav ke sath update ho gayi!' : 'Story successfully publish ho gayi!', 'success');
+        showToast(isEditing ? 'Story updated successfully!' : 'Story published successfully!', 'success');
         
         // Update local articles list immediately
         setArticles((prev) => {
@@ -2128,17 +2225,17 @@ export default function AdminDashboard() {
         fetchData();
         setActiveTab('posts');
       } else {
-        showToast(data.error || 'Story save karne me error aaya', 'error');
+        showToast(data.error || 'Failed to save story', 'error');
       }
     } catch (e) {
-      showToast('Database me story save karne me error aaya', 'error');
+      showToast('Error saving story to database', 'error');
     } finally {
       setIsPublishing(false);
     }
   };
 
   const handleDeletePost = async (slug: string) => {
-    if (!confirm('Kya aap sach me ye story delete karna chahte hain? Ye wapas nahi aayegi.')) {
+    if (!confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
       return;
     }
     try {
@@ -2147,13 +2244,13 @@ export default function AdminDashboard() {
       });
       const data = await res.json();
       if (res.ok) {
-        showToast('Story successfully delete ho gayi', 'success');
+        showToast('Story deleted successfully', 'success');
         fetchData();
       } else {
-        showToast(data.error || 'Story delete karne me error aaya', 'error');
+        showToast(data.error || 'Failed to delete story', 'error');
       }
     } catch (e) {
-      showToast('Deletion service se connect karne me error aaya', 'error');
+      showToast('Error connecting to delete service', 'error');
     }
   };
 
@@ -2277,7 +2374,7 @@ export default function AdminDashboard() {
                   type="button"
                   onClick={() => setShowLoginPassword(!showLoginPassword)}
                   className="absolute right-3 top-3 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
-                  title={showLoginPassword ? 'Password Chhupayein' : 'Password Dekhein'}
+                  title={showLoginPassword ? 'Hide password' : 'Show password'}
                 >
                   {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -2292,12 +2389,12 @@ export default function AdminDashboard() {
               {isVerifyingAuth ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Password Verify Ho Raha Hai...</span>
+                  <span>Verifying password...</span>
                 </>
               ) : (
                 <>
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Admin Panel Me Login Karein</span>
+                  <span>Log In to Admin Panel</span>
                 </>
               )}
             </button>
@@ -2309,7 +2406,7 @@ export default function AdminDashboard() {
               className="inline-flex items-center space-x-1 text-xs font-mono text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors hover:underline"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Website Par Wapas Jayein</span>
+              <span>Back to Website</span>
             </Link>
           </div>
         </div>
@@ -2357,7 +2454,7 @@ export default function AdminDashboard() {
               type="button"
               onClick={toggleDarkMode}
               className="p-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[#211d1d] dark:text-yellow-400 bg-[#faf8f2] dark:bg-[#1c202d] hover:bg-[#211d1d]/10 dark:hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center rounded-xs shadow-2xs"
-              title={isDarkMode ? "Light Mode par switch karein" : "Dark Mode par switch karein"}
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle theme"
             >
               {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#002b5c]" />}
@@ -2368,14 +2465,14 @@ export default function AdminDashboard() {
               target="_blank"
               className="inline-flex items-center space-x-1 border border-[#211d1d]/20 dark:border-white/20 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-all bg-[#faf8f2] dark:bg-[#1c202d] rounded-xs"
             >
-              <span>Website Dekhein</span>
+              <span>View Website</span>
               <Eye className="w-3.5 h-3.5" />
             </Link>
             <button
               onClick={handleLogout}
               className="inline-flex items-center space-x-1 bg-[#211d1d] dark:bg-[#1c202d] dark:border dark:border-white/20 text-[#faf8f2] dark:text-gray-200 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white transition-colors cursor-pointer rounded-xs"
             >
-              <span>Logout Karein</span>
+              <span>Log Out</span>
               <LogOut className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -2414,7 +2511,7 @@ export default function AdminDashboard() {
                 }`}
               >
                 <FileText className="w-4 h-4" />
-                <span>Sabhi Stories</span>
+                <span>All Stories</span>
               </button>
 
               <button
@@ -2422,7 +2519,7 @@ export default function AdminDashboard() {
                 className="flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5 rounded-xs"
               >
                 <Plus className="w-4 h-4" />
-                <span>Nayi Story Likhein</span>
+                <span>Write New Story</span>
               </button>
 
               <button
@@ -2457,7 +2554,7 @@ export default function AdminDashboard() {
               <div className="py-24 text-center">
                 <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#002b5c] dark:text-sky-400 mb-3" />
                 <p className="font-mono text-xs uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                  Database se data load ho raha hai...
+                  Loading data from database...
                 </p>
               </div>
             ) : (
@@ -2478,7 +2575,7 @@ export default function AdminDashboard() {
                           </span>
                         </div>
                         <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
-                          Real-time database records, per-article readership metrics aur audience engagement overview
+                          Real-time database records, per-article readership metrics, and audience engagement overview
                         </p>
                       </div>
 
@@ -2581,10 +2678,10 @@ export default function AdminDashboard() {
                         <div>
                           <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
                             <TrendingUp className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
-                            <span>Pichle 7 Dino Ka Traffic & Daily Views</span>
+                            <span>Last 7 Days Traffic & Daily Views</span>
                           </h3>
                           <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
-                            Supabase database me darj actual daily pageviews aur unique visitors
+                            Actual daily pageviews and unique visitors recorded in database
                           </p>
                         </div>
                         <div className="flex items-center space-x-4 text-[11px] font-mono">
@@ -2603,7 +2700,7 @@ export default function AdminDashboard() {
                       <div className="pt-8 pb-2">
                         {(!analyticsData?.dailyTrends || analyticsData.dailyTrends.length === 0) ? (
                           <div className="py-10 text-center text-xs font-mono text-[#777777] dark:text-gray-400">
-                            Pichle 7 dino ka traffic data load ho raha hai...
+                            Loading 7-day traffic trend data...
                           </div>
                         ) : (
                           <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-40 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
@@ -2664,7 +2761,7 @@ export default function AdminDashboard() {
                             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
                           </h3>
                           <p className="text-xs text-[#777777] dark:text-gray-400 font-sans">
-                            Website par live session recordings, heatmaps aur global audience telemetry active hai
+                            Live session recordings, heatmaps, and global audience telemetry active on website
                           </p>
                         </div>
                         <div className="flex items-center space-x-2 text-[11px] font-mono">
@@ -2689,7 +2786,7 @@ export default function AdminDashboard() {
                             </span>
                           </div>
                           <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
-                            Har reader ka mouse scroll depth %, cursor click heatmaps, dead clicks aur full screen recordings.
+                            Scroll depth %, cursor click heatmaps, dead click tracking, and full user session recordings.
                           </p>
                           <div className="flex items-center space-x-2 pt-1">
                             <a
@@ -2724,7 +2821,7 @@ export default function AdminDashboard() {
                             </span>
                           </div>
                           <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
-                            Pichle 30 minutes ke active live readers, Google Search organic keywords, country/city locations aur device metrics.
+                            Last 30 minutes active live readers, Google Search organic keywords, geo locations, and device telemetry.
                           </p>
                           <div className="pt-1">
                             <a
@@ -2746,10 +2843,10 @@ export default function AdminDashboard() {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
                         <div>
                           <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
-                            <span>Har Article Ka Performance & Live Views (Database Records)</span>
+                            <span>Article Readership Leaderboard & Database Records</span>
                           </h3>
                           <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
-                            Supabase database me darj sabhi stories ke exact view counts aur traffic share
+                            Exact view counts, reader reactions, and traffic share for all published stories
                           </p>
                         </div>
                         <button
@@ -2778,7 +2875,7 @@ export default function AdminDashboard() {
                             {articles.length === 0 ? (
                               <tr>
                                 <td colSpan={8} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
-                                  Koi article nahi mila.
+                                  No articles found.
                                 </td>
                               </tr>
                             ) : (
@@ -2868,7 +2965,7 @@ export default function AdminDashboard() {
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
-                                          title="Live Story Kholein"
+                                          title="Open Live Story"
                                         >
                                           <ExternalLink className="w-3.5 h-3.5" />
                                         </a>
@@ -2985,7 +3082,7 @@ export default function AdminDashboard() {
                           Published Stories ({articles.length})
                         </h2>
                         <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
-                          Har story ke live views dekhein, search karein, edit karein ya views ke anusaar sort karein
+                          View live readership, search, edit, or sort stories by views and publication date
                         </p>
                       </div>
 
@@ -2994,7 +3091,7 @@ export default function AdminDashboard() {
                         className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white px-3.5 py-1.5 text-xs font-mono font-medium uppercase tracking-wider rounded-xs transition-colors cursor-pointer shadow-2xs"
                       >
                         <Plus className="w-3.5 h-3.5" />
-                        <span>Nayi Story Likhein</span>
+                        <span>Write New Story</span>
                       </button>
                     </div>
 
@@ -3006,7 +3103,7 @@ export default function AdminDashboard() {
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Headline, author ya slug se search karein..."
+                          placeholder="Search by headline, author, or slug..."
                           className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 pl-8 text-xs text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs font-sans placeholder:text-gray-400 dark:placeholder:text-gray-500"
                         />
                         <Search className="w-3.5 h-3.5 text-[#777777] dark:text-gray-400 absolute left-2.5 top-2.5" />
@@ -3019,7 +3116,7 @@ export default function AdminDashboard() {
                           onChange={(e) => setCategoryFilter(e.target.value)}
                           className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 text-xs text-[#211d1d] dark:text-white focus:outline-none rounded-xs font-sans"
                         >
-                          <option value="all">Sabhi Categories ({categories.length})</option>
+                          <option value="all">All Categories ({categories.length})</option>
                           {categoriesList
                             .filter((c) => c !== 'all')
                             .map((c) => (
@@ -3064,7 +3161,7 @@ export default function AdminDashboard() {
                           {filteredArticles.length === 0 ? (
                             <tr>
                               <td colSpan={7} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
-                                Is search ke liye koi story nahi mili.
+                                No stories match your search criteria.
                               </td>
                             </tr>
                           ) : (
@@ -3111,21 +3208,21 @@ export default function AdminDashboard() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
-                                    title="Story Website Par Dekhein"
+                                    title="View Story on Website"
                                   >
                                     <Eye className="w-3.5 h-3.5" />
                                   </a>
                                   <button
                                     onClick={() => initEditPost(art)}
                                     className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors cursor-pointer"
-                                    title="Story Edit Karein"
+                                    title="Edit Story"
                                   >
                                     <Edit className="w-3.5 h-3.5" />
                                   </button>
                                   <button
                                     onClick={() => handleDeletePost(art.slug)}
                                     className="p-1 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 inline-block transition-colors cursor-pointer"
-                                    title="Story Delete Karein"
+                                    title="Delete Story"
                                   >
                                     <Trash2 className="w-3.5 h-3.5" />
                                   </button>
@@ -3151,11 +3248,11 @@ export default function AdminDashboard() {
                           className="px-3 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[10px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] inline-flex items-center space-x-1 cursor-pointer rounded"
                         >
                           <ArrowLeft className="w-3.5 h-3.5" />
-                          <span>Sabhi Stories</span>
+                          <span>All Stories</span>
                         </button>
                         <div>
                           <h2 className="font-serif text-lg sm:text-xl font-bold uppercase text-[#0a0a0a] dark:text-white leading-none">
-                            {isEditing ? 'Story Edit Karein' : 'Nayi Story Likhein'}
+                            {isEditing ? 'Edit Story' : 'Write New Story'}
                           </h2>
                           <div className="flex items-center space-x-2 text-[10px] text-[#575757] dark:text-gray-400 font-mono mt-0.5">
                             <span>Category: <strong className="text-[#002b5c] dark:text-sky-400">{editingArticle.category}</strong></span>
@@ -3179,7 +3276,7 @@ export default function AdminDashboard() {
                           className="px-3.5 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] cursor-pointer rounded inline-flex items-center space-x-1 shadow-xs"
                         >
                           <Eye className="w-3.5 h-3.5 text-[#002b5c] dark:text-sky-400" />
-                          <span>Preview Dekhein</span>
+                          <span>Live Preview</span>
                         </button>
 
                         {/* Primary Quick Submit Button */}
@@ -3195,12 +3292,12 @@ export default function AdminDashboard() {
                           {isPublishing ? (
                             <>
                               <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                              <span>Save Ho Raha Hai...</span>
+                              <span>Saving...</span>
                             </>
                           ) : (
                             <>
                               <Sparkles className="w-3.5 h-3.5" />
-                              <span>{isEditing ? 'Badlav Save Karein' : 'Story Publish Karein'}</span>
+                              <span>{isEditing ? 'Save Changes' : 'Publish Story'}</span>
                             </>
                           )}
                         </button>
@@ -3297,7 +3394,7 @@ export default function AdminDashboard() {
                                   });
                                 }
                               }}
-                              placeholder="Yahan story headline likhein..."
+                              placeholder="Enter story headline..."
                               style={{
                                 fontFamily: `'${titleFont}', serif`,
                                 fontSize: '20px',
@@ -3316,12 +3413,12 @@ export default function AdminDashboard() {
                                 <button
                                   type="button"
                                   onClick={() => {
-                                    const custom = prompt('Custom slug identifier daalein:', editingArticle.slug);
+                                    const custom = prompt('Enter custom URL slug:', editingArticle.slug);
                                     if (custom) setEditingArticle({ ...editingArticle, slug: generateSlug(custom) });
                                   }}
-                                  className="text-[10px] text-[#f7413e] hover:underline"
+                                  className="text-[10px] text-[#f7413e] hover:underline cursor-pointer"
                                 >
-                                  (badlein)
+                                  (edit)
                                 </button>
                               )}
                             </div>
@@ -3337,7 +3434,7 @@ export default function AdminDashboard() {
                                     className="px-2.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded-md transition-all shadow-xs inline-flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
                                   >
                                     <Sparkles className={`w-3 h-3 ${isSeoAnalyzing ? 'animate-spin text-[#facc15]' : 'text-[#facc15]'}`} />
-                                    <span>{isSeoAnalyzing ? 'AI Headlines Taiyar Ho Rahi Hain...' : 'AI Headline Suggestion'}</span>
+                                    <span>{isSeoAnalyzing ? 'Generating Headlines...' : 'AI Headline Suggestions'}</span>
                                   </button>
 
                                   {seoData && (
@@ -3363,7 +3460,7 @@ export default function AdminDashboard() {
                                     onClick={() => setShowSeoPanel(!showSeoPanel)}
                                     className="text-[11px] font-mono font-bold text-[#002b5c] hover:text-[#f7413e] cursor-pointer transition-colors inline-flex items-center space-x-1"
                                   >
-                                    <span>{showSeoPanel ? 'AI Suggestions Chhupayein ▲' : '3 AI Headlines & SERP Dekhein ▼'}</span>
+                                    <span>{showSeoPanel ? 'Hide AI Suggestions ▲' : 'View 3 AI Headlines & SERP ▼'}</span>
                                   </button>
                                 )}
                               </div>
@@ -3376,7 +3473,7 @@ export default function AdminDashboard() {
                                   <div>
                                     <div className="flex items-center justify-between mb-2">
                                       <span className="text-[11px] font-mono uppercase font-bold text-gray-700">
-                                        3 AI Headline Options (Story Auto-Fill Ke Liye Click Karein):
+                                        3 AI Headline Options (Click to auto-fill story):
                                       </span>
                                       <span className="text-[10px] text-gray-400 font-mono">Powered by Gemini AI</span>
                                     </div>
@@ -3409,16 +3506,16 @@ export default function AdminDashboard() {
                                               type="button"
                                               onClick={() => applySuggestedHeadline(item, true)}
                                               className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[10px] font-mono font-bold rounded transition-colors whitespace-nowrap cursor-pointer shadow-xs"
-                                              title="Title, Lead Summary Excerpt aur Canvas Story auto-fill karein"
+                                              title="Auto-fill Title, Lead Excerpt, and Canvas Story"
                                             >
-                                              Apply Karein & Story Likhein
+                                              Apply & Write Story
                                             </button>
                                             <button
                                               type="button"
                                               onClick={() => applySuggestedHeadline(item, false)}
                                               className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] font-mono rounded transition-colors whitespace-nowrap cursor-pointer"
                                             >
-                                              Sirf Title Rakhein
+                                              Use Title Only
                                             </button>
                                           </div>
                                         </div>
@@ -3430,7 +3527,7 @@ export default function AdminDashboard() {
                                   <div className="pt-3 border-t border-gray-200">
                                     <div className="flex items-center justify-between mb-2">
                                       <span className="text-[11px] font-mono uppercase font-bold text-gray-700">
-                                        Google Search Snippet Preview (Search Me Aisa Dikhega):
+                                        Google Search Snippet Preview (SERP Simulation):
                                       </span>
                                       <button
                                         type="button"
@@ -3440,12 +3537,12 @@ export default function AdminDashboard() {
                                               ...editingArticle,
                                               excerpt: seoData.suggestedMeta.metaDescription,
                                             });
-                                            showToast('Meta description Excerpt me set ho gayi!', 'success');
+                                            showToast('Meta description applied to Excerpt!', 'success');
                                           }
                                         }}
                                         className="text-[10px] font-mono font-bold text-[#002b5c] hover:underline cursor-pointer"
                                       >
-                                        Excerpt Me Apply Karein
+                                        Apply to Excerpt
                                       </button>
                                     </div>
 
@@ -3469,7 +3566,7 @@ export default function AdminDashboard() {
                                   {seoData.keywords && seoData.keywords.length > 0 && (
                                     <div className="pt-2 border-t border-gray-200 flex flex-wrap items-center gap-1.5">
                                       <span className="text-[10px] font-mono uppercase font-bold text-gray-500">
-                                        SEO Keywords (Tag set karne ke liye click karein):
+                                        SEO Keywords (Click to add tag):
                                       </span>
                                       {seoData.keywords.map((kw, i) => (
                                         <button
@@ -3477,7 +3574,7 @@ export default function AdminDashboard() {
                                           type="button"
                                           onClick={() => {
                                             setEditingArticle({ ...editingArticle, tag: kw });
-                                            showToast(`Tag set kiya gaya: "${kw}"`, 'success');
+                                            showToast(`Tag set to: "${kw}"`, 'success');
                                           }}
                                           className="px-2 py-0.5 bg-white hover:bg-[#002b5c] hover:text-white border border-gray-200 text-gray-700 text-[10px] font-mono rounded cursor-pointer transition-colors"
                                         >
@@ -3549,8 +3646,8 @@ export default function AdminDashboard() {
                                     <button
                                       type="button"
                                       onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
-                                      className="p-1 text-rose-600 hover:text-rose-800"
-                                      title="Photo Hatayein"
+                                      className="p-1 text-rose-600 hover:text-rose-800 cursor-pointer"
+                                      title="Remove Photo"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </button>
@@ -3569,10 +3666,10 @@ export default function AdminDashboard() {
                                 <LucideImage className="w-8 h-8 text-gray-400 mx-auto" />
                                 <div>
                                   <span className="font-mono text-xs font-bold uppercase text-[#002b5c] block">
-                                    Story Cover Photo Lagayein
+                                    Add Story Cover Photo
                                   </span>
                                   <span className="text-[11px] text-gray-400">
-                                    Direct apne device se upload karein ya curated stock gallery se chunein
+                                    Upload directly from your device or choose from stock photo library
                                   </span>
                                 </div>
                                 <div className="flex items-center justify-center space-x-2 pt-1">
@@ -3585,7 +3682,7 @@ export default function AdminDashboard() {
                                     {isUploadingImage ? (
                                       <>
                                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        <span>ImageKit Par Upload Ho Raha Hai...</span>
+                                        <span>Uploading to ImageKit CDN...</span>
                                       </>
                                     ) : (
                                       <>
@@ -3628,7 +3725,7 @@ export default function AdminDashboard() {
                                 lastFocusedRef.current = 'excerpt';
                               }}
                               onChange={(e) => setEditingArticle({ ...editingArticle, excerpt: e.target.value })}
-                              placeholder="Story ka 2-3 line me brief summary likhein..."
+                              placeholder="Write a concise 2-3 line lead summary / excerpt..."
                               style={{
                                 fontFamily: `'${excerptFont}', serif`,
                                 fontSize: `${excerptFontSize}px`,
@@ -3652,7 +3749,7 @@ export default function AdminDashboard() {
                                   type="button"
                                   onClick={() => setShowHistoryModal(true)}
                                   className="px-2 py-0.5 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 text-[10px] font-mono font-bold rounded transition-colors inline-flex items-center space-x-1 cursor-pointer border border-gray-200"
-                                  title="Previous versions dekhein aur 1-click me restore karein"
+                                  title="View previous revision versions and restore in 1-click"
                                 >
                                   <HistoryIcon className="w-3 h-3" />
                                   <span>History ({storyHistory.length})</span>
@@ -3668,10 +3765,10 @@ export default function AdminDashboard() {
                                   onClick={() => triggerAiWriter('generate-draft')}
                                   disabled={isAiWriting}
                                   className="px-2.5 py-1 bg-[#002b5c] hover:bg-[#f7413e] text-white font-bold rounded transition-all cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1 shadow-xs"
-                                  title="AI se poori story ka draft likhwayein"
+                                  title="Generate full story draft using AI"
                                 >
                                   <Sparkles className={`w-3 h-3 ${isAiWriting && aiWriterAction === 'generate-draft' ? 'animate-spin text-[#facc15]' : 'text-[#facc15]'}`} />
-                                  <span>{isAiWriting && aiWriterAction === 'generate-draft' ? 'Draft Likha Ja Raha Hai...' : 'Generate Full Draft'}</span>
+                                  <span>{isAiWriting && aiWriterAction === 'generate-draft' ? 'Generating Draft...' : 'Generate Full Draft'}</span>
                                 </button>
 
                                 <button
@@ -3679,9 +3776,9 @@ export default function AdminDashboard() {
                                   onClick={() => triggerAiWriter('continue-writing')}
                                   disabled={isAiWriting}
                                   className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
-                                  title="AI se aage ke paragraphs likhwayein"
+                                  title="Continue writing next paragraphs using AI"
                                 >
-                                  <span>{isAiWriting && aiWriterAction === 'continue-writing' ? 'Likha Ja Raha Hai...' : 'Continue Writing'}</span>
+                                  <span>{isAiWriting && aiWriterAction === 'continue-writing' ? 'Writing...' : 'Continue Writing'}</span>
                                 </button>
 
                                 <button
@@ -3689,9 +3786,9 @@ export default function AdminDashboard() {
                                   onClick={() => triggerAiWriter('key-takeaways')}
                                   disabled={isAiWriting}
                                   className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
-                                  title="Key takeaways highlight box jodein"
+                                  title="Insert Key Takeaways highlight box"
                                 >
-                                  <span>{isAiWriting && aiWriterAction === 'key-takeaways' ? 'Joda Ja Raha Hai...' : 'Key Takeaways'}</span>
+                                  <span>{isAiWriting && aiWriterAction === 'key-takeaways' ? 'Generating Takeaways...' : 'Key Takeaways'}</span>
                                 </button>
 
                                 <button
@@ -3699,9 +3796,9 @@ export default function AdminDashboard() {
                                   onClick={() => triggerAiWriter('polish')}
                                   disabled={isAiWriting}
                                   className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
-                                  title="Story ki language aur grammar polish karein"
+                                  title="Polish story grammar, readability and prose"
                                 >
-                                  <span>{isAiWriting && aiWriterAction === 'polish' ? 'Polish Ho Raha Hai...' : 'Polish Prose'}</span>
+                                  <span>{isAiWriting && aiWriterAction === 'polish' ? 'Polishing...' : 'Polish Prose'}</span>
                                 </button>
                               </div>
                             </div>
@@ -3779,7 +3876,7 @@ export default function AdminDashboard() {
                               ref={editorRef}
                               contentEditable={true}
                               suppressContentEditableWarning={true}
-                              data-placeholder="Yahan apni story likhein ya AI Tools se generate karein..."
+                              data-placeholder="Write your story here or use AI Tools to generate content..."
                               onFocus={() => {
                                 lastFocusedRef.current = 'body';
                               }}
@@ -3833,7 +3930,7 @@ export default function AdminDashboard() {
 
                             {editingArticle.sections.length === 0 ? (
                               <div className="p-4 border border-dashed border-gray-200 rounded-lg text-center text-gray-400 text-xs">
-                                Abhi koi sub-section nahi hai. <strong>"+ Add Sub-Section"</strong> par click karke story ko adhyayo me divide karein.
+                                No sub-sections added yet. Click <strong>"+ Add Sub-Section"</strong> to divide your story into chapters.
                               </div>
                             ) : (
                               <div className="space-y-3">
@@ -3846,7 +3943,7 @@ export default function AdminDashboard() {
                                       <button
                                         type="button"
                                         onClick={() => removeSectionField(idx)}
-                                        className="text-red-500 hover:text-red-700 p-1"
+                                        className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
                                         title="Delete Sub-Section"
                                       >
                                         <Trash2 className="w-4 h-4" />
@@ -3885,7 +3982,7 @@ export default function AdminDashboard() {
                               <h3 className="font-serif text-xs uppercase font-bold text-[#0a0a0a] tracking-wider">
                                 Publish & Placement
                               </h3>
-                              <InfoTooltip text="Ye panel decide karta hai ki aapka article website par kahan aur kis format me dikhega." />
+                              <InfoTooltip text="Controls where and in what layout format this article appears across the website." />
                             </div>
                             <span className="inline-block px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded bg-[#002b5c]/10 text-[#002b5c]">
                               {cmsMetadata.status || 'Published'}
@@ -3904,7 +4001,7 @@ export default function AdminDashboard() {
                             <div>
                               <div className="text-xs font-bold leading-none flex items-center space-x-1.5">
                                 <span>Breaking News Ticker</span>
-                                <InfoTooltip text="Isko ON karne par ye article website ke sabse top bar me scrolling marquee ticker ban jayega." />
+                                <InfoTooltip text="When enabled, this article is featured in the top breaking news marquee ticker." />
                                 {editingArticle.isBreaking && (
                                   <span className="text-[9px] font-mono uppercase bg-[#f7413e] text-white px-1.5 py-0.5 rounded font-bold">
                                     Active
@@ -3912,7 +4009,7 @@ export default function AdminDashboard() {
                                 )}
                               </div>
                               <div className="text-[10px] text-gray-500 mt-1">
-                                Website ke top marquee bar me dikhega
+                                Featured in top scrolling breaking ticker
                               </div>
                             </div>
                             <div className={`w-9 h-5 rounded-full transition-colors relative p-0.5 ${editingArticle.isBreaking ? 'bg-[#f7413e]' : 'bg-gray-300'}`}>
@@ -3926,7 +4023,7 @@ export default function AdminDashboard() {
                               <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
                                 Homepage Placement:
                               </label>
-                              <InfoTooltip text="Homepage par article kahan dikhega? Top 3 spotlight me, Latest News me, Carousel me ya standard category feed me." />
+                              <InfoTooltip text="Select placement zone: Top 3 Spotlight, Latest News Grid, Best This Month carousel, or standard Category feed." />
                             </div>
                             <div className="relative">
                               <select
@@ -3950,7 +4047,7 @@ export default function AdminDashboard() {
                                 <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
                                   Category:
                                 </label>
-                                <InfoTooltip text="Article ka main topic (jaise Technology, Business)." />
+                                <InfoTooltip text="Primary editorial desk / category." />
                               </div>
                               <div className="relative">
                                 <select
@@ -3983,7 +4080,7 @@ export default function AdminDashboard() {
                                 <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
                                   Sub-Category:
                                 </label>
-                                <InfoTooltip text="Category ke andar ka specific topic." />
+                                <InfoTooltip text="Sub-topic within the chosen category." />
                               </div>
                               <div className="relative">
                                 <select
@@ -4020,7 +4117,7 @@ export default function AdminDashboard() {
                               <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
                                 Card Tag:
                               </label>
-                              <InfoTooltip text="Photo ke upar jo chota sa badge likha hota hai (e.g. Exclusive, AI Report, Analysis)." />
+                              <InfoTooltip text="Custom badge displayed above the card image (e.g., Exclusive, Analysis, AI Report)." />
                             </div>
                             <div className="flex items-center space-x-1.5">
                               <input
@@ -4066,7 +4163,7 @@ export default function AdminDashboard() {
                                   <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
                                     Publish Date:
                                   </label>
-                                  <InfoTooltip text="Article publish hone ki date select karein." />
+                                  <InfoTooltip text="Select the publication date." />
                                 </div>
                                 <input
                                   type="date"
@@ -4097,7 +4194,7 @@ export default function AdminDashboard() {
                                   <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
                                     Publish Time:
                                   </label>
-                                  <InfoTooltip text="Article publish hone ka time select karein." />
+                                  <InfoTooltip text="Select the publication time." />
                                 </div>
                                 <div className="flex items-center space-x-1">
                                   <input
@@ -4132,7 +4229,7 @@ export default function AdminDashboard() {
                                   <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
                                     Word Count:
                                   </label>
-                                  <InfoTooltip text="Total words in article (Headline + Excerpt + Canvas + Chapters)." />
+                                  <InfoTooltip text="Total word count across headline, lead excerpt, body canvas, and chapters." />
                                 </div>
                                 <div className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono font-bold text-gray-900 flex items-center justify-between">
                                   <span>{articleWordCount} words</span>
@@ -4145,7 +4242,7 @@ export default function AdminDashboard() {
                                   <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
                                     Read Time:
                                   </label>
-                                  <InfoTooltip text="200 words/min ki speed se reading time automatically calculate hota hai (0 words par 0 min)." />
+                                  <InfoTooltip text="Estimated read time calculated automatically at 200 words per minute." />
                                 </div>
                                 <input
                                   type="text"
@@ -4170,7 +4267,7 @@ export default function AdminDashboard() {
                               <h3 className="font-serif text-xs uppercase font-bold text-[#0a0a0a] tracking-wider">
                                 Live SEO Health
                               </h3>
-                              <InfoTooltip text="Google Search Central & RankMath guidelines ke mutabiq Headline, Meta Excerpt, Word Count, Cover Image aur URL Slug ka live score measure karta hai." />
+                              <InfoTooltip text="Measures real-time SEO health score based on Google Search Central and editorial best practices." />
                             </div>
 
                             {/* Percentage Badge */}
@@ -4236,7 +4333,7 @@ export default function AdminDashboard() {
                           ) : (
                             <div className="p-2 bg-emerald-50 text-emerald-800 rounded text-[11px] font-medium flex items-center space-x-1.5">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                              <span>Story sabhi core Google News SEO benchmarks pass karti hai!</span>
+                              <span>Story passes all core Google News SEO benchmarks!</span>
                             </div>
                           )}
 
@@ -4292,7 +4389,7 @@ export default function AdminDashboard() {
                               <HistoryIcon className="w-5 h-5 text-[#002b5c]" />
                               <div>
                                 <h3 className="font-serif text-base font-bold text-gray-900">Story Version History & Restore</h3>
-                                <p className="text-[11px] text-gray-500 font-mono">Har major change ka snapshot yahan save hota hai. Kisi bhi purane version ko 1-click me restore karein.</p>
+                                <p className="text-[11px] text-gray-500 font-mono">Snapshots of major edits are recorded here. Restore any previous revision in 1-click.</p>
                               </div>
                             </div>
                             <button
@@ -4307,7 +4404,7 @@ export default function AdminDashboard() {
                           <div className="max-h-[380px] overflow-y-auto space-y-2.5 pr-1">
                             {storyHistory.length === 0 ? (
                               <div className="py-12 text-center text-gray-400 font-mono text-xs">
-                                Abhi tak koi previous revision snapshot record nahi hua hai. Jaise hi aap likhenge ya AI suggestion use karenge, yahan versions bante rahenge.
+                                No previous revision snapshots recorded yet. Versions are created automatically as you write or apply AI suggestions.
                               </div>
                             ) : (
                               storyHistory.map((ver, idx) => (
@@ -4336,7 +4433,7 @@ export default function AdminDashboard() {
                                     onClick={() => restoreVersion(ver)}
                                     className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded cursor-pointer transition-colors whitespace-nowrap shadow-xs self-start sm:self-center"
                                   >
-                                    Ye Version Restore Karein
+                                    Restore This Version
                                   </button>
                                 </div>
                               ))
@@ -4348,18 +4445,18 @@ export default function AdminDashboard() {
                               type="button"
                               onClick={() => {
                                 recordHistorySnapshot('Manual Backup');
-                                showToast('Manual backup history me save ho gaya!', 'success');
+                                showToast('Manual backup snapshot saved to history!', 'success');
                               }}
                               className="text-xs font-mono text-[#002b5c] hover:underline cursor-pointer font-bold"
                             >
-                              + Abhi Manual Backup Save Karein
+                              + Save Manual Backup Snapshot
                             </button>
                             <button
                               type="button"
                               onClick={() => setShowHistoryModal(false)}
                               className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-mono font-bold rounded cursor-pointer"
                             >
-                              Band Karein
+                              Close
                             </button>
                           </div>
                         </div>
@@ -4380,14 +4477,14 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setShowStockModal(false)}
-                              className="text-gray-400 hover:text-gray-700 text-lg font-bold"
+                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
                             >
                               &times;
                             </button>
                           </div>
 
                           <p className="text-xs text-gray-500">
-                            Curated categories me se cover photo chunein ya custom photo URL enter karein:
+                            Choose a cover photo from curated collections or paste a custom URL:
                           </p>
 
                           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-80 overflow-y-auto p-1">
@@ -4397,7 +4494,7 @@ export default function AdminDashboard() {
                                 onClick={() => {
                                   setEditingArticle({ ...editingArticle, image: photo.url });
                                   setShowStockModal(false);
-                                  showToast(`Photo set ho gayi: ${photo.label}`, 'success');
+                                  showToast(`Photo selected: ${photo.label}`, 'success');
                                 }}
                                 className="group cursor-pointer rounded-lg overflow-hidden border border-gray-200 hover:border-[#002b5c] transition-all hover:shadow-md"
                               >
@@ -4420,7 +4517,7 @@ export default function AdminDashboard() {
                           <div className="pt-3 border-t border-gray-100 flex items-center space-x-2">
                             <input
                               type="text"
-                              placeholder="Ya koi bhi Unsplash / Image URL yahan paste karein..."
+                              placeholder="Or paste any Unsplash / Direct Image URL here..."
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   e.preventDefault();
@@ -4436,9 +4533,9 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setShowStockModal(false)}
-                              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold rounded-lg"
+                              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold rounded-lg cursor-pointer"
                             >
-                              Band Karein
+                              Close
                             </button>
                           </div>
                         </div>
@@ -4453,13 +4550,13 @@ export default function AdminDashboard() {
                             <div className="flex items-center space-x-2">
                               <Paperclip className="w-5 h-5 text-[#002b5c]" />
                               <h3 className="font-serif text-lg font-bold text-gray-900">
-                                Media & Downloadable Assets Jodein
+                                Attach Media & Downloadable Assets
                               </h3>
                             </div>
                             <button
                               type="button"
                               onClick={() => setShowAssetModal(false)}
-                              className="text-gray-400 hover:text-gray-700 text-lg font-bold"
+                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
                             >
                               &times;
                             </button>
@@ -4468,7 +4565,7 @@ export default function AdminDashboard() {
                           <div className="space-y-3 text-xs">
                             <div>
                               <label className="block font-bold text-gray-700 mb-1">
-                                Asset Title / File Ka Naam:
+                                Asset Title / Resource Name:
                               </label>
                               <input
                                 type="text"
@@ -4494,9 +4591,9 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setShowAssetModal(false)}
-                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50"
+                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50 cursor-pointer"
                             >
-                              Cancel Karein
+                              Cancel
                             </button>
                             <button
                               type="button"
@@ -4512,12 +4609,12 @@ export default function AdminDashboard() {
                                     ]
                                   });
                                   setShowAssetModal(false);
-                                  showToast('Asset story me attach ho gaya', 'success');
+                                  showToast('Asset attached to story successfully', 'success');
                                 }
                               }}
-                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e]"
+                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e] cursor-pointer"
                             >
-                              Asset Jodein
+                              Attach Asset
                             </button>
                           </div>
                         </div>
@@ -4530,12 +4627,12 @@ export default function AdminDashboard() {
                         <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-200">
                           <div className="flex items-center justify-between pb-3 border-b border-gray-100">
                             <h3 className="font-serif text-lg font-bold text-gray-900">
-                              Custom CTA Button Jodein
+                              Add Custom Call-to-Action (CTA) Button
                             </h3>
                             <button
                               type="button"
                               onClick={() => setShowCustomButtonModal(false)}
-                              className="text-gray-400 hover:text-gray-700 text-lg font-bold"
+                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
                             >
                               &times;
                             </button>
@@ -4544,7 +4641,7 @@ export default function AdminDashboard() {
                           <div className="space-y-3 text-xs">
                             <div>
                               <label className="block font-bold text-gray-700 mb-1">
-                                Button Ka Text:
+                                Button Label Text:
                               </label>
                               <input
                                 type="text"
@@ -4570,9 +4667,9 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setShowCustomButtonModal(false)}
-                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50"
+                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50 cursor-pointer"
                             >
-                              Cancel Karein
+                              Cancel
                             </button>
                             <button
                               type="button"
@@ -4585,11 +4682,11 @@ export default function AdminDashboard() {
                                   ]
                                 });
                                 setShowCustomButtonModal(false);
-                                showToast('CTA Button block joda gaya', 'success');
+                                showToast('CTA Callout inserted successfully', 'success');
                               }}
-                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e]"
+                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e] cursor-pointer"
                             >
-                              Button Save Karein
+                              Insert Button
                             </button>
                           </div>
                         </div>
@@ -4621,14 +4718,14 @@ export default function AdminDashboard() {
                               className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors flex items-center space-x-1 cursor-pointer"
                             >
                               <ExternalLink className="w-3 h-3" />
-                              <span>Live Website URL Kholein</span>
+                              <span>Open Live URL</span>
                             </button>
                             <button
                               type="button"
                               onClick={() => setShowPreviewModal(false)}
                               className="px-3 py-1 bg-[#f7413e] hover:bg-[#d9302c] text-white text-[11px] font-bold rounded-full transition-colors cursor-pointer"
                             >
-                              ✕ Preview Band Karein
+                              ✕ Close Preview
                             </button>
                           </div>
                         </div>
@@ -4702,7 +4799,7 @@ export default function AdminDashboard() {
                             <div className="space-y-6 text-base sm:text-lg leading-relaxed text-gray-900 font-serif">
                               {(editingArticle.paragraphs && editingArticle.paragraphs.length > 0
                                 ? editingArticle.paragraphs
-                                : ['(Abhi koi content nahi likha gaya hai)']).map((para, i) => (
+                                : ['(No content written yet)']).map((para, i) => (
                                 <p key={i} className="first-letter:text-3xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-none">
                                   {para}
                                 </p>
@@ -4754,29 +4851,29 @@ export default function AdminDashboard() {
                           Homepage Sections & Categories Manager
                         </h2>
                         <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
-                          Apne editorial sections ko banayein, edit karein, rename karein aur layout redesign karein
+                          Create, edit, reorder, and redesign the layout presentation of your editorial sections
                         </p>
                       </div>
 
                       <button
                         onClick={initCreateCategory}
-                        className="inline-flex items-center space-x-1 px-4 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
+                        className="inline-flex items-center space-x-1.5 px-4 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                       >
                         <Plus className="w-4 h-4" />
-                        <span>+ Naya Section Jodein</span>
+                        <span>+ Add New Section</span>
                       </button>
                     </div>
 
                     {showCategoryForm ? (
                       <form onSubmit={handleSaveCategory} className="bg-[#faf8f2] dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 space-y-6 rounded-xs">
                         <h3 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10">
-                          {isEditingCategory ? 'Section Details Update Karein' : 'Naya Section Configure Karein'}
+                          {isEditingCategory ? 'Update Section Configuration' : 'Configure New Section'}
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-12 gap-6">
                           <div className="sm:col-span-6">
                             <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                              Section Ka Naam (Display Name)
+                              Section Display Name
                             </label>
                             <input
                               type="text"
@@ -4814,7 +4911,7 @@ export default function AdminDashboard() {
 
                           <div className="sm:col-span-8">
                             <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                              Layout Style (Design Chunein)
+                              Layout Presentation Style
                             </label>
                             <select
                               value={editingCategory.layout}
@@ -4834,13 +4931,13 @@ export default function AdminDashboard() {
                             onClick={() => setShowCategoryForm(false)}
                             className="px-4 py-2 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors cursor-pointer rounded-xs"
                           >
-                            Cancel Karein
+                            Cancel
                           </button>
                           <button
                             type="submit"
                             className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                           >
-                            {isEditingCategory ? 'Section Update Karein' : 'Section Banayein'}
+                            {isEditingCategory ? 'Update Section' : 'Create Section'}
                           </button>
                         </div>
                       </form>
@@ -4855,7 +4952,7 @@ export default function AdminDashboard() {
                                   onClick={() => moveCategoryUp(idx)}
                                   disabled={idx === 0}
                                   className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
-                                  title="Upar Karein"
+                                  title="Move Up"
                                 >
                                   <ArrowUp className="w-3.5 h-3.5" />
                                 </button>
@@ -4864,7 +4961,7 @@ export default function AdminDashboard() {
                                   onClick={() => moveCategoryDown(idx)}
                                   disabled={idx === categories.length - 1}
                                   className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
-                                  title="Niche Karein"
+                                  title="Move Down"
                                 >
                                   <ArrowDown className="w-3.5 h-3.5" />
                                 </button>
@@ -4894,13 +4991,13 @@ export default function AdminDashboard() {
                                 onClick={() => initEditCategory(cat)}
                                 className="px-3 py-1.5 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 transition-colors cursor-pointer rounded-xs"
                               >
-                                Layout Badlein
+                                Edit Layout
                               </button>
                               <button
                                 type="button"
                                 onClick={() => handleDeleteCategory(cat.slug)}
                                 className="p-1.5 border border-[#211d1d]/25 dark:border-white/20 text-[#f7413e] dark:text-rose-400 hover:bg-[#f7413e]/10 transition-colors cursor-pointer rounded-xs"
-                                title="Section Delete Karein"
+                                title="Delete Section"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>
@@ -4922,7 +5019,7 @@ export default function AdminDashboard() {
                           Website Global Settings
                         </h2>
                         <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
-                          Website ka naam, tagline, edition aur global masthead details update karein
+                          Update publication title, brand logo, tagline, edition metadata and header configuration
                         </p>
                       </div>
 
@@ -4930,9 +5027,10 @@ export default function AdminDashboard() {
                         <h4 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 sm:col-span-2">
                           Website Identity & Branding
                         </h4>
+                        
                         <div>
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Website Logo Title (e.g. ApexChief)
+                            Website Brand Title (e.g. ApexChief)
                           </label>
                           <input
                             type="text"
@@ -4942,6 +5040,7 @@ export default function AdminDashboard() {
                             className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
+
                         <div>
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Short Name / Abbreviation
@@ -4954,6 +5053,108 @@ export default function AdminDashboard() {
                             className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
+
+                        {/* BRAND LOGO UPLOAD & PREVIEW SECTION */}
+                        <div className="sm:col-span-2 p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div>
+                              <div className="flex items-center space-x-1.5">
+                                <LucideImage className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
+                                <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                                  Landing Page Header Brand Logo
+                                </span>
+                                <InfoTooltip text="Upload a transparent PNG, SVG, or WebP logo. When set, this logo will appear in the main website header masthead and mobile drawer navigation. If left blank, the Brand Title text will be displayed." />
+                              </div>
+                              <p className="text-[11px] text-[#575757] dark:text-gray-400 mt-0.5">
+                                Recommended format: Transparent PNG or SVG (height: 40px – 70px)
+                              </p>
+                            </div>
+
+                            {/* Hidden file input */}
+                            <input
+                              type="file"
+                              ref={logoFileInputRef}
+                              onChange={handleLogoUpload}
+                              accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                              className="hidden"
+                            />
+
+                            <div className="flex items-center space-x-2">
+                              <button
+                                type="button"
+                                disabled={isUploadingLogo}
+                                onClick={() => logoFileInputRef.current?.click()}
+                                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
+                              >
+                                {isUploadingLogo ? (
+                                  <>
+                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    <span>Uploading to CDN...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>{siteConfig.logo ? 'Change Brand Logo' : 'Upload Brand Logo'}</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {siteConfig.logo && (
+                                <button
+                                  type="button"
+                                  onClick={() => setSiteConfig({ ...siteConfig, logo: '' })}
+                                  className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
+                                  title="Remove Logo (Reverts to Text Masthead)"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                  <span>Remove</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Preview Area */}
+                          {siteConfig.logo ? (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3 bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 rounded-xs">
+                              <div className="p-2.5 bg-gray-100 dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 rounded flex items-center justify-center min-w-[140px] max-h-20 overflow-hidden">
+                                <img
+                                  src={siteConfig.logo}
+                                  alt="Brand Logo Preview"
+                                  className="max-h-12 max-w-[220px] object-contain"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <span className="text-[10px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                  <Check className="w-3 h-3" /> Active Header Logo
+                                </span>
+                                <p className="text-xs text-[#575757] dark:text-gray-400 truncate mt-0.5 font-mono">
+                                  {siteConfig.logo}
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-3 bg-white dark:bg-[#161c2e] border border-dashed border-[#211d1d]/15 dark:border-white/10 rounded-xs text-center py-4">
+                              <p className="text-xs text-[#575757] dark:text-gray-400">
+                                No custom logo uploaded. The website header is currently displaying the text title: <strong className="text-[#002b5c] dark:text-sky-400">{siteConfig.name || 'ApexChief'}</strong>
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Direct URL input */}
+                          <div>
+                            <label className="block text-[11px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
+                              Or enter Direct Logo URL:
+                            </label>
+                            <input
+                              type="text"
+                              value={siteConfig.logo || ''}
+                              onChange={(e) => setSiteConfig({ ...siteConfig, logo: e.target.value })}
+                              placeholder="https://ik.imagekit.io/.../your-brand-logo.png"
+                              className="block w-full px-3 py-1.5 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#0e1322] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                            />
+                          </div>
+                        </div>
+
                         <div className="sm:col-span-2">
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Tagline Headline Text
@@ -4966,9 +5167,10 @@ export default function AdminDashboard() {
                             className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
+
                         <div className="sm:col-span-2">
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Current Date Header Text
+                            Current Date Masthead Text
                           </label>
                           <input
                             type="text"
@@ -4978,9 +5180,10 @@ export default function AdminDashboard() {
                             className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
                           />
                         </div>
+
                         <div className="sm:col-span-2">
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Current Newspaper Edition Info
+                            Publication Edition Metadata
                           </label>
                           <input
                             type="text"
@@ -4997,7 +5200,7 @@ export default function AdminDashboard() {
                           type="submit"
                           className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
                         >
-                          Global Settings Save Karein
+                          Save Global Settings
                         </button>
                       </div>
                     </form>
@@ -5012,7 +5215,7 @@ export default function AdminDashboard() {
                           </h3>
                         </div>
                         <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
-                          Admin login password badlein (Ye seedhe Supabase database se connected hai aur wahi save hota hai)
+                          Update admin login password. Securely saved and synchronized with Supabase database.
                         </p>
                       </div>
 
@@ -5033,7 +5236,7 @@ export default function AdminDashboard() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 rounded-xs">
                         <div className="sm:col-span-2">
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Vartamaan (Current) Admin Password
+                            Current Admin Password
                           </label>
                           <div className="relative max-w-md">
                             <input
@@ -5060,7 +5263,7 @@ export default function AdminDashboard() {
 
                         <div>
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Naya (New) Admin Password
+                            New Admin Password
                           </label>
                           <div className="relative">
                             <input
@@ -5087,7 +5290,7 @@ export default function AdminDashboard() {
 
                         <div>
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
-                            Naya Password Confirm Karein
+                            Confirm New Password
                           </label>
                           <input
                             type="password"
@@ -5133,12 +5336,12 @@ export default function AdminDashboard() {
                           {isChangingPassword ? (
                             <>
                               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                              <span>Database Me Update Ho Raha Hai...</span>
+                              <span>Updating Database...</span>
                             </>
                           ) : (
                             <>
                               <Key className="w-3.5 h-3.5" />
-                              <span>Admin Password Database Me Save Karein</span>
+                              <span>Save Admin Password to Database</span>
                             </>
                           )}
                         </button>

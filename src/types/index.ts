@@ -36,6 +36,41 @@ export interface SubCategory {
   description?: string;
 }
 
+export interface SiteConfig {
+  name: string;
+  shortName: string;
+  logo?: string;
+  tagline: string;
+  description: string;
+  establishedYear: string;
+  currentDate: string;
+  edition: string;
+  contact: {
+    email: string;
+    phone: string;
+    logo?: string;
+    addressNY: {
+      title: string;
+      street: string;
+      city: string;
+      country: string;
+    };
+    addressLondon: {
+      title: string;
+      street: string;
+      city: string;
+      country: string;
+    };
+  };
+  socialLinks: {
+    twitter: string;
+    instagram: string;
+    linkedin: string;
+    facebook: string;
+  };
+  copyright: string;
+}
+
 export interface Category {
   id?: string;
   name: string;
