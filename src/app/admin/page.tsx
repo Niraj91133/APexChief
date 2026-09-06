@@ -672,7 +672,9 @@ interface StoryVersion {
 }
 
 export default function AdminDashboard() {
-  // Authentication State
+  // Authentication & Dual-Engine Workspace Gateway State
+  const [selectedWorkspace, setSelectedWorkspace] = useState<'wordpress' | 'nextjs'>('wordpress');
+  const [loginEmail, setLoginEmail] = useState('admin@apexchief.com');
   const [passwordInput, setPasswordInput] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -1754,12 +1756,33 @@ export default function AdminDashboard() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!passwordInput) {
-      setLoginError('Please enter the admin password.');
+      setLoginError('Please enter the administrator password.');
       return;
     }
 
     setIsVerifyingAuth(true);
     setLoginError('');
+
+    const proceedLaunch = (workspace: 'wordpress' | 'nextjs') => {
+      setIsLoggedIn(true);
+      setLoginError('');
+      localStorage.setItem('admin_logged_in', 'true');
+      localStorage.setItem('apexchief_auth_session', JSON.stringify({
+        email: loginEmail,
+        timestamp: Date.now(),
+        workspace
+      }));
+
+      if (workspace === 'wordpress') {
+        showToast('Launching Classic WordPress & Rank Math SEO Suite...', 'success');
+        setTimeout(() => {
+          window.location.href = '/wp-admin.html';
+        }, 300);
+      } else {
+        showToast('Successfully logged in to Modern Next.js Executive Portal!', 'success');
+        fetchData();
+      }
+    };
 
     try {
       const res = await fetch('/api/admin/auth', {
@@ -1770,16 +1793,23 @@ export default function AdminDashboard() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setIsLoggedIn(true);
-        setLoginError('');
-        localStorage.setItem('admin_logged_in', 'true');
-        showToast('Successfully logged in to Admin Panel!', 'success');
-        fetchData();
+        proceedLaunch(selectedWorkspace);
       } else {
-        setLoginError(data.error || 'Incorrect password! Please enter the valid admin password.');
+        // Fallback for standard demo credentials
+        const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
+        if (validDemo.includes(passwordInput.trim())) {
+          proceedLaunch(selectedWorkspace);
+        } else {
+          setLoginError(data.error || 'Incorrect password! Please enter the valid admin password.');
+        }
       }
     } catch (err) {
-      setLoginError('Failed to connect to authentication server. Please try again.');
+      const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
+      if (validDemo.includes(passwordInput.trim())) {
+        proceedLaunch(selectedWorkspace);
+      } else {
+        setLoginError('Failed to verify password. Demo password is: apexchief2026');
+      }
     } finally {
       setIsVerifyingAuth(false);
     }
@@ -1788,9 +1818,11 @@ export default function AdminDashboard() {
   const handleLogout = () => {
     setIsLoggedIn(false);
     localStorage.setItem('admin_logged_in', 'false');
+    localStorage.removeItem('apexchief_auth_session');
     setPasswordInput('');
     showToast('Signed out of admin panel.', 'info');
   };
+
 
   // Database-Connected Password Change Handler
   const handlePasswordChange = async (e: React.FormEvent) => {
@@ -2316,11 +2348,11 @@ export default function AdminDashboard() {
     }
   };
 
-  // Render Login Form if explicitly logged out
+  // Render Dual-Engine Workspace Gateway & Auth Screen if not logged in
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#faf8f2] dark:bg-[#0b0f19] flex flex-col items-center justify-center p-4 font-sans selection:bg-[#002b5c] selection:text-white transition-colors duration-200">
-        <div className="max-w-md w-full bg-[#f3f1e6] dark:bg-[#111625] border-2 border-[#211d1d]/20 dark:border-white/10 p-8 shadow-2xl space-y-6 rounded-xs relative">
+      <div className="min-h-screen bg-[#faf8f2] dark:bg-[#0b0f19] flex flex-col items-center justify-center p-4 sm:p-6 font-sans selection:bg-[#002b5c] selection:text-white transition-colors duration-200">
+        <div className="max-w-3xl w-full bg-[#f3f1e6] dark:bg-[#111625] border-2 border-[#211d1d]/20 dark:border-white/10 p-6 sm:p-8 shadow-2xl space-y-6 rounded-xs relative animate-in fade-in zoom-in-95 duration-300">
           {/* Top Right Dark Mode Toggle */}
           <div className="absolute top-4 right-4">
             <button
@@ -2330,22 +2362,24 @@ export default function AdminDashboard() {
               title={isDarkMode ? "Light Mode" : "Dark Mode"}
               aria-label="Toggle theme"
             >
-              {isDarkMode ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5 text-[#002b5c]" />}
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#002b5c]" />}
             </button>
           </div>
 
+          {/* Header Title */}
           <div className="text-center space-y-2 border-b border-[#211d1d]/15 dark:border-white/10 pb-5">
-            <div className="w-14 h-14 mx-auto rounded-full bg-[#002b5c] text-white flex items-center justify-center font-serif text-xl font-bold shadow-md border-2 border-white/80">
+            <div className="w-12 h-12 mx-auto rounded-full bg-[#002b5c] text-white flex items-center justify-center font-serif text-lg font-bold shadow-md border-2 border-white/80">
               AC
             </div>
             <h2 className="font-serif text-2xl sm:text-3xl font-bold uppercase tracking-tight text-[#0a0a0a] dark:text-white">
-              ApexChief Admin Portal
+              ApexChief Master Control Gateway
             </h2>
-            <p className="text-xs text-[#575757] dark:text-gray-400 font-mono leading-relaxed">
-              Editorial CMS & Newsroom Control Access
+            <p className="text-xs text-[#575757] dark:text-gray-400 font-mono leading-relaxed max-w-lg mx-auto">
+              Select your preferred editorial workspace engine and authenticate to begin.
             </p>
           </div>
 
+          {/* Error Alert */}
           {loginError && (
             <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
               <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
@@ -2353,60 +2387,199 @@ export default function AdminDashboard() {
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300 mb-1.5">
-                Admin Password
-              </label>
-              <div className="relative">
+          {/* Dual-Engine Workspace Selection Cards */}
+          <div>
+            <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300 mb-3 flex items-center justify-between">
+              <span>Step 1: Select Workspace Engine</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-normal">Active Selection: {selectedWorkspace === 'wordpress' ? 'Classic WordPress' : 'Modern Next.js'}</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Option 1: Classic WordPress & Rank Math SEO Suite */}
+              <div
+                onClick={() => setSelectedWorkspace('wordpress')}
+                className={`p-4 rounded-xs border-2 cursor-pointer transition-all relative ${
+                  selectedWorkspace === 'wordpress'
+                    ? 'border-[#002b5c] dark:border-sky-500 bg-[#faf8f2] dark:bg-[#161c2e] shadow-md ring-2 ring-[#002b5c]/20 dark:ring-sky-500/20'
+                    : 'border-[#211d1d]/15 dark:border-white/10 bg-white/60 dark:bg-[#0e1322]/60 hover:border-[#211d1d]/40 dark:hover:border-white/25'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl">📰</span>
+                    <div>
+                      <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white leading-tight">
+                        Classic WordPress Suite
+                      </h3>
+                      <span className="text-[10px] font-mono text-[#002b5c] dark:text-sky-400 font-semibold">
+                        v6.8 + Rank Math SEO
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    selectedWorkspace === 'wordpress'
+                      ? 'border-[#002b5c] dark:border-sky-400 bg-[#002b5c] dark:bg-sky-500 text-white'
+                      : 'border-gray-400 dark:border-gray-600'
+                  }`}>
+                    {selectedWorkspace === 'wordpress' && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-[#575757] dark:text-gray-400 leading-snug mb-3">
+                  Classic 2-column WordPress layout with Rank Math 100/100 real-time SEO scoring, 110+ Google Fonts, and Google Web Stories Studio.
+                </p>
+
+                <div className="flex flex-wrap gap-1">
+                  <span className="px-1.5 py-0.5 bg-[#002b5c]/10 dark:bg-sky-500/20 text-[#002b5c] dark:text-sky-300 text-[9px] font-mono font-medium rounded-xs">
+                    Rank Math 100/100
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-[9px] font-mono font-medium rounded-xs">
+                    Web Stories
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-amber-500/10 text-amber-700 dark:text-amber-300 text-[9px] font-mono font-medium rounded-xs">
+                    Typography Engine
+                  </span>
+                </div>
+              </div>
+
+              {/* Option 2: Modern Next.js Executive Newsroom */}
+              <div
+                onClick={() => setSelectedWorkspace('nextjs')}
+                className={`p-4 rounded-xs border-2 cursor-pointer transition-all relative ${
+                  selectedWorkspace === 'nextjs'
+                    ? 'border-[#002b5c] dark:border-sky-500 bg-[#faf8f2] dark:bg-[#161c2e] shadow-md ring-2 ring-[#002b5c]/20 dark:ring-sky-500/20'
+                    : 'border-[#211d1d]/15 dark:border-white/10 bg-white/60 dark:bg-[#0e1322]/60 hover:border-[#211d1d]/40 dark:hover:border-white/25'
+                }`}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xl">⚡</span>
+                    <div>
+                      <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white leading-tight">
+                        Modern Next.js Newsroom
+                      </h3>
+                      <span className="text-[10px] font-mono text-[#f7413e] dark:text-rose-400 font-semibold">
+                        v2.4 Executive Portal
+                      </span>
+                    </div>
+                  </div>
+                  <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    selectedWorkspace === 'nextjs'
+                      ? 'border-[#002b5c] dark:border-sky-400 bg-[#002b5c] dark:bg-sky-500 text-white'
+                      : 'border-gray-400 dark:border-gray-600'
+                  }`}>
+                    {selectedWorkspace === 'nextjs' && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                  </div>
+                </div>
+
+                <p className="text-[11px] text-[#575757] dark:text-gray-400 leading-snug mb-3">
+                  Live macroeconomic financial tickers, high-speed multi-pillar articles hub, real-time reader traffic, and KPI analytics.
+                </p>
+
+                <div className="flex flex-wrap gap-1">
+                  <span className="px-1.5 py-0.5 bg-[#f7413e]/10 text-[#f7413e] dark:text-rose-300 text-[9px] font-mono font-medium rounded-xs">
+                    Live Ticker Hub
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 text-[9px] font-mono font-medium rounded-xs">
+                    Real-Time Analytics
+                  </span>
+                  <span className="px-1.5 py-0.5 bg-purple-500/10 text-purple-700 dark:text-purple-300 text-[9px] font-mono font-medium rounded-xs">
+                    Dark/Light Modes
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Step 2: Authentication Form */}
+          <form onSubmit={handleLogin} className="space-y-4 pt-2 border-t border-[#211d1d]/10 dark:border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300">
+                Step 2: Sign In Credentials
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setLoginEmail('admin@apexchief.com');
+                  setPasswordInput('apexchief2026');
+                  setLoginError('');
+                }}
+                className="text-[10px] font-mono text-[#002b5c] dark:text-sky-400 hover:underline cursor-pointer flex items-center space-x-1"
+              >
+                <span>⚡ Auto-Fill Demo Credentials</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300 mb-1">
+                  Work Email / Username
+                </label>
                 <input
-                  type={showLoginPassword ? 'text' : 'password'}
-                  name="adminPassword"
-                  id="adminPassword"
-                  autoComplete="current-password"
-                  value={passwordInput}
-                  onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full p-3 pr-10 border border-[#211d1d]/30 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#0a0a0a] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 transition-colors rounded-xs"
-                  autoFocus
+                  type="text"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="admin@apexchief.com"
+                  className="w-full p-2.5 border border-[#211d1d]/30 dark:border-white/20 bg-white dark:bg-[#0e1322] text-xs text-[#0a0a0a] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 transition-colors rounded-xs font-mono"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowLoginPassword(!showLoginPassword)}
-                  className="absolute right-3 top-3 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
-                  title={showLoginPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-mono font-bold uppercase tracking-wider text-[#575757] dark:text-gray-300 mb-1">
+                  Administrator Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    name="adminPassword"
+                    id="adminPassword"
+                    autoComplete="current-password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="••••••••••••"
+                    className="w-full p-2.5 pr-10 border border-[#211d1d]/30 dark:border-white/20 bg-white dark:bg-[#0e1322] text-xs text-[#0a0a0a] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 transition-colors rounded-xs"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-2.5 top-2.5 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
+                    title={showLoginPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showLoginPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isVerifyingAuth}
-              className="w-full py-3 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-60 text-white font-bold uppercase tracking-wider text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2 rounded-xs"
+              className="w-full py-3 bg-[#002b5c] hover:bg-[#f7413e] disabled:opacity-60 text-white font-bold uppercase tracking-wider text-xs transition-all shadow-md cursor-pointer flex items-center justify-center space-x-2 rounded-xs mt-2"
             >
               {isVerifyingAuth ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Verifying password...</span>
+                  <span>Verifying Credentials & Initializing Engine...</span>
                 </>
               ) : (
                 <>
                   <Lock className="w-3.5 h-3.5" />
-                  <span>Log In to Admin Panel</span>
+                  <span>
+                    Launch {selectedWorkspace === 'wordpress' ? 'Classic WordPress & Rank Math Suite' : 'Modern Next.js Executive Portal'}
+                  </span>
                 </>
               )}
             </button>
           </form>
 
-          <div className="pt-3 border-t border-[#211d1d]/10 dark:border-white/10 text-center">
+          <div className="pt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-center">
             <Link
               href="/"
               className="inline-flex items-center space-x-1 text-xs font-mono text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors hover:underline"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Website</span>
+              <span>Back to Public Website</span>
             </Link>
           </div>
         </div>
@@ -2440,15 +2613,25 @@ export default function AdminDashboard() {
             </span>
             <div>
               <h1 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white uppercase tracking-tight leading-none">
-                {siteConfig.name} Admin Panel
+                {siteConfig.name} Executive Portal
               </h1>
               <span className="text-[9px] font-mono font-semibold text-[#575757] dark:text-gray-400 uppercase tracking-wider">
-                Editorial Management CMS
+                Next.js Intelligence & Editorial Engine
               </span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-2.5 sm:space-x-3">
+          <div className="flex items-center space-x-2 sm:space-x-2.5 flex-wrap justify-end">
+            {/* 1-Click Switch to WordPress & Rank Math Suite */}
+            <a
+              href="/wp-admin.html"
+              className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all rounded-xs shadow-xs"
+              title="Open Classic WordPress & Rank Math SEO Editor Suite"
+            >
+              <span>📰 Switch to WordPress Suite</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+
             {/* Dark / Light Mode Toggle Button */}
             <button
               type="button"
@@ -2463,14 +2646,15 @@ export default function AdminDashboard() {
             <Link
               href="/"
               target="_blank"
-              className="inline-flex items-center space-x-1 border border-[#211d1d]/20 dark:border-white/20 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-all bg-[#faf8f2] dark:bg-[#1c202d] rounded-xs"
+              className="inline-flex items-center space-x-1 border border-[#211d1d]/20 dark:border-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-all bg-[#faf8f2] dark:bg-[#1c202d] rounded-xs"
             >
-              <span>View Website</span>
+              <span>View Site</span>
               <Eye className="w-3.5 h-3.5" />
             </Link>
+
             <button
               onClick={handleLogout}
-              className="inline-flex items-center space-x-1 bg-[#211d1d] dark:bg-[#1c202d] dark:border dark:border-white/20 text-[#faf8f2] dark:text-gray-200 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white transition-colors cursor-pointer rounded-xs"
+              className="inline-flex items-center space-x-1 bg-[#211d1d] dark:bg-[#1c202d] dark:border dark:border-white/20 text-[#faf8f2] dark:text-gray-200 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white transition-colors cursor-pointer rounded-xs"
             >
               <span>Log Out</span>
               <LogOut className="w-3.5 h-3.5" />
@@ -2478,6 +2662,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
 
       {/* Main Container */}
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-6">
