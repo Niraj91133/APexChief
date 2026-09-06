@@ -26,7 +26,14 @@ export default function Footer() {
             </Link>
             <span className="hidden sm:inline-block text-[#eff0e0]/20">|</span>
             <p className="text-xs text-[#eff0e0]/60 font-sans tracking-wide">
-              © {currentYear} {siteConfig.name}. All Rights Reserved.
+              ©{' '}
+              <Link
+                href="/admin"
+                className="text-inherit hover:text-inherit no-underline cursor-default focus:outline-none"
+              >
+                {currentYear}
+              </Link>{' '}
+              {siteConfig.name}. All Rights Reserved.
             </p>
           </div>
 
