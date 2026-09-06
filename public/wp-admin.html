@@ -287,86 +287,49 @@
     <!-- Main Workspace Selector Area -->
     <div id="gateway-selection-screen" class="max-w-5xl mx-auto w-full my-auto py-8">
       
-      <div class="text-center space-y-2 mb-10">
-        <span class="text-xs font-mono font-bold tracking-widest text-[#f7413e] uppercase bg-[#f7413e]/10 border border-[#f7413e]/30 px-3 py-1 rounded-full">
-          Select Your Portal Destination
-        </span>
-        <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight">ApexChief Workspaces</h2>
-        <p class="text-sm text-gray-400 max-w-lg mx-auto">Choose a management portal below to authenticate and access your editorial or executive workstation.</p>
+      <div class="text-center space-y-2 mb-8">
+        <h2 class="text-3xl md:text-4xl font-serif font-bold text-white tracking-tight">Select Editorial Format</h2>
+        <p class="text-xs sm:text-sm text-gray-400 font-mono">Choose your post editor workspace to continue</p>
       </div>
 
       <!-- 2 Options Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
         
-        <!-- OPTION 1: Classic WordPress & Rank Math SEO Suite -->
-        <div class="bg-gradient-to-b from-[#161f30] to-[#111827] border border-gray-700/80 hover:border-[#f7413e] rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-[#f7413e]/10 group relative overflow-hidden">
-          <div class="absolute -right-10 -top-10 w-36 h-36 bg-[#f7413e]/10 rounded-full blur-2xl group-hover:bg-[#f7413e]/20 transition-all"></div>
-          
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="bg-[#f7413e] text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow">
-                Editorial CMS &bull; Rank Math Pro
-              </span>
-              <span class="text-xs font-mono text-gray-400">v6.8 Suite</span>
+        <!-- OPTION 1: Format 1 (Classic WordPress) -->
+        <div onclick="selectGatewayWorkspace('classic')" class="bg-[#161f30] hover:bg-[#1c273d] border-2 border-gray-700/80 hover:border-[#f7413e] rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-[#f7413e]/20 group cursor-pointer">
+          <div class="space-y-3">
+            <div class="w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-[#f7413e]/50 transition-colors shadow-inner">
+              <img src="/images/format-1.png" alt="Format 1" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
             </div>
 
-            <div class="w-14 h-14 rounded-xl bg-[#f7413e]/10 border border-[#f7413e]/30 flex items-center justify-center text-2xl text-[#f7413e] group-hover:scale-110 transition-transform">
-              <i class="fas fa-newspaper"></i>
-            </div>
-
-            <div>
-              <h3 class="text-xl font-bold text-white group-hover:text-[#f7413e] transition-colors">Classic WordPress &amp; Rank Math SEO Suite</h3>
-              <p class="text-xs text-gray-400 mt-1 leading-relaxed">Full editorial post creator with classic 2-column layout, 100+ categorized Google fonts, real-time 100/100 Rank Math SEO scoring, 1-Click Auto TOC, callout boxes, Google Web Stories, and full site branding settings.</p>
-            </div>
-
-            <div class="space-y-2 pt-2 border-t border-gray-800 text-xs text-gray-300">
-              <div class="flex items-center gap-2"><i class="fas fa-check text-green-400 text-[11px]"></i><span>Classic WYSIWYG &amp; 100+ Typography Engine</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-green-400 text-[11px]"></i><span>Live Rank Math SEO &amp; SERP Snippet Preview</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-green-400 text-[11px]"></i><span>1-Click TOC, Callouts, Symbols &amp; Find/Replace</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-green-400 text-[11px]"></i><span>AMP Web Stories, Media Library &amp; Password Suite</span></div>
+            <div class="pt-2 text-center">
+              <h3 class="text-2xl font-serif font-bold text-white group-hover:text-[#f7413e] transition-colors">Format 1</h3>
             </div>
           </div>
 
-          <div class="pt-6">
-            <button onclick="selectGatewayWorkspace('classic')" class="w-full bg-[#f7413e] hover:bg-[#d62f2c] text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all shadow-lg cursor-pointer">
-              <span>Launch Classic WP Suite</span>
+          <div class="pt-4">
+            <button type="button" class="w-full bg-[#f7413e] hover:bg-[#d62f2c] text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center space-x-2 transition-all shadow-lg cursor-pointer uppercase tracking-wider">
+              <span>Open Format 1</span>
               <i class="fas fa-arrow-right"></i>
             </button>
           </div>
         </div>
 
-        <!-- OPTION 2: Modern Next.js Executive Portal & Intelligence Feed -->
-        <div class="bg-gradient-to-b from-[#161f30] to-[#111827] border border-gray-700/80 hover:border-blue-500 rounded-2xl p-7 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 group relative overflow-hidden">
-          <div class="absolute -right-10 -top-10 w-36 h-36 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
-
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <span class="bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow">
-                Next-Gen React &bull; Executive Portal
-              </span>
-              <span class="text-xs font-mono text-gray-400">v2.4 Portal</span>
+        <!-- OPTION 2: Format 2 (Modern Next.js) -->
+        <div onclick="window.location.href='/admin'" class="bg-[#161f30] hover:bg-[#1c273d] border-2 border-gray-700/80 hover:border-blue-500 rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20 group cursor-pointer">
+          <div class="space-y-3">
+            <div class="w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-blue-500/50 transition-colors shadow-inner">
+              <img src="/images/format-2.png" alt="Format 2" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
             </div>
 
-            <div class="w-14 h-14 rounded-xl bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-2xl text-blue-400 group-hover:scale-110 transition-transform">
-              <i class="fas fa-layer-group"></i>
-            </div>
-
-            <div>
-              <h3 class="text-xl font-bold text-white group-hover:text-blue-400 transition-colors">Modern Next.js Executive Newsroom</h3>
-              <p class="text-xs text-gray-400 mt-1 leading-relaxed">Interactive modern executive portal featuring live breaking market ticker, high-speed multi-pillar category grid feeds, real-time reader analytics, glassmorphism UI, and direct newsroom search.</p>
-            </div>
-
-            <div class="space-y-2 pt-2 border-t border-gray-800 text-xs text-gray-300">
-              <div class="flex items-center gap-2"><i class="fas fa-check text-blue-400 text-[11px]"></i><span>Live Breaking Macroeconomic Ticker Bar</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-blue-400 text-[11px]"></i><span>Multi-Pillar Executive Intelligence Grid</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-blue-400 text-[11px]"></i><span>Real-Time Visitor Analytics &amp; KPI Metrics</span></div>
-              <div class="flex items-center gap-2"><i class="fas fa-check text-blue-400 text-[11px]"></i><span>High-Speed Next.js React Portal &amp; Search</span></div>
+            <div class="pt-2 text-center">
+              <h3 class="text-2xl font-serif font-bold text-white group-hover:text-blue-400 transition-colors">Format 2</h3>
             </div>
           </div>
 
-          <div class="pt-6">
-            <button onclick="selectGatewayWorkspace('modern')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center space-x-2 transition-all shadow-lg cursor-pointer">
-              <span>Launch Modern Executive Portal</span>
+          <div class="pt-4">
+            <button type="button" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center space-x-2 transition-all shadow-lg cursor-pointer uppercase tracking-wider">
+              <span>Open Format 2</span>
               <i class="fas fa-arrow-right"></i>
             </button>
           </div>
