@@ -361,29 +361,22 @@
         <p class="text-xs text-gray-400">Enter your credentials to unlock this workstation.</p>
       </div>
 
-      <!-- 1-Click Auto-Fill Demo Helper -->
-      <div class="bg-blue-950/40 border border-blue-800/60 p-2.5 rounded-lg flex items-center justify-between text-xs text-blue-300">
-        <div class="flex items-center gap-1.5">
-          <i class="fas fa-key text-blue-400"></i>
-          <span>Demo: <strong>admin@apexchief.com</strong></span>
-        </div>
-        <button type="button" onclick="autoFillDemoCredentials()" class="text-[11px] bg-blue-600 hover:bg-blue-500 text-white font-bold px-2 py-0.5 rounded shadow cursor-pointer">
-          1-Click Auto Fill
-        </button>
-      </div>
-
       <!-- Login Form -->
-      <form onsubmit="performGatewayLogin(event)" class="space-y-4 text-xs">
+      <form onsubmit="performGatewayLogin(event)" autocomplete="off" class="space-y-4 text-xs">
         <div>
           <label class="block font-bold text-gray-300 mb-1">Username / Work Email</label>
           <div class="relative">
             <input 
               type="text" 
+              name="apex_gateway_user_field"
               id="login-username" 
               value="" 
+              autocomplete="off"
+              data-lpignore="true"
+              data-form-type="other"
               placeholder="Enter username or email" 
               required
-              class="w-full bg-[#111827] border border-gray-700 text-white rounded-lg p-2.5 focus:border-[#f7413e] outline-none pl-9 font-mono"
+              class="w-full bg-[#111827] border border-gray-700 text-white rounded-lg p-2.5 focus:border-[#f7413e] outline-none pl-9 font-mono text-xs"
             >
             <i class="fas fa-user absolute left-3 top-3.5 text-gray-500"></i>
           </div>
@@ -394,25 +387,21 @@
           <div class="relative">
             <input 
               type="password" 
+              name="apex_gateway_pass_field"
               id="login-password" 
               value="" 
+              autocomplete="new-password"
+              data-lpignore="true"
+              data-form-type="other"
               placeholder="Enter password" 
               required
-              class="w-full bg-[#111827] border border-gray-700 text-white rounded-lg p-2.5 focus:border-[#f7413e] outline-none pl-9 pr-9 font-mono"
+              class="w-full bg-[#111827] border border-gray-700 text-white rounded-lg p-2.5 focus:border-[#f7413e] outline-none pl-9 pr-9 font-mono text-xs"
             >
             <i class="fas fa-lock absolute left-3 top-3.5 text-gray-500"></i>
             <button type="button" onclick="togglePasswordVisibility('login-password')" class="absolute right-3 top-3 text-gray-500 hover:text-white">
               <i class="fas fa-eye text-xs"></i>
             </button>
           </div>
-        </div>
-
-        <div class="flex items-center justify-between pt-1">
-          <label class="flex items-center space-x-2 text-gray-300 cursor-pointer">
-            <input type="checkbox" id="login-remember-me" checked class="rounded text-[#f7413e]">
-            <span>Remember this device</span>
-          </label>
-          <a href="#" onclick="showToast('Password Hint', 'Default password is: apexchief2026'); return false;" class="text-gray-400 hover:text-white text-[11px]">Forgot password?</a>
         </div>
 
         <!-- Error Alert -->
@@ -6284,9 +6273,9 @@
         selectedTags.push(t.innerText.replace('×', '').trim());
       });
 
-      const existingIndex = posts.findIndex(p => p.id === currentPostId);
+      const existingIndex = posts.findIndex(p => p.id === currentPostId || p.slug === slug);
       const postObj = {
-        id: currentPostId,
+        id: currentPostId || slug,
         title: title,
         slug: slug,
         content: content,
@@ -6301,7 +6290,7 @@
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         categories: selectedCats.length ? selectedCats : [primaryCategory],
         tags: selectedTags,
-        featuredImage: currentFeaturedImage,
+        featuredImage: currentFeaturedImage || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
         author: 'ApexChief Editorial'
       };
 
@@ -6313,6 +6302,65 @@
 
       saveState();
 
+      // Synchronize with Next.js Server & Database API
+      try {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = content;
+        const pElements = tempDiv.querySelectorAll('p');
+        let extractedParagraphs = [];
+        pElements.forEach(p => {
+          const t = p.innerText.trim();
+          if (t) extractedParagraphs.push(t);
+        });
+        if (extractedParagraphs.length === 0) {
+          const plainTxt = tempDiv.innerText.trim();
+          if (plainTxt) extractedParagraphs = [plainTxt];
+          else extractedParagraphs = ['Editorial coverage from ApexChief newsroom.'];
+        }
+
+        const snippetDesc = document.getElementById('snippet-description')?.value || '';
+        const cleanExcerpt = snippetDesc.replace('%excerpt%', '').trim() || (extractedParagraphs[0] ? extractedParagraphs[0].slice(0, 160) + '...' : 'Latest analytical coverage from ApexChief editorial desk.');
+
+        let placementVal = 'category';
+        if (homepagePlacement === 'top3') placementVal = 'top3';
+        else if (homepagePlacement === 'latest-news') placementVal = 'latest-news';
+        else if (homepagePlacement === 'best-month') placementVal = 'best-month';
+
+        const apiPayload = {
+          id: postObj.id,
+          slug: slug,
+          title: title,
+          category: primaryCategory,
+          subcategory: subCategory,
+          tag: cardTag,
+          date: postObj.date,
+          author: 'ApexChief Editorial',
+          authorRole: 'Senior Editor',
+          authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+          image: postObj.featuredImage,
+          readTime: `${Math.max(2, Math.ceil(tempDiv.innerText.split(/\\s+/).length / 150))} min read`,
+          excerpt: cleanExcerpt,
+          content: content,
+          placement: placementVal,
+          isBreaking: breakingTicker,
+          status: status === 'published' ? 'Published' : 'Draft',
+          paragraphs: extractedParagraphs,
+          sections: []
+        };
+
+        fetch('/api/articles', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(apiPayload)
+        }).then(r => r.json()).then(res => {
+          console.log('Synchronized article with Next.js live server:', res);
+        }).catch(err => {
+          console.warn('API sync fallback to localStorage:', err);
+        });
+      } catch (err) {
+        console.warn('Payload build error:', err);
+      }
+
       const statusBadge = document.getElementById('placement-status-badge');
       if (status === 'published') {
         document.getElementById('post-status-label').innerText = 'PUBLISHED';
@@ -6321,7 +6369,7 @@
           statusBadge.className = 'bg-blue-50 text-blue-900 border border-blue-200 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded';
         }
         confetti({ particleCount: 80, spread: 60, origin: { y: 0.8 } });
-        showToast('Published to ApexChief! 🚀', `"${title}" is now live.`);
+        showToast('Published to ApexChief! 🚀', `"${title}" is now live on the homepage.`);
       } else {
         document.getElementById('post-status-label').innerText = 'DRAFT';
         if (statusBadge) {
@@ -7146,7 +7194,13 @@
     }
 
     function deletePost(id) {
-      posts = posts.filter(p => p.id !== id);
+      const p = posts.find(item => item.id === id);
+      if (p && p.slug) {
+        fetch('/api/articles?slug=' + encodeURIComponent(p.slug), {
+          method: 'DELETE'
+        }).catch(e => console.warn('Delete API warning:', e));
+      }
+      posts = posts.filter(item => item.id !== id);
       saveState();
       renderPostsTable();
       showToast('Post Moved to Trash', 'Item removed.');

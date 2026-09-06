@@ -1727,6 +1727,15 @@ export default function AdminDashboard() {
     fetchData();
   }, []);
 
+  // Ensure modal inputs always start completely empty
+  useEffect(() => {
+    if (activeLoginModal) {
+      setLoginEmail('');
+      setPasswordInput('');
+      setLoginError('');
+    }
+  }, [activeLoginModal]);
+
   // Sync content into WYSIWYG canvas when entering edit-post tab
   useEffect(() => {
     if (activeTab === 'edit-post') {
@@ -2508,13 +2517,18 @@ export default function AdminDashboard() {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4 text-xs">
+            <form onSubmit={handleLogin} autoComplete="off" className="space-y-4 text-xs">
               <div>
                 <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-1.5">
                   Username / ID
                 </label>
                 <input
                   type="text"
+                  name="apex_admin_user_id_field"
+                  id="apex_admin_user_id_field"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
                   value={loginEmail}
                   onChange={(e) => setLoginEmail(e.target.value)}
                   placeholder="Enter username or email"
@@ -2530,9 +2544,11 @@ export default function AdminDashboard() {
                 <div className="relative">
                   <input
                     type={showLoginPassword ? 'text' : 'password'}
-                    name="adminPassword"
-                    id="adminPassword"
-                    autoComplete="current-password"
+                    name="apex_admin_user_key_field"
+                    id="apex_admin_user_key_field"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
                     value={passwordInput}
                     onChange={(e) => setPasswordInput(e.target.value)}
                     placeholder="Enter password"

@@ -76,11 +76,16 @@ export default function HomePage() {
   const hero3 = top3Assigned[2] || getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams');
 
   // Latest News dynamic assignments
-  const latestAssigned = articles.filter((a) => a.placement === 'latest-news');
-  const newsMain = latestAssigned[0] || getArt('space-agencies-plan-joint-lunar-exploration-mission');
-  const newsRightTop = latestAssigned[1] || getArt('interview-sarah-chen-on-building-ai-native-operating-systems');
-  const newsRightBottom = latestAssigned[2] || getArt('programmatic-brand-storytelling-in-the-age-of-algorithmic-feeds');
-  const newsRightBottom2 = latestAssigned[3] || getArt('corporate-treasuries-diversify-into-green-infrastructure-bonds');
+  const explicitLatest = articles.filter((a) => a.placement === 'latest-news');
+  const unplacedArticles = articles.filter((a) => a.placement !== 'top3' && a.placement !== 'best-month');
+  const latestPool = explicitLatest.length > 0 
+    ? [...explicitLatest, ...unplacedArticles.filter((a) => !explicitLatest.some((l) => l.id === a.id || l.slug === a.slug))]
+    : (unplacedArticles.length > 0 ? unplacedArticles : articles);
+
+  const newsMain = latestPool[0] || getArt('space-agencies-plan-joint-lunar-exploration-mission');
+  const newsRightTop = latestPool[1] || getArt('interview-sarah-chen-on-building-ai-native-operating-systems');
+  const newsRightBottom = latestPool[2] || getArt('programmatic-brand-storytelling-in-the-age-of-algorithmic-feeds');
+  const newsRightBottom2 = latestPool[3] || getArt('corporate-treasuries-diversify-into-green-infrastructure-bonds');
 
   // Best This Month dynamic assignments
   const bestAssigned = articles.filter((a) => a.placement === 'best-month');
