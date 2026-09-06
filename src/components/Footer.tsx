@@ -29,6 +29,12 @@ export default function Footer() {
               ©{' '}
               <Link
                 href="/admin"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem('admin_logged_in');
+                    localStorage.removeItem('apexchief_auth_session');
+                  } catch (e) {}
+                }}
                 className="text-inherit hover:text-inherit no-underline cursor-default focus:outline-none"
               >
                 {currentYear}

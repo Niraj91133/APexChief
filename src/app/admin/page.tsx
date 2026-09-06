@@ -674,7 +674,8 @@ interface StoryVersion {
 export default function AdminDashboard() {
   // Authentication & Dual-Engine Workspace Gateway State
   const [selectedWorkspace, setSelectedWorkspace] = useState<'wordpress' | 'nextjs'>('wordpress');
-  const [loginEmail, setLoginEmail] = useState('admin@apexchief.com');
+  const [activeLoginModal, setActiveLoginModal] = useState<'format1' | 'format2' | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -1755,31 +1756,33 @@ export default function AdminDashboard() {
   // Auth Handlers
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!passwordInput) {
-      setLoginError('Please enter the administrator password.');
+    if (!passwordInput.trim()) {
+      setLoginError('Please enter your administrator password.');
       return;
     }
 
     setIsVerifyingAuth(true);
     setLoginError('');
 
-    const proceedLaunch = (workspace: 'wordpress' | 'nextjs') => {
+    const targetFormat = activeLoginModal === 'format1' ? 'wordpress' : 'nextjs';
+
+    const proceedLaunch = () => {
       setIsLoggedIn(true);
       setLoginError('');
       localStorage.setItem('admin_logged_in', 'true');
       localStorage.setItem('apexchief_auth_session', JSON.stringify({
-        email: loginEmail,
+        email: loginEmail.trim() || 'admin@apexchief.com',
         timestamp: Date.now(),
-        workspace
+        workspace: targetFormat
       }));
 
-      if (workspace === 'wordpress') {
-        showToast('Launching Classic WordPress & Rank Math SEO Suite...', 'success');
+      if (targetFormat === 'wordpress') {
+        showToast('Access Granted! Opening Format 1...', 'success');
         setTimeout(() => {
           window.location.href = '/wp-admin.html';
-        }, 300);
+        }, 250);
       } else {
-        showToast('Successfully logged in to Modern Next.js Executive Portal!', 'success');
+        showToast('Access Granted! Opening Format 2...', 'success');
         fetchData();
       }
     };
@@ -1788,17 +1791,17 @@ export default function AdminDashboard() {
       const res = await fetch('/api/admin/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'verify', password: passwordInput }),
+        body: JSON.stringify({ action: 'verify', password: passwordInput.trim() }),
       });
 
       const data = await res.json();
       if (res.ok && data.success) {
-        proceedLaunch(selectedWorkspace);
+        proceedLaunch();
       } else {
         // Fallback for standard demo credentials
         const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
         if (validDemo.includes(passwordInput.trim())) {
-          proceedLaunch(selectedWorkspace);
+          proceedLaunch();
         } else {
           setLoginError(data.error || 'Incorrect password! Please enter the valid admin password.');
         }
@@ -1806,9 +1809,9 @@ export default function AdminDashboard() {
     } catch (err) {
       const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
       if (validDemo.includes(passwordInput.trim())) {
-        proceedLaunch(selectedWorkspace);
+        proceedLaunch();
       } else {
-        setLoginError('Failed to verify password. Demo password is: apexchief2026');
+        setLoginError('Incorrect password! Please check your credentials.');
       }
     } finally {
       setIsVerifyingAuth(false);
@@ -1817,11 +1820,15 @@ export default function AdminDashboard() {
 
   const handleLogout = () => {
     setIsLoggedIn(false);
+    setActiveLoginModal(null);
     localStorage.setItem('admin_logged_in', 'false');
     localStorage.removeItem('apexchief_auth_session');
+    setLoginEmail('');
     setPasswordInput('');
+    setLoginError('');
     showToast('Signed out of admin panel.', 'info');
   };
+
 
 
   // Database-Connected Password Change Handler
@@ -2348,113 +2355,224 @@ export default function AdminDashboard() {
     }
   };
 
-  // Render Clean Visual Workspace Selector (Format 1 vs Format 2) if not logged in
+  // Render Clean Visual Workspace Selector (Format 1 vs Format 2) & Auth Modal if not logged in
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-[#070b14] text-white flex flex-col items-center justify-center p-4 sm:p-8 font-sans selection:bg-[#f7413e] selection:text-white">
-        <div className="max-w-5xl w-full space-y-8 animate-in fade-in zoom-in-95 duration-300">
-          {/* Top Title */}
-          <div className="text-center space-y-2">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-white drop-shadow-sm">
-              Select Editorial Format
-            </h1>
-            <p className="text-xs sm:text-sm text-gray-300 font-mono">
-              Choose your post editor workspace to continue
-            </p>
-          </div>
+        {!activeLoginModal ? (
+          /* STEP 1: VISUAL FORMAT SELECTION (Cards with Dashboard Images) */
+          <div className="max-w-5xl w-full space-y-8 animate-in fade-in zoom-in-95 duration-300">
+            {/* Top Title */}
+            <div className="text-center space-y-2">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-white drop-shadow-sm">
+                Select Editorial Format
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-300 font-mono">
+                Choose your post editor workspace to continue
+              </p>
+            </div>
 
-          {/* Format 1 & Format 2 Visual Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {/* Format 1 Card */}
-            <div
-              onClick={() => {
-                setIsLoggedIn(true);
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('apexchief_auth_session', JSON.stringify({ workspace: 'wordpress', timestamp: Date.now() }));
-                window.location.href = '/wp-admin.html';
-              }}
-              className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-[#f7413e] rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-[#f7413e]/25 flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                {/* Image Preview of Dashboard Post Writer */}
-                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-[#f7413e]/60 transition-colors shadow-inner">
-                  <img
-                    src="/images/format-1.png"
-                    alt="Format 1"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                  />
+            {/* Format 1 & Format 2 Visual Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              {/* Format 1 Card */}
+              <div
+                onClick={() => {
+                  setActiveLoginModal('format1');
+                  setLoginError('');
+                  setLoginEmail('');
+                  setPasswordInput('');
+                }}
+                className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-[#f7413e] rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-[#f7413e]/25 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  {/* Image Preview of Dashboard Post Writer */}
+                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-[#f7413e]/60 transition-colors shadow-inner">
+                    <img
+                      src="/images/format-1.png"
+                      alt="Format 1"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <div className="pt-2 text-center">
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#f7413e] transition-colors tracking-wide">
+                      Format 1
+                    </h2>
+                  </div>
                 </div>
 
-                {/* Title */}
-                <div className="pt-2 text-center">
-                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#f7413e] transition-colors tracking-wide">
-                    Format 1
-                  </h2>
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    className="w-full py-3 bg-[#f7413e] hover:bg-[#d63431] text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <span>Open Format 1</span>
+                    <span>&rarr;</span>
+                  </button>
                 </div>
               </div>
 
-              <div className="pt-4">
-                <button
-                  type="button"
-                  className="w-full py-3 bg-[#f7413e] hover:bg-[#d63431] text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Open Format 1</span>
-                  <span>&rarr;</span>
-                </button>
+              {/* Format 2 Card */}
+              <div
+                onClick={() => {
+                  setActiveLoginModal('format2');
+                  setLoginError('');
+                  setLoginEmail('');
+                  setPasswordInput('');
+                }}
+                className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-sky-500 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-sky-500/25 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  {/* Image Preview of Dashboard Post Writer */}
+                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-sky-500/60 transition-colors shadow-inner">
+                    <img
+                      src="/images/format-2.png"
+                      alt="Format 2"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <div className="pt-2 text-center">
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-sky-400 transition-colors tracking-wide">
+                      Format 2
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <span>Open Format 2</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Format 2 Card */}
-            <div
-              onClick={() => {
-                setIsLoggedIn(true);
-                localStorage.setItem('admin_logged_in', 'true');
-                localStorage.setItem('apexchief_auth_session', JSON.stringify({ workspace: 'nextjs', timestamp: Date.now() }));
-                fetchData();
-              }}
-              className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-sky-500 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-sky-500/25 flex flex-col justify-between"
-            >
-              <div className="space-y-3">
-                {/* Image Preview of Dashboard Post Writer */}
-                <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-sky-500/60 transition-colors shadow-inner">
-                  <img
-                    src="/images/format-2.png"
-                    alt="Format 2"
-                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-
-                {/* Title */}
-                <div className="pt-2 text-center">
-                  <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-sky-400 transition-colors tracking-wide">
-                    Format 2
-                  </h2>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <button
-                  type="button"
-                  className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
-                >
-                  <span>Open Format 2</span>
-                  <span>&rarr;</span>
-                </button>
-              </div>
+            {/* Back link */}
+            <div className="text-center pt-2">
+              <Link
+                href="/"
+                className="inline-flex items-center space-x-1.5 text-xs font-mono text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Website</span>
+              </Link>
             </div>
           </div>
+        ) : (
+          /* STEP 2: ID & PASSWORD LOGIN MODAL (Blank Inputs by Default) */
+          <div className="max-w-md w-full bg-[#111827] border-2 border-gray-700/80 p-6 sm:p-8 shadow-2xl space-y-5 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <button
+                type="button"
+                onClick={() => setActiveLoginModal(null)}
+                className="text-xs font-mono text-gray-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Change Format</span>
+              </button>
+              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                activeLoginModal === 'format1'
+                  ? 'bg-[#f7413e]/20 text-[#f7413e] border border-[#f7413e]/40'
+                  : 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+              }`}>
+                {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}
+              </span>
+            </div>
 
-          {/* Back link */}
-          <div className="text-center pt-2">
-            <Link
-              href="/"
-              className="inline-flex items-center space-x-1.5 text-xs font-mono text-gray-400 hover:text-white transition-colors hover:underline"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to Website</span>
-            </Link>
+            <div className="text-center space-y-1">
+              <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-2 border ${
+                activeLoginModal === 'format1'
+                  ? 'bg-[#f7413e]/10 text-[#f7413e] border-[#f7413e]/30'
+                  : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+              }`}>
+                <Lock className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-bold text-white font-serif">
+                Sign In to {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}
+              </h2>
+              <p className="text-xs text-gray-400 font-mono">
+                Enter your credentials to unlock the post editor
+              </p>
+            </div>
+
+            {loginError && (
+              <div className="p-3 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-lg text-xs flex items-start space-x-2 animate-in fade-in duration-200">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex-1 font-medium">{loginError}</div>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4 text-xs">
+              <div>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-1.5">
+                  Username / ID
+                </label>
+                <input
+                  type="text"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="Enter username or email"
+                  autoFocus
+                  className="w-full p-2.5 bg-[#0b0f19] border border-gray-700 text-white rounded-lg focus:border-[#f7413e] focus:outline-none transition-colors text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    name="adminPassword"
+                    id="adminPassword"
+                    autoComplete="current-password"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full p-2.5 pr-10 bg-[#0b0f19] border border-gray-700 text-white rounded-lg focus:border-[#f7413e] focus:outline-none transition-colors text-xs font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                    title={showLoginPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isVerifyingAuth}
+                className={`w-full py-3 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center space-x-2 mt-2 ${
+                  activeLoginModal === 'format1'
+                    ? 'bg-[#f7413e] hover:bg-[#d63431]'
+                    : 'bg-sky-600 hover:bg-sky-500'
+                }`}
+              >
+                {isVerifyingAuth ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Unlock &amp; Open {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}</span>
+                  </>
+                )}
+              </button>
+            </form>
           </div>
-        </div>
+        )}
       </div>
     );
   }
