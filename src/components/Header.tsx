@@ -50,21 +50,12 @@ function HeaderNav({
 
   return (
     <div
-      className="category-nav-bar w-full bg-black text-white border-b border-black transition-all relative z-40"
+      className="category-nav-bar hidden lg:block w-full bg-black text-white border-b border-black transition-all relative z-40"
       onMouseLeave={handleMouseLeave}
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-1.5 sm:py-2">
-        {/* Mobile-Only Menu Toggle Button */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 text-white hover:text-[#f7413e] transition-colors cursor-pointer"
-          aria-label="Toggle navigation menu"
-        >
-          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
-
         {/* Desktop Navigation Links (All Categories Centered within 1240px Container) */}
-        <nav className="hidden lg:flex items-center justify-center flex-wrap xl:flex-nowrap gap-x-1 xl:gap-x-2 py-0.5 flex-1">
+        <nav className="flex items-center justify-center flex-wrap xl:flex-nowrap gap-x-1 xl:gap-x-2 py-0.5 flex-1">
           <Link
             href="/news"
             className="px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap shrink-0"
@@ -106,13 +97,6 @@ function HeaderNav({
             );
           })}
         </nav>
-
-        {/* Mobile search indicator */}
-        <div className="lg:hidden">
-          <button onClick={onOpenSearch} className="p-2 text-white hover:text-[#f7413e]">
-            <Search className="w-5 h-5" />
-          </button>
-        </div>
       </div>
 
       {/* Hover Subcategory Mega Dropdown Panel */}
