@@ -28,6 +28,8 @@ export const siteConfig = {
     instagram: 'https://instagram.com',
     linkedin: 'https://linkedin.com',
     facebook: 'https://facebook.com',
+    whatsapp: 'https://wa.me/919876543210',
+    phoneUrl: 'tel:+12125554821',
   },
   copyright: '© 2026 ApexChief. All Rights Reserved.',
 };

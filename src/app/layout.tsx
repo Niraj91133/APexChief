@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import SearchModal from '@/components/SearchModal';
 import Analytics from '@/components/Analytics';
 import MainWrapper from '@/components/MainWrapper';
+import WhatsAppFloatingWidget from '@/components/WhatsAppFloatingWidget';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -74,6 +75,7 @@ export default function RootLayout({
         <Footer />
         <SearchModal />
         <Analytics />
+        <WhatsAppFloatingWidget />
       </body>
     </html>
   );

@@ -4696,41 +4696,95 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: CREATE / EDIT WEB STORY -->
+  <!-- MODAL: CREATE / EDIT WEB STORY (FULL MULTI-SLIDE & DEVICE UPLOADER) -->
   <!-- ========================================================================= -->
+  <input type="file" id="story-poster-file-input" accept="image/*" class="hidden" onchange="handleStoryPosterDeviceUpload(event)">
+  <input type="file" id="story-slide-file-input" accept="image/*" class="hidden" onchange="handleStorySlideDeviceUpload(event)">
+
   <div id="modal-story-editor" class="fixed inset-0 z-[999999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-lg shadow-2xl w-full max-w-xl overflow-hidden border border-gray-300 text-xs">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-300 text-xs flex flex-col max-h-[90vh]">
+      <!-- Header -->
       <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-[#111827] text-white">
-        <h3 class="font-bold text-sm">Create New Google Web Story</h3>
-        <button onclick="closeCreateStoryModal()" class="text-gray-400 hover:text-white">&times;</button>
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-bolt text-yellow-400"></i>
+          <h3 id="story-modal-title" class="font-bold text-sm">Create New Google Web Story</h3>
+          <span class="bg-[#f7413e] text-[9px] px-1.5 py-0.5 rounded font-mono uppercase font-bold">AMP Discover</span>
+        </div>
+        <button onclick="closeCreateStoryModal()" class="text-gray-400 hover:text-white text-lg leading-none">&times;</button>
       </div>
-      <div class="p-5 space-y-3 max-h-[75vh] overflow-y-auto">
-        <div>
-          <label class="block font-bold text-gray-700 mb-1">Story Title</label>
-          <input type="text" id="new-story-title" placeholder="e.g., Top 5 Macro Trends of 2026" class="w-full border border-gray-300 rounded p-2 focus:outline-blue-500">
+
+      <!-- Body -->
+      <div class="p-5 space-y-4 overflow-y-auto flex-1">
+        <!-- Story Headline & Category -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div class="md:col-span-2">
+            <label class="block font-bold text-gray-700 mb-1">Story Headline / Title <span class="text-red-500">*</span></label>
+            <input type="text" id="new-story-title" placeholder="e.g., Inside the UAE Frontier AI Sovereign Compute Grid" class="w-full border border-gray-300 rounded p-2 text-xs focus:border-blue-500 outline-none">
+          </div>
+          <div>
+            <label class="block font-bold text-gray-700 mb-1">Category</label>
+            <select id="new-story-cat" class="w-full border border-gray-300 rounded p-2 text-xs bg-white font-semibold focus:border-blue-500 outline-none">
+              <option value="Technology">Technology</option>
+              <option value="Markets">Markets</option>
+              <option value="Business">Business</option>
+              <option value="Leadership">Leadership</option>
+              <option value="Startups">Startups</option>
+              <option value="Future">Future</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label class="block font-bold text-gray-700 mb-1">Category</label>
-          <select id="new-story-cat" class="w-full border border-gray-300 rounded p-2 bg-white font-semibold">
-            <option value="Technology">Technology</option>
-            <option value="Markets">Markets</option>
-            <option value="Business">Business</option>
-            <option value="Leadership">Leadership</option>
-            <option value="Startups">Startups</option>
-            <option value="Future">Future</option>
-          </select>
+
+        <!-- Cover Poster with Device Upload -->
+        <div class="border border-gray-200 rounded-lg p-3.5 bg-gray-50/70">
+          <div class="flex items-center justify-between mb-2">
+            <label class="block font-bold text-gray-700 text-xs">
+              <i class="fas fa-image text-blue-600 mr-1"></i> Cover Poster Image (9:16 Ratio)
+            </label>
+            <button type="button" onclick="document.getElementById('story-poster-file-input').click()" class="bg-[#2271b1] hover:bg-[#135e96] text-white text-[11px] font-bold px-3 py-1 rounded shadow-2xs flex items-center gap-1 cursor-pointer">
+              <i class="fas fa-upload"></i> Upload from Device
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-3">
+            <div id="story-poster-preview-box" class="w-14 h-20 bg-gray-200 rounded border border-gray-300 overflow-hidden flex-shrink-0 flex items-center justify-center text-gray-400">
+              <img id="story-poster-img" src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+              <input type="text" id="new-story-poster" oninput="updateStoryPosterPreview(this.value)" value="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" placeholder="https://image-url or upload from device..." class="w-full border border-gray-300 rounded p-2 text-xs focus:border-blue-500 outline-none font-mono">
+              <span class="text-[10px] text-gray-500 mt-1 block">Supports direct device upload (.jpg, .png, .webp) or remote CDN image URL.</span>
+            </div>
+          </div>
         </div>
+
+        <!-- Interactive Slide-by-Slide Builder -->
         <div>
-          <label class="block font-bold text-gray-700 mb-1">Cover Poster Image URL</label>
-          <input type="text" id="new-story-poster" value="https://images.unsplash.com/photo-1518770660439-4636190af475?w=800" class="w-full border border-gray-300 rounded p-2 focus:outline-blue-500">
-        </div>
-        <div class="bg-blue-50 border border-blue-200 p-3 rounded text-[11px] text-blue-900">
-          <strong>Story Engine:</strong> 4 animated slides with full Google Discover AMP schema will be generated automatically.
+          <div class="flex items-center justify-between pb-2 border-b border-gray-200 mb-3">
+            <div class="flex items-center space-x-2">
+              <i class="fas fa-layer-group text-[#f7413e]"></i>
+              <span class="font-bold text-gray-800 text-xs uppercase tracking-wider">Story Slides (<span id="story-slides-count">3</span> Slides)</span>
+            </div>
+            <button type="button" onclick="addStoryEditorSlide()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 border border-gray-300 text-[11px] font-bold px-2.5 py-1 rounded flex items-center gap-1 shadow-2xs cursor-pointer">
+              <i class="fas fa-plus text-green-600"></i> Add New Slide
+            </button>
+          </div>
+
+          <!-- Slide Containers List -->
+          <div id="story-slides-builder-list" class="space-y-3">
+            <!-- Rendered dynamically via renderStoryEditorSlides() -->
+          </div>
         </div>
       </div>
-      <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex justify-end space-x-2">
-        <button onclick="closeCreateStoryModal()" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded font-semibold">Cancel</button>
-        <button onclick="submitNewStory()" class="bg-[#f7413e] hover:bg-[#d62f2c] text-white px-4 py-1.5 rounded font-bold">Publish Web Story</button>
+
+      <!-- Footer -->
+      <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
+        <span class="text-[11px] text-gray-500 font-mono">100% Google AMP & Discover Compliant</span>
+        <div class="flex space-x-2">
+          <button onclick="closeCreateStoryModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3.5 py-1.5 rounded font-semibold text-xs transition-colors">Cancel</button>
+          <button onclick="submitNewStory()" class="bg-[#f7413e] hover:bg-[#d62f2c] text-white px-5 py-1.5 rounded font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5">
+            <i class="fas fa-check-circle"></i>
+            <span id="btn-save-story-label">Publish Web Story</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -7553,15 +7607,33 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     // =========================================================================
-    // GOOGLE WEB STORIES SUITE & INTERACTIVE MOBILE PLAYER
+    // GOOGLE WEB STORIES SUITE & INTERACTIVE MOBILE PLAYER (FULL FUNCTIONAL)
     // =========================================================================
+    let currentStoryEditingId = null;
+    let storyEditorSlides = [];
+    let activeSlideUploadIndex = null;
+
     function renderStoriesList() {
       const container = document.getElementById('stories-grid-container');
       if (!container) return;
 
+      if (!stories || stories.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full py-12 text-center bg-white rounded-xl border border-gray-200">
+            <i class="fas fa-bolt text-4xl text-gray-300 mb-2"></i>
+            <h3 class="font-bold text-gray-700 text-sm">No Active Google Web Stories</h3>
+            <p class="text-xs text-gray-500 mb-3">Create your first visual AMP Web Story for Google Discover.</p>
+            <button onclick="openCreateStoryModal()" class="bg-[#f7413e] hover:bg-[#d62f2c] text-white px-4 py-1.5 rounded text-xs font-bold">
+              + Create First Story
+            </button>
+          </div>
+        `;
+        return;
+      }
+
       container.innerHTML = stories.map(s => `
         <div class="relative bg-gray-900 rounded-2xl overflow-hidden shadow-lg group flex flex-col justify-between aspect-[9/16] transition-all hover:scale-[1.02] border border-gray-800">
-          <img src="${s.poster}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" alt="${s.title}">
+          <img src="${s.poster}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80" alt="${s.title}" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=800'">
           <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/60"></div>
           
           <!-- Top Card Meta -->
@@ -7570,21 +7642,27 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
               ${s.category}
             </span>
             <span class="bg-black/60 backdrop-blur-xs text-white text-[10px] font-semibold px-2 py-0.5 rounded-full border border-white/20">
-              <i class="fas fa-layer-group text-[9px] mr-1 text-yellow-400"></i> ${s.slides?.length || 4} Slides
+              <i class="fas fa-layer-group text-[9px] mr-1 text-yellow-400"></i> ${s.slides?.length || 3} Slides
             </span>
           </div>
 
           <!-- Bottom Card Content & Actions -->
           <div class="relative z-10 p-4 space-y-2 text-white">
-            <span class="text-[10px] text-gray-300 block"><i class="fas fa-eye text-[9px] mr-1 text-blue-400"></i> ${s.views} Views</span>
-            <h4 class="font-serif font-bold text-sm leading-snug drop-shadow-md line-clamp-3">${s.title}</h4>
+            <div class="flex items-center justify-between text-[10px] text-gray-300">
+              <span><i class="fas fa-eye text-[9px] mr-1 text-blue-400"></i> ${s.views || '1.4k'} Views</span>
+              <span><i class="fas fa-check-circle text-[9px] text-emerald-400 mr-1"></i> AMP Ready</span>
+            </div>
+            <h4 class="font-serif font-bold text-sm leading-snug drop-shadow-md line-clamp-2">${s.title}</h4>
             
             <div class="pt-2 flex items-center space-x-1.5">
-              <button onclick="playStory('${s.id}')" class="flex-1 bg-white hover:bg-gray-100 text-gray-900 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center space-x-1 shadow transition-colors">
+              <button onclick="playStory('${s.id}')" class="flex-1 bg-white hover:bg-gray-100 text-gray-900 font-bold py-1.5 rounded-lg text-xs flex items-center justify-center space-x-1 shadow transition-colors cursor-pointer">
                 <i class="fas fa-play text-[#f7413e] text-[10px]"></i>
-                <span>Play Story</span>
+                <span>Play</span>
               </button>
-              <button onclick="deleteStory('${s.id}')" class="w-7 h-7 rounded-lg bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center text-xs" title="Delete">
+              <button onclick="editStory('${s.id}')" class="w-7 h-7 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white flex items-center justify-center text-xs cursor-pointer" title="Edit Story">
+                <i class="fas fa-edit text-[10px]"></i>
+              </button>
+              <button onclick="deleteStory('${s.id}')" class="w-7 h-7 rounded-lg bg-red-600/80 hover:bg-red-600 text-white flex items-center justify-center text-xs cursor-pointer" title="Delete Story">
                 <i class="fas fa-trash-alt text-[10px]"></i>
               </button>
             </div>
@@ -7593,13 +7671,202 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       `).join('');
     }
 
-    function openCreateStoryModal() {
-      document.getElementById('new-story-title').value = '';
+    function handleStoryPosterDeviceUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        document.getElementById('new-story-poster').value = dataUrl;
+        updateStoryPosterPreview(dataUrl);
+        showToast('Poster Uploaded', `${file.name} set as story cover poster.`);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function updateStoryPosterPreview(url) {
+      const img = document.getElementById('story-poster-img');
+      if (img && url) {
+        img.src = url;
+      }
+    }
+
+    function handleStorySlideDeviceUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file || activeSlideUploadIndex === null) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        if (storyEditorSlides[activeSlideUploadIndex]) {
+          storyEditorSlides[activeSlideUploadIndex].bg = dataUrl;
+          renderStoryEditorSlides();
+          showToast('Slide Image Uploaded', `Image set for Slide #${activeSlideUploadIndex + 1}.`);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function triggerSlideDeviceUpload(index) {
+      activeSlideUploadIndex = index;
+      const fileInput = document.getElementById('story-slide-file-input');
+      if (fileInput) {
+        fileInput.value = '';
+        fileInput.click();
+      }
+    }
+
+    function renderStoryEditorSlides() {
+      const container = document.getElementById('story-slides-builder-list');
+      const countLabel = document.getElementById('story-slides-count');
+      if (countLabel) countLabel.innerText = storyEditorSlides.length;
+      if (!container) return;
+
+      container.innerHTML = storyEditorSlides.map((slide, idx) => `
+        <div class="border border-gray-300 rounded-lg p-3.5 bg-white shadow-2xs space-y-3 relative group">
+          <!-- Slide Header -->
+          <div class="flex items-center justify-between pb-2 border-b border-gray-200">
+            <div class="flex items-center space-x-2">
+              <span class="w-5 h-5 rounded-full bg-[#111827] text-white flex items-center justify-center font-bold text-[10px]">
+                ${idx + 1}
+              </span>
+              <span class="font-bold text-gray-800 text-xs">Slide #${idx + 1}</span>
+              <span class="text-[10px] text-gray-400 font-mono">(${idx === 0 ? 'Intro Slide' : (idx === storyEditorSlides.length - 1 ? 'Outro Slide' : 'Content Slide')})</span>
+            </div>
+            ${storyEditorSlides.length > 1 ? `
+              <button type="button" onclick="removeStoryEditorSlide(${idx})" class="text-red-500 hover:text-red-700 text-xs flex items-center gap-1 cursor-pointer font-semibold">
+                <i class="fas fa-trash-alt text-[10px]"></i> Delete
+              </button>
+            ` : ''}
+          </div>
+
+          <!-- Slide Background Image with Device Upload -->
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-16 bg-gray-100 rounded border border-gray-300 overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <img src="${slide.bg || 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800'}" class="w-full h-full object-cover" onerror="this.src='https://images.unsplash.com/photo-1518770660439-4636190af475?w=800'">
+            </div>
+            <div class="flex-1 space-y-1.5">
+              <div class="flex items-center justify-between">
+                <label class="text-[10px] font-bold text-gray-600 uppercase">Slide Background Image</label>
+                <button type="button" onclick="triggerSlideDeviceUpload(${idx})" class="bg-gray-100 hover:bg-gray-200 border border-gray-300 text-gray-800 text-[10px] font-bold px-2 py-0.5 rounded flex items-center gap-1 cursor-pointer shadow-2xs">
+                  <i class="fas fa-upload text-blue-600"></i> Upload Image
+                </button>
+              </div>
+              <input type="text" value="${slide.bg || ''}" oninput="storyEditorSlides[${idx}].bg = this.value; this.parentElement.previousElementSibling.querySelector('img').src = this.value;" placeholder="https://image-url or click Upload Image..." class="w-full border border-gray-300 rounded p-1.5 text-xs font-mono">
+            </div>
+          </div>
+
+          <!-- Slide Tag & Headline -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 block mb-0.5 uppercase">Badge / Tag</label>
+              <input type="text" value="${slide.tag || ''}" oninput="storyEditorSlides[${idx}].tag = this.value" placeholder="e.g. EXCLUSIVE" class="w-full border border-gray-300 rounded p-1.5 text-xs font-bold uppercase">
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-[10px] font-bold text-gray-600 block mb-0.5 uppercase">Slide Headline</label>
+              <input type="text" value="${slide.headline || ''}" oninput="storyEditorSlides[${idx}].headline = this.value" placeholder="e.g. Rapid Technological Acceleration" class="w-full border border-gray-300 rounded p-1.5 text-xs font-semibold">
+            </div>
+          </div>
+
+          <!-- Slide Subtext & CTA Link -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+            <div class="md:col-span-2">
+              <label class="text-[10px] font-bold text-gray-600 block mb-0.5 uppercase">Description / Caption</label>
+              <textarea rows="2" oninput="storyEditorSlides[${idx}].subtext = this.value" placeholder="Brief visual paragraph for this story slide..." class="w-full border border-gray-300 rounded p-1.5 text-xs resize-none">${slide.subtext || ''}</textarea>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-gray-600 block mb-0.5 uppercase">Call to Action Link</label>
+              <input type="text" value="${slide.ctaUrl || ''}" oninput="storyEditorSlides[${idx}].ctaUrl = this.value" placeholder="/news/enterprise-ai..." class="w-full border border-gray-300 rounded p-1.5 text-xs font-mono">
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addStoryEditorSlide() {
+      const nextIdx = storyEditorSlides.length + 1;
+      storyEditorSlides.push({
+        bg: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1080',
+        tag: 'DEEP DIVE',
+        headline: `Strategic Focus Point #${nextIdx}`,
+        subtext: 'Key editorial insights from the ApexChief intelligence desk.',
+        ctaUrl: '/news'
+      });
+      renderStoryEditorSlides();
+    }
+
+    function removeStoryEditorSlide(index) {
+      if (storyEditorSlides.length <= 1) return;
+      storyEditorSlides.splice(index, 1);
+      renderStoryEditorSlides();
+    }
+
+    function openCreateStoryModal(editStoryId = null) {
+      currentStoryEditingId = editStoryId;
+      const modalTitle = document.getElementById('story-modal-title');
+      const btnSave = document.getElementById('btn-save-story-label');
+
+      if (editStoryId) {
+        const story = stories.find(s => s.id === editStoryId);
+        if (story) {
+          if (modalTitle) modalTitle.innerText = 'Edit Google Web Story';
+          if (btnSave) btnSave.innerText = 'Save Changes';
+          document.getElementById('new-story-title').value = story.title;
+          document.getElementById('new-story-cat').value = story.category;
+          document.getElementById('new-story-poster').value = story.poster;
+          updateStoryPosterPreview(story.poster);
+          storyEditorSlides = JSON.parse(JSON.stringify(story.slides || []));
+          if (storyEditorSlides.length === 0) {
+            storyEditorSlides = [
+              { bg: story.poster, tag: story.category.toUpperCase(), headline: story.title, subtext: 'Exclusive ApexChief visual coverage.' }
+            ];
+          }
+        }
+      } else {
+        if (modalTitle) modalTitle.innerText = 'Create New Google Web Story';
+        if (btnSave) btnSave.innerText = 'Publish Web Story';
+        document.getElementById('new-story-title').value = '';
+        document.getElementById('new-story-cat').value = 'Technology';
+        const defaultPoster = 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=800';
+        document.getElementById('new-story-poster').value = defaultPoster;
+        updateStoryPosterPreview(defaultPoster);
+        storyEditorSlides = [
+          {
+            bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1080',
+            tag: 'FRONTIER TECH',
+            headline: 'Autonomous Infrastructure Evolution',
+            subtext: 'How sovereign compute nodes are reshaping national cloud frameworks in 2026.',
+            ctaUrl: '/news'
+          },
+          {
+            bg: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1080',
+            tag: 'CAPITAL ALLOCATION',
+            headline: 'Sovereign Wealth Acceleration',
+            subtext: 'Direct investments in 2nm fabrication facilities outpace standard equity syndicates.',
+            ctaUrl: '/news'
+          },
+          {
+            bg: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1080',
+            tag: 'STRATEGIC OUTLOOK',
+            headline: '2026 Global Projections',
+            subtext: 'Executive summary and key policy recommendations for enterprise leaders.',
+            ctaUrl: '/news'
+          }
+        ];
+      }
+
+      renderStoryEditorSlides();
       document.getElementById('modal-story-editor').classList.remove('hidden');
+    }
+
+    function editStory(id) {
+      openCreateStoryModal(id);
     }
 
     function closeCreateStoryModal() {
       document.getElementById('modal-story-editor').classList.add('hidden');
+      currentStoryEditingId = null;
     }
 
     function submitNewStory() {
@@ -7612,47 +7879,50 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         return;
       }
 
-      const newStory = {
-        id: 'story_' + Date.now(),
-        title: title,
-        category: category,
-        poster: poster,
-        views: '1.2k',
-        date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-        slides: [
-          {
-            bg: poster,
-            tag: category.toUpperCase(),
-            headline: title,
-            subtext: 'Exclusive ApexChief visual coverage and breaking analysis.'
-          },
-          {
-            bg: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=1080',
-            tag: 'DEEP DIVE',
-            headline: 'Strategic Industry Impact',
-            subtext: 'Market indicators confirm shifting capital allocations and technological acceleration.'
-          },
-          {
-            bg: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1080',
-            tag: 'OUTLOOK',
-            headline: '2026 Forward Projections',
-            subtext: 'Leading analysts recommend continuous monitoring of key macroeconomic benchmarks.'
-          }
-        ]
-      };
+      if (storyEditorSlides.length === 0) {
+        showToast('Missing Slides', 'Please add at least 1 slide to your story.');
+        return;
+      }
 
-      stories.unshift(newStory);
+      if (currentStoryEditingId) {
+        // Update existing story
+        const story = stories.find(s => s.id === currentStoryEditingId);
+        if (story) {
+          story.title = title;
+          story.category = category;
+          story.poster = poster;
+          story.slides = storyEditorSlides;
+          showToast('Web Story Updated', `"${title}" updated successfully.`);
+        }
+      } else {
+        // Create brand new story
+        const newStory = {
+          id: 'story_' + Date.now(),
+          title: title,
+          category: category,
+          poster: poster,
+          views: '1.4k',
+          date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+          slides: storyEditorSlides
+        };
+        stories.unshift(newStory);
+        showToast('Web Story Created', `"${title}" is published to Google Discover with ${storyEditorSlides.length} slides.`);
+      }
+
       saveState();
       renderStoriesList();
       closeCreateStoryModal();
-      showToast('Web Story Created', `"${title}" is published to Google Discover.`);
     }
 
     function deleteStory(id) {
-      stories = stories.filter(s => s.id !== id);
-      saveState();
-      renderStoriesList();
-      showToast('Story Deleted', 'Visual story removed.');
+      const story = stories.find(s => s.id === id);
+      const title = story ? story.title : 'Web Story';
+      if (confirm(`Are you sure you want to delete "${title}"?`)) {
+        stories = stories.filter(s => s.id !== id);
+        saveState();
+        renderStoriesList();
+        showToast('Story Deleted', 'Visual Web Story has been removed.');
+      }
     }
 
     function playStory(id) {
