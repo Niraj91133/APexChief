@@ -20,7 +20,7 @@ export interface Article {
   readTime: string;
   excerpt: string;
   content?: string;
-  placement?: 'top3' | 'latest-news' | 'best-month' | 'category';
+  placement?: 'top3' | 'latest-news' | 'best-month' | 'category' | 'interview' | 'top10' | 'standard';
   isBreaking?: boolean;
   paragraphs: string[];
   sections: ArticleSection[];
@@ -28,6 +28,7 @@ export interface Article {
   trending?: boolean;
   viewsCount?: number;
   likesCount?: number;
+  focusKeyword?: string;
 }
 
 export interface SubCategory {
