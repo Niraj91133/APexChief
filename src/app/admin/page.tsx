@@ -1953,6 +1953,114 @@ export default function AdminDashboard() {
     return ['all', ...cats];
   }, [categories]);
 
+  // Tag Efficiency Algorithm for Format 2
+  const tagEfficiencyData = useMemo(() => {
+    const rawTags = (editingArticle.tag || '').split(',').map((t: string) => t.trim()).filter(Boolean);
+    const title = (editingArticle.title || '').toLowerCase();
+    const content = (editingArticle.content || '').replace(/<[^>]*>?/gm, ' ').toLowerCase();
+    const focusKw = (editingArticle.focusKeyword || '').toLowerCase();
+
+    if (rawTags.length === 0) {
+      return { tags: [], avgScore: 0, avgColor: '#9ca3af', status: 'No Tags', advice: 'Add 3-6 relevant tags' };
+    }
+
+    const evaluated = rawTags.map((tag: string) => {
+      const cleanTag = tag.toLowerCase();
+      let score = 0;
+      let reasons: string[] = [];
+
+      // 1. Content Body Frequency
+      const escaped = cleanTag.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp('(\\b|\\s)' + escaped + '(\\b|\\s)', 'gi');
+      const matches = content.match(regex);
+      const occurrences = matches ? matches.length : (content.includes(cleanTag) ? 1 : 0);
+
+      if (occurrences >= 2 && occurrences <= 10) {
+        score += 45;
+        reasons.push(`${occurrences} mentions in text`);
+      } else if (occurrences === 1) {
+        score += 30;
+        reasons.push('1 mention in text');
+      } else if (occurrences > 10) {
+        score += 25;
+        reasons.push('High density');
+      } else {
+        reasons.push('Not in body text');
+      }
+
+      // 2. Title & Keyword Match
+      if (title.includes(cleanTag)) {
+        score += 25;
+        reasons.push('Headline match');
+      } else if (cleanTag.split(/\s+/).some((w: string) => w.length > 2 && title.includes(w))) {
+        score += 15;
+        reasons.push('Partial headline match');
+      }
+
+      if (focusKw && (focusKw.includes(cleanTag) || cleanTag.includes(focusKw))) {
+        score += 10;
+        reasons.push('Matches Focus Keyword');
+      }
+
+      // 3. Length Quality
+      if (cleanTag.length >= 4 && cleanTag.length <= 25) {
+        score += 10;
+      } else if (cleanTag.length < 3) {
+        score += 2;
+      } else {
+        score += 5;
+      }
+
+      // 4. Anti-spam
+      if (rawTags.length <= 6) score += 10;
+      else if (rawTags.length <= 8) score += 6;
+      else if (rawTags.length > 15) score -= 25;
+      else score -= 10;
+
+      score = Math.max(8, Math.min(100, Math.round(score)));
+
+      let color = '#ef4444';
+      let status = 'Low Relevance';
+      let badgeBg = 'bg-red-50 text-red-700 border-red-200';
+
+      if (score >= 70) {
+        color = '#10b981';
+        status = 'High Efficiency';
+        badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      } else if (score >= 40) {
+        color = '#f59e0b';
+        status = 'Moderate';
+        badgeBg = 'bg-amber-50 text-amber-700 border-amber-200';
+      }
+
+      return {
+        name: tag,
+        score,
+        color,
+        status,
+        badgeBg,
+        occurrences,
+        reason: reasons.join(' • ')
+      };
+    });
+
+    const totalScore = evaluated.reduce((sum: number, it: any) => sum + it.score, 0);
+    const avgScore = Math.round(totalScore / evaluated.length);
+    let avgColor = '#ef4444';
+    if (avgScore >= 70) avgColor = '#10b981';
+    else if (avgScore >= 40) avgColor = '#f59e0b';
+
+    return {
+      tags: evaluated,
+      avgScore,
+      avgColor,
+      status: avgScore >= 70 ? 'Optimal' : (avgScore >= 40 ? 'Moderate' : 'Low'),
+      advice: rawTags.length > 8 
+        ? `Anti-Spam Alert: Using ${rawTags.length} tags (>8 limit) dilutes SEO.` 
+        : (evaluated.some((e: any) => e.score < 40) ? 'Tags with red sticks are not found in article body.' : 'Anti-Spam Shield Active: Optimal density.')
+    };
+  }, [editingArticle.tag, editingArticle.title, editingArticle.content, editingArticle.focusKeyword]);
+
   // Category management handlers
   const initCreateCategory = () => {
     setIsEditingCategory(false);
@@ -4341,6 +4449,64 @@ export default function AdminDashboard() {
                                 <option value="Spotlight">Spotlight</option>
                                 <option value="Policy">Policy</option>
                               </select>
+                            </div>
+
+                            {/* Tag Efficiency Segmented Stick Indicator */}
+                            <div className="mt-2 p-2.5 bg-gray-50/80 border border-gray-200 rounded-md space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <div className="flex items-center space-x-1.5 font-semibold text-gray-700">
+                                  <Zap className="w-3 h-3 text-amber-500" />
+                                  <span>Tag Efficiency:</span>
+                                  <span style={{ color: tagEfficiencyData.avgColor }} className="font-bold font-mono">
+                                    {tagEfficiencyData.tags.length > 0 ? `${tagEfficiencyData.avgScore}% (${tagEfficiencyData.status})` : '0%'}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">
+                                  {tagEfficiencyData.tags.length} {tagEfficiencyData.tags.length === 1 ? 'Stick' : 'Sticks'} ({tagEfficiencyData.tags.length} {tagEfficiencyData.tags.length === 1 ? 'Tag' : 'Tags'})
+                                </span>
+                              </div>
+
+                              {/* Segmented Sticks (1 stick per tag) */}
+                              <div className="flex items-center gap-1 w-full min-h-[8px] rounded bg-gray-200 p-0.5">
+                                {tagEfficiencyData.tags.length === 0 ? (
+                                  <div className="w-full text-center text-[10px] text-gray-400 font-mono py-0.5">No tags assigned</div>
+                                ) : (
+                                  tagEfficiencyData.tags.map((item: any, idx: number) => (
+                                    <div
+                                      key={idx}
+                                      className="flex-1 h-2 rounded-xs transition-all duration-300 relative group cursor-pointer"
+                                      style={{ backgroundColor: item.color }}
+                                      title={`Stick ${idx + 1}: '${item.name}' • Efficiency: ${item.score}% (${item.status}) • ${item.reason}`}
+                                    />
+                                  ))
+                                )}
+                              </div>
+
+                              {/* Individual Tag Badges with Efficiency Dots */}
+                              {tagEfficiencyData.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 pt-1">
+                                  {tagEfficiencyData.tags.map((item: any, idx: number) => (
+                                    <span
+                                      key={idx}
+                                      className={`inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded border ${item.badgeBg}`}
+                                      title={item.reason}
+                                    >
+                                      <span
+                                        className="w-1.5 h-1.5 rounded-full mr-1 shrink-0"
+                                        style={{ backgroundColor: item.color }}
+                                      />
+                                      <span>{item.name}</span>
+                                      <span className="ml-1 font-mono font-bold" style={{ color: item.color }}>
+                                        {item.score}%
+                                      </span>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="text-[10px] text-gray-500 leading-tight">
+                                {tagEfficiencyData.advice}
+                              </div>
                             </div>
                           </div>
 

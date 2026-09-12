@@ -13,6 +13,7 @@ import {
   Mail,
   CheckCircle2,
 } from 'lucide-react';
+import HeroSection3Grid from '@/components/HeroSection3Grid';
 
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>(ARTICLES);
@@ -121,98 +122,9 @@ export default function HomePage() {
   return (
     <div className="w-full space-y-16">
       {/* ========================================================================= */}
-      {/* 0. TOP 3-STORY FEATURE SECTION (Above "Latest News")                       */}
+      {/* 0. HERO 3-GRID: LEFT TOP 10 + CENTER HERO LEAD + RIGHT INTERVIEW SLIDER   */}
       {/* ========================================================================= */}
-      <section className="w-full pb-8 border-b border-[#211d1d]/20">
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20">
-          {/* Card 1 (Left) */}
-          <div className="md:pr-6 pb-6 md:pb-0 flex flex-col justify-between group">
-            <Link
-              href={`/news/${hero1.slug}`}
-              className="block overflow-hidden relative aspect-square mb-3 bg-[#eff0e0]"
-            >
-              <Image
-                src={hero1.image}
-                alt={hero1.title}
-                fill
-                priority
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#575757] font-semibold">
-                {hero1.tag || hero1.category}
-              </span>
-              <Link href={`/news/${hero1.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1">
-                  {hero1.title}
-                </h3>
-              </Link>
-              <div className="text-xs font-serif italic text-[#575757] mt-2">
-                {hero1.date}
-              </div>
-            </div>
-          </div>
-
-          {/* Card 2 (Center) */}
-          <div className="md:px-6 py-6 md:py-0 flex flex-col justify-between group">
-            <div className="mb-3">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#575757] font-semibold">
-                {hero2.tag || hero2.category}
-              </span>
-              <Link href={`/news/${hero2.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1">
-                  {hero2.title}
-                </h3>
-              </Link>
-              <div className="text-xs font-serif italic text-[#575757] mt-2">
-                {hero2.date}
-              </div>
-            </div>
-            <Link
-              href={`/news/${hero2.slug}`}
-              className="block overflow-hidden relative aspect-square bg-[#eff0e0]"
-            >
-              <Image
-                src={hero2.image}
-                alt={hero2.title}
-                fill
-                priority
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-          </div>
-
-          {/* Card 3 (Right) */}
-          <div className="md:pl-6 pt-6 md:pt-0 flex flex-col justify-between group">
-            <Link
-              href={`/news/${hero3.slug}`}
-              className="block overflow-hidden relative aspect-square mb-3 bg-[#eff0e0]"
-            >
-              <Image
-                src={hero3.image}
-                alt={hero3.title}
-                fill
-                priority
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-[#575757] font-semibold">
-                {hero3.tag || hero3.category}
-              </span>
-              <Link href={`/news/${hero3.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1">
-                  {hero3.title}
-                </h3>
-              </Link>
-              <div className="text-xs font-serif italic text-[#575757] mt-2">
-                {hero3.date}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <HeroSection3Grid articles={articles} heroLeadArticle={hero1} />
 
       {/* ========================================================================= */}
       {/* 1. LATEST NEWS                                                            */}
