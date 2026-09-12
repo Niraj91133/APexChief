@@ -383,22 +383,22 @@ export default function HomePage() {
       {/* ========================================================================= */}
       {/* 10. NEWSLETTER DISPATCH BANNER                                            */}
       {/* ========================================================================= */}
-      <section className="w-full bg-[#211d1d] text-[#fefdf3] p-8 sm:p-12 text-center relative overflow-hidden">
+      <section className="w-full bg-white dark:bg-[#1a1d26] text-[#211d1d] dark:text-[#fefdf3] p-8 sm:p-12 text-center relative overflow-hidden border border-[#211d1d]/15 dark:border-white/10 shadow-xs">
         <div className="max-w-2xl mx-auto relative z-10">
           <Mail className="w-8 h-8 text-[#f7413e] mx-auto mb-3 animate-bounce" />
           <span className="text-[11px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
             Weekly Editorial Briefing
           </span>
-          <h3 className="font-serif text-3xl sm:text-4xl font-bold mt-2 mb-4 text-[#fefdf3]">
+          <h3 className="font-serif text-3xl sm:text-4xl font-bold mt-2 mb-4 text-[#211d1d] dark:text-[#fefdf3]">
             Curated Journalism Delivered Directly
           </h3>
-          <p className="text-xs sm:text-sm text-[#eff0e0]/80 leading-relaxed mb-6 font-sans">
+          <p className="text-xs sm:text-sm text-[#575757] dark:text-[#eff0e0]/80 leading-relaxed mb-6 font-sans">
             Join over 45,000 discerning readers receiving our weekly digest of original reporting, investigative cultural essays, and global industry intelligence.
           </p>
 
           {newsletterSubscribed ? (
-            <div className="bg-[#f7413e]/20 border border-[#f7413e] p-4 rounded text-sm text-[#fefdf3] flex items-center justify-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-[#f7413e]" />
+            <div className="bg-emerald-50 dark:bg-[#f7413e]/20 border border-emerald-500 dark:border-[#f7413e] p-4 text-sm text-emerald-800 dark:text-[#fefdf3] flex items-center justify-center space-x-2">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-[#f7413e]" />
               <span>Thank you for subscribing! Your briefing will arrive every Friday.</span>
             </div>
           ) : (
@@ -409,11 +409,11 @@ export default function HomePage() {
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email address..."
                 required
-                className="bg-[#fefdf3] text-[#211d1d] px-4 py-3 text-xs rounded-none border-0 focus:outline-none focus:ring-2 focus:ring-[#f7413e] flex-1 font-sans"
+                className="bg-[#faf8f2] dark:bg-[#111318] text-[#211d1d] dark:text-[#fefdf3] border border-[#211d1d]/20 dark:border-white/20 px-4 py-3 text-xs rounded-none focus:outline-none focus:ring-2 focus:ring-[#f7413e] flex-1 font-sans placeholder:text-[#575757]/60 dark:placeholder:text-gray-400"
               />
               <button
                 type="submit"
-                className="bg-[#f7413e] hover:bg-[#d92d2a] text-[#fefdf3] font-oswald text-xs uppercase px-6 py-3 font-bold tracking-widest transition-colors rounded-none"
+                className="bg-[#f7413e] hover:bg-[#d92d2a] text-[#fefdf3] font-oswald text-xs uppercase px-6 py-3 font-bold tracking-widest transition-colors rounded-none cursor-pointer"
               >
                 Subscribe
               </button>
