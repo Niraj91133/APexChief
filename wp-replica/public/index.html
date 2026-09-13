@@ -1140,8 +1140,8 @@
                       <label class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
                         <i class="fas fa-bullseye text-[#f7413e] text-xs"></i>
                         <span>Focus Keywords</span>
-                        <span id="focus-keywords-count" class="bg-gray-100 text-gray-700 text-[10px] px-1.5 py-0.5 rounded font-bold">1 / 5</span>
-                        <i class="fas fa-question-circle text-gray-400 text-[11px]" title="Add primary and secondary target keywords. Green = High Impact (Kaam Karega), Yellow = Moderate, Red = Weak/Missing."></i>
+                        <span id="focus-keywords-count" class="bg-gray-100 text-gray-700 text-[10px] px-1.5 py-0.5 rounded font-bold">0 / 5</span>
+                        <i class="fas fa-question-circle text-gray-400 text-[11px]" title="Add primary and secondary target keywords. Green = Optimal (70-100), Yellow = Moderate (40-69), Red = Poor / Missing (<40)."></i>
                       </label>
                       <button 
                         type="button" 
@@ -1190,26 +1190,26 @@
                     </div>
 
                     <!-- Hidden master input to store comma-separated keywords for compatibility with database, savePost, and APIs -->
-                    <input type="hidden" id="focus-keyword" value="Job Crisis" onchange="handleContentChange()">
+                    <input type="hidden" id="focus-keyword" value="" onchange="handleContentChange()">
 
                     <!-- Visual Health & Color Legend Guide -->
                     <div class="flex flex-wrap items-center justify-between text-[11px] px-1 pt-0.5 text-gray-500 gap-1">
                       <div class="flex items-center space-x-2.5">
-                        <span class="flex items-center space-x-1" title="High ranking probability — found in Title, URL, Desc and Content">
+                        <span class="flex items-center space-x-1" title="High ranking probability — keyword found across Title, URL, Meta Description and Content body">
                           <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
-                          <span class="font-semibold text-emerald-700 text-[10.5px]">Kaam Karega (70-100)</span>
+                          <span class="font-semibold text-emerald-700 text-[10.5px]">Optimal / Good (70-100)</span>
                         </span>
-                        <span class="flex items-center space-x-1" title="Partial match — missing in Title or Meta Description">
+                        <span class="flex items-center space-x-1" title="Partial match — missing in Title, URL or Meta Description">
                           <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
                           <span class="font-semibold text-amber-700 text-[10.5px]">Moderate (40-69)</span>
                         </span>
-                        <span class="flex items-center space-x-1" title="Critical missing — not found in body text or title">
+                        <span class="flex items-center space-x-1" title="Critical missing — keyword not found in body text or headings">
                           <span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
-                          <span class="font-semibold text-red-700 text-[10.5px]">Kaam Nahi Karega (&lt;40)</span>
+                          <span class="font-semibold text-red-700 text-[10.5px]">Poor / Missing (&lt;40)</span>
                         </span>
                       </div>
                       <span id="active-inspected-kw-label" class="font-mono text-[10px] text-gray-400">
-                        Inspecting: <strong class="text-gray-700 font-bold" id="inspected-kw-name">Job Crisis</strong>
+                        Inspecting: <strong class="text-gray-700 font-bold" id="inspected-kw-name">None</strong>
                       </span>
                     </div>
                   </div>
@@ -5299,7 +5299,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
     ];
 
-    const defaultTags = ['Economy', 'Technology', 'AI', 'Markets', 'Leadership', 'Investments', 'India Growth'];
+    const defaultTags = [];
 
     const defaultMedia = [
       { id: 'm1', url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200', name: 'images-7-3.jpg', title: 'Indian Economic Landscape', alt: 'Indian economic landscape and urban industrial boom', type: 'image', size: '43 KB', dim: '679 by 452 pixels', date: '12 September 2026', author: 'ApexChief Editorial', caption: 'Macroeconomic development corridor in 2026.', description: 'High-resolution editorial photography of modern economic development corridors and industrial infrastructure.' },
@@ -5641,7 +5641,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         date: '2026/09/06 at 10:30 am',
         rawDate: '2026-09-06T10:30:00',
         categories: ['Business', 'Economy'],
-        tags: ['Economy', 'Technology'],
+        tags: [],
         featuredImage: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800',
         author: 'ApexChief Editorial',
         views: 1240,
@@ -5660,7 +5660,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         date: '2026/09/05 at 4:15 pm',
         rawDate: '2026-09-05T16:15:00',
         categories: ['Leadership', 'Strategy'],
-        tags: ['Leadership', 'Markets'],
+        tags: [],
         featuredImage: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800',
         author: 'ApexChief Editorial',
         views: 980,
@@ -5671,7 +5671,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
     let posts = JSON.parse(localStorage.getItem(STORAGE_KEY_POSTS)) || defaultPosts;
     let categories = JSON.parse(localStorage.getItem(STORAGE_KEY_CATS)) || defaultApexChiefCategories;
-    let tags = JSON.parse(localStorage.getItem(STORAGE_KEY_TAGS)) || defaultTags;
+    let tags = [];
     let mediaList = JSON.parse(localStorage.getItem(STORAGE_KEY_MEDIA)) || defaultMedia;
     let pages = JSON.parse(localStorage.getItem(STORAGE_KEY_PAGES)) || defaultPages;
     let stories = JSON.parse(localStorage.getItem(STORAGE_KEY_STORIES)) || defaultStories;
@@ -8404,6 +8404,10 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     function initNewPost() {
       currentPostId = 'post_' + Date.now();
       activeInspectedKwIndex = 0;
+      tags = [];
+      const tagInp = document.getElementById('tag-input');
+      if (tagInp) tagInp.value = '';
+
       document.getElementById('post-editor-heading').innerText = 'Add Post';
       document.getElementById('post-title').value = '';
       document.getElementById('editor-content').innerHTML = '<p>Start writing your new story here...</p>';
@@ -8452,6 +8456,10 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (!p) return;
       currentPostId = p.id;
       activeInspectedKwIndex = 0;
+      tags = Array.isArray(p.tags) ? [...p.tags] : (typeof p.tags === 'string' ? p.tags.split(',').map(s => s.trim()).filter(Boolean) : []);
+      const tagInp = document.getElementById('tag-input');
+      if (tagInp) tagInp.value = '';
+
       document.getElementById('post-editor-heading').innerText = 'Edit Post';
       document.getElementById('post-title').value = p.title;
       document.getElementById('editor-content').innerHTML = p.content;
@@ -8501,6 +8509,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
       currentFeaturedImage = p.featuredImage || '';
       renderFeaturedImageUI();
+      renderTagsCloud();
       switchView('post-new');
       handleContentChange();
       handleSnippetChange();
@@ -8737,21 +8746,34 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     function handleAddFocusKeywordFromInput() {
       const inputEl = document.getElementById('focus-keyword-input');
       if (!inputEl) return;
-      const val = inputEl.value.trim().replace(/^,+|,+$/g, '');
-      if (!val) return;
+      const rawVal = inputEl.value.trim();
+      if (!rawVal) return;
       
-      const currentList = getFocusKeywordsList();
-      if (currentList.map(k => k.toLowerCase()).includes(val.toLowerCase())) {
-        showToast('Keyword Exists', `"${val}" is already added.`);
-        inputEl.value = '';
-        return;
-      }
+      const newItems = rawVal.split(',')
+        .map(x => x.trim())
+        .filter(x => x.length > 0);
+      
+      if (newItems.length === 0) return;
 
-      currentList.push(val);
-      activeInspectedKwIndex = currentList.length - 1;
-      setFocusKeywordsList(currentList);
-      inputEl.value = '';
-      showToast('Focus Keyword Added', `Added "${val}" to keyword analysis.`);
+      const currentList = getFocusKeywordsList();
+      let addedCount = 0;
+
+      newItems.forEach(val => {
+        if (!currentList.map(k => k.toLowerCase()).includes(val.toLowerCase())) {
+          currentList.push(val);
+          addedCount++;
+        }
+      });
+
+      if (addedCount > 0) {
+        activeInspectedKwIndex = currentList.length - 1;
+        setFocusKeywordsList(currentList);
+        inputEl.value = '';
+        showToast('Focus Keyword Added', `Added ${addedCount} focus keyword(s).`);
+      } else {
+        showToast('Keyword Exists', `Keyword(s) already in focus list.`);
+        inputEl.value = '';
+      }
     }
 
     function removeFocusKeyword(index) {
@@ -8806,7 +8828,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const currentList = getFocusKeywordsList();
       let added = 0;
       candidates.forEach(cand => {
-        if (!currentList.map(k => k.toLowerCase()).includes(cand.toLowerCase()) && currentList.length < 5) {
+        if (!currentList.map(k => k.toLowerCase()).includes(cand.toLowerCase()) && currentList.length < 8) {
           currentList.push(cand);
           added++;
         }
@@ -8826,7 +8848,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           keyword: '',
           score: 0,
           status: 'weak',
-          statusLabel: 'Kaam Nahi Karega',
+          statusLabel: 'Poor / Missing (<40)',
           bgClass: 'bg-red-50 border-red-200 text-red-900',
           scoreBadgeClass: 'bg-red-600 text-white',
           statusDot: 'bg-red-500',
@@ -8914,20 +8936,20 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       score = Math.min(100, Math.max(0, score));
 
       let status = 'weak';
-      let statusLabel = 'Kaam Nahi Karega';
+      let statusLabel = 'Poor / Missing (<40)';
       let bgClass = 'bg-red-50/90 border-red-300 text-red-900';
       let scoreBadgeClass = 'bg-red-600 text-white';
       let statusDot = 'bg-red-500';
 
       if (score >= 70) {
         status = 'optimal';
-        statusLabel = 'Kaam Karega (Sahi Hai)';
+        statusLabel = 'Optimal / Good (70-100)';
         bgClass = 'bg-emerald-50 border-emerald-300 text-emerald-900';
         scoreBadgeClass = 'bg-emerald-600 text-white';
         statusDot = 'bg-emerald-500';
       } else if (score >= 40) {
         status = 'moderate';
-        statusLabel = 'Moderate (Kuch Missing)';
+        statusLabel = 'Moderate (40-69)';
         bgClass = 'bg-amber-50 border-amber-300 text-amber-900';
         scoreBadgeClass = 'bg-amber-500 text-white';
         statusDot = 'bg-amber-500';
@@ -8946,7 +8968,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         inUrl,
         inBeginning,
         inBody,
-        inSubheadings,
+        inSubheadings: inSubhead,
         inImageAlt,
         density,
         densityPass,
@@ -9846,13 +9868,17 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
 
       // Render Tag Cloud Chips - Clean, Simple, Minimalistic
-      cloud.innerHTML = evaluatedTags.map(item => `
-        <span class="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-800 rounded px-2 py-0.5 text-xs font-medium border border-gray-200 shadow-2xs transition-colors" title="${escapeHtml(item.tag)} &bull; ${item.score}% (${item.status})">
-          <span class="w-1.5 h-1.5 rounded-full mr-1.5 inline-block shrink-0 shadow-xs" style="background-color: ${item.color};"></span>
-          <span class="text-gray-800">${escapeHtml(item.tag)}</span>
-          <button type="button" onclick="removeTagFromPost('${escapeHtml(item.tag)}')" class="ml-1.5 text-gray-400 hover:text-red-600 font-bold text-sm leading-none cursor-pointer" title="Remove tag">&times;</button>
-        </span>
-      `).join('');
+      if (evaluatedTags.length === 0) {
+        cloud.innerHTML = '<span class="text-[11px] text-gray-400 italic py-1">No tags added yet. Type a tag above and click Add.</span>';
+      } else {
+        cloud.innerHTML = evaluatedTags.map(item => `
+          <span class="inline-flex items-center bg-gray-100 hover:bg-gray-200 text-gray-800 rounded px-2 py-0.5 text-xs font-medium border border-gray-200 shadow-2xs transition-colors" title="${escapeHtml(item.tag)} &bull; ${item.score}% (${item.status})">
+            <span class="w-1.5 h-1.5 rounded-full mr-1.5 inline-block shrink-0 shadow-xs" style="background-color: ${item.color};"></span>
+            <span class="text-gray-800">${escapeHtml(item.tag)}</span>
+            <button type="button" onclick="removeTagFromPost('${escapeHtml(item.tag)}')" class="ml-1.5 text-gray-400 hover:text-red-600 font-bold text-sm leading-none cursor-pointer" title="Remove tag">&times;</button>
+          </span>
+        `).join('');
+      }
     }
 
     function addTag() {
@@ -9861,13 +9887,25 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const val = input.value.trim();
       if (!val) return;
       const newItems = val.split(',').map(x => x.trim()).filter(Boolean);
+      if (newItems.length === 0) return;
+      
+      let added = 0;
       newItems.forEach(t => {
-        if (!tags.includes(t)) tags.push(t);
+        if (!tags.map(x => x.toLowerCase()).includes(t.toLowerCase())) {
+          tags.push(t);
+          added++;
+        }
       });
-      saveState();
-      renderTagsCloud();
-      input.value = '';
-      showToast('Tags Added', newItems.join(', '));
+      
+      if (added > 0) {
+        saveState();
+        renderTagsCloud();
+        input.value = '';
+        showToast('Tags Added', newItems.join(', '));
+      } else {
+        showToast('Tag Exists', 'Tag is already attached.');
+        input.value = '';
+      }
     }
 
     function addTagFromInput() {
@@ -9875,7 +9913,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     function removeTagFromPost(t) {
-      tags = tags.filter(item => item !== t);
+      tags = tags.filter(item => item.toLowerCase() !== t.toLowerCase());
       saveState();
       renderTagsCloud();
       showToast('Tag Removed', t);
