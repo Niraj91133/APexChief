@@ -523,7 +523,7 @@ export default function HeroSection3Grid({
               {/* Interviewee Image + Dialogue Badge */}
               <div
                 onClick={() => setIsInterviewsModalOpen(true)}
-                className="block overflow-hidden relative aspect-[16/10] bg-[#eff0e0] border border-[#211d1d]/15 cursor-pointer group"
+                className="block overflow-hidden relative aspect-[16/10] bg-[#111827] border border-[#211d1d]/20 cursor-pointer group shadow-xs"
               >
                 <Image
                   src={currentInterview.image}
@@ -531,29 +531,34 @@ export default function HeroSection3Grid({
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent flex flex-col justify-end p-3">
-                  <div className="flex items-center space-x-2 text-white/90 text-[10px] font-mono uppercase tracking-wider mb-1">
-                    <span className="bg-[#f7413e] text-white px-2 py-0.5 rounded-xs font-bold">
+                {/* Deep High-Contrast Gradient Backdrop for 100% Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 via-45% to-transparent/10 flex flex-col justify-end p-3.5">
+                  <div className="flex items-center space-x-2 text-white text-[10px] font-mono uppercase tracking-wider mb-1.5">
+                    <span className="bg-[#f7413e] text-white px-2 py-0.5 rounded-xs font-bold shadow-xs">
                       {currentInterview.tag || 'Interview'}
                     </span>
-                    <span>{currentInterview.readTime}</span>
+                    <span className="bg-black/70 px-2 py-0.5 rounded-xs text-gray-200 font-bold border border-white/20">
+                      {currentInterview.readTime}
+                    </span>
                   </div>
-                  <h4 className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-[#f7413e] transition-colors line-clamp-2 leading-tight">
+                  <h4 className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-[#f7413e] transition-colors line-clamp-2 leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
                     {currentInterview.title}
                   </h4>
                 </div>
               </div>
 
-              {/* Standout Pull Quote Box */}
-              <div className="bg-white p-3 border-l-2 border-[#f7413e] shadow-2xs">
-                <Quote className="w-4 h-4 text-[#f7413e] mb-1 opacity-80" />
-                <p className="font-serif italic text-xs text-[#211d1d] leading-relaxed line-clamp-3">
-                  {currentQuoteData.quote}
+              {/* Standout Pull Quote Box with High-Contrast Typography */}
+              <div className="bg-white dark:bg-[#1a1e27] p-3.5 border-l-4 border-[#f7413e] shadow-2xs">
+                <Quote className="w-4 h-4 text-[#f7413e] mb-1.5 opacity-90" />
+                <p className="font-serif italic text-xs sm:text-[13px] text-[#1a1a1a] dark:text-[#f3f1e9] leading-relaxed line-clamp-3 font-medium">
+                  &ldquo;{currentQuoteData.quote}&rdquo;
                 </p>
-                <div className="mt-2 text-[11px] font-sans font-bold text-[#0a0a0a]">
-                  — {currentQuoteData.interviewee}
-                  <span className="text-[10px] font-normal text-[#575757] ml-1.5">
-                    ({currentQuoteData.role})
+                <div className="mt-2 text-[11px] font-sans font-bold text-[#0a0a0a] dark:text-white flex items-center justify-between">
+                  <span>
+                    — {currentQuoteData.interviewee}{' '}
+                    <span className="text-[10px] font-normal text-[#575757] dark:text-gray-400 ml-1">
+                      ({currentQuoteData.role})
+                    </span>
                   </span>
                 </div>
               </div>
