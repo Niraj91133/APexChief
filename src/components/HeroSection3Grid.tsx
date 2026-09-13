@@ -467,22 +467,22 @@ export default function HeroSection3Grid({
         {/* 3. RIGHT GRID: EXECUTIVE INTERVIEWS & INTERACTIVE SLIDER (4 Cols)          */}
         {/* ========================================================================= */}
         <div
-          className="lg:col-span-4 flex flex-col justify-between bg-[#f4f3ec] border border-[#211d1d]/20 p-5 sm:p-6 shadow-xs relative"
+          className="lg:col-span-4 flex flex-col justify-between bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-5 sm:p-6 shadow-xs relative transition-all group/interview-box"
           onMouseEnter={() => setIsSliderHovered(true)}
           onMouseLeave={() => setIsSliderHovered(false)}
         >
           <div>
-            {/* Header with Slider Controls and Total List Trigger */}
-            <div className="flex items-center justify-between pb-3.5 mb-4 border-b-2 border-[#211d1d]">
-              <div className="flex items-center space-x-2">
-                <span className="flex items-center justify-center w-6 h-6 bg-[#211d1d] text-white text-[11px] font-mono font-bold rounded-xs shadow-2xs">
-                  <Mic className="w-3.5 h-3.5 text-[#f7413e]" />
+            {/* Header with Mic badge & Clean Slider Controls */}
+            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-gray-200 dark:border-white/15">
+              <div className="flex items-center space-x-2.5">
+                <span className="flex items-center justify-center w-7 h-7 bg-[#f7413e] text-white text-xs font-mono font-bold rounded-xs shadow-2xs">
+                  <Mic className="w-3.5 h-3.5" />
                 </span>
                 <div>
-                  <h3 className="font-oswald text-base sm:text-lg font-bold uppercase tracking-wider text-[#0a0a0a] leading-none">
+                  <h3 className="font-oswald text-base sm:text-lg font-bold uppercase tracking-wider text-black dark:text-white leading-none">
                     INTERVIEWS
                   </h3>
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-[#575757]">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-gray-500 dark:text-gray-400">
                     Executive Dialogues
                   </span>
                 </div>
@@ -490,7 +490,7 @@ export default function HeroSection3Grid({
 
               {/* Slider Next/Prev Arrows & Slide Counter */}
               <div className="flex items-center space-x-1.5">
-                <span className="text-[10px] font-mono text-[#575757] font-semibold mr-1">
+                <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
                   0{sliderIndex + 1} / 0{activeInterviews.length}
                 </span>
                 <button
@@ -499,7 +499,7 @@ export default function HeroSection3Grid({
                       prev === 0 ? activeInterviews.length - 1 : prev - 1
                     )
                   }
-                  className="w-6 h-6 bg-white hover:bg-[#211d1d] hover:text-white border border-[#211d1d]/20 text-[#211d1d] flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 bg-gray-100 dark:bg-gray-800 hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
                   aria-label="Previous Interview"
                 >
                   <ChevronLeft className="w-3.5 h-3.5" />
@@ -510,7 +510,7 @@ export default function HeroSection3Grid({
                       prev === activeInterviews.length - 1 ? 0 : prev + 1
                     )
                   }
-                  className="w-6 h-6 bg-white hover:bg-[#211d1d] hover:text-white border border-[#211d1d]/20 text-[#211d1d] flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-7 h-7 bg-gray-100 dark:bg-gray-800 hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
                   aria-label="Next Interview"
                 >
                   <ChevronRight className="w-3.5 h-3.5" />
@@ -518,83 +518,87 @@ export default function HeroSection3Grid({
               </div>
             </div>
 
-            {/* Interactive Interview Slide Content */}
-            <div className="space-y-3">
-              {/* Interviewee Image + Dialogue Badge */}
-              <div
-                onClick={() => setIsInterviewsModalOpen(true)}
-                className="block overflow-hidden relative aspect-[16/10] bg-[#111827] border border-[#211d1d]/20 cursor-pointer group shadow-xs"
-              >
-                <Image
-                  src={currentInterview.image}
-                  alt={currentInterview.title}
-                  fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* Deep High-Contrast Gradient Backdrop for 100% Readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/75 via-45% to-transparent/10 flex flex-col justify-end p-3.5">
-                  <div className="flex items-center space-x-2 text-white text-[10px] font-mono uppercase tracking-wider mb-1.5">
-                    <span className="bg-[#f7413e] text-white px-2 py-0.5 rounded-xs font-bold shadow-xs">
-                      {currentInterview.tag || 'Interview'}
-                    </span>
-                    <span className="bg-black/70 px-2 py-0.5 rounded-xs text-gray-200 font-bold border border-white/20">
-                      {currentInterview.readTime}
-                    </span>
-                  </div>
-                  <h4 className="font-serif font-bold text-sm sm:text-base text-white group-hover:text-[#f7413e] transition-colors line-clamp-2 leading-snug drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)]">
-                    {currentInterview.title}
-                  </h4>
-                </div>
+            {/* Clean Featured Interviewee Portrait Image */}
+            <Link
+              href={`/news/${currentInterview.slug}`}
+              className="block overflow-hidden relative aspect-[16/10] mb-3.5 bg-gray-100 dark:bg-gray-800 rounded-xs border border-gray-200 dark:border-white/10 group/img"
+            >
+              <Image
+                src={currentInterview.image}
+                alt={currentInterview.title}
+                fill
+                priority
+                className="object-cover transition-transform duration-700 group-hover/img:scale-105"
+              />
+              <div className="absolute top-2.5 left-2.5">
+                <span className="bg-black/90 text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 font-bold rounded-xs shadow-xs">
+                  {currentInterview.tag || 'Executive'}
+                </span>
               </div>
+              <div className="absolute bottom-2.5 right-2.5">
+                <span className="bg-black/75 backdrop-blur-xs text-white text-[10px] font-mono font-semibold px-2 py-0.5 rounded-xs">
+                  {currentInterview.readTime}
+                </span>
+              </div>
+            </Link>
 
-              {/* Standout Pull Quote Box with High-Contrast Typography */}
-              <div className="bg-white dark:bg-[#1a1e27] p-3.5 border-l-4 border-[#f7413e] shadow-2xs">
-                <Quote className="w-4 h-4 text-[#f7413e] mb-1.5 opacity-90" />
-                <p className="font-serif italic text-xs sm:text-[13px] text-[#1a1a1a] dark:text-[#f3f1e9] leading-relaxed line-clamp-3 font-medium">
-                  &ldquo;{currentQuoteData.quote}&rdquo;
-                </p>
-                <div className="mt-2 text-[11px] font-sans font-bold text-[#0a0a0a] dark:text-white flex items-center justify-between">
-                  <span>
-                    — {currentQuoteData.interviewee}{' '}
-                    <span className="text-[10px] font-normal text-[#575757] dark:text-gray-400 ml-1">
-                      ({currentQuoteData.role})
-                    </span>
+            {/* Clear Typography: Headline Below Image */}
+            <Link href={`/news/${currentInterview.slug}`} className="block group/title">
+              <h4 className="font-serif text-base sm:text-lg font-bold text-black dark:text-white group-hover/title:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-3">
+                {currentInterview.title}
+              </h4>
+            </Link>
+
+            {/* Elegant Minimalist Quote Card */}
+            <div className="bg-[#faf8f5] dark:bg-[#202020] p-3.5 border-l-2 border-[#f7413e] rounded-r-xs mb-3">
+              <p className="font-serif italic text-xs sm:text-[13px] text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-3">
+                &ldquo;{currentQuoteData.quote.replace(/^[“”"']+|[“”"']+$/g, '')}&rdquo;
+              </p>
+              <div className="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-gray-200/60 dark:border-white/10">
+                <div className="flex items-center space-x-1.5 truncate">
+                  <span className="font-bold text-black dark:text-white text-xs">
+                    {currentQuoteData.interviewee}
+                  </span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400 truncate">
+                    {currentQuoteData.role}
                   </span>
                 </div>
               </div>
+            </div>
 
-              {/* Slide Indicator Dots */}
-              <div className="flex items-center justify-center space-x-1.5 pt-1">
-                {activeInterviews.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSliderIndex(idx)}
-                    className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                      sliderIndex === idx
-                        ? 'w-6 bg-[#f7413e]'
-                        : 'w-1.5 bg-[#211d1d]/20 hover:bg-[#211d1d]/40'
-                    }`}
-                    aria-label={`Go to slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
+            {/* Slide Indicator Progress Bars */}
+            <div className="flex items-center justify-center space-x-1.5 pt-0.5 mb-1">
+              {activeInterviews.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSliderIndex(idx)}
+                  className={`h-1 rounded-full transition-all cursor-pointer ${
+                    sliderIndex === idx
+                      ? 'w-7 bg-[#f7413e]'
+                      : 'w-2 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </div>
 
-          {/* Bottom Actions: Read Current & Open Total List Modal Button */}
-          <div className="mt-4 pt-3 border-t border-[#211d1d]/15 flex items-center justify-between gap-2">
+          {/* Bottom Actions: Read Full Dialogue & View Total List Button */}
+          <div className="mt-4 pt-3.5 border-t border-gray-200 dark:border-white/15 flex items-center justify-between gap-2">
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="text-[11px] font-mono uppercase tracking-wider text-[#002b5c] hover:text-[#f7413e] font-bold transition-colors"
+              className="inline-flex items-center space-x-1 text-xs font-mono uppercase tracking-wider text-black dark:text-white hover:text-[#f7413e] font-bold transition-colors"
             >
-              Read Dialogue →
+              <span>Read Dialogue</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </Link>
 
             <button
               onClick={() => setIsInterviewsModalOpen(true)}
-              className="bg-[#211d1d] hover:bg-[#f7413e] text-white text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 font-bold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer"
+              className="bg-black hover:bg-[#f7413e] dark:bg-white dark:hover:bg-[#f7413e] text-white dark:text-black dark:hover:text-white text-[11px] font-mono uppercase tracking-wider px-3.5 py-1.5 font-bold transition-all shadow-2xs flex items-center space-x-1.5 cursor-pointer rounded-xs"
             >
-              <span>View Total List</span>
+              <span>Total List</span>
               <ArrowRight className="w-3 h-3" />
             </button>
           </div>
