@@ -4322,7 +4322,7 @@ export default function AdminDashboard() {
                               <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
                                 Homepage Placement:
                               </label>
-                              <InfoTooltip text="Select placement zone: Top 3 Spotlight, Latest News Grid, Best This Month carousel, or standard Category feed." />
+                              <InfoTooltip text="Select placement zone: Top 3 Spotlight, Top 10 Ranked, Executive Interviews, Latest News Grid, Best This Month carousel, or standard Category feed." />
                             </div>
                             <div className="relative">
                               <select
@@ -4332,6 +4332,8 @@ export default function AdminDashboard() {
                               >
                                 <option value="category">Category Feed (Standard)</option>
                                 <option value="top3">Top 3 Spotlight Cards (Header)</option>
+                                <option value="top10">Top 10 Ranked Articles (Hero Left)</option>
+                                <option value="interview">Executive Interviews (Hero Right)</option>
                                 <option value="latest-news">Latest News Grid Section</option>
                                 <option value="best-month">Best This Month (Carousel)</option>
                               </select>

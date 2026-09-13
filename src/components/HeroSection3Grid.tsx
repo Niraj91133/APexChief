@@ -49,6 +49,7 @@ export default function HeroSection3Grid({
   // 1. Collect Interview Articles
   const interviewArticles = articles.filter(
     (a) =>
+      a.placement === 'interview' ||
       a.category?.toLowerCase() === 'interview' ||
       a.contentType?.toLowerCase() === 'interview' ||
       a.subcategory?.toLowerCase() === 'interviews' ||
@@ -154,8 +155,10 @@ export default function HeroSection3Grid({
     },
   };
 
-  // 2. Collect Top 10 Ranked Articles
-  const top10Ranked = articles.slice(0, 15);
+  // 2. Collect Top 10 Ranked Articles (Explicit top10 first, then remaining)
+  const explicitTop10 = articles.filter((a) => a.placement === 'top10');
+  const otherArticles = articles.filter((a) => a.placement !== 'top10');
+  const top10Ranked = [...explicitTop10, ...otherArticles].slice(0, 15);
 
   // 3. Center Hero Lead Article
   const lead =

@@ -1447,7 +1447,7 @@
                       <span class="font-bold text-gray-900 text-xs">Breaking News Ticker</span>
                       <i class="fas fa-info-circle text-gray-400 text-[10px] cursor-pointer hover:text-blue-600" title="Enable to feature headline in top global breaking marquee bar."></i>
                     </div>
-                    <p class="text-[11px] text-gray-500">Website ke top marquee bar me dikhega</p>
+                    <p class="text-[11px] text-gray-500">Displays in the top marquee ticker bar</p>
                   </div>
                   <!-- Modern iOS/Tailwind Toggle Switch -->
                   <label class="relative inline-flex items-center cursor-pointer shrink-0 ml-2">
@@ -1465,6 +1465,8 @@
                   <select id="homepage-placement-select" class="w-full border border-gray-300 rounded-lg p-2 bg-white text-xs font-medium focus:border-blue-500 outline-none text-gray-800 shadow-2xs">
                     <option value="standard">Category Feed (Standard)</option>
                     <option value="top3">Top 3 Spotlight Cards (Header)</option>
+                    <option value="top10">Top 10 Ranked Articles (Hero Left)</option>
+                    <option value="interview">Executive Interviews (Hero Right)</option>
                     <option value="latest-news">Latest News Grid Section</option>
                     <option value="best-month">Best This Month (Carousel)</option>
                   </select>
@@ -8483,7 +8485,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const tickerInput = document.getElementById('ticker-toggle-input');
       if (tickerInput) tickerInput.checked = !!p.breakingTicker;
       const hpSelect = document.getElementById('homepage-placement-select');
-      if (hpSelect) hpSelect.value = p.homepagePlacement || 'standard';
+      if (hpSelect) hpSelect.value = p.homepagePlacement || (p.placement === 'interview' ? 'interview' : p.placement === 'top10' ? 'top10' : p.placement === 'top3' ? 'top3' : p.placement === 'latest-news' ? 'latest-news' : p.placement === 'best-month' ? 'best-month' : 'standard');
       const catSelect = document.getElementById('placement-category-select');
       if (catSelect && p.categories && p.categories[0]) {
         catSelect.value = p.categories[0];
@@ -8594,6 +8596,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
         let placementVal = 'category';
         if (homepagePlacement === 'top3') placementVal = 'top3';
+        else if (homepagePlacement === 'top10') placementVal = 'top10';
+        else if (homepagePlacement === 'interview') placementVal = 'interview';
         else if (homepagePlacement === 'latest-news') placementVal = 'latest-news';
         else if (homepagePlacement === 'best-month') placementVal = 'best-month';
 
