@@ -1134,29 +1134,83 @@
                     </div>
                   </div>
 
-                  <!-- Focus Keyword Input -->
-                  <div>
-                    <div class="flex items-center justify-between mb-1">
-                      <label class="text-xs font-bold text-gray-700 flex items-center gap-1">
-                        <span>Focus Keyword</span>
-                        <i class="fas fa-question-circle text-gray-400 text-[11px]" title="The primary target keyword for ranking."></i>
+                  <!-- Multi-Focus Keyword Input & Dynamic Health Box -->
+                  <div class="space-y-2">
+                    <div class="flex items-center justify-between mb-0.5">
+                      <label class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                        <i class="fas fa-bullseye text-[#f7413e] text-xs"></i>
+                        <span>Focus Keywords</span>
+                        <span id="focus-keywords-count" class="bg-gray-100 text-gray-700 text-[10px] px-1.5 py-0.5 rounded font-bold">1 / 5</span>
+                        <i class="fas fa-question-circle text-gray-400 text-[11px]" title="Add primary and secondary target keywords. Green = High Impact (Kaam Karega), Yellow = Moderate, Red = Weak/Missing."></i>
                       </label>
-                      <span class="text-[11px] text-gray-500">Real-time keyword analysis</span>
+                      <button 
+                        type="button" 
+                        onclick="suggestKeywordsFromTitle()" 
+                        class="text-[11px] font-medium text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1 cursor-pointer"
+                        title="Extract suggested keywords from the headline"
+                      >
+                        <i class="fas fa-magic text-[10px]"></i>
+                        <span>Suggest from Title</span>
+                      </button>
                     </div>
 
-                    <div class="flex items-center border border-gray-300 rounded focus-within:border-blue-500 bg-white">
-                      <input 
-                        type="text" 
-                        id="focus-keyword" 
-                        value="Job Crisis"
-                        placeholder="Example: Rank Math SEO"
-                        oninput="handleContentChange()"
-                        class="flex-1 px-3 py-2 text-xs outline-none"
-                      >
-                      <div class="px-3 py-1 border-l border-gray-200 flex items-center space-x-2 bg-gray-50">
-                        <span id="rankmath-box-score" class="seo-score-badge seo-score-red">0 / 100</span>
-                        <i class="fas fa-chart-bar text-gray-400 text-xs" title="Keyword metrics active"></i>
+                    <!-- Interactive Keywords Container Box -->
+                    <div class="border border-gray-300 rounded bg-gray-50/50 p-2.5 space-y-2 focus-within:border-blue-500 focus-within:bg-white transition-all shadow-2xs">
+                      <!-- Active Keyword Chips List -->
+                      <div id="focus-keywords-chips-list" class="flex flex-wrap gap-1.5 items-center min-h-[32px]">
+                        <!-- Chips dynamically rendered here with green/yellow/red color, score, primary badge, and delete button -->
                       </div>
+
+                      <!-- Keyword Input and Add Button Row -->
+                      <div class="flex items-center gap-2 pt-1.5 border-t border-gray-200/80">
+                        <div class="relative flex-1 flex items-center">
+                          <i class="fas fa-search absolute left-2.5 text-gray-400 text-xs pointer-events-none"></i>
+                          <input 
+                            type="text" 
+                            id="focus-keyword-input" 
+                            placeholder="Type keyword and press Enter or comma (e.g. Job Crisis, AI Economy)..."
+                            onkeydown="handleFocusKeywordKeyDown(event)"
+                            class="w-full pl-7 pr-3 py-1.5 text-xs bg-white border border-gray-200 rounded outline-none focus:border-blue-500 text-gray-800 placeholder-gray-400"
+                          >
+                        </div>
+                        <button 
+                          type="button"
+                          onclick="handleAddFocusKeywordFromInput()"
+                          class="bg-[#211d1d] hover:bg-[#f7413e] text-white text-xs px-3 py-1.5 font-bold rounded transition-colors flex items-center space-x-1 cursor-pointer shrink-0"
+                        >
+                          <i class="fas fa-plus text-[10px]"></i>
+                          <span>Add</span>
+                        </button>
+                        
+                        <!-- Primary Score Badge in Header -->
+                        <div class="pl-2 border-l border-gray-200 flex items-center space-x-1.5 shrink-0">
+                          <span id="rankmath-box-score" class="seo-score-badge seo-score-red">0 / 100</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Hidden master input to store comma-separated keywords for compatibility with database, savePost, and APIs -->
+                    <input type="hidden" id="focus-keyword" value="Job Crisis" onchange="handleContentChange()">
+
+                    <!-- Visual Health & Color Legend Guide -->
+                    <div class="flex flex-wrap items-center justify-between text-[11px] px-1 pt-0.5 text-gray-500 gap-1">
+                      <div class="flex items-center space-x-2.5">
+                        <span class="flex items-center space-x-1" title="High ranking probability — found in Title, URL, Desc and Content">
+                          <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                          <span class="font-semibold text-emerald-700 text-[10.5px]">Kaam Karega (70-100)</span>
+                        </span>
+                        <span class="flex items-center space-x-1" title="Partial match — missing in Title or Meta Description">
+                          <span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                          <span class="font-semibold text-amber-700 text-[10.5px]">Moderate (40-69)</span>
+                        </span>
+                        <span class="flex items-center space-x-1" title="Critical missing — not found in body text or title">
+                          <span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span>
+                          <span class="font-semibold text-red-700 text-[10.5px]">Kaam Nahi Karega (&lt;40)</span>
+                        </span>
+                      </div>
+                      <span id="active-inspected-kw-label" class="font-mono text-[10px] text-gray-400">
+                        Inspecting: <strong class="text-gray-700 font-bold" id="inspected-kw-name">Job Crisis</strong>
+                      </span>
                     </div>
                   </div>
 
@@ -8349,10 +8403,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
     function initNewPost() {
       currentPostId = 'post_' + Date.now();
+      activeInspectedKwIndex = 0;
       document.getElementById('post-editor-heading').innerText = 'Add Post';
       document.getElementById('post-title').value = '';
       document.getElementById('editor-content').innerHTML = '<p>Start writing your new story here...</p>';
       document.getElementById('focus-keyword').value = '';
+      const kwInput = document.getElementById('focus-keyword-input');
+      if (kwInput) kwInput.value = '';
       document.getElementById('snippet-title').value = '%title%';
       document.getElementById('snippet-description').value = '%excerpt%';
 
@@ -8394,10 +8451,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const p = posts.find(item => item.slug === slug || item.id === slug);
       if (!p) return;
       currentPostId = p.id;
+      activeInspectedKwIndex = 0;
       document.getElementById('post-editor-heading').innerText = 'Edit Post';
       document.getElementById('post-title').value = p.title;
       document.getElementById('editor-content').innerHTML = p.content;
       document.getElementById('focus-keyword').value = p.focusKeyword || '';
+      const kwInput = document.getElementById('focus-keyword-input');
+      if (kwInput) kwInput.value = '';
       document.getElementById('snippet-title').value = p.title;
 
       const snippetSlug = document.getElementById('snippet-permalink');
@@ -8628,7 +8688,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     // =========================================================================
-    // RANK MATH SEO SCORING & AUDIT ENGINE (INDUSTRIAL ACCURACY)
+    // MULTI-FOCUS KEYWORD & DYNAMIC HEALTH/COLOR ENGINE
     // =========================================================================
     const sentimentWords = [
       'best', 'top', 'great', 'ultimate', 'guide', 'proven', 'shocking', 'essential', 
@@ -8646,13 +8706,327 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       'high-growth', 'transformative', 'lucrative', 'unprecedented'
     ];
 
+    let activeInspectedKwIndex = 0;
+
+    function getFocusKeywordsList() {
+      const raw = document.getElementById('focus-keyword')?.value || '';
+      return raw.split(',')
+        .map(k => k.trim())
+        .filter((k, idx, arr) => k.length > 0 && arr.indexOf(k) === idx);
+    }
+
+    function setFocusKeywordsList(list) {
+      const uniqueList = list.map(k => k.trim()).filter((k, idx, arr) => k.length > 0 && arr.indexOf(k) === idx);
+      const hiddenInput = document.getElementById('focus-keyword');
+      if (hiddenInput) {
+        hiddenInput.value = uniqueList.join(', ');
+      }
+      if (activeInspectedKwIndex >= uniqueList.length) {
+        activeInspectedKwIndex = Math.max(0, uniqueList.length - 1);
+      }
+      handleContentChange();
+    }
+
+    function handleFocusKeywordKeyDown(e) {
+      if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        handleAddFocusKeywordFromInput();
+      }
+    }
+
+    function handleAddFocusKeywordFromInput() {
+      const inputEl = document.getElementById('focus-keyword-input');
+      if (!inputEl) return;
+      const val = inputEl.value.trim().replace(/^,+|,+$/g, '');
+      if (!val) return;
+      
+      const currentList = getFocusKeywordsList();
+      if (currentList.map(k => k.toLowerCase()).includes(val.toLowerCase())) {
+        showToast('Keyword Exists', `"${val}" is already added.`);
+        inputEl.value = '';
+        return;
+      }
+
+      currentList.push(val);
+      activeInspectedKwIndex = currentList.length - 1;
+      setFocusKeywordsList(currentList);
+      inputEl.value = '';
+      showToast('Focus Keyword Added', `Added "${val}" to keyword analysis.`);
+    }
+
+    function removeFocusKeyword(index) {
+      const list = getFocusKeywordsList();
+      if (index >= 0 && index < list.length) {
+        const removed = list.splice(index, 1);
+        setFocusKeywordsList(list);
+        showToast('Keyword Removed', `Removed "${removed[0]}"`);
+      }
+    }
+
+    function setPrimaryFocusKeyword(index) {
+      const list = getFocusKeywordsList();
+      if (index >= 0 && index < list.length) {
+        const [primary] = list.splice(index, 1);
+        list.unshift(primary);
+        activeInspectedKwIndex = 0;
+        setFocusKeywordsList(list);
+        showToast('Primary Keyword Set', `"${primary}" is now the primary focus keyword.`);
+      }
+    }
+
+    function setActiveFocusKeyword(index) {
+      const list = getFocusKeywordsList();
+      if (index >= 0 && index < list.length) {
+        activeInspectedKwIndex = index;
+        handleContentChange();
+      }
+    }
+
+    function suggestKeywordsFromTitle() {
+      const title = document.getElementById('post-title')?.value.trim() || '';
+      if (!title) {
+        showToast('Title Empty', 'Please enter a post title first.');
+        return;
+      }
+      const stopWords = ['why', 'is', 'the', 'its', 'on', 'and', 'for', 'in', 'of', 'to', 'a', 'an', 'how', 'what', 'with', 'from', 'this', 'that', 'by'];
+      const rawWords = title.replace(/[^a-zA-Z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+      
+      const candidates = [];
+      for (let i = 0; i < rawWords.length - 1; i++) {
+        const w1 = rawWords[i];
+        const w2 = rawWords[i+1];
+        if (!stopWords.includes(w1.toLowerCase()) || !stopWords.includes(w2.toLowerCase())) {
+          candidates.push(`${w1} ${w2}`);
+        }
+      }
+      if (candidates.length === 0 && rawWords.length > 0) {
+        candidates.push(rawWords.slice(0, 2).join(' '));
+      }
+
+      const currentList = getFocusKeywordsList();
+      let added = 0;
+      candidates.forEach(cand => {
+        if (!currentList.map(k => k.toLowerCase()).includes(cand.toLowerCase()) && currentList.length < 5) {
+          currentList.push(cand);
+          added++;
+        }
+      });
+
+      if (added > 0) {
+        setFocusKeywordsList(currentList);
+        showToast('Keywords Suggested', `Added ${added} suggested keyword(s) from title.`);
+      } else {
+        showToast('No New Keywords', 'Keywords from title are already in focus list.');
+      }
+    }
+
+    function evaluateSingleKeywordMetrics(keyword, ctx) {
+      if (!keyword || !keyword.trim()) {
+        return {
+          keyword: '',
+          score: 0,
+          status: 'weak',
+          statusLabel: 'Kaam Nahi Karega',
+          bgClass: 'bg-red-50 border-red-200 text-red-900',
+          scoreBadgeClass: 'bg-red-600 text-white',
+          statusDot: 'bg-red-500',
+          inTitle: false,
+          inDesc: false,
+          inUrl: false,
+          inBeginning: false,
+          inBody: false,
+          inSubheadings: false,
+          inImageAlt: false,
+          density: '0.00',
+          densityPass: false,
+          densityWordMatch: 0,
+          reasons: ['No keyword defined']
+        };
+      }
+
+      const kwLower = keyword.trim().toLowerCase();
+      const { titleLower, textLower, contentHTML, slugLower, descLower, words, wordCount, isPillar, postTitle } = ctx;
+
+      let score = 0;
+      const reasons = [];
+
+      // 1. In Title (16 pts)
+      const inTitle = titleLower.includes(kwLower) || titleLower.replace(/[-_:]/g, ' ').includes(kwLower);
+      if (inTitle) { score += 16; reasons.push('Found in Title'); } else { reasons.push('Missing in Title'); }
+
+      // 2. In Meta Description (12 pts)
+      const inDesc = descLower.includes(kwLower);
+      if (inDesc) { score += 12; reasons.push('Found in Meta Description'); } else { reasons.push('Missing in Meta Desc'); }
+
+      // 3. In URL (8 pts)
+      const kwSlug = kwLower.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+      const inUrl = slugLower.includes(kwSlug) || slugLower.replace(/[-_]/g, ' ').includes(kwLower);
+      if (inUrl) { score += 8; reasons.push('Found in URL'); } else { reasons.push('Missing in URL'); }
+
+      // 4. In Beginning (5 pts)
+      const first100 = words.slice(0, Math.max(100, Math.round(wordCount * 0.15))).join(' ').toLowerCase();
+      const inBeginning = first100.includes(kwLower);
+      if (inBeginning) { score += 5; reasons.push('At start of content'); }
+
+      // 5. In Body Text (4 pts)
+      const kwRegex = new RegExp(escapeRegExp(kwLower), 'gi');
+      const kwMatches = (textLower.match(kwRegex) || []).length;
+      const inBody = kwMatches >= 1;
+      if (inBody) { score += 4; reasons.push(`${kwMatches}x in content`); } else { reasons.push('Missing in body'); }
+
+      // 6. Content Length (5 pts)
+      const minFullLength = isPillar ? 1000 : 600;
+      if (wordCount >= minFullLength) score += 5;
+      else if (wordCount >= (isPillar ? 600 : 300)) score += 3;
+
+      // 7. Subheadings (5 pts)
+      const subheadings = (contentHTML.match(/<h[2-6][^>]*>(.*?)<\/h[2-6]>/gi) || []).join(' ').toLowerCase();
+      const inSubhead = subheadings.includes(kwLower);
+      if (inSubhead) { score += 5; reasons.push('In Subheadings'); }
+
+      // 8. Image Alt (5 pts)
+      const imgTags = contentHTML.match(/<img[^>]+>/gi) || [];
+      const inImageAlt = imgTags.some(img => {
+        const altMatch = img.match(/alt=["']([^"']*)["']/i);
+        return altMatch && altMatch[1] && altMatch[1].toLowerCase().includes(kwLower);
+      });
+      if (inImageAlt) { score += 5; reasons.push('In Image Alt'); }
+
+      // 9. Keyword Density (5 pts)
+      const kwWordsCount = kwLower.split(/\s+/).length;
+      const density = (wordCount > 0) ? ((kwMatches * kwWordsCount / wordCount) * 100).toFixed(2) : '0.00';
+      const densityPass = parseFloat(density) >= 0.8 && parseFloat(density) <= 2.5;
+      if (densityPass) { score += 5; reasons.push(`Density ${density}%`); }
+
+      // 10. Start of Title (3 pts)
+      const titleWords = titleLower.split(/\s+/).slice(0, 4).join(' ');
+      const atStartTitle = titleWords.includes(kwLower) || titleLower.indexOf(kwLower) === 0 || (titleLower.indexOf(kwLower) < titleLower.length * 0.45);
+      if (atStartTitle) score += 3;
+
+      // Base readability additions for comprehensive scoring
+      if (/\d+/.test(postTitle)) score += 2;
+      if (sentimentWords.some(w => titleLower.includes(w))) score += 3;
+      if (powerWords.some(w => titleLower.includes(w))) score += 2;
+      if (contentHTML.includes('id="toc"') || contentHTML.toLowerCase().includes('table of contents')) score += 3;
+      if (contentHTML.includes('<img') || contentHTML.includes('<video')) score += 4;
+      if (slugLower.length <= 75 && slugLower.length > 0) score += 4;
+
+      score = Math.min(100, Math.max(0, score));
+
+      let status = 'weak';
+      let statusLabel = 'Kaam Nahi Karega';
+      let bgClass = 'bg-red-50/90 border-red-300 text-red-900';
+      let scoreBadgeClass = 'bg-red-600 text-white';
+      let statusDot = 'bg-red-500';
+
+      if (score >= 70) {
+        status = 'optimal';
+        statusLabel = 'Kaam Karega (Sahi Hai)';
+        bgClass = 'bg-emerald-50 border-emerald-300 text-emerald-900';
+        scoreBadgeClass = 'bg-emerald-600 text-white';
+        statusDot = 'bg-emerald-500';
+      } else if (score >= 40) {
+        status = 'moderate';
+        statusLabel = 'Moderate (Kuch Missing)';
+        bgClass = 'bg-amber-50 border-amber-300 text-amber-900';
+        scoreBadgeClass = 'bg-amber-500 text-white';
+        statusDot = 'bg-amber-500';
+      }
+
+      return {
+        keyword,
+        score,
+        status,
+        statusLabel,
+        bgClass,
+        scoreBadgeClass,
+        statusDot,
+        inTitle,
+        inDesc,
+        inUrl,
+        inBeginning,
+        inBody,
+        inSubheadings,
+        inImageAlt,
+        density,
+        densityPass,
+        kwMatches,
+        reasons
+      };
+    }
+
+    function renderFocusKeywordsChips(evaluations) {
+      const container = document.getElementById('focus-keywords-chips-list');
+      if (!container) return;
+
+      const countEl = document.getElementById('focus-keywords-count');
+      if (countEl) countEl.innerText = `${evaluations.length} / 5`;
+
+      if (evaluations.length === 0) {
+        container.innerHTML = `
+          <div class="text-[11px] text-gray-500 italic py-1 flex items-center gap-1.5 w-full">
+            <i class="fas fa-info-circle text-gray-400"></i>
+            <span>No focus keywords added yet. Type below and press Enter or comma.</span>
+          </div>
+        `;
+        const inspectedLabel = document.getElementById('inspected-kw-name');
+        if (inspectedLabel) inspectedLabel.innerText = 'None';
+        return;
+      }
+
+      const activeEval = evaluations[activeInspectedKwIndex] || evaluations[0];
+      const inspectedLabel = document.getElementById('inspected-kw-name');
+      if (inspectedLabel && activeEval) inspectedLabel.innerText = activeEval.keyword;
+
+      container.innerHTML = evaluations.map((item, idx) => {
+        const isPrimary = idx === 0;
+        const isActive = idx === activeInspectedKwIndex;
+
+        return `
+          <div 
+            onclick="setActiveFocusKeyword(${idx})"
+            title="${item.keyword} — Score: ${item.score}/100 (${item.statusLabel})\n${item.reasons.join(' • ')}"
+            class="group inline-flex items-center gap-1.5 px-2.5 py-1 rounded border ${item.bgClass} text-xs font-sans transition-all cursor-pointer select-none ${isActive ? 'ring-2 ring-blue-500 ring-offset-1 shadow-sm font-semibold' : 'hover:shadow-2xs'}"
+          >
+            <!-- Primary Star Button -->
+            <button 
+              type="button" 
+              onclick="event.stopPropagation(); setPrimaryFocusKeyword(${idx})"
+              title="${isPrimary ? 'Primary Target Keyword' : 'Click to make this the Primary Focus Keyword'}"
+              class="focus:outline-none cursor-pointer"
+            >
+              ${isPrimary ? '<i class="fas fa-star text-amber-500 text-[11px]"></i>' : '<i class="far fa-star text-gray-400 hover:text-amber-500 text-[11px]"></i>'}
+            </button>
+
+            <!-- Keyword Label -->
+            <span class="truncate max-w-[130px] sm:max-w-[180px]">${item.keyword}</span>
+
+            <!-- Score Pill -->
+            <span class="${item.scoreBadgeClass} text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full leading-tight shadow-2xs">
+              ${item.score}
+            </span>
+
+            ${isPrimary ? '<span class="text-[9px] uppercase tracking-wider font-bold text-amber-800 bg-amber-200/70 px-1 py-0.2 rounded">Primary</span>' : ''}
+
+            <!-- Delete Button -->
+            <button 
+              type="button" 
+              onclick="event.stopPropagation(); removeFocusKeyword(${idx})"
+              title="Remove '${item.keyword}'"
+              class="text-gray-400 hover:text-red-600 ml-0.5 text-[11px] focus:outline-none cursor-pointer"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
+
     function handleContentChange() {
-      const postTitle = document.getElementById('post-title').value.trim();
+      const postTitle = document.getElementById('post-title')?.value.trim() || '';
       const contentEl = document.getElementById('editor-content');
-      const contentHTML = contentEl.innerHTML;
-      const contentText = contentEl.innerText || '';
-      const focusKwInput = document.getElementById('focus-keyword').value.trim();
-      const primaryFocusKw = focusKwInput.split(',')[0].trim().toLowerCase();
+      const contentHTML = contentEl ? contentEl.innerHTML : '';
+      const contentText = contentEl ? (contentEl.innerText || '') : '';
       const isPillar = document.getElementById('is-pillar-content')?.checked || false;
 
       // Authentic clean text extraction and word counting
@@ -8660,53 +9034,73 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const words = cleanText ? cleanText.split(/\s+/).filter(Boolean) : [];
       const wordCount = words.length;
 
+      const titleLower = (document.getElementById('serp-preview-title')?.innerText || postTitle).toLowerCase();
+      const textLower = cleanText.toLowerCase();
+      const slugLower = (document.getElementById('snippet-permalink')?.value || document.getElementById('serp-preview-slug')?.innerText || '').toLowerCase();
+      const descLower = (document.getElementById('serp-preview-desc-text')?.innerText || document.getElementById('serp-preview-desc')?.innerText || '').toLowerCase();
+
+      const evalContext = {
+        postTitle,
+        titleLower,
+        textLower,
+        contentHTML,
+        slugLower,
+        descLower,
+        words,
+        wordCount,
+        isPillar
+      };
+
+      // Multi-keyword evaluation & chip rendering
+      const kwList = getFocusKeywordsList();
+      let evaluations = [];
+      if (kwList.length > 0) {
+        evaluations = kwList.map(kw => evaluateSingleKeywordMetrics(kw, evalContext));
+      } else {
+        evaluations = [];
+      }
+      renderFocusKeywordsChips(evaluations);
+
+      const activeKwEval = evaluations[activeInspectedKwIndex] || evaluations[0] || evaluateSingleKeywordMetrics('', evalContext);
+      const primaryFocusKw = (evaluations[0]?.keyword || '').toLowerCase();
+      const inspectedKw = (activeKwEval.keyword || '').toLowerCase();
+
       let score = 0;
       let basicErrors = 0;
       let additionalErrors = 0;
       let titleErrors = 0;
       let contentErrors = 0;
 
-      const titleLower = (document.getElementById('serp-preview-title')?.innerText || postTitle).toLowerCase();
-      const textLower = cleanText.toLowerCase();
-      const slugLower = (document.getElementById('snippet-permalink')?.value || document.getElementById('serp-preview-slug')?.innerText || '').toLowerCase();
-      const descLower = (document.getElementById('serp-preview-desc-text')?.innerText || document.getElementById('serp-preview-desc')?.innerText || '').toLowerCase();
-
       // =========================================================================
-      // 1. BASIC SEO TESTS (45 Points Total)
+      // 1. BASIC SEO TESTS (Based on Active Inspected Keyword)
       // =========================================================================
 
       // 1.1 Focus Keyword in SEO Title (16 pts)
-      const kwInTitle = !!primaryFocusKw && (titleLower.includes(primaryFocusKw) || titleLower.replace(/[-_:]/g, ' ').includes(primaryFocusKw));
+      const kwInTitle = activeKwEval.inTitle;
       setRuleStatus('rule-keyword-in-title', kwInTitle);
       if (kwInTitle) score += 16; else basicErrors++;
 
       // 1.2 Focus Keyword in Meta Description (12 pts)
-      const kwInDesc = !!primaryFocusKw && descLower.includes(primaryFocusKw);
+      const kwInDesc = activeKwEval.inDesc;
       setRuleStatus('rule-keyword-in-desc', kwInDesc);
       if (kwInDesc) score += 12; else basicErrors++;
 
       // 1.3 Focus Keyword in URL / Slug (8 pts)
-      const kwSlugClean = primaryFocusKw ? primaryFocusKw.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') : '';
-      const kwInUrl = !!primaryFocusKw && (slugLower.includes(kwSlugClean) || slugLower.replace(/[-_]/g, ' ').includes(primaryFocusKw));
+      const kwInUrl = activeKwEval.inUrl;
       setRuleStatus('rule-keyword-in-url', kwInUrl);
       if (kwInUrl) score += 8; else basicErrors++;
 
-      // 1.4 Focus Keyword at beginning of content (first 100 words or 15%) (5 pts)
-      const first100Words = words.slice(0, Math.max(100, Math.round(wordCount * 0.15))).join(' ').toLowerCase();
-      const kwInStart = !!primaryFocusKw && first100Words.includes(primaryFocusKw);
+      // 1.4 Focus Keyword at beginning of content (5 pts)
+      const kwInStart = activeKwEval.inBeginning;
       setRuleStatus('rule-keyword-in-beginning', kwInStart);
       if (kwInStart) score += 5; else basicErrors++;
 
       // 1.5 Focus Keyword in body text (4 pts)
-      const kwRegex = primaryFocusKw ? new RegExp(escapeRegExp(primaryFocusKw), 'gi') : null;
-      const kwMatches = (primaryFocusKw && kwRegex) ? (textLower.match(kwRegex) || []).length : 0;
-      const kwInBody = kwMatches >= 1;
+      const kwInBody = activeKwEval.inBody;
       setRuleStatus('rule-keyword-in-content', kwInBody);
       if (kwInBody) score += 4; else basicErrors++;
 
       // 1.6 Content Length benchmark (5 pts)
-      // Regular: >= 600 words (green/5pts), >= 300 (3pts), <300 (0pts)
-      // Pillar: >= 1000 words (green/5pts), >= 600 (3pts), <600 (0pts)
       const minFullLength = isPillar ? 1000 : 600;
       const minPartialLength = isPillar ? 600 : 300;
       const hasLengthPass = wordCount >= minFullLength;
@@ -8721,39 +9115,31 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
 
       // =========================================================================
-      // 2. ADDITIONAL SEO TESTS (35 Points Total)
+      // 2. ADDITIONAL SEO TESTS
       // =========================================================================
 
-      // 2.1 Focus Keyword in Subheadings H2, H3, H4, H5, H6 (5 pts)
-      const subheadings = (contentHTML.match(/<h[2-6][^>]*>(.*?)<\/h[2-6]>/gi) || []).join(' ').toLowerCase();
-      const kwInSubhead = !!primaryFocusKw && subheadings.includes(primaryFocusKw);
+      // 2.1 Focus Keyword in Subheadings (5 pts)
+      const kwInSubhead = activeKwEval.inSubheadings;
       setRuleStatus('rule-keyword-in-subheadings', kwInSubhead);
       if (kwInSubhead) score += 5; else additionalErrors++;
 
       // 2.2 Focus Keyword in Image Alt Attributes (5 pts)
-      const imgTags = contentHTML.match(/<img[^>]+>/gi) || [];
-      const hasImgWithKw = imgTags.some(img => {
-        const altMatch = img.match(/alt=["']([^"']*)["']/i);
-        return altMatch && altMatch[1] && primaryFocusKw && altMatch[1].toLowerCase().includes(primaryFocusKw);
-      });
+      const hasImgWithKw = activeKwEval.inImageAlt;
       setRuleStatus('rule-keyword-in-image-alt', hasImgWithKw);
       if (hasImgWithKw) score += 5; else additionalErrors++;
 
-      // 2.3 Keyword Density (5 pts) - Optimal 0.8% - 2.5%
-      const kwWordsCount = primaryFocusKw ? primaryFocusKw.split(/\s+/).length : 1;
-      const density = (wordCount > 0 && primaryFocusKw) ? ((kwMatches * kwWordsCount / wordCount) * 100).toFixed(2) : '0.00';
+      // 2.3 Keyword Density (5 pts)
       const densityValEl = document.getElementById('density-val');
       if (densityValEl) {
-        densityValEl.innerText = density + '%';
-        if (parseFloat(density) >= 0.8 && parseFloat(density) <= 2.5) {
+        densityValEl.innerText = activeKwEval.density + '%';
+        if (activeKwEval.densityPass) {
           densityValEl.className = 'text-green-600 font-bold';
         } else {
           densityValEl.className = 'text-amber-600 font-bold';
         }
       }
-      const goodDensity = parseFloat(density) >= 0.8 && parseFloat(density) <= 2.5;
-      setRuleStatus('rule-keyword-density', goodDensity);
-      if (goodDensity) score += 5; else additionalErrors++;
+      setRuleStatus('rule-keyword-density', activeKwEval.densityPass);
+      if (activeKwEval.densityPass) score += 5; else additionalErrors++;
 
       // 2.4 URL Length <= 75 chars (4 pts)
       const shortUrl = slugLower.length <= 75 && slugLower.length > 0;
@@ -8797,9 +9183,9 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       // 3. TITLE READABILITY (10 Points Total)
       // =========================================================================
 
-      // 3.1 Keyword at start of title (within first 4 words or first 45%) (3 pts)
+      // 3.1 Keyword at start of title (3 pts)
       const titleWords = titleLower.split(/\s+/).slice(0, 4).join(' ');
-      const kwAtStartTitle = !!primaryFocusKw && (titleWords.includes(primaryFocusKw) || titleLower.indexOf(primaryFocusKw) === 0 || (titleLower.indexOf(primaryFocusKw) < titleLower.length * 0.45));
+      const kwAtStartTitle = !!inspectedKw && (titleWords.includes(inspectedKw) || titleLower.indexOf(inspectedKw) === 0 || (titleLower.indexOf(inspectedKw) < titleLower.length * 0.45));
       setRuleStatus('rule-keyword-at-start-title', kwAtStartTitle);
       if (kwAtStartTitle) score += 3; else titleErrors++;
 
@@ -8839,7 +9225,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       setRuleStatus('rule-has-media', hasMedia);
       if (hasMedia) score += 4; else contentErrors++;
 
-      // Update real-time word count & reading time metrics
+      // Real-time word count & reading time metrics
       const wordDisplay = document.getElementById('word-count-display');
       if (wordDisplay) wordDisplay.innerHTML = `Word count: <strong class="text-gray-900">${wordCount}</strong>`;
 
@@ -8849,7 +9235,11 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const readDisplay = document.getElementById('reading-time-display');
       if (readDisplay) readDisplay.innerHTML = `Reading time: <strong class="text-gray-900">${Math.max(1, Math.ceil(wordCount / 200))} min</strong>`;
 
-      // Calculate final score
+      // Calculate final overall score (Primary keyword score + secondary keywords bonus)
+      if (evaluations.length > 1) {
+        const secondaryPassCount = evaluations.slice(1).filter(e => e.score >= 60).length;
+        score = Math.min(100, score + Math.min(10, secondaryPassCount * 3));
+      }
       score = Math.min(100, Math.max(0, score));
       updateScoreUI(score);
 
