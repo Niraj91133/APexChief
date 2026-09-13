@@ -5948,7 +5948,138 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     // =========================================================================
     // FLOATING INLINE LINK POPOVER & EDITOR LINK SETTINGS
     // =========================================================================
+    // INLINE LINK CONTROLLER & SMART AUTO-LINKIFY ENGINE
+    // =========================================================================
     let activeInlineLinkElem = null;
+
+    function autoLinkifyString(text) {
+      if (!text) return '';
+      const urlRegex = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/gi;
+      return text.replace(urlRegex, (url) => {
+        let cleanUrl = url;
+        let trailingPunct = '';
+        if (/[.,;:!?)]$/.test(cleanUrl)) {
+          trailingPunct = cleanUrl.slice(-1);
+          cleanUrl = cleanUrl.slice(0, -1);
+        }
+        const href = cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') ? cleanUrl : `https://${cleanUrl}`;
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-[#2271b1] underline font-medium hover:text-[#135e96]">${cleanUrl}</a>${trailingPunct}`;
+      });
+    }
+
+    function autoLinkifyHtmlContent(html) {
+      if (!html) return '';
+      return html.replace(
+        /(<a\b[^>]*>[\s\S]*?<\/a>|<[^>]+>)|((https?:\/\/[^\s<>"'`]+|www\.[^\s<>"'`]+))/gi,
+        (match, isTagOrLink, isUrl) => {
+          if (isTagOrLink) return match;
+          if (isUrl) {
+            let cleanUrl = isUrl;
+            let trailingPunct = '';
+            if (/[.,;:!?)]$/.test(cleanUrl)) {
+              trailingPunct = cleanUrl.slice(-1);
+              cleanUrl = cleanUrl.slice(0, -1);
+            }
+            const href = cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') ? cleanUrl : `https://${cleanUrl}`;
+            return `<a href="${href}" target="_blank" rel="noopener noreferrer" class="text-[#2271b1] underline font-medium hover:text-[#135e96]">${cleanUrl}</a>${trailingPunct}`;
+          }
+          return match;
+        }
+      );
+    }
+
+    function setupSmartPasteAutoLink(elemId) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+
+      el.addEventListener('paste', function(e) {
+        const text = (e.clipboardData || window.clipboardData)?.getData('text/plain');
+        if (!text) return;
+
+        const isDirectUrl = /^(https?:\/\/[^\s]+|www\.[^\s]+)$/i.test(text.trim());
+        const containsUrls = /(https?:\/\/[^\s<>"]+|www\.[^\s<>"]+)/i.test(text);
+
+        if (!containsUrls) return; // Standard text paste
+
+        e.preventDefault();
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        const range = sel.getRangeAt(0);
+
+        if (isDirectUrl) {
+          const rawUrl = text.trim();
+          const href = rawUrl.startsWith('http://') || rawUrl.startsWith('https://') ? rawUrl : `https://${rawUrl}`;
+
+          if (!range.collapsed) {
+            const selectedText = range.toString();
+            const a = document.createElement('a');
+            a.href = href;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = 'text-[#2271b1] underline font-medium hover:text-[#135e96]';
+            a.innerText = selectedText;
+
+            range.deleteContents();
+            range.insertNode(a);
+
+            const newRange = document.createRange();
+            newRange.selectNodeContents(a);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+          } else {
+            const a = document.createElement('a');
+            a.href = href;
+            a.target = '_blank';
+            a.rel = 'noopener noreferrer';
+            a.className = 'text-[#2271b1] underline font-medium hover:text-[#135e96]';
+            a.innerText = rawUrl;
+
+            range.deleteContents();
+            range.insertNode(a);
+
+            const space = document.createTextNode('\u00A0');
+            a.parentNode.insertBefore(space, a.nextSibling);
+
+            const newRange = document.createRange();
+            newRange.setStartAfter(space);
+            newRange.setEndAfter(space);
+            sel.removeAllRanges();
+            sel.addRange(newRange);
+          }
+
+          saveEditorSelection();
+          handleContentChange();
+          showToast('Live Link Attached 🔗', `Direct link for ${rawUrl}`);
+          return;
+        }
+
+        // Multi-paragraph or mixed text containing URLs
+        const converted = autoLinkifyHtmlContent(text.replace(/\n/g, '<br>'));
+        const temp = document.createElement('div');
+        temp.innerHTML = converted;
+
+        range.deleteContents();
+        const frag = document.createDocumentFragment();
+        let child;
+        let lastNode = null;
+        while ((child = temp.firstChild)) {
+          lastNode = frag.appendChild(child);
+        }
+        range.insertNode(frag);
+
+        if (lastNode) {
+          const newRange = document.createRange();
+          newRange.setStartAfter(lastNode);
+          newRange.setEndAfter(lastNode);
+          sel.removeAllRanges();
+          sel.addRange(newRange);
+        }
+
+        saveEditorSelection();
+        handleContentChange();
+        showToast('Formatted with Links 🔗', 'Auto-converted URLs to clickable links');
+      });
+    }
 
     function handleEditorClick(event) {
       const target = event.target.closest('a');
@@ -5956,7 +6087,12 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const popover = document.getElementById('inline-link-popover');
       
       if (target && editor && editor.contains(target)) {
-        // Prevent default click navigation inside editor
+        // If user Ctrl-clicks or Cmd-clicks, directly open link in new tab
+        if (event.ctrlKey || event.metaKey) {
+          window.open(target.href, '_blank', 'noopener,noreferrer');
+          return;
+        }
+        // Prevent default click navigation inside editor while showing popover
         event.preventDefault();
         activeInlineLinkElem = target;
         currentLinkAnchorNode = target;
@@ -8312,9 +8448,11 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     function savePost(status = 'draft') {
-      const title = document.getElementById('post-title').value.trim() || 'Untitled Post';
-      const content = document.getElementById('editor-content').innerHTML;
-      const slug = document.getElementById('snippet-permalink').value.trim() || generateSlug(title);
+      const rawTitle = document.getElementById('post-title').value.trim() || 'Untitled Post';
+      const title = autoLinkifyString(rawTitle);
+      const rawContent = document.getElementById('editor-content').innerHTML;
+      const content = autoLinkifyHtmlContent(rawContent);
+      const slug = document.getElementById('snippet-permalink').value.trim() || generateSlug(rawTitle);
       const focusKw = document.getElementById('focus-keyword').value.trim();
       const seoScore = parseInt(document.getElementById('rankmath-box-score').innerText) || 50;
       
@@ -8373,11 +8511,11 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         const pElements = tempDiv.querySelectorAll('p');
         let extractedParagraphs = [];
         pElements.forEach(p => {
-          const t = p.innerText.trim();
+          const t = p.innerHTML.trim();
           if (t) extractedParagraphs.push(t);
         });
         if (extractedParagraphs.length === 0) {
-          const plainTxt = tempDiv.innerText.trim();
+          const plainTxt = tempDiv.innerHTML.trim();
           if (plainTxt) extractedParagraphs = [plainTxt];
           else extractedParagraphs = ['Editorial coverage from ApexChief newsroom.'];
         }
@@ -12617,6 +12755,18 @@ function renderAuditResults() {
         `;
       }
       showToast('Instant Indexing Submitted ⚡', 'URLs queued for Google & Bing bots.');
+    }
+
+    // Initialize Smart Paste Auto-Link engine on all content and input fields
+    function initSmartPasteEngine() {
+      setupSmartPasteAutoLink('editor-content');
+      setupSmartPasteAutoLink('page-content-editor');
+      setupSmartPasteAutoLink('post-title');
+    }
+
+    window.addEventListener('DOMContentLoaded', initSmartPasteEngine);
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initSmartPasteEngine();
     }
 
   </script>

@@ -6,21 +6,21 @@
     "category": "Business",
     "subcategory": "Companies",
     "tag": "Companies",
-    "date": "Sep 12, 2026",
+    "date": "Sep 13, 2026",
     "author": "ApexChief Editorial",
     "authorRole": "Senior Editor",
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800",
     "readTime": "2 min read",
     "excerpt": "India's headline GDP growth is outpacing global benchmarks in 2026, yet structural automation and service-sector productivity gains mean employment generation i...",
-    "content": "\n<h2>Economic Growth Versus Employment Realities</h2>\n<p>India's headline GDP growth is outpacing global benchmarks in 2026, yet structural automation and service-sector productivity gains mean employment generation is diverging from capital expansion.</p>\n\n<img src=\"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800\" alt=\"Indian economic landscape\" class=\"my-3 rounded shadow max-w-full h-auto\">\n\n<h2>Why Tech and Manufacturing Are Transforming the Workforce</h2>\n<p>With artificial intelligence reshaping IT back-offices and automated robotics scaling manufacturing corridors, companies are producing higher revenues with leaner teams.</p>\n<p>For more official analysis, read our <a href=\"/market-analysis\">internal macro economic index</a> or consult official <a href=\"https://rbiapproved.gov.in\" target=\"_blank\" rel=\"noopener\">central fiscal data</a>.</p>\n              ",
+    "content": "\n<h2>Economic Growth Versus Employment Realities</h2>\n<p>India's headline GDP growth is outpacing global benchmarks in 2026, yet structural automation and service-sector productivity gains mean employment generation is diverging from capital expansion.</p>\n\n<img src=\"https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800\" alt=\"Indian economic landscape\" class=\"my-3 rounded shadow max-w-full h-auto\">\n\n<h2>Why Tech and Manufacturing Are Transforming the Workforce</h2>\n<p>With artificial intelligence reshaping IT back-offices and automated robotics scaling manufacturing corridors, companies are producing higher revenues with leaner teams.</p>\n<p>For more official analysis, read our <a href=\"/market-analysis\" class=\"text-[#2271b1] underline font-medium\">internal macro economic index</a> or consult official <a href=\"https://rbiapproved.gov.in\" target=\"_blank\" rel=\"noopener\" class=\"text-[#2271b1] underline font-medium\">central fiscal data</a>.</p>\n              ",
     "placement": "category",
     "isBreaking": false,
     "status": "Published",
     "paragraphs": [
       "India's headline GDP growth is outpacing global benchmarks in 2026, yet structural automation and service-sector productivity gains mean employment generation is diverging from capital expansion.",
       "With artificial intelligence reshaping IT back-offices and automated robotics scaling manufacturing corridors, companies are producing higher revenues with leaner teams.",
-      "For more official analysis, read our internal macro economic index or consult official central fiscal data."
+      "For more official analysis, read our <a href=\"/market-analysis\" class=\"text-[#2271b1] underline font-medium\">internal macro economic index</a> or consult official <a href=\"https://rbiapproved.gov.in\" target=\"_blank\" rel=\"noopener\" class=\"text-[#2271b1] underline font-medium\">central fiscal data</a>."
     ],
     "sections": []
   },

@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import ShareButtons from './ShareButtons';
 import ArticleViewTracker from '@/components/ArticleViewTracker';
+import { linkifyText, linkifyHtml } from '@/lib/linkify';
 
 export const dynamic = 'force-dynamic';
 
@@ -246,14 +247,14 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             itemProp="headline"
             className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#0a0a0a] dark:text-[#ffffff] leading-tight tracking-tight mb-4 sm:mb-5"
           >
-            {article.title}
+            {linkifyText(article.title)}
           </h1>
 
           <p
             itemProp="description"
             className="font-serif italic text-base sm:text-lg text-[#575757] dark:text-[#c4c4c4] leading-relaxed max-w-2xl mx-auto mb-5"
           >
-            {article.excerpt}
+            {linkifyText(article.excerpt)}
           </p>
 
           {/* Meta Info Bar (Date, Read Time, Tag) */}
@@ -309,7 +310,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           {/* Rich Body Content (WYSIWYG HTML or Structured Paragraphs) */}
           {article.content ? (
             <div
-              dangerouslySetInnerHTML={{ __html: article.content }}
+              dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
               className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-serif"
             />
           ) : (
@@ -317,7 +318,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               {/* Lead Paragraph with Drop Cap */}
               {article.paragraphs[0] && (
                 <p className="drop-cap font-serif text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
-                  {article.paragraphs[0]}
+                  {linkifyText(article.paragraphs[0])}
                 </p>
               )}
 
@@ -326,10 +327,10 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 article.sections.map((sec, idx) => (
                   <section key={idx} className="my-8">
                     <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
-                      {sec.heading}
+                      {linkifyText(sec.heading)}
                     </h2>
                     <p className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
-                      {sec.content}
+                      {linkifyText(sec.content)}
                     </p>
                   </section>
                 ))
@@ -339,7 +340,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                     key={idx}
                     className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
                   >
-                    {p}
+                    {linkifyText(p)}
                   </p>
                 ))
               )}
