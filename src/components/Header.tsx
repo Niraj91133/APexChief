@@ -53,12 +53,12 @@ function HeaderNav({
       className="category-nav-bar hidden lg:block w-full bg-black text-white border-b border-black transition-all relative z-40"
       onMouseLeave={handleMouseLeave}
     >
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-1.5 sm:py-2">
+      <div className="w-full max-w-[1440px] mx-auto px-2 sm:px-4 flex items-center justify-center py-1.5">
         {/* Desktop Navigation Links (Home + Categories Centered within Container) */}
-        <nav className="flex items-center justify-center flex-wrap xl:flex-nowrap gap-x-1 xl:gap-x-2 py-0.5 flex-1">
+        <nav className="flex items-center justify-center flex-wrap gap-x-0.5 lg:gap-x-1 xl:gap-x-1.5 py-0.5 text-center">
           <Link
             href="/"
-            className={`px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
+            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
               pathname === '/' && !currentCategory
                 ? 'text-[#f7413e] bg-white/10'
                 : 'text-white/95 hover:text-[#f7413e]'
@@ -69,7 +69,7 @@ function HeaderNav({
 
           <Link
             href="/news"
-            className={`px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
+            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
               pathname === '/news' && !currentCategory
                 ? 'text-[#f7413e] bg-white/10'
                 : 'text-white/95 hover:text-[#f7413e]'
@@ -91,7 +91,7 @@ function HeaderNav({
               >
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-1 px-1.5 xl:px-2 py-1 rounded text-[10.5px] xl:text-[11.5px] 2xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                  className={`inline-flex items-center space-x-0.5 px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
                       : isHovered
