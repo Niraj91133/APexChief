@@ -94,7 +94,7 @@ export const CATEGORIES: Category[] = [
   {
     name: "Technology",
     slug: "technology",
-    description: "Frontier artificial intelligence, deep-tech hardware, quantum cryptography, cloud computing, and semiconductor engineering.",
+    description: "Frontier artificial intelligence, deep-tech hardware, quantum computing, cloud infrastructure, and cybersecurity.",
     layout: "tech-layout",
     order: 4,
     isVisible: true,
@@ -115,7 +115,7 @@ export const CATEGORIES: Category[] = [
         description: "Zero-trust architectures, post-quantum encryption, and critical infra defense."
       },
       {
-        name: "Innovation & DeepTech",
+        name: "DeepTech & Innovation",
         slug: "innovation",
         description: "Quantum sensors, solid-state batteries, and photonics breakthroughs."
       }
@@ -170,7 +170,7 @@ export const CATEGORIES: Category[] = [
         description: "In-depth investigative reports and investigative journalism."
       },
       {
-        name: "Policy & Regulation",
+        name: "Policy & Law",
         slug: "policy-law",
         description: "Antitrust enforcement, legal rulings, and international trade accords."
       },
@@ -182,8 +182,8 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    name: "Real Estate",
-    slug: "real-estate",
+    name: "Real state",
+    slug: "real-state",
     description: "Commercial property, prime residential towers, sovereign infrastructure, REITs, and urban architecture.",
     layout: "business-layout",
     order: 7,
@@ -212,8 +212,8 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    name: "Startup",
-    slug: "startup",
+    name: "Start up",
+    slug: "start-up",
     description: "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
     layout: "tech-layout",
     order: 8,
@@ -302,27 +302,92 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    name: "More",
-    slug: "more",
-    description: "Extended coverage across Retail & E-commerce, Luxury Hospitality, and Groceries & Food Supply.",
-    layout: "lifestyle-layout",
+    name: "Retail",
+    slug: "retail",
+    description: "Omni-channel retail, direct-to-consumer luxury brands, global commerce, and retail technology.",
+    layout: "business-layout",
     order: 11,
     isVisible: true,
     subcategories: [
       {
-        name: "Retail",
-        slug: "retail",
-        description: "Omni-channel retail, direct-to-consumer luxury brands, and e-commerce technology."
+        name: "E-Commerce & DTC",
+        slug: "ecommerce-dtc",
+        description: "Digital commerce storefronts, customer retention, and brand scale."
       },
       {
-        name: "Hospitality",
-        slug: "hospitality",
-        description: "Ultra-luxury resorts, hotel management, aviation, and global tourism."
+        name: "Luxury & Fashion",
+        slug: "luxury-fashion",
+        description: "High-end fashion houses, bespoke apparel, and retail flagships."
       },
       {
-        name: "Groceries",
-        slug: "groceries",
-        description: "Supermarket logistics, food supply chains, agri-tech, and sustainable distribution."
+        name: "Retail Tech & AI",
+        slug: "retail-tech",
+        description: "Automated checkout, computer vision inventory, and dynamic pricing."
+      },
+      {
+        name: "Consumer Trends",
+        slug: "consumer-trends",
+        description: "Shifting buying behaviors, generational loyalty, and market baskets."
+      }
+    ]
+  },
+  {
+    name: "Hospitality",
+    slug: "hospitality",
+    description: "Ultra-luxury resorts, hotel management, aviation, fine dining, and global tourism.",
+    layout: "lifestyle-layout",
+    order: 12,
+    isVisible: true,
+    subcategories: [
+      {
+        name: "Luxury Hotels & Resorts",
+        slug: "luxury-resorts",
+        description: "Five-star hotel flagships, boutique hideaways, and master hospitality."
+      },
+      {
+        name: "Travel & Aviation",
+        slug: "travel-aviation",
+        description: "First-class travel, private aviation, and sovereign airline networks."
+      },
+      {
+        name: "Fine Dining & Culinary",
+        slug: "fine-dining",
+        description: "Michelin-starred culinary arts, master sommeliers, and gastronomic trends."
+      },
+      {
+        name: "Tourism Economics",
+        slug: "tourism-economics",
+        description: "Global destination development, tourism GDP, and leisure real estate."
+      }
+    ]
+  },
+  {
+    name: "Groceries",
+    slug: "groceries",
+    description: "Supermarket logistics, food supply chains, agri-tech, consumer goods, and sustainable distribution.",
+    layout: "business-layout",
+    order: 13,
+    isVisible: true,
+    subcategories: [
+      {
+        name: "Supermarket Chains",
+        slug: "supermarkets",
+        description: "Hypermarket operations, private-label branding, and grocery retail."
+      },
+      {
+        name: "Food Supply & Logistics",
+        slug: "food-supply",
+        description: "Cold storage networks, farm-to-table transit, and perishables logistics."
+      },
+      {
+        name: "Agri-Tech & Organics",
+        slug: "agri-tech",
+        description: "Vertical farming, organic certification, and sustainable agriculture."
+      },
+      {
+        name: "Consumer Goods (FMCG)",
+        slug: "fmcg",
+        description: "Packaged consumer foods, household staples, and beverage innovations."
       }
     ]
   }

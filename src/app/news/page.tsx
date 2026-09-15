@@ -9,35 +9,29 @@ import ArticleCard from '@/components/ArticleCard';
 import { Search, Newspaper, ArrowLeft, Layers, Tag, MapPin } from 'lucide-react';
 import Link from 'next/link';
 
-// Legacy mapping helper
+// Category resolution helper with robust slug aliases
 const resolveCategoryAndSub = (catParam: string, subParam: string | null) => {
   const norm = (catParam || '').toLowerCase().trim();
   const normSub = (subParam || '').toLowerCase().trim();
 
-  // Backward-compat aliases
+  // Backward-compat aliases & clean slug normalization
   if (norm === 'ai' || norm === 'artificial-intelligence') {
     return { category: 'technology', sub: 'ai', region: null };
   }
-  if (norm === 'real-estate') {
-    return { category: 'markets', sub: 'real-estate', region: null };
+  if (norm === 'real-estate' || norm === 'realestate' || norm === 'realstate' || norm === 'real-state') {
+    return { category: 'real-state', sub: normSub || null, region: null };
   }
-  if (norm === 'interview') {
-    return { category: 'leadership', sub: 'interviews', region: null };
+  if (norm === 'startup' || norm === 'startups' || norm === 'start-up') {
+    return { category: 'start-up', sub: normSub || null, region: null };
   }
-  if (norm === 'biography') {
-    return { category: 'leadership', sub: 'profiles', region: null };
+  if (norm === 'top-list' || norm === 'top10' || norm === 'top-10' || norm === 'top - list') {
+    return { category: 'top-list', sub: normSub || null, region: null };
   }
-  if (norm === 'finance') {
-    return { category: 'markets', sub: 'finance', region: null };
-  }
-  if (norm === 'health' || norm === 'medical' || norm === 'bard-powerport-lawsuit') {
-    return { category: 'future', sub: 'healthtech', region: null };
+  if (norm === 'medical' || norm === 'bard-powerport-lawsuit') {
+    return { category: 'health', sub: normSub || 'healthtech', region: null };
   }
   if (norm === 'innovation') {
     return { category: 'technology', sub: 'innovation', region: null };
-  }
-  if (norm === 'start-up' || norm === 'startup') {
-    return { category: 'startups', sub: normSub || null, region: null };
   }
   if (norm === 'uae') {
     return { category: 'all', sub: null, region: 'UAE' };

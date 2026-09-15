@@ -67,17 +67,6 @@ function HeaderNav({
             Home
           </Link>
 
-          <Link
-            href="/news"
-            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
-              pathname === '/news' && !currentCategory
-                ? 'text-[#f7413e] bg-white/10'
-                : 'text-white/95 hover:text-[#f7413e]'
-            }`}
-          >
-            All Categories
-          </Link>
-
           {categories.map((cat) => {
             const hasSubs = cat.subcategories && cat.subcategories.length > 0;
             const isHovered = hoveredCat === cat.slug;

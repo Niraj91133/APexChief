@@ -204,6 +204,15 @@ export async function bulkSaveCategoriesInDB(categories: CategoryInfo[]): Promis
       subcategories: cat.subcategories || [],
     }));
 
+    // Clean up deprecated categories not in the new set
+    const currentSlugs = categories.map((c) => c.slug);
+    if (currentSlugs.length > 0) {
+      await supabaseAdmin
+        .from('categories')
+        .delete()
+        .not('slug', 'in', `(${currentSlugs.map((s) => `"${s}"`).join(',')})`);
+    }
+
     const { error } = await supabaseAdmin
       .from('categories')
       .upsert(rows, { onConflict: 'slug' });
