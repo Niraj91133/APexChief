@@ -256,31 +256,9 @@ export default function HeroSection3Grid({
   });
 
   return (
-    <section className="w-full pb-8 border-b border-[#211d1d]/20 dark:border-white/15 relative">
-      {/* 0. GRAND EDITORIAL SECTION HEADER MATCHING REST OF THE SITE */}
-      <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
-        <div className="flex items-center space-x-3">
-          <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
-            SPOTLIGHT &amp; EXECUTIVE INDEX
-          </h2>
-          <span className="hidden md:inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#f7413e]/10 text-[#f7413e] dark:bg-[#f7413e]/20 text-xs font-mono uppercase tracking-widest font-bold">
-            <span className="w-2 h-2 bg-[#f7413e] rounded-full animate-pulse"></span>
-            <span>Live Edition</span>
-          </span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <button
-            onClick={() => setIsTop10ModalOpen(true)}
-            className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider cursor-pointer"
-          >
-            <span>Full Top 10 Archive</span>
-            <span className="text-base leading-none">→</span>
-          </button>
-        </div>
-      </div>
-
+    <section className="w-full pb-6 border-b border-[#211d1d]/20 dark:border-white/15 relative">
       {/* 2-GRID HERO SECTION (8 COLS SPOTLIGHT + COMPACT TOP 10 STRIP | 4 COLS EXECUTIVE INTERVIEWS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         
         {/* ========================================================================= */}
         {/* 1. LEFT GRID (8 Cols): SPOTLIGHT LEAD STORY + TOP 10 STRIP                 */}
@@ -292,7 +270,7 @@ export default function HeroSection3Grid({
         >
           <div>
             {/* Top Indicator & Slide Controls Bar */}
-            <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#211d1d]/10 dark:border-white/10">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/10 dark:border-white/10">
               <div className="flex items-center space-x-2">
                 <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Trophy className="w-3 h-3" />
@@ -313,29 +291,29 @@ export default function HeroSection3Grid({
                       prev === 0 ? visibleTopCount - 1 : prev - 1
                     )
                   }
-                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Previous Ranked Article"
                   title="Previous Story"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() =>
                     setActiveTopIndex((prev) => (prev + 1) % visibleTopCount)
                   }
-                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Next Ranked Article"
                   title="Next Story"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
 
-            {/* Featured Image with Clean Framing */}
+            {/* Featured Image with Reduced Compact Height */}
             <Link
               href={`/news/${activeTopArticle.slug}`}
-              className="block overflow-hidden relative aspect-[16/10] mb-4 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full h-[180px] sm:h-[200px] md:h-[220px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
             >
               <Image
                 key={activeTopArticle.slug}
@@ -345,16 +323,16 @@ export default function HeroSection3Grid({
                 priority
                 className="object-cover transition-transform duration-500 group-hover/img:scale-105 animate-in fade-in duration-300"
               />
-              <div className="absolute top-3 left-3 flex items-center space-x-2">
-                <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-md">
+              <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
+                <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
                   RANK 0{activeTopIndex + 1}
                 </span>
-                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-md">
+                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
                   {activeTopArticle.tag || activeTopArticle.category}
                 </span>
               </div>
-              <div className="absolute bottom-3 right-3">
-                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono px-2.5 py-1 font-semibold shadow-md">
+              <div className="absolute bottom-2.5 right-2.5">
+                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono px-2 py-0.5 font-semibold shadow-md">
                   {activeTopArticle.readTime}
                 </span>
               </div>
@@ -519,7 +497,7 @@ export default function HeroSection3Grid({
         >
           <div>
             {/* Header with Mic badge & Clean Slider Controls */}
-            <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#211d1d]/20 dark:border-white/15">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/20 dark:border-white/15">
               <div className="flex items-center space-x-2">
                 <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Mic className="w-3 h-3" />
@@ -540,10 +518,10 @@ export default function HeroSection3Grid({
                       prev === 0 ? activeInterviews.length - 1 : prev - 1
                     )
                   }
-                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Previous Interview"
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <ChevronLeft className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() =>
@@ -551,10 +529,10 @@ export default function HeroSection3Grid({
                       prev === activeInterviews.length - 1 ? 0 : prev + 1
                     )
                   }
-                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
+                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Next Interview"
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -562,7 +540,7 @@ export default function HeroSection3Grid({
             {/* Featured Interviewee Portrait Image */}
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full h-[140px] sm:h-[155px] mb-2.5 bg-[#eff0e0] dark:bg-[#202020] group/img"
             >
               <Image
                 src={currentInterview.image}
