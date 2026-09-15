@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { getArticles, getCategories } from '@/data/db';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3007';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
   const articles = getArticles();
   const categories = getCategories();
 

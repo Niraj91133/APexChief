@@ -42,19 +42,115 @@ const bebas = Bebas_Neue({
 });
 
 export const metadata: Metadata = {
-  title: 'ApexChief — Newsio Editorial Journal',
-  description: 'Modern media stories & weekly editorial features — EST. 2023. Curated journalism, deep-dive culture features, technology innovations, global affairs, and lifestyle analysis.',
-  keywords: 'news, editorial, modern times, journalism, culture, business, technology, lifestyle, travel, health, ai news',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com'),
+  title: {
+    default: 'ApexChief – Business, Leadership, Startups & Interview',
+    template: '%s — ApexChief',
+  },
+  description:
+    'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
+  keywords: [
+    'ApexChief',
+    'Apex Chief',
+    'Business',
+    'Leadership',
+    'Startups',
+    'Interview',
+    'Executive Interviews',
+    'Technology',
+    'Innovation',
+    'Emerging Trends',
+    'Founder Stories',
+    'CEOs',
+    'Digital Media',
+  ],
+  authors: [{ name: 'ApexChief Editorial Team', url: 'https://www.apexchief.com' }],
+  creator: 'ApexChief',
+  publisher: 'ApexChief',
+  applicationName: 'ApexChief',
+  alternates: {
+    canonical: 'https://www.apexchief.com',
+  },
   icons: {
     icon: 'https://framerusercontent.com/images/zYn8Xte3IxdFPFqfnQCRr2eGyHY.svg',
     apple: 'https://framerusercontent.com/images/edl63QIn2mk7QrakefiptPwcgZo.png',
   },
   openGraph: {
-    title: 'ApexChief — Newsio Editorial Journal',
-    description: 'Modern media stories & weekly editorial features — EST. 2023',
-    images: ['https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png'],
+    title: 'ApexChief – Business, Leadership, Startups & Interview',
+    description:
+      'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
+    url: 'https://www.apexchief.com',
+    siteName: 'ApexChief',
+    images: [
+      {
+        url: 'https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png',
+        width: 1200,
+        height: 630,
+        alt: 'ApexChief – Business, Leadership, Startups & Interview',
+      },
+    ],
+    locale: 'en_US',
     type: 'website',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ApexChief – Business, Leadership, Startups & Interview',
+    description:
+      'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
+    site: '@ApexChief',
+    creator: '@ApexChief',
+    images: ['https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://www.apexchief.com/#website',
+      url: 'https://www.apexchief.com',
+      name: 'ApexChief',
+      description:
+        'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
+      publisher: {
+        '@id': 'https://www.apexchief.com/#organization',
+      },
+      potentialAction: [
+        {
+          '@type': 'SearchAction',
+          target: {
+            '@type': 'EntryPoint',
+            urlTemplate: 'https://www.apexchief.com/news?search={search_term_string}',
+          },
+          'query-input': 'required name=search_term_string',
+        },
+      ],
+    },
+    {
+      '@type': 'NewsMediaOrganization',
+      '@id': 'https://www.apexchief.com/#organization',
+      name: 'ApexChief',
+      url: 'https://www.apexchief.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://framerusercontent.com/images/zYn8Xte3IxdFPFqfnQCRr2eGyHY.svg',
+      },
+      description:
+        'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends.',
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -64,6 +160,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${baskerville.variable} ${inter.variable} ${oswald.variable} ${bebas.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body
         suppressHydrationWarning
         className="min-h-screen bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"

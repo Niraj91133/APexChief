@@ -1,13 +1,13 @@
 {
   "name": "ApexChief",
   "shortName": "ApexChief",
-  "tagline": "Modern media stories & weekly editorial features — EST. 2023",
-  "description": "A modern newspaper and editorial publication delivering curated daily journalism, deep-dive features, culture analysis, and global reporting.",
+  "tagline": "Business, Leadership, Startups & Interview",
+  "description": "ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.",
   "establishedYear": "2023",
   "currentDate": "Monday, May 25, 2026",
   "edition": "Vol. XIV, No. 128 — Global Edition",
   "contact": {
-    "email": "hello@theagejournal.com",
+    "email": "contact@apexchief.com",
     "phone": "+1 (212) 555-4821",
     "addressNY": {
       "title": "New York Office",
@@ -23,10 +23,12 @@
     }
   },
   "socialLinks": {
-    "twitter": "https://twitter.com",
-    "instagram": "https://instagram.com",
-    "linkedin": "https://linkedin.com",
-    "facebook": "https://facebook.com"
+    "twitter": "https://twitter.com/ApexChief",
+    "instagram": "https://instagram.com/ApexChief",
+    "linkedin": "https://linkedin.com/company/apexchief",
+    "facebook": "https://facebook.com/ApexChief",
+    "whatsapp": "https://wa.me/919876543210",
+    "phoneUrl": "tel:+12125554821"
   },
-  "copyright": "© 2026 All Right Reserved by Reddevs"
+  "copyright": "© 2026 ApexChief. All Rights Reserved."
 }
