@@ -270,7 +270,7 @@ export default function HeroSection3Grid({
         >
           <div>
             {/* Top Indicator & Slide Controls Bar */}
-            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/10 dark:border-white/10">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/10 dark:border-white/10 h-8">
               <div className="flex items-center space-x-2">
                 <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Trophy className="w-3 h-3" />
@@ -310,10 +310,10 @@ export default function HeroSection3Grid({
               </div>
             </div>
 
-            {/* Featured Image with Reduced Compact Height */}
+            {/* Featured Image with Exact Matching Height */}
             <Link
               href={`/news/${activeTopArticle.slug}`}
-              className="block overflow-hidden relative w-full h-[180px] sm:h-[200px] md:h-[220px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
             >
               <Image
                 key={activeTopArticle.slug}
@@ -497,7 +497,7 @@ export default function HeroSection3Grid({
         >
           <div>
             {/* Header with Mic badge & Clean Slider Controls */}
-            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/20 dark:border-white/15">
+            <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-[#211d1d]/10 dark:border-white/10 h-8">
               <div className="flex items-center space-x-2">
                 <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Mic className="w-3 h-3" />
@@ -537,10 +537,10 @@ export default function HeroSection3Grid({
               </div>
             </div>
 
-            {/* Featured Interviewee Portrait Image */}
+            {/* Featured Interviewee Portrait Image (Exact Matching Height as Spotlight) */}
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="block overflow-hidden relative w-full h-[140px] sm:h-[155px] mb-2.5 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
             >
               <Image
                 src={currentInterview.image}
