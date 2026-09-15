@@ -259,7 +259,7 @@ export default function HeroSection3Grid({
     <section className="w-full pb-6 border-b border-[#211d1d]/20 dark:border-white/15 relative">
       {/* 2-GRID HERO SECTION (8 COLS SPOTLIGHT + COMPACT TOP 10 STRIP | 4 COLS EXECUTIVE INTERVIEWS) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-        
+
         {/* ========================================================================= */}
         {/* 1. LEFT GRID (8 Cols): SPOTLIGHT LEAD STORY + TOP 10 STRIP                 */}
         {/* ========================================================================= */}
@@ -401,20 +401,18 @@ export default function HeroSection3Grid({
                     key={art.slug}
                     onClick={() => setActiveTopIndex(idx)}
                     onMouseEnter={() => setActiveTopIndex(idx)}
-                    className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${
-                      isActive
+                    className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${isActive
                         ? 'bg-[#eff0e0] dark:bg-[#252525] border-[#f7413e] shadow-xs'
                         : 'bg-white dark:bg-[#181818] border-[#211d1d]/15 dark:border-white/10 hover:border-[#211d1d]/40'
-                    }`}
+                      }`}
                   >
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
                         <span
-                          className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${
-                            isActive
+                          className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${isActive
                               ? 'bg-[#f7413e] text-white'
                               : 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
-                          }`}
+                            }`}
                         >
                           0{idx + 1}
                         </span>
@@ -423,11 +421,10 @@ export default function HeroSection3Grid({
                         </span>
                       </div>
                       <h4
-                        className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${
-                          isActive
+                        className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${isActive
                             ? 'text-[#f7413e]'
                             : 'text-[#0a0a0a] dark:text-white hover:text-[#f7413e]'
-                        }`}
+                          }`}
                       >
                         {art.title}
                       </h4>
@@ -448,20 +445,18 @@ export default function HeroSection3Grid({
                       key={art.slug}
                       onClick={() => setActiveTopIndex(actualIdx)}
                       onMouseEnter={() => setActiveTopIndex(actualIdx)}
-                      className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${
-                        isActive
+                      className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${isActive
                           ? 'bg-[#eff0e0] dark:bg-[#252525] border-[#f7413e] shadow-xs'
                           : 'bg-white dark:bg-[#181818] border-[#211d1d]/15 dark:border-white/10 hover:border-[#211d1d]/40'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-1.5">
                           <span
-                            className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${
-                              isActive
+                            className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${isActive
                                 ? 'bg-[#f7413e] text-white'
                                 : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
-                            }`}
+                              }`}
                           >
                             {actualIdx + 1 < 10 ? `0${actualIdx + 1}` : actualIdx + 1}
                           </span>
@@ -470,11 +465,10 @@ export default function HeroSection3Grid({
                           </span>
                         </div>
                         <h4
-                          className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${
-                            isActive
+                          className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${isActive
                               ? 'text-[#f7413e]'
                               : 'text-[#0a0a0a] dark:text-white hover:text-[#f7413e]'
-                          }`}
+                            }`}
                         >
                           {art.title}
                         </h4>
@@ -537,24 +531,37 @@ export default function HeroSection3Grid({
               </div>
             </div>
 
-            {/* Featured Interviewee Portrait Image (Exact Matching Height as Spotlight) */}
+            {/* Featured Interviewee Portrait Image (Exact Matching Height & Full Accurate View) */}
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#111111] border border-black/10 dark:border-white/10 group/img"
             >
+              {/* Layer 1: Ambient Blurred Background */}
               <Image
+                key={`bg-int-${currentInterview.slug}`}
+                src={currentInterview.image}
+                alt=""
+                fill
+                className="object-cover blur-lg opacity-30 dark:opacity-45 scale-110 pointer-events-none"
+                aria-hidden="true"
+              />
+
+              {/* Layer 2: Full Accurate Uncropped Main Image */}
+              <Image
+                key={currentInterview.slug}
                 src={currentInterview.image}
                 alt={currentInterview.title}
                 fill
                 priority
-                className="object-cover transition-transform duration-500 group-hover/img:scale-105"
+                className="object-contain object-center relative z-10 transition-opacity duration-300"
               />
-              <div className="absolute top-2.5 left-2.5">
+
+              <div className="absolute top-2.5 left-2.5 z-20">
                 <span className="bg-black/85 text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-xs">
                   {currentInterview.tag || 'Executive'}
                 </span>
               </div>
-              <div className="absolute bottom-2.5 right-2.5">
+              <div className="absolute bottom-2.5 right-2.5 z-20">
                 <span className="bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono font-semibold px-2 py-0.5">
                   {currentInterview.readTime}
                 </span>
@@ -600,11 +607,10 @@ export default function HeroSection3Grid({
                 <button
                   key={idx}
                   onClick={() => setSliderIndex(idx)}
-                  className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                    sliderIndex === idx
+                  className={`h-1.5 rounded-full transition-all cursor-pointer ${sliderIndex === idx
                       ? 'w-6 bg-[#f7413e]'
                       : 'w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
-                  }`}
+                    }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
               ))}
@@ -686,11 +692,10 @@ export default function HeroSection3Grid({
                     <button
                       key={cat}
                       onClick={() => setTop10Category(cat)}
-                      className={`px-2.5 py-1 text-[10.5px] font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer rounded-xs ${
-                        top10Category === cat
+                      className={`px-2.5 py-1 text-[10.5px] font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer rounded-xs ${top10Category === cat
                           ? 'bg-[#f7413e] text-white shadow-2xs'
                           : 'bg-[#eff0e0] dark:bg-[#252525] text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d] hover:text-white'
-                      }`}
+                        }`}
                     >
                       {cat}
                     </button>
@@ -816,11 +821,10 @@ export default function HeroSection3Grid({
                     <button
                       key={cat}
                       onClick={() => setInterviewCategory(cat)}
-                      className={`px-2.5 py-1 text-[10.5px] font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer rounded-xs ${
-                        interviewCategory === cat
+                      className={`px-2.5 py-1 text-[10.5px] font-mono uppercase tracking-wider font-semibold transition-colors cursor-pointer rounded-xs ${interviewCategory === cat
                           ? 'bg-[#f7413e] text-white shadow-2xs'
                           : 'bg-[#eff0e0] dark:bg-[#252525] text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d] hover:text-white'
-                      }`}
+                        }`}
                     >
                       {cat}
                     </button>
