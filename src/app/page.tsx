@@ -76,19 +76,33 @@ export default function HomePage() {
   const hero2 = top3Assigned[1] || getArt('the-rise-of-fractional-executives-in-modern-workforce');
   const hero3 = top3Assigned[2] || getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams');
 
-  // Latest News dynamic assignments
-  const explicitLatest = articles.filter((a) => a.placement === 'latest-news');
-  const unplacedArticles = articles.filter((a) => a.placement !== 'top3' && a.placement !== 'best-month');
-  const latestPool = explicitLatest.length > 0 
-    ? [...explicitLatest, ...unplacedArticles.filter((a) => !explicitLatest.some((l) => l.id === a.id || l.slug === a.slug))]
-    : (unplacedArticles.length > 0 ? unplacedArticles : articles);
+  // Latest News dynamic assignments: strictly pull placement === 'latest-news' OR category === 'News'
+  const explicitLatest = articles.filter(
+    (a) =>
+      a.placement === 'latest-news' ||
+      a.category?.toLowerCase() === 'news' ||
+      a.category?.toLowerCase() === 'latest news' ||
+      a.tag?.toLowerCase() === 'news'
+  );
 
-  const newsMain = latestPool[0] || getArt('space-agencies-plan-joint-lunar-exploration-mission');
-  const newsRightTop = latestPool[1] || getArt('interview-sarah-chen-on-building-ai-native-operating-systems');
-  const newsRightBottom = latestPool[2] || getArt('programmatic-brand-storytelling-in-the-age-of-algorithmic-feeds');
-  const newsRightBottom2 = latestPool[3] || getArt('corporate-treasuries-diversify-into-green-infrastructure-bonds');
+  const defaultLatestFallbacks = [
+    getArt('space-agencies-plan-joint-lunar-exploration-mission'),
+    getArt('interview-sarah-chen-on-building-ai-native-operating-systems'),
+    getArt('programmatic-brand-storytelling-in-the-age-of-algorithmic-feeds'),
+    getArt('corporate-treasuries-diversify-into-green-infrastructure-bonds'),
+  ];
 
-  // Best This Month dynamic assignments
+  const latestPool = [
+    ...explicitLatest,
+    ...defaultLatestFallbacks.filter((fb) => !explicitLatest.some((l) => l.id === fb.id || l.slug === fb.slug)),
+  ];
+
+  const newsMain = latestPool[0] || defaultLatestFallbacks[0];
+  const newsRightTop = latestPool[1] || defaultLatestFallbacks[1];
+  const newsRightBottom = latestPool[2] || defaultLatestFallbacks[2];
+  const newsRightBottom2 = latestPool[3] || defaultLatestFallbacks[3];
+
+  // Best This Month dynamic assignments: strictly placement === 'best-month'
   const bestAssigned = articles.filter((a) => a.placement === 'best-month');
   const bestThisMonthArticles = bestAssigned.length > 0 ? bestAssigned : [
     getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams'),
@@ -429,39 +443,29 @@ export default function HomePage() {
 // DYNAMIC CATEGORY SECTION DISPATCHER COMPONENT
 // =========================================================================
 function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
-  // Filter articles in this category case-insensitively
+  // Filter articles in this category case-insensitively (checking category, subcategory, and tag)
   const categoryArticles = articles.filter((art) => {
-    const normArtCat = art.category.toLowerCase().trim().replace(/[-\s]/g, '');
-    const normCatSlug = cat.slug.toLowerCase().trim().replace(/[-\s]/g, '');
-    const normCatName = cat.name.toLowerCase().trim().replace(/[-\s]/g, '');
+    const normArtCat = (art.category || '').toLowerCase().trim().replace(/[-\s]/g, '');
+    const normArtSub = (art.subcategory || '').toLowerCase().trim().replace(/[-\s]/g, '');
+    const normCatSlug = (cat.slug || '').toLowerCase().trim().replace(/[-\s]/g, '');
+    const normCatName = (cat.name || '').toLowerCase().trim().replace(/[-\s]/g, '');
     
-    return normArtCat === normCatSlug || normArtCat === normCatName;
-  });
+    return (
+      normArtCat === normCatSlug ||
+      normArtCat === normCatName ||
+      normArtSub === normCatSlug ||
+      normArtSub === normCatName
+    );
+  }).map((art) => ({
+    ...art,
+    image: art.image ? art.image.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
+    authorAvatar: art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+  }));
 
   // If there are 0 articles, hide the section entirely
   if (categoryArticles.length === 0) {
     return null;
   }
-
-  // Get articles safe getter helper (falls back to placeholder if out of range)
-  const getArtAt = (index: number): Article => {
-    if (index < categoryArticles.length) {
-      const art = categoryArticles[index];
-      const cleanImage = art.image ? art.image.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
-      const cleanAvatar = art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300';
-      return {
-        ...art,
-        image: cleanImage,
-        authorAvatar: cleanAvatar
-      };
-    }
-    const fallback = categoryArticles[0];
-    return {
-      ...fallback,
-      id: `fallback-${cat.slug}-${index}`,
-      title: `${cat.name} Editorial Feature`,
-    };
-  };
 
   const layout = cat.layout || 'world-layout';
 
@@ -481,12 +485,10 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     </div>
   );
 
-  // 1. World & News Layout (Hero banner on top + 3 cards below)
+  // 1. World & News Layout (Hero banner on top + cards below)
   if (layout === 'world-layout' || layout === 'news-layout') {
-    const featured = getArtAt(0);
-    const col1 = getArtAt(1);
-    const col2 = getArtAt(2);
-    const col3 = getArtAt(3);
+    const featured = categoryArticles[0];
+    const subArticles = categoryArticles.slice(1, 4);
     
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
@@ -521,53 +523,93 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
             </div>
           </div>
         </div>
-        {/* Bottom 3-Card Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25">
-          {[col1, col2, col3].map((col, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
-              <Link
-                href={`/news/${col.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
-              >
-                <Image
-                  src={col.image}
-                  alt={col.title}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-              </Link>
-              <div>
-                <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
-                  {col.tag || col.category}
-                </span>
-                <Link href={`/news/${col.slug}`}>
-                  <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
-                    {col.title}
-                  </h4>
+
+        {/* Bottom Cards Row if more articles exist */}
+        {subArticles.length > 0 && (
+          <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, subArticles.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25`}>
+            {subArticles.map((col, idx) => (
+              <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
+                <Link
+                  href={`/news/${col.slug}`}
+                  className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
+                >
+                  <Image
+                    src={col.image}
+                    alt={col.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </Link>
-                <div className="text-xs font-serif italic text-[#575757] mt-1.5">
-                  {col.date}
+                <div>
+                  <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
+                    {col.tag || col.category}
+                  </span>
+                  <Link href={`/news/${col.slug}`}>
+                    <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
+                      {col.title}
+                    </h4>
+                  </Link>
+                  <div className="text-xs font-serif italic text-[#575757] mt-1.5">
+                    {col.date}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     );
   }
 
   // 2. Tech / Innovation / Technology / Start Up / Career layout (Split list + Right lead)
   if (layout === 'tech-layout') {
-    const left1 = getArtAt(0);
-    const left2 = getArtAt(1);
-    const center = getArtAt(2);
+    if (categoryArticles.length === 1) {
+      const art = categoryArticles[0];
+      return (
+        <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+          {renderHeader()}
+          <div className="group grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <Link
+              href={`/news/${art.slug}`}
+              className="lg:col-span-6 block overflow-hidden relative aspect-[16/10] bg-[#eff0e0]"
+            >
+              <Image
+                src={art.image}
+                alt={art.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+            </Link>
+            <div className="lg:col-span-6">
+              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
+                {art.tag || art.category}
+              </span>
+              <Link href={`/news/${art.slug}`}>
+                <h3 className="font-serif text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                  {art.title}
+                </h3>
+              </Link>
+              <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-3 mb-3">
+                {art.excerpt}
+              </p>
+              <div className="text-xs font-serif italic text-[#575757]">
+                {art.date}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    const sideArticles = categoryArticles.slice(0, 2);
+    const mainLead = categoryArticles[2] || categoryArticles[0];
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
         {renderHeader()}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20">
           <div className="lg:col-span-5 space-y-4 divide-y divide-[#211d1d]/15 pb-6 lg:pb-0">
-            {[left1, left2].map((art, idx) => (
+            {sideArticles.map((art, idx) => (
               <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-4'} group flex items-start space-x-3`}>
                 <Link
                   href={`/news/${art.slug}`}
@@ -599,30 +641,30 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
 
           <div className="lg:col-span-7 lg:pl-6 group flex flex-col justify-between">
             <Link
-              href={`/news/${center.slug}`}
+              href={`/news/${mainLead.slug}`}
               className="block overflow-hidden relative aspect-[16/9] mb-4 bg-[#eff0e0]"
             >
               <Image
-                src={center.image}
-                alt={center.title}
+                src={mainLead.image}
+                alt={mainLead.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </Link>
             <div>
               <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
-                {center.tag || center.category}
+                {mainLead.tag || mainLead.category}
               </span>
-              <Link href={`/news/${center.slug}`}>
+              <Link href={`/news/${mainLead.slug}`}>
                 <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
-                  {center.title}
+                  {mainLead.title}
                 </h3>
               </Link>
               <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 mb-3">
-                {center.excerpt}
+                {mainLead.excerpt}
               </p>
               <div className="text-xs font-serif italic text-[#575757]">
-                {center.date}
+                {mainLead.date}
               </div>
             </div>
           </div>
@@ -633,14 +675,13 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
 
   // 3. Business / Finance / Real Estate layout (2 prominent split cards)
   if (layout === 'business-layout') {
-    const main1 = getArtAt(0);
-    const main2 = getArtAt(1);
+    const displayList = categoryArticles.slice(0, 2);
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
         {renderHeader()}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20">
-          {[main1, main2].map((art, idx) => (
+        <div className={`grid grid-cols-1 ${displayList.length > 1 ? 'md:grid-cols-2' : ''} gap-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20`}>
+          {displayList.map((art, idx) => (
             <div key={idx} className={`group flex flex-col justify-between ${idx === 1 ? 'md:pl-8 pt-6 md:pt-0' : 'pb-6 md:pb-0'}`}>
               <Link
                 href={`/news/${art.slug}`}
@@ -677,15 +718,13 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   }
 
   // 4. Default / Lifestyle / Creative / Culture / Health (3-Column Grid)
-  const art1 = getArtAt(0);
-  const art2 = getArtAt(1);
-  const art3 = getArtAt(2);
+  const displayList = categoryArticles.slice(0, 3);
 
   return (
     <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
       {renderHeader()}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20">
-        {[art1, art2, art3].map((art, idx) => (
+      <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20`}>
+        {displayList.map((art, idx) => (
           <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
             <Link
               href={`/news/${art.slug}`}

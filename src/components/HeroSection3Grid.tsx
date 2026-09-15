@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '@/types';
+import { ARTICLES } from '@/data/articles';
 import {
   ChevronLeft,
   ChevronRight,
@@ -158,10 +159,28 @@ export default function HeroSection3Grid({
     },
   };
 
-  // 2. Collect Top 10 Ranked Articles (Explicit top10 first, then remaining)
-  const explicitTop10 = articles.filter((a) => a.placement === 'top10');
-  const otherArticles = articles.filter((a) => a.placement !== 'top10');
-  const top10Ranked = [...explicitTop10, ...otherArticles].slice(0, 15);
+  // 2. Collect Top 10 Ranked Articles (Strictly articles marked placement === 'top10' or category === 'Top - List' / 'Top 10')
+  const explicitTop10 = articles.filter(
+    (a) =>
+      a.placement === 'top10' ||
+      a.category?.toLowerCase() === 'top - list' ||
+      a.category?.toLowerCase() === 'top-list' ||
+      a.category?.toLowerCase() === 'top 10' ||
+      a.category?.toLowerCase() === 'top10' ||
+      a.tag?.toLowerCase() === 'top 10'
+  );
+
+  // Fallback seed articles for Top 10 so the list is always populated without polluting with new unrelated category posts
+  const defaultTop10Seed = ARTICLES.filter(
+    (a) => a.placement !== 'interview' && a.category?.toLowerCase() !== 'interview'
+  );
+
+  const top10Ranked = [
+    ...explicitTop10,
+    ...defaultTop10Seed.filter(
+      (s) => !explicitTop10.some((e) => e.id === s.id || e.slug === s.slug)
+    ),
+  ].slice(0, 15);
 
   // Visible ranked items (5 primary or 10 if expanded)
   const visibleTopCount = showExtraTop10 ? Math.min(10, top10Ranked.length) : Math.min(5, top10Ranked.length);
