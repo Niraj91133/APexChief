@@ -256,39 +256,55 @@ export default function HeroSection3Grid({
   });
 
   return (
-    <section className="w-full pb-6 border-b border-[#211d1d]/20 dark:border-white/15 relative">
+    <section className="w-full pb-8 border-b border-[#211d1d]/20 dark:border-white/15 relative">
+      {/* 0. GRAND EDITORIAL SECTION HEADER MATCHING REST OF THE SITE */}
+      <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
+        <div className="flex items-center space-x-3">
+          <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+            SPOTLIGHT &amp; EXECUTIVE INDEX
+          </h2>
+          <span className="hidden md:inline-flex items-center space-x-1.5 px-2.5 py-1 bg-[#f7413e]/10 text-[#f7413e] dark:bg-[#f7413e]/20 text-xs font-mono uppercase tracking-widest font-bold">
+            <span className="w-2 h-2 bg-[#f7413e] rounded-full animate-pulse"></span>
+            <span>Live Edition</span>
+          </span>
+        </div>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => setIsTop10ModalOpen(true)}
+            className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider cursor-pointer"
+          >
+            <span>Full Top 10 Archive</span>
+            <span className="text-base leading-none">→</span>
+          </button>
+        </div>
+      </div>
+
       {/* 2-GRID HERO SECTION (8 COLS SPOTLIGHT + COMPACT TOP 10 STRIP | 4 COLS EXECUTIVE INTERVIEWS) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* ========================================================================= */}
-        {/* 1. LEFT GRID (8 Cols): SLEEK SPOTLIGHT CAROUSEL + COMPACT 5-CARD INDEX     */}
+        {/* 1. LEFT GRID (8 Cols): SPOTLIGHT LEAD STORY + TOP 10 STRIP                 */}
         {/* ========================================================================= */}
         <div
-          className="lg:col-span-8 flex flex-col justify-between bg-white dark:bg-[#161616] border border-[#211d1d]/20 dark:border-white/15 shadow-xs relative transition-all group/herobox"
+          className="lg:col-span-8 flex flex-col justify-between lg:border-r lg:border-[#211d1d]/20 dark:lg:border-white/20 lg:pr-8 group/herobox"
           onMouseEnter={() => setIsTopHovered(true)}
           onMouseLeave={() => setIsTopHovered(false)}
         >
-          {/* Top Section Header */}
-          <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-[#211d1d]/15 dark:border-white/15 bg-[#fbfaf5] dark:bg-[#1c1c1c]">
-            <div className="flex items-center space-x-2">
-              <span className="flex items-center justify-center w-6 h-6 bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded-xs shadow-2xs">
-                <Trophy className="w-3 h-3" />
-              </span>
+          <div>
+            {/* Top Indicator & Slide Controls Bar */}
+            <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#211d1d]/10 dark:border-white/10">
               <div className="flex items-center space-x-2">
-                <h3 className="font-oswald text-sm sm:text-base font-bold uppercase tracking-wider text-[#0a0a0a] dark:text-white leading-none">
-                  TOP 10 INDEX &amp; SPOTLIGHT
-                </h3>
-                <span className="hidden sm:inline-flex items-center space-x-1 px-1.5 py-0.5 bg-[#f7413e]/10 text-[#f7413e] dark:bg-[#f7413e]/20 text-[9px] font-mono uppercase tracking-widest font-bold rounded-xs">
-                  <span className="w-1.5 h-1.5 bg-[#f7413e] rounded-full animate-pulse"></span>
-                  <span>Live</span>
+                <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
+                  <Trophy className="w-3 h-3" />
+                </span>
+                <span className="font-mono text-xs uppercase tracking-widest text-[#f7413e] font-bold">
+                  RANK 0{activeTopIndex + 1} OF 0{visibleTopCount}
                 </span>
               </div>
-            </div>
 
-            {/* Quick Actions: Top 10 Total List Modal & Carousel Controls */}
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center space-x-1">
-                <span className="text-[10.5px] font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
+              {/* Carousel Next/Prev Controls */}
+              <div className="flex items-center space-x-1.5">
+                <span className="text-xs font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
                   0{activeTopIndex + 1}/0{visibleTopCount}
                 </span>
                 <button
@@ -297,135 +313,109 @@ export default function HeroSection3Grid({
                       prev === 0 ? visibleTopCount - 1 : prev - 1
                     )
                   }
-                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
+                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Previous Ranked Article"
                   title="Previous Story"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() =>
                     setActiveTopIndex((prev) => (prev + 1) % visibleTopCount)
                   }
-                  className="w-6 h-6 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
+                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-[#211d1d] dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Next Ranked Article"
                   title="Next Story"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-
-              <button
-                onClick={() => setIsTop10ModalOpen(true)}
-                className="inline-flex items-center space-x-1 text-[10.5px] font-mono uppercase font-bold text-[#f7413e] hover:text-[#0a0a0a] dark:hover:text-white bg-[#f7413e]/10 hover:bg-[#f7413e]/20 px-2 py-1 rounded-xs transition-colors cursor-pointer"
-                title="Click to view total top 10 ranked list"
-              >
-                <span>Total List</span>
-                <ArrowUpRight className="w-3 h-3" />
-              </button>
             </div>
-          </div>
 
-          {/* MAIN SPOTLIGHT STORY (COMPACT & BEAUTIFULLY FRAMED) */}
-          <div className="p-3.5 sm:p-4 bg-white dark:bg-[#161616] flex flex-col justify-between flex-1">
-            <div>
-              {/* Featured Image with Natural Framing */}
+            {/* Featured Image with Clean Framing */}
+            <Link
+              href={`/news/${activeTopArticle.slug}`}
+              className="block overflow-hidden relative aspect-[16/10] mb-4 bg-[#eff0e0] dark:bg-[#202020] group/img"
+            >
+              <Image
+                key={activeTopArticle.slug}
+                src={activeTopArticle.image}
+                alt={activeTopArticle.title}
+                fill
+                priority
+                className="object-cover transition-transform duration-500 group-hover/img:scale-105 animate-in fade-in duration-300"
+              />
+              <div className="absolute top-3 left-3 flex items-center space-x-2">
+                <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-md">
+                  RANK 0{activeTopIndex + 1}
+                </span>
+                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-md">
+                  {activeTopArticle.tag || activeTopArticle.category}
+                </span>
+              </div>
+              <div className="absolute bottom-3 right-3">
+                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono px-2.5 py-1 font-semibold shadow-md">
+                  {activeTopArticle.readTime}
+                </span>
+              </div>
+            </Link>
+
+            {/* Category / Tag Dot */}
+            <div className="flex items-center space-x-1.5 text-xs text-[#575757] dark:text-gray-400 font-sans mb-1.5">
+              <span className="text-[#002b5c] dark:text-[#60a5fa] font-bold text-sm leading-none">•</span>
+              <span className="font-serif italic text-[13px] text-[#575757] dark:text-gray-300">
+                {activeTopArticle.tag || activeTopArticle.category}
+              </span>
+              <span className="text-gray-400 mx-1">•</span>
+              <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400">
+                Editorial Rank #{activeTopIndex + 1}
+              </span>
+            </div>
+
+            {/* Headline matching Latest News font size */}
+            <Link href={`/news/${activeTopArticle.slug}`} className="block group/headline">
+              <h3 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-medium tracking-wide text-[#0a0a0a] dark:text-white group-hover/headline:text-[#f7413e] transition-colors leading-tight mb-3">
+                {activeTopArticle.title}
+              </h3>
+            </Link>
+
+            {/* Excerpt matching Latest News font size */}
+            <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 leading-relaxed mb-4 line-clamp-3">
+              {activeTopArticle.excerpt}
+            </p>
+
+            {/* Meta & Read full story link */}
+            <div className="flex items-center justify-between pt-3 border-t border-[#211d1d]/10 dark:border-white/10 mb-5">
+              <div className="text-[12px] font-serif italic text-[#575757] dark:text-gray-400">
+                By {activeTopArticle.author} • {activeTopArticle.date}
+              </div>
               <Link
                 href={`/news/${activeTopArticle.slug}`}
-                className="block overflow-hidden relative w-full h-[200px] sm:h-[220px] md:h-[235px] mb-3 bg-[#eff0e0] dark:bg-[#202020] border border-[#211d1d]/15 dark:border-white/10 shadow-xs rounded-xs group/img"
+                className="inline-flex items-center space-x-1 text-[12px] font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-medium"
               >
-                <Image
-                  key={activeTopArticle.slug}
-                  src={activeTopArticle.image}
-                  alt={activeTopArticle.title}
-                  fill
-                  priority
-                  className="object-cover object-center transition-all duration-700 group-hover/img:scale-105 animate-in fade-in duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/20 pointer-events-none" />
-
-                {/* Top Left Rank & Category Tag */}
-                <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
-                  <span className="bg-[#f7413e] text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold rounded-xs shadow-md">
-                    RANK 0{activeTopIndex + 1}
-                  </span>
-                  <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold rounded-xs shadow-md">
-                    {activeTopArticle.tag || activeTopArticle.category}
-                  </span>
-                </div>
-
-                {/* Bottom Right Read Time */}
-                <div className="absolute bottom-2.5 right-2.5">
-                  <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 rounded-xs font-semibold shadow-md">
-                    {activeTopArticle.readTime}
-                  </span>
-                </div>
+                <span>Read full story</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
-
-              {/* Headline & Excerpt */}
-              <div className="space-y-1">
-                <Link href={`/news/${activeTopArticle.slug}`} className="block group/headline">
-                  <h2 className="font-serif text-lg sm:text-xl md:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover/headline:text-[#f7413e] transition-colors leading-snug line-clamp-2">
-                    {activeTopArticle.title}
-                  </h2>
-                </Link>
-                <p className="font-sans text-xs sm:text-[13px] text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2">
-                  {activeTopArticle.excerpt}
-                </p>
-              </div>
-            </div>
-
-            {/* Author Meta, Slide Progress, and Read Analysis CTA */}
-            <div className="pt-2.5 mt-2 border-t border-[#211d1d]/15 dark:border-white/10 flex items-center justify-between gap-2 text-xs text-[#575757] dark:text-gray-400">
-              <div className="flex items-center space-x-2 min-w-0">
-                <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#211d1d]/20 dark:border-white/20 shrink-0">
-                  <Image
-                    src={activeTopArticle.authorAvatar}
-                    alt={activeTopArticle.author}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="truncate text-[11px]">
-                  <span className="font-serif italic font-semibold text-[#211d1d] dark:text-gray-200">
-                    {activeTopArticle.author}
-                  </span>
-                  <span className="text-gray-400 ml-1.5">• {activeTopArticle.date}</span>
-                </div>
-              </div>
-
-              {/* Slide Indicators & Read CTA */}
-              <div className="flex items-center space-x-2 shrink-0">
-                <div className="flex items-center space-x-1 hidden sm:flex">
-                  {top10Ranked.slice(0, visibleTopCount).map((_, dotIdx) => (
-                    <button
-                      key={dotIdx}
-                      onClick={() => setActiveTopIndex(dotIdx)}
-                      className={`h-1.5 rounded-full transition-all cursor-pointer ${
-                        activeTopIndex === dotIdx
-                          ? 'w-5 bg-[#f7413e]'
-                          : 'w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
-                      }`}
-                      aria-label={`Go to ranked story ${dotIdx + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <Link
-                  href={`/news/${activeTopArticle.slug}`}
-                  className="bg-[#211d1d] dark:bg-white hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-white dark:text-black dark:hover:text-white text-[10.5px] font-mono uppercase tracking-wider px-3 py-1 font-bold transition-all shadow-2xs flex items-center space-x-1 rounded-xs"
-                >
-                  <span>Read Story</span>
-                  <ArrowUpRight className="w-3 h-3" />
-                </Link>
-              </div>
             </div>
           </div>
 
-          {/* BOTTOM SECTION: COMPACT 5-CARD TOP 10 INDEX STRIP (NO UNWANTED WHITESPACE) */}
-          <div className="p-2 sm:p-2.5 bg-[#fbfaf5] dark:bg-[#191919] border-t border-[#211d1d]/15 dark:border-white/10">
+          {/* BOTTOM SECTION: COMPACT 5-CARD TOP 10 INDEX STRIP */}
+          <div className="pt-4 border-t border-[#211d1d]/20 dark:border-white/15">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+                TOP 10 QUICK INDEX (CLICK TO PREVIEW)
+              </span>
+              <button
+                onClick={() => setShowExtraTop10(!showExtraTop10)}
+                className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 hover:text-black dark:hover:text-white flex items-center space-x-1 cursor-pointer font-semibold"
+              >
+                <span>{showExtraTop10 ? 'Show 1–5' : '+5 Extra (06–10)'}</span>
+                {showExtraTop10 ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              </button>
+            </div>
+
             {/* 5 Primary Ranked Cards Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
               {top10Ranked.slice(0, 5).map((art, idx) => {
                 const isActive = activeTopIndex === idx;
                 return (
@@ -433,34 +423,32 @@ export default function HeroSection3Grid({
                     key={art.slug}
                     onClick={() => setActiveTopIndex(idx)}
                     onMouseEnter={() => setActiveTopIndex(idx)}
-                    className={`group p-1.5 sm:p-2 rounded-xs transition-all cursor-pointer border flex flex-col justify-between ${
+                    className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${
                       isActive
-                        ? 'bg-white dark:bg-[#222222] border-[#f7413e] dark:border-[#f7413e] shadow-2xs'
-                        : 'bg-white/80 dark:bg-[#1d1d1d] hover:bg-white dark:hover:bg-[#222222] border-[#211d1d]/10 dark:border-white/5 hover:border-[#211d1d]/25'
+                        ? 'bg-[#eff0e0] dark:bg-[#252525] border-[#f7413e] shadow-xs'
+                        : 'bg-white dark:bg-[#181818] border-[#211d1d]/15 dark:border-white/10 hover:border-[#211d1d]/40'
                     }`}
                   >
                     <div>
-                      <div className="flex items-center justify-between mb-0.5">
+                      <div className="flex items-center justify-between mb-1.5">
                         <span
-                          className={`font-oswald font-bold text-[10.5px] leading-none px-1.5 py-0.5 rounded-xs transition-colors ${
+                          className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${
                             isActive
-                              ? 'bg-[#f7413e] text-white shadow-2xs'
-                              : idx === 0
-                              ? 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
-                              : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200 border border-[#211d1d]/15 dark:border-white/10'
+                              ? 'bg-[#f7413e] text-white'
+                              : 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
                           }`}
                         >
                           0{idx + 1}
                         </span>
-                        <span className="text-[8.5px] font-mono text-[#575757] dark:text-gray-400 truncate max-w-[65px]">
+                        <span className="text-[10px] font-serif italic text-[#575757] dark:text-gray-400 truncate max-w-[65px]">
                           {art.tag || art.category}
                         </span>
                       </div>
                       <h4
-                        className={`font-serif font-bold text-[10.5px] line-clamp-2 leading-tight transition-colors ${
+                        className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${
                           isActive
                             ? 'text-[#f7413e]'
-                            : 'text-[#0a0a0a] dark:text-gray-200 group-hover:text-[#f7413e]'
+                            : 'text-[#0a0a0a] dark:text-white hover:text-[#f7413e]'
                         }`}
                       >
                         {art.title}
@@ -473,7 +461,7 @@ export default function HeroSection3Grid({
 
             {/* Extra Items 6-10 (Expandable inline) */}
             {showExtraTop10 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5 sm:gap-2 pt-1.5 mt-1.5 border-t border-dashed border-[#211d1d]/20 dark:border-white/15 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mt-2.5 pt-2.5 border-t border-dashed border-[#211d1d]/20 dark:border-white/15 animate-in fade-in slide-in-from-top-2 duration-200">
                 {top10Ranked.slice(5, 10).map((art, idx) => {
                   const actualIdx = idx + 5;
                   const isActive = activeTopIndex === actualIdx;
@@ -482,32 +470,32 @@ export default function HeroSection3Grid({
                       key={art.slug}
                       onClick={() => setActiveTopIndex(actualIdx)}
                       onMouseEnter={() => setActiveTopIndex(actualIdx)}
-                      className={`group p-1.5 sm:p-2 rounded-xs transition-all cursor-pointer border flex flex-col justify-between ${
+                      className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${
                         isActive
-                          ? 'bg-white dark:bg-[#222222] border-[#f7413e] dark:border-[#f7413e] shadow-2xs'
-                          : 'bg-white/80 dark:bg-[#1d1d1d] hover:bg-white dark:hover:bg-[#222222] border-[#211d1d]/10 dark:border-white/5'
+                          ? 'bg-[#eff0e0] dark:bg-[#252525] border-[#f7413e] shadow-xs'
+                          : 'bg-white dark:bg-[#181818] border-[#211d1d]/15 dark:border-white/10 hover:border-[#211d1d]/40'
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between mb-0.5">
+                        <div className="flex items-center justify-between mb-1.5">
                           <span
-                            className={`font-oswald font-bold text-[10.5px] leading-none px-1.5 py-0.5 rounded-xs transition-colors ${
+                            className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${
                               isActive
-                                ? 'bg-[#f7413e] text-white shadow-2xs'
+                                ? 'bg-[#f7413e] text-white'
                                 : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
                             }`}
                           >
                             {actualIdx + 1 < 10 ? `0${actualIdx + 1}` : actualIdx + 1}
                           </span>
-                          <span className="text-[8.5px] font-mono text-[#575757] dark:text-gray-400 truncate max-w-[65px]">
+                          <span className="text-[10px] font-serif italic text-[#575757] dark:text-gray-400 truncate max-w-[65px]">
                             {art.tag || art.category}
                           </span>
                         </div>
                         <h4
-                          className={`font-serif font-bold text-[10.5px] line-clamp-2 leading-tight transition-colors ${
+                          className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${
                             isActive
                               ? 'text-[#f7413e]'
-                              : 'text-[#0a0a0a] dark:text-gray-200 group-hover:text-[#f7413e]'
+                              : 'text-[#0a0a0a] dark:text-white hover:text-[#f7413e]'
                           }`}
                         >
                           {art.title}
@@ -518,60 +506,32 @@ export default function HeroSection3Grid({
                 })}
               </div>
             )}
-
-            {/* Bottom Actions for Index */}
-            <div className="mt-1.5 pt-1.5 flex items-center justify-between gap-2 text-xs border-t border-[#211d1d]/10 dark:border-white/10">
-              <button
-                onClick={() => setShowExtraTop10(!showExtraTop10)}
-                className="flex items-center space-x-1 text-[10px] font-mono uppercase tracking-wider text-[#575757] dark:text-gray-400 hover:text-[#0a0a0a] dark:hover:text-white font-semibold transition-colors cursor-pointer"
-              >
-                <span>{showExtraTop10 ? 'Show Less' : '+5 Extra (06–10)'}</span>
-                {showExtraTop10 ? (
-                  <ChevronUp className="w-3 h-3" />
-                ) : (
-                  <ChevronDown className="w-3 h-3" />
-                )}
-              </button>
-
-              <button
-                onClick={() => setIsTop10ModalOpen(true)}
-                className="text-[10px] font-mono uppercase tracking-wider text-[#f7413e] hover:underline font-bold flex items-center space-x-1 cursor-pointer"
-              >
-                <span>Full Archive</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
-            </div>
           </div>
         </div>
 
         {/* ========================================================================= */}
-        {/* 2. RIGHT GRID: EXECUTIVE INTERVIEWS (4 Cols - SNUG & BALANCED)            */}
+        {/* 2. RIGHT GRID: EXECUTIVE INTERVIEWS (4 Cols)                               */}
         {/* ========================================================================= */}
         <div
-          className="lg:col-span-4 flex flex-col justify-between bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-3.5 sm:p-4 shadow-xs relative transition-all group/interview-box"
+          className="lg:col-span-4 flex flex-col justify-between group/interview-box"
           onMouseEnter={() => setIsSliderHovered(true)}
           onMouseLeave={() => setIsSliderHovered(false)}
         >
           <div>
             {/* Header with Mic badge & Clean Slider Controls */}
-            <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-gray-200 dark:border-white/15">
+            <div className="flex items-center justify-between pb-2 mb-3 border-b border-[#211d1d]/20 dark:border-white/15">
               <div className="flex items-center space-x-2">
-                <span className="flex items-center justify-center w-6 h-6 bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded-xs shadow-2xs">
+                <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Mic className="w-3 h-3" />
                 </span>
-                <div>
-                  <h3 className="font-oswald text-sm sm:text-base font-bold uppercase tracking-wider text-black dark:text-white leading-none">
-                    INTERVIEWS
-                  </h3>
-                  <span className="text-[9.5px] font-mono uppercase tracking-widest text-gray-500 dark:text-gray-400">
-                    Executive Dialogues
-                  </span>
-                </div>
+                <h3 className="font-bebas text-2xl sm:text-3xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+                  INTERVIEWS
+                </h3>
               </div>
 
               {/* Slider Next/Prev Arrows & Slide Counter */}
-              <div className="flex items-center space-x-1">
-                <span className="text-[10.5px] font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
+              <div className="flex items-center space-x-1.5">
+                <span className="text-xs font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
                   0{sliderIndex + 1}/0{activeInterviews.length}
                 </span>
                 <button
@@ -580,10 +540,10 @@ export default function HeroSection3Grid({
                       prev === 0 ? activeInterviews.length - 1 : prev - 1
                     )
                   }
-                  className="w-6 h-6 bg-gray-100 dark:bg-gray-800 hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
+                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Previous Interview"
                 >
-                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() =>
@@ -591,57 +551,65 @@ export default function HeroSection3Grid({
                       prev === activeInterviews.length - 1 ? 0 : prev + 1
                     )
                   }
-                  className="w-6 h-6 bg-gray-100 dark:bg-gray-800 hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer rounded-xs"
+                  className="w-7 h-7 bg-gray-100 dark:bg-[#252525] hover:bg-[#f7413e] hover:text-white text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors cursor-pointer"
                   aria-label="Next Interview"
                 >
-                  <ChevronRight className="w-3.5 h-3.5" />
+                  <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            {/* Clean Featured Interviewee Portrait Image */}
+            {/* Featured Interviewee Portrait Image */}
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="block overflow-hidden relative w-full h-[155px] sm:h-[170px] mb-2.5 bg-gray-100 dark:bg-gray-800 rounded-xs border border-gray-200 dark:border-white/10 group/img"
+              className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
             >
               <Image
                 src={currentInterview.image}
                 alt={currentInterview.title}
                 fill
                 priority
-                className="object-cover object-center transition-transform duration-700 group-hover/img:scale-105"
+                className="object-cover transition-transform duration-500 group-hover/img:scale-105"
               />
-              <div className="absolute top-2 left-2">
-                <span className="bg-black/90 text-white text-[9.5px] font-mono uppercase tracking-widest px-2 py-0.5 font-bold rounded-xs shadow-xs">
+              <div className="absolute top-2.5 left-2.5">
+                <span className="bg-black/85 text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-xs">
                   {currentInterview.tag || 'Executive'}
                 </span>
               </div>
-              <div className="absolute bottom-2 right-2">
-                <span className="bg-black/80 backdrop-blur-xs text-white text-[9.5px] font-mono font-semibold px-2 py-0.5 rounded-xs">
+              <div className="absolute bottom-2.5 right-2.5">
+                <span className="bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono font-semibold px-2 py-0.5">
                   {currentInterview.readTime}
                 </span>
               </div>
             </Link>
 
-            {/* Clear Typography: Headline Below Image */}
+            {/* Category / Tag Dot */}
+            <div className="flex items-center space-x-1.5 text-xs text-[#575757] dark:text-gray-400 font-sans mb-1.5">
+              <span className="text-[#002b5c] dark:text-[#60a5fa] font-bold text-sm leading-none">•</span>
+              <span className="font-serif italic text-[13px] text-[#575757] dark:text-gray-300">
+                {currentInterview.tag || 'Executive Feature'}
+              </span>
+            </div>
+
+            {/* Headline */}
             <Link href={`/news/${currentInterview.slug}`} className="block group/title">
-              <h4 className="font-serif text-sm sm:text-base font-bold text-black dark:text-white group-hover/title:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
+              <h4 className="font-oswald text-[18px] sm:text-[22px] font-medium tracking-wide text-[#0a0a0a] dark:text-white group-hover/title:text-[#f7413e] transition-colors leading-tight mb-2.5">
                 {currentInterview.title}
               </h4>
             </Link>
 
             {/* Elegant Minimalist Quote Card */}
-            <div className="bg-[#faf8f5] dark:bg-[#202020] p-2.5 sm:p-3 border-l-2 border-[#f7413e] rounded-r-xs mb-2">
-              <p className="font-serif italic text-xs text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-2 sm:line-clamp-3">
+            <div className="bg-[#fefdf3] dark:bg-[#1a1a1a] p-3.5 border-l-2 border-[#f7413e] mb-3">
+              <p className="font-serif italic text-xs sm:text-[13px] text-gray-800 dark:text-gray-200 leading-relaxed line-clamp-3">
                 &ldquo;{currentQuoteData.quote.replace(/^[“”"']+|[“”"']+$/g, '')}&rdquo;
               </p>
-              <div className="mt-2 flex items-center justify-between text-xs pt-1.5 border-t border-gray-200/60 dark:border-white/10">
+              <div className="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-[#211d1d]/10 dark:border-white/10">
                 <div className="flex items-center space-x-1.5 truncate">
-                  <span className="font-bold text-black dark:text-white text-[11px]">
+                  <span className="font-serif italic font-semibold text-black dark:text-white text-[12px]">
                     {currentQuoteData.interviewee}
                   </span>
                   <span className="text-gray-400 text-[10px]">•</span>
-                  <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 truncate">
+                  <span className="text-[11px] font-mono text-gray-500 dark:text-gray-400 truncate">
                     {currentQuoteData.role}
                   </span>
                 </div>
@@ -649,12 +617,12 @@ export default function HeroSection3Grid({
             </div>
 
             {/* Slide Indicator Progress Bars */}
-            <div className="flex items-center justify-center space-x-1 pt-1 mb-1">
+            <div className="flex items-center justify-center space-x-1 pt-1 mb-2">
               {activeInterviews.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setSliderIndex(idx)}
-                  className={`h-1 rounded-full transition-all cursor-pointer ${
+                  className={`h-1.5 rounded-full transition-all cursor-pointer ${
                     sliderIndex === idx
                       ? 'w-6 bg-[#f7413e]'
                       : 'w-1.5 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400'
@@ -665,22 +633,22 @@ export default function HeroSection3Grid({
             </div>
           </div>
 
-          {/* Bottom Actions: Read Full Dialogue & View Total List Button */}
-          <div className="mt-2.5 pt-2.5 border-t border-gray-200 dark:border-white/15 flex items-center justify-between gap-2">
+          {/* Bottom Actions */}
+          <div className="pt-3 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="inline-flex items-center space-x-1 text-[11px] font-mono uppercase tracking-wider text-black dark:text-white hover:text-[#f7413e] font-bold transition-colors"
+              className="inline-flex items-center space-x-1 text-[12px] font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-medium"
             >
-              <span>Read Dialogue</span>
-              <ArrowUpRight className="w-3 h-3" />
+              <span>Read dialogue</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
 
             <button
               onClick={() => setIsInterviewsModalOpen(true)}
-              className="bg-black hover:bg-[#f7413e] dark:bg-white dark:hover:bg-[#f7413e] text-white dark:text-black dark:hover:text-white text-[10.5px] font-mono uppercase tracking-wider px-3 py-1 font-bold transition-all shadow-2xs flex items-center space-x-1 cursor-pointer rounded-xs"
+              className="inline-flex items-center space-x-1 text-xs font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider cursor-pointer"
             >
               <span>Total List</span>
-              <ArrowRight className="w-3 h-3" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
