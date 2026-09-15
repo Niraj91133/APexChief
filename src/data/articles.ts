@@ -5,9 +5,9 @@ export const ARTICLES: Article[] = [
     "id": "automated-cold-chain-micro-fulfillment-groceries",
     "slug": "automated-cold-chain-micro-fulfillment-groceries",
     "title": "Automated Cold-Chain Micro-Fulfillment Centers Transform Supermarket Supply Velocity",
-    "category": "Groceries",
-    "subcategory": "Food Supply & Logistics",
-    "tag": "Grocery Tech",
+    "category": "Lifestyle",
+    "subcategory": "Living & Design",
+    "tag": "Lifestyle",
     "date": "Sep 13, 2026",
     "author": "Julian Vance",
     "authorRole": "Supply Chain Analyst",
@@ -662,7 +662,8 @@ export const ARTICLES: Article[] = [
         "heading": "On the Death of the Graphical User Interface (GUI)",
         "content": "\"The GUI was a brilliant bridge for an era when computers were dumb arithmetic boxes,\" Chen reflects. \"When your software understands natural language and business context, navigating ten drop-down menus to approve an invoice is pure friction.\""
       }
-    ]
+    ],
+    "placement": "interview"
   },
   {
     "id": "leadership-marcus-graham-vc",

@@ -212,71 +212,11 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    name: "Start up",
-    slug: "start-up",
-    description: "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
-    layout: "tech-layout",
-    order: 8,
-    isVisible: true,
-    subcategories: [
-      {
-        name: "Seed & Series A",
-        slug: "seed-funding",
-        description: "Pitch deck teardowns, early-stage capital, and term sheet mechanics."
-      },
-      {
-        name: "Venture Capital",
-        slug: "venture-capital",
-        description: "Fund economics, LP allocations, and deep-tech sovereign venture funds."
-      },
-      {
-        name: "Bootstrapping",
-        slug: "bootstrapping",
-        description: "Bootstrapped scaling to $10M ARR, lean micro-teams, and unit profitability."
-      },
-      {
-        name: "Unicorns & Scaleups",
-        slug: "scaleups",
-        description: "Hypergrowth scaling, international expansion, and talent retention."
-      }
-    ]
-  },
-  {
-    name: "Opinion",
-    slug: "opinion",
-    description: "Thought leadership, guest columnists, editorial perspectives, and strategic market critiques.",
-    layout: "culture-layout",
-    order: 9,
-    isVisible: true,
-    subcategories: [
-      {
-        name: "Guest Columns",
-        slug: "guest-columns",
-        description: "Perspectives from prominent founders, economists, and CEOs."
-      },
-      {
-        name: "Editorial Board",
-        slug: "editorial-board",
-        description: "Institutional perspectives and critical commentary from ApexChief."
-      },
-      {
-        name: "Market Perspectives",
-        slug: "market-perspectives",
-        description: "Analytical viewpoints on macroeconomic and geopolitical trends."
-      },
-      {
-        name: "Policy Commentary",
-        slug: "policy-commentary",
-        description: "In-depth critiques of global regulatory policies and economic shifts."
-      }
-    ]
-  },
-  {
     name: "Health",
     slug: "health",
     description: "HealthTech, metabolic longevity, clinical biotechnology, wellness innovation, and pharmaceuticals.",
     layout: "health-layout",
-    order: 10,
+    order: 8,
     isVisible: true,
     subcategories: [
       {
@@ -306,7 +246,7 @@ export const CATEGORIES: Category[] = [
     slug: "retail",
     description: "Omni-channel retail, direct-to-consumer luxury brands, global commerce, and retail technology.",
     layout: "business-layout",
-    order: 11,
+    order: 9,
     isVisible: true,
     subcategories: [
       {
@@ -336,7 +276,7 @@ export const CATEGORIES: Category[] = [
     slug: "hospitality",
     description: "Ultra-luxury resorts, hotel management, aviation, fine dining, and global tourism.",
     layout: "lifestyle-layout",
-    order: 12,
+    order: 10,
     isVisible: true,
     subcategories: [
       {
@@ -362,32 +302,92 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    name: "Groceries",
-    slug: "groceries",
-    description: "Supermarket logistics, food supply chains, agri-tech, consumer goods, and sustainable distribution.",
-    layout: "business-layout",
+    name: "Lifestyle",
+    slug: "lifestyle",
+    description: "Contemporary living, luxury culture, executive wellness, travel & leisure, and modern lifestyle trends.",
+    layout: "lifestyle-layout",
+    order: 11,
+    isVisible: true,
+    subcategories: [
+      {
+        name: "Living & Design",
+        slug: "living-design",
+        description: "Architectural residences, interior aesthetics, and bespoke living spaces."
+      },
+      {
+        name: "Culture & Style",
+        slug: "culture-style",
+        description: "Haute couture, horology, art curation, and luxury heritage."
+      },
+      {
+        name: "Food & Gastronomy",
+        slug: "food-gastronomy",
+        description: "Fine dining masterclasses, artisanal culinary crafts, and epicurean trends."
+      },
+      {
+        name: "Wellness & Leisure",
+        slug: "wellness-leisure",
+        description: "Holistic retreats, bespoke fitness, and high-performance lifestyle habits."
+      }
+    ]
+  },
+  {
+    name: "Start up",
+    slug: "start-up",
+    description: "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
+    layout: "tech-layout",
+    order: 12,
+    isVisible: true,
+    subcategories: [
+      {
+        name: "Seed & Series A",
+        slug: "seed-funding",
+        description: "Pitch deck teardowns, early-stage capital, and term sheet mechanics."
+      },
+      {
+        name: "Venture Capital",
+        slug: "venture-capital",
+        description: "Fund economics, LP allocations, and deep-tech sovereign venture funds."
+      },
+      {
+        name: "Bootstrapping",
+        slug: "bootstrapping",
+        description: "Bootstrapped scaling to $10M ARR, lean micro-teams, and unit profitability."
+      },
+      {
+        name: "Unicorns & Scaleups",
+        slug: "scaleups",
+        description: "Hypergrowth scaling, international expansion, and talent retention."
+      }
+    ]
+  },
+  {
+    name: "Opinion",
+    slug: "opinion",
+    description: "Thought leadership, guest columnists, editorial perspectives, and strategic market critiques.",
+    layout: "culture-layout",
     order: 13,
     isVisible: true,
     subcategories: [
       {
-        name: "Supermarket Chains",
-        slug: "supermarkets",
-        description: "Hypermarket operations, private-label branding, and grocery retail."
+        name: "Guest Columns",
+        slug: "guest-columns",
+        description: "Perspectives from prominent founders, economists, and CEOs."
       },
       {
-        name: "Food Supply & Logistics",
-        slug: "food-supply",
-        description: "Cold storage networks, farm-to-table transit, and perishables logistics."
+        name: "Editorial Board",
+        slug: "editorial-board",
+        description: "Institutional perspectives and critical commentary from ApexChief."
       },
       {
-        name: "Agri-Tech & Organics",
-        slug: "agri-tech",
-        description: "Vertical farming, organic certification, and sustainable agriculture."
+        name: "Market Perspectives",
+        slug: "market-perspectives",
+        description: "Analytical viewpoints on macroeconomic and geopolitical trends."
       },
       {
-        name: "Consumer Goods (FMCG)",
-        slug: "fmcg",
-        description: "Packaged consumer foods, household staples, and beverage innovations."
+        name: "Policy Commentary",
+        slug: "policy-commentary",
+        description: "In-depth critiques of global regulatory policies and economic shifts."
       }
     ]
   }

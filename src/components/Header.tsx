@@ -445,13 +445,6 @@ export default function Header() {
                   >
                     Home
                   </Link>
-                  <Link
-                    href="/news"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-3 py-2 text-sm font-bold uppercase rounded text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-                  >
-                    All Stories
-                  </Link>
                   {categories.map((cat) => {
                     const hasSubs = cat.subcategories && cat.subcategories.length > 0;
                     const isExpanded = expandedMobileCat === cat.slug;
