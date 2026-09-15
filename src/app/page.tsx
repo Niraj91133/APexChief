@@ -485,19 +485,322 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     </div>
   );
 
+  // =========================================================================
+  // A. OPINION & COMMENTARY CUSTOM COMPACT SECTION
+  // =========================================================================
+  if (cat.slug === 'opinion') {
+    const leadOpinion = categoryArticles[0];
+    const otherOpinions = categoryArticles.slice(1, 4);
+
+    return (
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
+        {renderHeader()}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+          {/* Left Lead Essay (7 Cols): Compact Horizontal Layout */}
+          <div className="lg:col-span-7 flex flex-col justify-between p-5 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 group">
+            <div>
+              <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold mb-2">
+                <span>Featured Column</span>
+                <span>•</span>
+                <span>{leadOpinion.tag || 'Executive Essay'}</span>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-start gap-4 mb-3">
+                <Link
+                  href={`/news/${leadOpinion.slug}`}
+                  className="w-full sm:w-44 h-36 relative shrink-0 bg-[#eff0e0] dark:bg-[#222] overflow-hidden border border-[#211d1d]/10 dark:border-white/10"
+                >
+                  <Image
+                    src={leadOpinion.image}
+                    alt={leadOpinion.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
+                <div className="flex-1">
+                  <Link href={`/news/${leadOpinion.slug}`}>
+                    <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-2">
+                      {leadOpinion.title}
+                    </h3>
+                  </Link>
+                  <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-3">
+                    {leadOpinion.excerpt}
+                  </p>
+                </div>
+              </div>
+
+              {/* Author & Pullquote Card */}
+              <div className="bg-white dark:bg-[#1c2230] border-l-2 border-[#f7413e] p-3 mt-3 text-xs italic font-serif text-[#211d1d] dark:text-gray-200">
+                “{leadOpinion.excerpt ? leadOpinion.excerpt.slice(0, 140) + '...' : 'Thought leadership and strategic analysis from leaders shaping global enterprise.'}”
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 mt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-xs">
+              <div className="flex items-center space-x-2">
+                <Image
+                  src={leadOpinion.authorAvatar}
+                  alt={leadOpinion.author}
+                  width={24}
+                  height={24}
+                  className="rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                />
+                <span className="font-medium text-[#0a0a0a] dark:text-white font-serif">{leadOpinion.author}</span>
+                <span className="text-gray-400">•</span>
+                <span className="text-[11px] text-gray-500 dark:text-gray-400">{leadOpinion.authorRole || 'Contributor'}</span>
+              </div>
+              <Link
+                href={`/news/${leadOpinion.slug}`}
+                className="text-xs font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-semibold"
+              >
+                Read Essay →
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column (5 Cols): Secondary Stacked Columns */}
+          <div className="lg:col-span-5 flex flex-col justify-between space-y-3.5">
+            {otherOpinions.map((art, idx) => (
+              <div
+                key={idx}
+                className="p-3.5 bg-white dark:bg-[#171b26] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="flex items-center justify-between text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-1">
+                    <span className="text-[#f7413e] font-bold uppercase">{art.tag || 'Perspective'}</span>
+                    <span>{art.readTime || '4 min read'}</span>
+                  </div>
+                  <Link href={`/news/${art.slug}`}>
+                    <h4 className="font-serif text-sm sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
+                      {art.title}
+                    </h4>
+                  </Link>
+                </div>
+                <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
+                  <span className="font-serif italic text-gray-600 dark:text-gray-400">By {art.author}</span>
+                  <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e]">
+                    Read →
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // =========================================================================
+  // B. RETAIL & COMMERCE CUSTOM COMPACT SECTION
+  // =========================================================================
+  if (cat.slug === 'retail') {
+    const displayList = categoryArticles.slice(0, 3);
+
+    return (
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
+        {renderHeader()}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+          {displayList.map((art, idx) => (
+            <div
+              key={idx}
+              className="group flex flex-col justify-between p-4 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all"
+            >
+              <div>
+                <Link
+                  href={`/news/${art.slug}`}
+                  className="block overflow-hidden relative w-full h-[160px] sm:h-[175px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
+                >
+                  <Image
+                    src={art.image}
+                    alt={art.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2 left-2">
+                    <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold">
+                      {art.tag || 'Retail Tech'}
+                    </span>
+                  </div>
+                </Link>
+
+                <div className="flex items-center space-x-1 text-[11px] font-mono text-[#f7413e] font-bold mb-1">
+                  <span>MARKET PULSE</span>
+                </div>
+
+                <Link href={`/news/${art.slug}`}>
+                  <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
+                    {art.title}
+                  </h3>
+                </Link>
+                <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed mb-3">
+                  {art.excerpt}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
+                <span className="font-serif italic text-[#575757] dark:text-gray-400">{art.date}</span>
+                <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-semibold">
+                  Read Report →
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Compact Retail Sector Pulse Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-white dark:bg-[#161a24] border border-[#211d1d]/10 dark:border-white/10 text-xs text-gray-700 dark:text-gray-300">
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">🏷️ Flagship Tech:</span>
+            <span className="truncate">Luxury boutiques deploy spatial styling lounges</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">⚡ Micro-Hubs:</span>
+            <span className="truncate">Autonomous urban sub-30 min order replenishment</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">📈 DTC Ownership:</span>
+            <span className="truncate">+42% revenue shift to proprietary VIP commerce apps</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // =========================================================================
+  // C. HOSPITALITY & TRAVEL CUSTOM COMPACT SECTION
+  // =========================================================================
+  if (cat.slug === 'hospitality') {
+    const leadHosp = categoryArticles[0];
+    const sideHosp = categoryArticles.slice(1, 3);
+
+    return (
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
+        {renderHeader()}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mb-5">
+          {/* Left Feature Destination Card (6 cols) */}
+          <div className="lg:col-span-6 flex flex-col justify-between p-4 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 group">
+            <div>
+              <Link
+                href={`/news/${leadHosp.slug}`}
+                className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
+              >
+                <Image
+                  src={leadHosp.image}
+                  alt={leadHosp.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
+                  <span className="bg-[#f7413e] text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold shadow-xs">
+                    Curated Destination
+                  </span>
+                  <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 font-semibold">
+                    ★★★★★ Ultra-Luxury
+                  </span>
+                </div>
+              </Link>
+              <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
+                📍 {leadHosp.tag || 'Luxury Travel'}
+              </span>
+              <Link href={`/news/${leadHosp.slug}`}>
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                  {leadHosp.title}
+                </h3>
+              </Link>
+              <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed">
+                {leadHosp.excerpt}
+              </p>
+            </div>
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#211d1d]/10 dark:border-white/10 text-xs">
+              <span className="font-serif italic text-gray-500 dark:text-gray-400">By {leadHosp.author} • {leadHosp.date}</span>
+              <Link href={`/news/${leadHosp.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-semibold">
+                Explore Destination →
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Two Horizontal Destination Cards (6 cols) */}
+          <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
+            {sideHosp.map((art, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col sm:flex-row items-stretch gap-4 p-4 bg-white dark:bg-[#161a24] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group flex-1"
+              >
+                <Link
+                  href={`/news/${art.slug}`}
+                  className="w-full sm:w-44 h-36 sm:h-auto relative shrink-0 bg-[#eff0e0] dark:bg-[#202020] overflow-hidden"
+                >
+                  <Image
+                    src={art.image}
+                    alt={art.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute top-2 left-2">
+                    <span className="bg-black/80 backdrop-blur-xs text-white text-[9px] font-mono uppercase px-1.5 py-0.5">
+                      {art.tag || 'Hideaway'}
+                    </span>
+                  </div>
+                </Link>
+                <div className="flex-1 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] font-mono text-[#f7413e] font-bold uppercase">
+                      📍 Destination Report
+                    </span>
+                    <Link href={`/news/${art.slug}`}>
+                      <h4 className="font-serif text-sm sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5 mb-1.5">
+                        {art.title}
+                      </h4>
+                    </Link>
+                    <p className="font-sans text-[11px] text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed">
+                      {art.excerpt}
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px] mt-2">
+                    <span className="font-serif italic text-gray-500 dark:text-gray-400">{art.date}</span>
+                    <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-medium">
+                      View →
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Hospitality Intelligence Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-white dark:bg-[#161a24] border border-[#211d1d]/10 dark:border-white/10 text-xs text-gray-700 dark:text-gray-300">
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">✈️ Private Corridors:</span>
+            <span className="truncate">Sovereign biometric sky-lounges expand worldwide</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">🌿 Eco-Retreats:</span>
+            <span className="truncate">100% off-grid solar and geothermal desert architecture</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-[#f7413e] font-bold">🍽️ Haute Cuisine:</span>
+            <span className="truncate">Michelin-standard farm-to-table culinary residences</span>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // =========================================================================
   // 1. World & News Layout (Hero banner on top + cards below)
+  // =========================================================================
   if (layout === 'world-layout' || layout === 'news-layout') {
     const featured = categoryArticles[0];
     const subArticles = categoryArticles.slice(1, 4);
     
     return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
         {renderHeader()}
-        {/* Top Wide Featured Banner */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 border-b border-[#211d1d]/20 mb-6 group items-center">
+        {/* Top Wide Featured Banner with controlled height */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 border-b border-[#211d1d]/20 dark:border-white/15 mb-6 group items-center">
           <Link
             href={`/news/${featured.slug}`}
-            className="lg:col-span-6 block overflow-hidden relative aspect-[16/10] bg-[#eff0e0]"
+            className="lg:col-span-6 block overflow-hidden relative w-full h-[200px] sm:h-[220px] bg-[#eff0e0] dark:bg-[#202020]"
           >
             <Image
               src={featured.image}
@@ -507,18 +810,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
             />
           </Link>
           <div className="lg:col-span-6 flex flex-col justify-center">
-            <span className="text-xs font-mono uppercase font-semibold text-[#575757]">
+            <span className="text-xs font-mono uppercase font-semibold text-[#575757] dark:text-gray-400">
               {featured.tag || featured.category}
             </span>
             <Link href={`/news/${featured.slug}`}>
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-3">
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
                 {featured.title}
               </h3>
             </Link>
-            <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-4">
+            <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 leading-relaxed mb-3 line-clamp-2">
               {featured.excerpt}
             </p>
-            <div className="text-xs font-serif italic text-[#575757]">
+            <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
               {featured.date}
             </div>
           </div>
@@ -526,12 +829,12 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
 
         {/* Bottom Cards Row if more articles exist */}
         {subArticles.length > 0 && (
-          <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, subArticles.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25`}>
+          <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, subArticles.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25 dark:divide-white/15`}>
             {subArticles.map((col, idx) => (
               <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
                 <Link
                   href={`/news/${col.slug}`}
-                  className="block overflow-hidden relative aspect-[16/10] mb-3 bg-[#eff0e0]"
+                  className="block overflow-hidden relative w-full h-[150px] sm:h-[165px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
                 >
                   <Image
                     src={col.image}
@@ -541,15 +844,15 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   />
                 </Link>
                 <div>
-                  <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
+                  <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
                     {col.tag || col.category}
                   </span>
                   <Link href={`/news/${col.slug}`}>
-                    <h4 className="font-serif text-base font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5">
+                    <h4 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5 line-clamp-2">
                       {col.title}
                     </h4>
                   </Link>
-                  <div className="text-xs font-serif italic text-[#575757] mt-1.5">
+                  <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400 mt-1.5">
                     {col.date}
                   </div>
                 </div>
@@ -561,17 +864,19 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     );
   }
 
-  // 2. Tech / Innovation / Technology / Start Up / Career layout (Split list + Right lead)
+  // =========================================================================
+  // 2. Tech / Innovation / Technology / Start Up layout (Split list + Right lead)
+  // =========================================================================
   if (layout === 'tech-layout') {
     if (categoryArticles.length === 1) {
       const art = categoryArticles[0];
       return (
-        <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+        <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
           {renderHeader()}
           <div className="group grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             <Link
               href={`/news/${art.slug}`}
-              className="lg:col-span-6 block overflow-hidden relative aspect-[16/10] bg-[#eff0e0]"
+              className="lg:col-span-6 block overflow-hidden relative w-full h-[180px] sm:h-[200px] bg-[#eff0e0] dark:bg-[#202020]"
             >
               <Image
                 src={art.image}
@@ -581,18 +886,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               />
             </Link>
             <div className="lg:col-span-6">
-              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
+              <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
                 {art.tag || art.category}
               </span>
               <Link href={`/news/${art.slug}`}>
-                <h3 className="font-serif text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
                   {art.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-3 mb-3">
+              <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 line-clamp-2 mb-3">
                 {art.excerpt}
               </p>
-              <div className="text-xs font-serif italic text-[#575757]">
+              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
                 {art.date}
               </div>
             </div>
@@ -605,15 +910,15 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     const mainLead = categoryArticles[2] || categoryArticles[0];
 
     return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
         {renderHeader()}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20">
-          <div className="lg:col-span-5 space-y-4 divide-y divide-[#211d1d]/15 pb-6 lg:pb-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20 dark:divide-white/15">
+          <div className="lg:col-span-5 space-y-3 divide-y divide-[#211d1d]/15 dark:divide-white/10 pb-4 lg:pb-0">
             {sideArticles.map((art, idx) => (
-              <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-4'} group flex items-start space-x-3`}>
+              <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-3'} group flex items-start space-x-3`}>
                 <Link
                   href={`/news/${art.slug}`}
-                  className="w-24 h-24 relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
+                  className="w-20 h-20 relative shrink-0 bg-[#eff0e0] dark:bg-[#202020] overflow-hidden"
                 >
                   <Image
                     src={art.image}
@@ -623,15 +928,15 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   />
                 </Link>
                 <div className="flex-1">
-                  <span className="text-[10px] font-mono uppercase text-[#575757]">
+                  <span className="text-[10px] font-mono uppercase text-[#575757] dark:text-gray-400">
                     {art.tag || art.category}
                   </span>
                   <Link href={`/news/${art.slug}`}>
-                    <h4 className="font-serif text-sm font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug">
+                    <h4 className="font-serif text-xs sm:text-sm font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
                       {art.title}
                     </h4>
                   </Link>
-                  <div className="text-[11px] font-serif italic text-[#575757] mt-1">
+                  <div className="text-[11px] font-serif italic text-[#575757] dark:text-gray-400 mt-0.5">
                     {art.date}
                   </div>
                 </div>
@@ -642,7 +947,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
           <div className="lg:col-span-7 lg:pl-6 group flex flex-col justify-between">
             <Link
               href={`/news/${mainLead.slug}`}
-              className="block overflow-hidden relative aspect-[16/9] mb-4 bg-[#eff0e0]"
+              className="block overflow-hidden relative w-full h-[180px] sm:h-[200px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
             >
               <Image
                 src={mainLead.image}
@@ -652,18 +957,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               />
             </Link>
             <div>
-              <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
+              <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
                 {mainLead.tag || mainLead.category}
               </span>
               <Link href={`/news/${mainLead.slug}`}>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5">
                   {mainLead.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 mb-3">
+              <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
                 {mainLead.excerpt}
               </p>
-              <div className="text-xs font-serif italic text-[#575757]">
+              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
                 {mainLead.date}
               </div>
             </div>
@@ -673,19 +978,21 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     );
   }
 
-  // 3. Business / Finance / Real Estate layout (2 prominent split cards)
-  if (layout === 'business-layout') {
-    const displayList = categoryArticles.slice(0, 2);
+  // =========================================================================
+  // 3. Business / Real Estate / Lifestyle layout
+  // =========================================================================
+  if (layout === 'business-layout' || layout === 'lifestyle-layout') {
+    const displayList = categoryArticles.slice(0, 3);
 
     return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
         {renderHeader()}
-        <div className={`grid grid-cols-1 ${displayList.length > 1 ? 'md:grid-cols-2' : ''} gap-8 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20`}>
+        <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20 dark:divide-white/15`}>
           {displayList.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 1 ? 'md:pl-8 pt-6 md:pt-0' : 'pb-6 md:pb-0'}`}>
+            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-4 md:pb-0' : idx === 1 ? 'py-4 md:py-0 md:px-6' : 'pt-4 md:pt-0 md:pl-6'}`}>
               <Link
                 href={`/news/${art.slug}`}
-                className="block overflow-hidden relative aspect-[16/10] mb-4 bg-[#eff0e0]"
+                className="block overflow-hidden relative w-full h-[160px] sm:h-[180px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
               >
                 <Image
                   src={art.image}
@@ -695,18 +1002,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 />
               </Link>
               <div>
-                <span className="text-xs font-mono uppercase text-[#575757] font-semibold">
+                <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
                   {art.tag || art.category}
                 </span>
                 <Link href={`/news/${art.slug}`}>
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
+                  <h3 className="font-serif text-base sm:text-lg font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
                     {art.title}
                   </h3>
                 </Link>
-                <p className="font-sans text-xs sm:text-sm text-[#575757] line-clamp-2 mb-3">
+                <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
                   {art.excerpt}
                 </p>
-                <div className="text-xs font-serif italic text-[#575757]">
+                <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
                   {art.date}
                 </div>
               </div>
@@ -717,18 +1024,20 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     );
   }
 
-  // 4. Default / Lifestyle / Creative / Culture / Health (3-Column Grid)
+  // =========================================================================
+  // 4. Default / Culture / Health (Compact 3-Column Grid)
+  // =========================================================================
   const displayList = categoryArticles.slice(0, 3);
 
   return (
-    <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 pb-8 scroll-mt-20">
+    <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
       {renderHeader()}
-      <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20`}>
+      <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20 dark:divide-white/15`}>
         {displayList.map((art, idx) => (
-          <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
+          <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-4 md:pb-0' : idx === 1 ? 'py-4 md:py-0 md:px-6' : 'pt-4 md:pt-0 md:pl-6'}`}>
             <Link
               href={`/news/${art.slug}`}
-              className="block overflow-hidden relative aspect-[16/10] mb-3.5 bg-[#eff0e0]"
+              className="block overflow-hidden relative w-full h-[155px] sm:h-[170px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
             >
               <Image
                 src={art.image}
@@ -738,18 +1047,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               />
             </Link>
             <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] font-semibold">
+              <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
                 {art.tag || art.category}
               </span>
               <Link href={`/news/${art.slug}`}>
-                <h3 className="font-serif text-lg font-bold text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2 line-clamp-2">
+                <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
                   {art.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs text-[#575757] line-clamp-2 mb-3">
+              <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
                 {art.excerpt}
               </p>
-              <div className="text-xs font-serif italic text-[#575757]">
+              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
                 {art.date}
               </div>
             </div>

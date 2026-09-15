@@ -1040,5 +1040,143 @@ export const ARTICLES: Article[] = [
       "\"We are not building data centers for today's chatbots; we are building sovereign cognitive power plants that will run national utility and healthcare networks.\""
     ],
     "sections": []
+  },
+  {
+    "id": "multimodal-ai-agents-corporate-hierarchy-opinion",
+    "slug": "multimodal-ai-agents-corporate-hierarchy-opinion",
+    "title": "Why Multimodal AI Agents Will Dissolve Traditional Corporate Hierarchies by 2028",
+    "category": "Opinion",
+    "subcategory": "Guest Columns",
+    "tag": "Executive Perspective",
+    "date": "Sep 15, 2026",
+    "author": "Dr. Sarah Chen",
+    "authorRole": "CEO, Apex Neural",
+    "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200",
+    "readTime": "5 min read",
+    "excerpt": "When autonomous software agents can execute cross-functional workflows, middle-management coordination layers become architectural friction.",
+    "paragraphs": [
+      "When autonomous software agents can execute cross-functional workflows, middle-management coordination layers become architectural friction rather than strategic assets."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
+  },
+  {
+    "id": "boardroom-blindspot-geopolitical-cloud-opinion",
+    "slug": "boardroom-blindspot-geopolitical-cloud-opinion",
+    "title": "The Boardroom Blindspot: Underestimating Geopolitical Fragmentation in Cloud Computing",
+    "category": "Opinion",
+    "subcategory": "Editorial Board",
+    "tag": "Boardroom Critique",
+    "date": "Sep 14, 2026",
+    "author": "Julian Vance",
+    "authorRole": "Global Policy Fellow",
+    "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
+    "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200",
+    "readTime": "4 min read",
+    "excerpt": "Enterprises that assume ubiquitous borders-free compute will face catastrophic data sovereignty shocks as sovereign states enforce domestic cloud borders.",
+    "paragraphs": [
+      "Enterprises that assume ubiquitous borders-free compute will face catastrophic data sovereignty shocks as sovereign states enforce domestic cloud borders."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
+  },
+  {
+    "id": "dtc-pivot-heritage-luxury-brands-retail",
+    "slug": "dtc-pivot-heritage-luxury-brands-retail",
+    "title": "The Direct-to-Consumer Pivot: Why Century-Old Heritage Brands Are Reclaiming Customer Ownership",
+    "category": "Retail",
+    "subcategory": "Luxury & Fashion",
+    "tag": "DTC Strategy",
+    "date": "Sep 15, 2026",
+    "author": "Elena Rostova",
+    "authorRole": "Luxury Commerce Editor",
+    "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    "image": "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=1200",
+    "readTime": "5 min read",
+    "excerpt": "Wholesale reliance is declining as top luxury ateliers invest billions in proprietary VIP commerce apps and bespoke concierge distribution.",
+    "paragraphs": [
+      "Wholesale reliance is declining as top luxury ateliers invest billions in proprietary VIP commerce apps and bespoke concierge distribution."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
+  },
+  {
+    "id": "computer-vision-autonomous-checkouts-urban-retail",
+    "slug": "computer-vision-autonomous-checkouts-urban-retail",
+    "title": "Computer-Vision Checkouts and Autonomous Micro-Hubs Redefine High-Density Urban Retail",
+    "category": "Retail",
+    "subcategory": "Retail Tech & AI",
+    "tag": "Retail Automation",
+    "date": "Sep 14, 2026",
+    "author": "Marcus Graham",
+    "authorRole": "Consumer Tech Analyst",
+    "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
+    "image": "https://images.unsplash.com/photo-1555421689-491a97ff2040?w=1200",
+    "readTime": "4 min read",
+    "excerpt": "Frictionless sensor fusion eliminates queues entirely while algorithmic dynamic shelf-pricing optimizes perishable turnover in real-time.",
+    "paragraphs": [
+      "Frictionless sensor fusion eliminates queues entirely while algorithmic dynamic shelf-pricing optimizes perishable turnover in real-time."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
+  },
+  {
+    "id": "private-aviation-sky-lounges-ultra-luxury-travel",
+    "slug": "private-aviation-sky-lounges-ultra-luxury-travel",
+    "title": "Private Aviation and Sovereign Sky-Lounges: How UHNW Global Mobility Is Shifting in 2026",
+    "category": "Hospitality",
+    "subcategory": "Travel & Aviation",
+    "tag": "Private Aviation",
+    "date": "Sep 15, 2026",
+    "author": "Lucas Davenport",
+    "authorRole": "Luxury Travel Critic",
+    "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
+    "image": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200",
+    "readTime": "5 min read",
+    "excerpt": "High-speed sovereign corridors, private biometric terminals, and bespoke flying apartments are transforming corporate executive transport.",
+    "paragraphs": [
+      "High-speed sovereign corridors, private biometric terminals, and bespoke flying apartments are transforming corporate executive transport."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
+  },
+  {
+    "id": "biophilic-hideaways-regenerative-wellness-resorts",
+    "slug": "biophilic-hideaways-regenerative-wellness-resorts",
+    "title": "Bespoke Biophilic Hideaways: The Rapid Rise of Off-Grid Regenerative Wellness Architecture",
+    "category": "Hospitality",
+    "subcategory": "Luxury Hotels & Resorts",
+    "tag": "Eco-Architecture",
+    "date": "Sep 14, 2026",
+    "author": "Elena Rostova",
+    "authorRole": "Design & Culture Critic",
+    "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
+    "image": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200",
+    "readTime": "4 min read",
+    "excerpt": "Luxury travelers seek complete sensory decompression in carbon-negative sanctuaries engineered with local timber and geothermal cooling.",
+    "paragraphs": [
+      "Luxury travelers seek complete sensory decompression in carbon-negative sanctuaries engineered with local timber and geothermal cooling."
+    ],
+    "sections": [],
+    "featured": false,
+    "placement": "category",
+    "isBreaking": false,
+    "status": "Published"
   }
 ];
