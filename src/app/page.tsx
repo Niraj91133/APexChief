@@ -486,6 +486,138 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   );
 
   // =========================================================================
+  // 0. TOP - LIST: EDITORIAL POWER INDEX (TOP 10 FULL SHOWCASE)
+  // =========================================================================
+  if (cat.slug === 'top-list' || cat.slug === 'top10' || cat.name?.toLowerCase().includes('top - list')) {
+    const top10Articles = categoryArticles.slice(0, 10);
+
+    return (
+      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
+        {renderHeader()}
+        
+        {/* Top 10 Power Index Grid: 2 Columns of 5 Rows each for extreme readability & compact height */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
+          {/* Column 1: Ranks 01 to 05 */}
+          <div className="space-y-3">
+            {top10Articles.slice(0, 5).map((art, idx) => (
+              <div
+                key={art.slug}
+                className="flex items-center gap-3.5 p-3 bg-white dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group shadow-2xs"
+              >
+                {/* Big Rank Number Badge */}
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#211d1d] dark:bg-white text-white dark:text-black group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0">
+                  0{idx + 1}
+                </div>
+
+                {/* Compact Thumbnail */}
+                <Link
+                  href={`/news/${art.slug}`}
+                  className="w-20 sm:w-24 h-16 sm:h-18 relative shrink-0 overflow-hidden bg-[#eff0e0] dark:bg-[#222] border border-[#211d1d]/10 dark:border-white/10"
+                >
+                  <Image
+                    src={art.image}
+                    alt={art.title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </Link>
+
+                {/* Content Details */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-0.5">
+                    <span className="uppercase text-[#f7413e] font-bold">
+                      {art.tag || art.category}
+                    </span>
+                    <span>•</span>
+                    <span>{art.readTime}</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span className="hidden sm:inline">{art.date}</span>
+                  </div>
+                  <Link href={`/news/${art.slug}`}>
+                    <h4 className="font-oswald text-sm sm:text-[15px] font-medium text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-1 mb-1">
+                      {art.title}
+                    </h4>
+                  </Link>
+                  <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
+                    {art.excerpt}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Column 2: Ranks 06 to 10 */}
+          <div className="space-y-3">
+            {top10Articles.slice(5, 10).map((art, idx) => {
+              const actualRank = idx + 6;
+              return (
+                <div
+                  key={art.slug}
+                  className="flex items-center gap-3.5 p-3 bg-white dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group shadow-2xs"
+                >
+                  {/* Big Rank Number Badge */}
+                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200 group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0">
+                    {actualRank < 10 ? `0${actualRank}` : actualRank}
+                  </div>
+
+                  {/* Compact Thumbnail */}
+                  <Link
+                    href={`/news/${art.slug}`}
+                    className="w-20 sm:w-24 h-16 sm:h-18 relative shrink-0 overflow-hidden bg-[#eff0e0] dark:bg-[#222] border border-[#211d1d]/10 dark:border-white/10"
+                  >
+                    <Image
+                      src={art.image}
+                      alt={art.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </Link>
+
+                  {/* Content Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2 text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-0.5">
+                      <span className="uppercase text-[#f7413e] font-bold">
+                        {art.tag || art.category}
+                      </span>
+                      <span>•</span>
+                      <span>{art.readTime}</span>
+                      <span className="hidden sm:inline">•</span>
+                      <span className="hidden sm:inline">{art.date}</span>
+                    </div>
+                    <Link href={`/news/${art.slug}`}>
+                      <h4 className="font-oswald text-sm sm:text-[15px] font-medium text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-1 mb-1">
+                        {art.title}
+                      </h4>
+                    </Link>
+                    <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
+                      {art.excerpt}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Top 10 Power Index Strip */}
+        <div className="mt-4 p-3 bg-[#faf8f2] dark:bg-[#111318] border border-[#211d1d]/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
+          <div className="flex items-center space-x-2 text-[#211d1d] dark:text-gray-300">
+            <span className="text-[#f7413e] font-bold">🏆 EDITORIAL POWER INDEX:</span>
+            <span className="text-gray-600 dark:text-gray-400">Complete 10-tier global enterprise rankings &amp; institutional leaderboards.</span>
+          </div>
+          <Link
+            href={`/news?category=top-list`}
+            className="text-[#f7413e] hover:underline font-bold uppercase tracking-wider shrink-0 flex items-center space-x-1"
+          >
+            <span>Explore All 10 Rankings</span>
+            <span>→</span>
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  // =========================================================================
   // A. OPINION & COMMENTARY CUSTOM COMPACT SECTION
   // =========================================================================
   if (cat.slug === 'opinion') {

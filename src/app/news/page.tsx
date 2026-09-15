@@ -351,8 +351,15 @@ function NewsContent() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayedArticles.map((article) => (
-            <ArticleCard key={article.slug} article={article} variant="standard" />
+          {displayedArticles.map((article, idx) => (
+            <div key={article.slug} className="relative group/rank-card">
+              {activeCategory === 'top-list' && (
+                <div className="absolute top-2 left-2 z-20 bg-[#f7413e] text-white font-oswald text-xs font-bold px-2 py-0.5 shadow-md flex items-center space-x-1">
+                  <span>RANK 0{idx + 1}</span>
+                </div>
+              )}
+              <ArticleCard article={article} variant="standard" />
+            </div>
           ))}
         </div>
       )}

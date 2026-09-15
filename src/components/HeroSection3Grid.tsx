@@ -159,37 +159,52 @@ export default function HeroSection3Grid({
     },
   };
 
-  // 2. Collect Top 10 Ranked Articles (Strictly articles marked placement === 'top10' or category === 'Top - List' / 'Top 10')
-  const explicitTop10 = articles.filter(
-    (a) =>
-      a.placement === 'top10' ||
-      a.category?.toLowerCase() === 'top - list' ||
-      a.category?.toLowerCase() === 'top-list' ||
-      a.category?.toLowerCase() === 'top 10' ||
-      a.category?.toLowerCase() === 'top10' ||
-      a.tag?.toLowerCase() === 'top 10'
-  );
+  // Helper to parse dates to ensure the newest published post is ranked first
+  const parseArticleDate = (d?: string) => {
+    if (!d) return 0;
+    const parsed = Date.parse(d);
+    return isNaN(parsed) ? 0 : parsed;
+  };
 
-  // Fallback seed articles for Top 10 so the list is always populated without polluting with new unrelated category posts
-  const defaultTop10Seed = ARTICLES.filter(
-    (a) => a.placement !== 'interview' && a.category?.toLowerCase() !== 'interview'
-  );
+  // 2. Collect Ranked Articles for Hero Section (STRICTLY ONLY 5) & Top 10 for Total List
+  // User wants: "hm jo v last post kre uska usme dikhe apna ranking k hisab se only 5 ...jo last best ranking article ho"
+  const explicitTop = articles
+    .filter(
+      (a) =>
+        a.placement === 'top10' ||
+        a.category?.toLowerCase() === 'top - list' ||
+        a.category?.toLowerCase() === 'top-list' ||
+        a.category?.toLowerCase() === 'top 10' ||
+        a.category?.toLowerCase() === 'top10' ||
+        a.tag?.toLowerCase() === 'top 10'
+    )
+    .sort((a, b) => parseArticleDate(b.date) - parseArticleDate(a.date));
 
-  const top10Ranked = [
-    ...explicitTop10,
-    ...defaultTop10Seed.filter(
-      (s) => !explicitTop10.some((e) => e.id === s.id || e.slug === s.slug)
-    ),
-  ].slice(0, 15);
+  const otherCandidates = articles
+    .filter(
+      (a) =>
+        a.placement !== 'interview' &&
+        a.category?.toLowerCase() !== 'interview' &&
+        a.placement !== 'best-month' &&
+        !explicitTop.some((e) => (e.id && e.id === a.id) || e.slug === a.slug)
+    )
+    .sort((a, b) => parseArticleDate(b.date) - parseArticleDate(a.date));
 
-  // Visible ranked items (5 primary or 10 if expanded)
-  const visibleTopCount = showExtraTop10 ? Math.min(10, top10Ranked.length) : Math.min(5, top10Ranked.length);
+  // Combined sorted articles: newest / best ranking posts appear first!
+  const combinedRanked = [...explicitTop, ...otherCandidates];
+
+  // Full Top 10 for Total List Modal & Category Archive
+  const top10Ranked = combinedRanked.slice(0, 10);
+
+  // Hero Section Rank Widget: EXACTLY & ONLY 5 ITEMS!
+  const heroRanked5 = combinedRanked.slice(0, 5);
+  const visibleTopCount = Math.min(5, heroRanked5.length || 5);
 
   // 3. Active Story for the Featured Image Showcase
   const activeTopArticle: Article =
-    top10Ranked[activeTopIndex] ||
-    heroLeadArticle ||
-    top10Ranked[0] || {
+    heroRanked5[activeTopIndex] ||
+    heroRanked5[0] ||
+    heroLeadArticle || {
       id: 'default-lead',
       slug: 'enterprise-ai-reshapes-global-supply-chain-logistics',
       title: 'Enterprise AI Reshapes Global Supply Chain Logistics and Maritime Route Optimization',
@@ -396,24 +411,40 @@ export default function HeroSection3Grid({
             </div>
           </div>
 
-          {/* BOTTOM SECTION: COMPACT 5-CARD TOP 10 INDEX STRIP */}
+          {/* BOTTOM SECTION: COMPACT 5-CARD TOP RANKED STRIP (STRICTLY 5 ARTICLES) */}
           <div className="pt-4 border-t border-[#211d1d]/20 dark:border-white/15">
             <div className="flex items-center justify-between mb-2.5">
-              <span className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
-                TOP 10 QUICK INDEX (CLICK TO PREVIEW)
-              </span>
-              <button
-                onClick={() => setShowExtraTop10(!showExtraTop10)}
-                className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 hover:text-black dark:hover:text-white flex items-center space-x-1 cursor-pointer font-semibold"
-              >
-                <span>{showExtraTop10 ? 'Show 1–5' : '+5 Extra (06–10)'}</span>
-                {showExtraTop10 ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              </button>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+                  TOP 5 RANKED STORIES
+                </span>
+                <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 hidden sm:inline">
+                  • LATEST EDITORIAL PICKS
+                </span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setIsTop10ModalOpen(true)}
+                  className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 hover:text-black dark:hover:text-white flex items-center space-x-1 cursor-pointer font-semibold"
+                  title="Open Top 10 Modal Preview"
+                >
+                  <span>Quick View</span>
+                </button>
+                <span className="text-gray-300 dark:text-gray-700">•</span>
+                <Link
+                  href="/news?category=top-list"
+                  className="text-xs font-mono uppercase text-[#f7413e] hover:underline flex items-center space-x-1 font-bold"
+                  title="Explore All 10 Ranked Stories"
+                >
+                  <span>Total List (Top 10)</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
 
-            {/* 5 Primary Ranked Cards Grid */}
+            {/* Strictly 5 Primary Ranked Cards Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
-              {top10Ranked.slice(0, 5).map((art, idx) => {
+              {heroRanked5.map((art, idx) => {
                 const isActive = activeTopIndex === idx;
                 return (
                   <div
@@ -452,51 +483,6 @@ export default function HeroSection3Grid({
                 );
               })}
             </div>
-
-            {/* Extra Items 6-10 (Expandable inline) */}
-            {showExtraTop10 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 mt-2.5 pt-2.5 border-t border-dashed border-[#211d1d]/20 dark:border-white/15 animate-in fade-in slide-in-from-top-2 duration-200">
-                {top10Ranked.slice(5, 10).map((art, idx) => {
-                  const actualIdx = idx + 5;
-                  const isActive = activeTopIndex === actualIdx;
-                  return (
-                    <div
-                      key={art.slug}
-                      onClick={() => setActiveTopIndex(actualIdx)}
-                      onMouseEnter={() => setActiveTopIndex(actualIdx)}
-                      className={`p-2.5 transition-all cursor-pointer border flex flex-col justify-between ${isActive
-                          ? 'bg-[#eff0e0] dark:bg-[#252525] border-[#f7413e] shadow-xs'
-                          : 'bg-white dark:bg-[#181818] border-[#211d1d]/15 dark:border-white/10 hover:border-[#211d1d]/40'
-                        }`}
-                    >
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span
-                            className={`font-oswald font-bold text-xs px-1.5 py-0.5 leading-none ${isActive
-                                ? 'bg-[#f7413e] text-white'
-                                : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
-                              }`}
-                          >
-                            {actualIdx + 1 < 10 ? `0${actualIdx + 1}` : actualIdx + 1}
-                          </span>
-                          <span className="text-[10px] font-serif italic text-[#575757] dark:text-gray-400 truncate max-w-[65px]">
-                            {art.tag || art.category}
-                          </span>
-                        </div>
-                        <h4
-                          className={`font-oswald text-[13px] sm:text-[14px] font-medium leading-snug line-clamp-2 transition-colors ${isActive
-                              ? 'text-[#f7413e]'
-                              : 'text-[#0a0a0a] dark:text-white hover:text-[#f7413e]'
-                            }`}
-                        >
-                          {art.title}
-                        </h4>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
           </div>
         </div>
 

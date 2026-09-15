@@ -29,6 +29,12 @@ export interface Article {
   viewsCount?: number;
   likesCount?: number;
   focusKeyword?: string;
+  status?: string;
+  articleType?: string;
+  homepagePriority?: string;
+  publishDate?: string;
+  publishTime?: string;
+  publishTimezone?: string;
 }
 
 export interface SubCategory {
