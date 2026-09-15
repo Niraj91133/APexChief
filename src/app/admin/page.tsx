@@ -123,14 +123,31 @@ const PREDEFINED_AUTHORS: AuthorProfile[] = [
 ];
 
 const CURATED_STOCK_PHOTOS = [
-  { label: 'Enterprise AI & Architecture', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200' },
-  { label: 'Global Capital & Green Bonds', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200' },
-  { label: 'UAE & MENA Corridor', url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200' },
-  { label: 'Founders & Bootstrapped SaaS', url: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200' },
-  { label: 'Executive Boardroom Dialogue', url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200' },
-  { label: 'DeepTech & Neural Silicon', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200' },
-  { label: 'Lunar Exploration & Space', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200' },
-  { label: 'Clean Energy Infrastructure', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200' },
+  // 1. Tech & AI
+  { label: 'Enterprise AI & Architecture', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200' },
+  { label: 'DeepTech & Neural Silicon', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200' },
+  { label: 'Quantum Computing Lab', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200' },
+  { label: 'Data Center & Cloud Grid', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200' },
+  { label: 'Robotics & Autonomous Vision', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200' },
+  // 2. Business & Finance
+  { label: 'Global Capital & Green Bonds', category: 'Business', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200' },
+  { label: 'Executive Boardroom Dialogue', category: 'Business', url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200' },
+  { label: 'Founders & Bootstrapped SaaS', category: 'Business', url: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200' },
+  { label: 'Global Trade & Logistics', category: 'Business', url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200' },
+  { label: 'Financial Trading Floor', category: 'Business', url: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1200' },
+  // 3. Markets & Global Cities
+  { label: 'UAE & MENA Corridor', category: 'Markets', url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200' },
+  { label: 'New York Wall Street', category: 'Markets', url: 'https://images.unsplash.com/photo-1502899576159-f224dc2349fa?w=1200' },
+  { label: 'London Canary Wharf Skyline', category: 'Markets', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200' },
+  { label: 'Tokyo Financial District', category: 'Markets', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1200' },
+  // 4. Clean Energy & Sustainability
+  { label: 'Clean Energy Infrastructure', category: 'Energy', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200' },
+  { label: 'Solar Farm Array', category: 'Energy', url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1200' },
+  { label: 'Wind Turbine Horizons', category: 'Energy', url: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200' },
+  // 5. Science & Space
+  { label: 'Lunar Exploration & Space', category: 'Science', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200' },
+  { label: 'Biotech Genome Research', category: 'Science', url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200' },
+  { label: 'Neuroscience & Brain Health', category: 'Science', url: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1200' },
 ];
 
 const GOOGLE_FONTS_COLLECTION = [
@@ -821,6 +838,23 @@ export default function AdminDashboard() {
   const [customBtnText, setCustomBtnText] = useState('Explore Deep Dive');
   const [customBtnUrl, setCustomBtnUrl] = useState('#');
 
+  // WordPress-Identical Permalink Flow & Inline Editor State
+  const [isEditingSlug, setIsEditingSlug] = useState(false);
+  const [tempSlugInput, setTempSlugInput] = useState('');
+  const [isManualSlug, setIsManualSlug] = useState(false);
+
+  // Complete Featured Image & Media Manager Modal State
+  const [showFeaturedImageModal, setShowFeaturedImageModal] = useState(false);
+  const [featuredImageTab, setFeaturedImageTab] = useState<'upload' | 'library' | 'stock' | 'url'>('upload');
+  const [stockSearchQuery, setStockSearchQuery] = useState('');
+  const [stockCategoryFilter, setStockCategoryFilter] = useState('All');
+  const [customImageUrlInput, setCustomImageUrlInput] = useState('');
+  const [testedImageUrl, setTestedImageUrl] = useState<string | null>(null);
+  const [isTestingUrl, setIsTestingUrl] = useState(false);
+  const mediaModalFileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadDragActive, setUploadDragActive] = useState(false);
+  const [uploadedMediaHistory, setUploadedMediaHistory] = useState<string[]>([]);
+
   // Gemini AI SEO Assistant State
   const [isSeoAnalyzing, setIsSeoAnalyzing] = useState(false);
   const [showSeoPanel, setShowSeoPanel] = useState(false);
@@ -1212,17 +1246,22 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement> | File) => {
+    let file: File | undefined;
+    if (e instanceof File) {
+      file = e;
+    } else if (e && e.target && e.target.files) {
+      file = e.target.files[0];
+    }
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
-      showToast('Please select a valid image file (JPG, PNG, WebP)', 'error');
+      showToast('Please select a valid image file (JPG, PNG, WebP, SVG, AVIF)', 'error');
       return;
     }
 
     setIsUploadingImage(true);
-    showToast('Processing and uploading image to ImageKit CDN...', 'info');
+    showToast('Processing and uploading image to CDN...', 'info');
 
     try {
       // 1. Optimize & compress image in browser
@@ -1265,29 +1304,31 @@ export default function AdminDashboard() {
 
       // Method 2: If direct upload didn't succeed, use server endpoint
       if (!uploadedUrl) {
-        const serverRes = await fetch('/api/imagekit/upload', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            file: base64,
-            fileName,
-            folder: '/articles',
-          }),
-        });
-
-        const rawText = await serverRes.text();
-        let serverData: any = {};
         try {
-          serverData = JSON.parse(rawText);
-        } catch {
-          throw new Error(rawText.slice(0, 100) || `Server upload error (${serverRes.status})`);
-        }
+          const serverRes = await fetch('/api/imagekit/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file: base64,
+              fileName,
+              folder: '/articles',
+            }),
+          });
 
-        if (serverRes.ok && serverData.url) {
-          uploadedUrl = serverData.url;
-        } else {
-          throw new Error(serverData.error || 'Server upload failed');
+          if (serverRes.ok) {
+            const serverData = await serverRes.json();
+            if (serverData.url) {
+              uploadedUrl = serverData.url;
+            }
+          }
+        } catch (serverErr) {
+          console.warn('Server upload endpoint unreachable, falling back to base64 data URL:', serverErr);
         }
+      }
+
+      // Method 3: Resilient offline/data URI fallback so user's image is NEVER lost
+      if (!uploadedUrl && base64) {
+        uploadedUrl = base64;
       }
 
       if (uploadedUrl) {
@@ -1295,7 +1336,9 @@ export default function AdminDashboard() {
           ...prev,
           image: uploadedUrl,
         }));
-        showToast('✓ Photo successfully uploaded to ImageKit CDN!', 'success');
+        setUploadedMediaHistory((prev) => Array.from(new Set([uploadedUrl, ...prev])));
+        setShowFeaturedImageModal(false);
+        showToast('✓ Featured cover image updated successfully!', 'success');
       } else {
         throw new Error('Image URL was not returned');
       }
@@ -1305,7 +1348,55 @@ export default function AdminDashboard() {
     } finally {
       setIsUploadingImage(false);
       if (imageFileInputRef.current) imageFileInputRef.current.value = '';
+      if (mediaModalFileInputRef.current) mediaModalFileInputRef.current.value = '';
     }
+  };
+
+  // Helper to select an existing image from media library or stock photos
+  const handleSelectMediaImage = (imageUrl: string, label?: string) => {
+    if (!imageUrl) return;
+    setEditingArticle((prev) => ({
+      ...prev,
+      image: imageUrl,
+    }));
+    setUploadedMediaHistory((prev) => Array.from(new Set([imageUrl, ...prev])));
+    setShowFeaturedImageModal(false);
+    showToast(label ? `Featured photo set: ${label}` : 'Featured image set successfully!', 'success');
+  };
+
+  // WordPress-Identical Permalink Management Functions
+  const startEditingSlug = () => {
+    setTempSlugInput(editingArticle.slug || generateSlug(editingArticle.title));
+    setIsEditingSlug(true);
+  };
+
+  const savePermalinkSlug = () => {
+    const rawVal = (tempSlugInput || '').trim();
+    const clean = generateSlug(rawVal || editingArticle.title) || `story-${Date.now()}`;
+    setEditingArticle((prev) => ({
+      ...prev,
+      slug: clean,
+    }));
+    setIsManualSlug(true);
+    setIsEditingSlug(false);
+    showToast(`Permalink updated: https://apexchief.com/${clean}`, 'success');
+  };
+
+  const cancelPermalinkSlug = () => {
+    setTempSlugInput(editingArticle.slug || '');
+    setIsEditingSlug(false);
+  };
+
+  const resetSlugToTitle = () => {
+    const clean = generateSlug(editingArticle.title) || `story-${Date.now()}`;
+    setEditingArticle((prev) => ({
+      ...prev,
+      slug: clean,
+    }));
+    setTempSlugInput(clean);
+    setIsManualSlug(false);
+    setIsEditingSlug(false);
+    showToast(`Permalink reset from headline: https://apexchief.com/${clean}`, 'info');
   };
 
   const applySuggestedHeadline = (item: { title: string; excerpt?: string; draftHtml?: string }, fullStory: boolean = true) => {
@@ -2232,6 +2323,9 @@ export default function AdminDashboard() {
   const initCreatePost = () => {
     setIsEditing(false);
     setIsCustomAuthor(false);
+    setIsManualSlug(false);
+    setIsEditingSlug(false);
+    setTempSlugInput('');
     const defaultCat = categories[0]?.name || 'Business';
     const matchedCat = categories.find(c => c.name.toLowerCase() === defaultCat.toLowerCase()) || CATEGORIES[0];
     const defaultSub = matchedCat?.subcategories?.[0]?.name || 'Companies';
@@ -2279,6 +2373,9 @@ export default function AdminDashboard() {
 
   const initEditPost = (art: Article) => {
     setIsEditing(true);
+    setIsManualSlug(true);
+    setIsEditingSlug(false);
+    setTempSlugInput(art.slug || '');
     const hasPredefined = PREDEFINED_AUTHORS.some((a) => a.name === art.author);
     setIsCustomAuthor(!hasPredefined);
 
@@ -2287,12 +2384,16 @@ export default function AdminDashboard() {
 
     setEditingArticle({
       ...art,
+      image: art.image || '',
       readTime: metrics.readTime,
       category: art.category || 'Business',
       subcategory: (art as any).subcategory || '',
       placement: (art as any).placement || 'category',
       isBreaking: (art as any).isBreaking || false,
     });
+    if (art.image) {
+      setUploadedMediaHistory((prev) => Array.from(new Set([art.image, ...prev])));
+    }
     setCmsMetadata({
       status: (art as any).status || 'Published',
       articleType: (art as any).articleType || 'News',
@@ -2325,6 +2426,9 @@ export default function AdminDashboard() {
     // Auto-generate excerpt if missing
     const finalExcerpt = editingArticle.excerpt?.trim() || (finalParagraphs[0] ? finalParagraphs[0].slice(0, 180) + '...' : editingArticle.title);
 
+    // Selected image or curated category fallback
+    const finalImage = editingArticle.image?.trim() || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
+
     const articlePayload: Article = {
       ...editingArticle,
       id: editingArticle.id || finalSlug,
@@ -2343,7 +2447,7 @@ export default function AdminDashboard() {
       author: editingArticle.author || 'Admin',
       authorRole: editingArticle.authorRole || 'Editor',
       authorAvatar: editingArticle.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
-      image: editingArticle.image || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
+      image: finalImage,
       readTime: editingArticle.readTime || '0 min read',
       ...({
         articleType: cmsMetadata.articleType || 'News',
@@ -2367,6 +2471,10 @@ export default function AdminDashboard() {
       if (res.ok) {
         showToast(isEditing ? 'Story updated successfully!' : 'Story published successfully!', 'success');
         
+        if (finalImage) {
+          setUploadedMediaHistory((prev) => Array.from(new Set([finalImage, ...prev])));
+        }
+
         // Update local articles list immediately
         setArticles((prev) => {
           const idx = prev.findIndex((a) => a.id === articlePayload.id || a.slug === articlePayload.slug);
@@ -2760,10 +2868,13 @@ export default function AdminDashboard() {
             <Link
               href="/"
               target="_blank"
-              className="inline-flex items-center space-x-1 border border-[#211d1d]/20 dark:border-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-all bg-[#faf8f2] dark:bg-[#1c202d] rounded-xs"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all rounded-xs shadow-xs"
+              title="Open the live public landing page in a new tab"
             >
-              <span>View Site</span>
-              <Eye className="w-3.5 h-3.5" />
+              <Globe className="w-3.5 h-3.5" />
+              <span>🌐 Open Landing Page</span>
+              <ExternalLink className="w-3 h-3" />
             </Link>
 
             <button
@@ -2844,6 +2955,21 @@ export default function AdminDashboard() {
                 <Settings className="w-4 h-4" />
                 <span>Website Settings</span>
               </button>
+
+              <div className="pt-2 border-t border-[#211d1d]/10 dark:border-white/10 hidden lg:block">
+                <Link
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xs hover:bg-emerald-100"
+                >
+                  <span className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4" />
+                    <span>Open Landing Page</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
           )}
 
@@ -3683,15 +3809,11 @@ export default function AdminDashboard() {
                               }}
                               onChange={(e) => {
                                 const val = e.target.value;
-                                if (isEditing) {
-                                  setEditingArticle({ ...editingArticle, title: val });
-                                } else {
-                                  setEditingArticle({
-                                    ...editingArticle,
-                                    title: val,
-                                    slug: generateSlug(val),
-                                  });
-                                }
+                                setEditingArticle({
+                                  ...editingArticle,
+                                  title: val,
+                                  slug: editingArticle.slug || generateSlug(val) || 'new-post',
+                                });
                               }}
                               placeholder="Enter story headline..."
                               style={{
@@ -3704,21 +3826,80 @@ export default function AdminDashboard() {
                               className="block w-full border-b border-gray-200 focus:border-[#002b5c] pb-2 text-[#0a0a0a] text-lg sm:text-xl font-serif font-bold focus:outline-none placeholder:text-gray-300 leading-snug transition-all"
                             />
 
-                            {/* Permalink Preview Bar */}
-                            <div className="flex items-center space-x-2 text-xs font-mono text-gray-400 mt-2">
-                              <span className="text-gray-500">Permalink URL:</span>
-                              <span className="text-[#002b5c] font-medium truncate">https://apexchief.com/news/{editingArticle.slug || 'story-slug'}</span>
-                              {!isEditing && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const custom = prompt('Enter custom URL slug:', editingArticle.slug);
-                                    if (custom) setEditingArticle({ ...editingArticle, slug: generateSlug(custom) });
-                                  }}
-                                  className="text-[10px] text-[#f7413e] hover:underline cursor-pointer"
-                                >
-                                  (edit)
-                                </button>
+                            {/* WordPress-Identical Editable Permalink Bar Under Title */}
+                            <div className="flex items-center flex-wrap gap-2 text-xs font-mono text-gray-500 mt-2.5 p-2 bg-gray-50/90 border border-gray-200 rounded-md">
+                              <span className="font-bold text-gray-800 text-[11px] font-sans">Permalink:</span>
+                              
+                              {!isEditingSlug ? (
+                                <div className="flex items-center flex-wrap gap-2">
+                                  <span className="text-gray-500 text-xs flex items-center gap-0.5">
+                                    <span className="text-gray-400">https://apexchief.com/</span>
+                                    <span className="font-bold text-[#002b5c] bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 text-xs">
+                                      {editingArticle.slug || 'story-slug'}
+                                    </span>
+                                  </span>
+
+                                  <div className="inline-flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={startEditingSlug}
+                                      className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                    >
+                                      Edit
+                                    </button>
+                                    <a
+                                      href={`/news/${editingArticle.slug || 'story-slug'}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-[#002b5c] hover:underline text-[11px] font-mono font-bold rounded shadow-2xs transition-colors inline-flex items-center gap-1"
+                                    >
+                                      <span>View Story</span>
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center flex-wrap gap-1.5">
+                                  <span className="text-gray-400 text-xs">https://apexchief.com/</span>
+                                  <input
+                                    type="text"
+                                    value={tempSlugInput}
+                                    onChange={(e) => setTempSlugInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        savePermalinkSlug();
+                                      } else if (e.key === 'Escape') {
+                                        e.preventDefault();
+                                        cancelPermalinkSlug();
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="px-2 py-0.5 bg-white border border-[#002b5c] text-xs font-mono font-semibold text-gray-900 rounded outline-none w-56 sm:w-72 shadow-inner focus:ring-1 focus:ring-[#002b5c]"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={savePermalinkSlug}
+                                    className="px-2.5 py-0.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                  >
+                                    OK
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={cancelPermalinkSlug}
+                                    className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={resetSlugToTitle}
+                                    className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-mono rounded cursor-pointer transition-colors"
+                                    title="Regenerate slug from current headline title"
+                                  >
+                                    Reset to Title
+                                  </button>
+                                </div>
                               )}
                             </div>
 
@@ -3892,55 +4073,77 @@ export default function AdminDashboard() {
                           <div className="group relative border border-dashed border-gray-300 hover:border-[#002b5c] rounded-lg p-3 bg-gray-50/50 transition-colors">
                             {editingArticle.image ? (
                               <div className="space-y-3">
-                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-100 shadow-inner">
+                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-100 shadow-inner group/img">
                                   <img
                                     src={editingArticle.image.replace(/&amp;/g, '&')}
                                     alt="Story Cover"
                                     className="object-cover w-full h-full"
                                   />
+                                  <div className="absolute top-2 right-2 flex items-center space-x-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 bg-black/75 hover:bg-[#002b5c] text-white text-[10px] font-mono font-bold rounded shadow-sm backdrop-blur-xs cursor-pointer transition-colors"
+                                    >
+                                      Replace Image
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                      className="p-1 bg-rose-600/90 hover:bg-rose-700 text-white rounded shadow-sm cursor-pointer transition-colors"
+                                      title="Remove Image"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
                                 </div>
                                 <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
                                   <div className="flex items-center space-x-2 w-full sm:w-auto">
-                                    <span className="text-[10px] font-mono text-gray-500 uppercase font-bold">Photo URL:</span>
+                                    <span className="text-[10px] font-mono text-gray-500 uppercase font-bold">Image URL:</span>
                                     <input
                                       type="text"
                                       value={editingArticle.image}
                                       onChange={(e) => setEditingArticle({ ...editingArticle, image: e.target.value })}
-                                      className="flex-1 sm:w-64 px-2 py-1 border border-gray-200 text-xs font-mono rounded focus:outline-none focus:border-[#002b5c]"
+                                      placeholder="https://..."
+                                      className="flex-1 sm:w-72 px-2 py-1 border border-gray-200 text-xs font-mono rounded focus:outline-none focus:border-[#002b5c] bg-white"
                                     />
                                   </div>
-                                  <div className="flex items-center space-x-2">
-                                    <input
-                                      type="file"
-                                      ref={imageFileInputRef}
-                                      onChange={handleImageFileUpload}
-                                      accept="image/*"
-                                      className="hidden"
-                                    />
+                                  <div className="flex items-center space-x-1.5">
                                     <button
                                       type="button"
-                                      disabled={isUploadingImage}
-                                      onClick={() => imageFileInputRef.current?.click()}
-                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-[#002b5c] hover:bg-[#f7413e] text-white rounded shadow-xs cursor-pointer inline-flex items-center space-x-1 disabled:opacity-50"
+                                      onClick={() => {
+                                        setFeaturedImageTab('upload');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-[#002b5c] hover:bg-[#f7413e] text-white rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
                                     >
-                                      {isUploadingImage ? (
-                                        <>
-                                          <Loader2 className="w-3 h-3 animate-spin" />
-                                          <span>Uploading...</span>
-                                        </>
-                                      ) : (
-                                        <>
-                                          <Upload className="w-3 h-3" />
-                                          <span>Upload (ImageKit)</span>
-                                        </>
-                                      )}
+                                      <Upload className="w-3 h-3" />
+                                      <span>Upload</span>
                                     </button>
                                     <button
                                       type="button"
-                                      onClick={() => setShowStockModal(true)}
-                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 rounded shadow-xs cursor-pointer"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
                                     >
-                                      Stock Photos
+                                      <ImageIcon className="w-3 h-3" />
+                                      <span>Media Library</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('stock');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                    >
+                                      <Camera className="w-3 h-3" />
+                                      <span>Stock Photos</span>
                                     </button>
                                     <button
                                       type="button"
@@ -3954,48 +4157,49 @@ export default function AdminDashboard() {
                                 </div>
                               </div>
                             ) : (
-                              <div className="py-8 text-center space-y-3">
-                                <input
-                                  type="file"
-                                  ref={imageFileInputRef}
-                                  onChange={handleImageFileUpload}
-                                  accept="image/*"
-                                  className="hidden"
-                                />
+                              <div className="py-7 text-center space-y-3">
                                 <LucideImage className="w-8 h-8 text-gray-400 mx-auto" />
                                 <div>
                                   <span className="font-mono text-xs font-bold uppercase text-[#002b5c] block">
-                                    Add Story Cover Photo
+                                    Set Story Cover / Featured Photo
                                   </span>
                                   <span className="text-[11px] text-gray-400">
-                                    Upload directly from your device or choose from stock photo library
+                                    Upload directly, select from Media Library, or pick from curated stock photography
                                   </span>
                                 </div>
-                                <div className="flex items-center justify-center space-x-2 pt-1">
+                                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
                                   <button
                                     type="button"
-                                    disabled={isUploadingImage}
-                                    onClick={() => imageFileInputRef.current?.click()}
-                                    className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1.5 disabled:opacity-50"
+                                    onClick={() => {
+                                      setFeaturedImageTab('upload');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1.5"
                                   >
-                                    {isUploadingImage ? (
-                                      <>
-                                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                        <span>Uploading to ImageKit CDN...</span>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Upload className="w-3.5 h-3.5" />
-                                        <span>Upload Photo (ImageKit CDN)</span>
-                                      </>
-                                    )}
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Photo</span>
                                   </button>
                                   <button
                                     type="button"
-                                    onClick={() => setShowStockModal(true)}
-                                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer"
+                                    onClick={() => {
+                                      setFeaturedImageTab('library');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
                                   >
-                                    Stock Photos
+                                    <ImageIcon className="w-3.5 h-3.5" />
+                                    <span>Media Library</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('stock');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                  >
+                                    <Camera className="w-3.5 h-3.5" />
+                                    <span>Stock Photos</span>
                                   </button>
                                 </div>
                               </div>
@@ -4316,7 +4520,92 @@ export default function AdminDashboard() {
                             </div>
                           </div>
 
-                          {/* 2. Homepage Placement Dropdown */}
+                          {/* 2. Dedicated Featured Image Meta Box */}
+                          <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-lg space-y-2.5">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-1.5">
+                                <LucideImage className="w-3.5 h-3.5 text-[#002b5c]" />
+                                <span className="font-mono text-[10px] uppercase font-bold text-gray-700 tracking-wider">
+                                  Featured Image
+                                </span>
+                                <InfoTooltip text="The primary cover photo for cards, hero spotlight, and article headers." />
+                              </div>
+                              {editingArticle.image && (
+                                <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                                  Active
+                                </span>
+                              )}
+                            </div>
+
+                            {editingArticle.image ? (
+                              <div className="space-y-2">
+                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 border border-gray-300 shadow-2xs group">
+                                  <img
+                                    src={editingArticle.image.replace(/&amp;/g, '&')}
+                                    alt="Featured Preview"
+                                    className="object-cover w-full h-full"
+                                  />
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 bg-white hover:bg-gray-100 text-gray-900 text-[10px] font-mono font-bold rounded shadow-sm transition-colors cursor-pointer"
+                                    >
+                                      Replace
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                      className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-mono font-bold rounded shadow-sm transition-colors cursor-pointer"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between text-[10px] font-mono pt-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('library');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="text-[#002b5c] hover:underline font-bold cursor-pointer"
+                                  >
+                                    Change / Media Library
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                    className="text-rose-600 hover:underline cursor-pointer"
+                                  >
+                                    Remove image
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => {
+                                  setFeaturedImageTab('upload');
+                                  setShowFeaturedImageModal(true);
+                                }}
+                                className="border-2 border-dashed border-gray-300 hover:border-[#002b5c] hover:bg-white rounded-md p-3.5 text-center cursor-pointer transition-all space-y-1 group"
+                              >
+                                <LucideImage className="w-5 h-5 text-gray-400 group-hover:text-[#002b5c] mx-auto transition-colors" />
+                                <div className="text-[11px] font-bold text-[#002b5c] group-hover:underline">
+                                  + Set featured image
+                                </div>
+                                <p className="text-[9px] text-gray-400">
+                                  Upload, Media Library, or Stock Photos
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 3. Homepage Placement Dropdown */}
                           <div>
                             <div className="flex items-center mb-1">
                               <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
@@ -4822,81 +5111,421 @@ export default function AdminDashboard() {
                       </div>
                     )}
 
-                    {/* CURATED LIGHTROOM / STOCK PHOTO MODAL */}
-                    {showStockModal && (
-                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-                        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 space-y-4 border border-gray-200">
-                          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                    {/* COMPREHENSIVE MEDIA & FEATURED IMAGE MANAGER MODAL */}
+                    {showFeaturedImageModal && (
+                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+                          
+                          {/* Modal Header */}
+                          <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
                             <div className="flex items-center space-x-2">
-                              <Camera className="w-5 h-5 text-[#002b5c]" />
-                              <h3 className="font-serif text-lg font-bold text-gray-900">
-                                Stock Photos Curator
-                              </h3>
+                              <LucideImage className="w-5 h-5 text-[#002b5c]" />
+                              <div>
+                                <h3 className="font-serif text-base font-bold text-gray-900 leading-tight">
+                                  Featured Image & Media Manager
+                                </h3>
+                                <p className="text-[10px] text-gray-500 font-mono">
+                                  Upload from device, browse media library, or select from curated stock photography
+                                </p>
+                              </div>
                             </div>
                             <button
                               type="button"
-                              onClick={() => setShowStockModal(false)}
-                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
+                              onClick={() => setShowFeaturedImageModal(false)}
+                              className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
                             >
-                              &times;
+                              <X className="w-5 h-5" />
                             </button>
                           </div>
 
-                          <p className="text-xs text-gray-500">
-                            Choose a cover photo from curated collections or paste a custom URL:
-                          </p>
-
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-h-80 overflow-y-auto p-1">
-                            {CURATED_STOCK_PHOTOS.map((photo, i) => (
-                              <div
-                                key={i}
-                                onClick={() => {
-                                  setEditingArticle({ ...editingArticle, image: photo.url });
-                                  setShowStockModal(false);
-                                  showToast(`Photo selected: ${photo.label}`, 'success');
-                                }}
-                                className="group cursor-pointer rounded-lg overflow-hidden border border-gray-200 hover:border-[#002b5c] transition-all hover:shadow-md"
-                              >
-                                <div className="aspect-[4/3] relative bg-gray-100">
-                                  <img
-                                    src={photo.url}
-                                    alt={photo.label}
-                                    className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                                  />
-                                </div>
-                                <div className="p-1.5 bg-white text-center">
-                                  <span className="text-[10px] font-bold text-gray-800 block truncate">
-                                    {photo.label}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-
-                          <div className="pt-3 border-t border-gray-100 flex items-center space-x-2">
-                            <input
-                              type="text"
-                              placeholder="Or paste any Unsplash / Direct Image URL here..."
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  const url = e.currentTarget.value.trim();
-                                  if (url) {
-                                    setEditingArticle({ ...editingArticle, image: url });
-                                    setShowStockModal(false);
-                                  }
-                                }
-                              }}
-                              className="flex-1 p-2 border border-gray-200 text-xs rounded-lg focus:outline-none focus:border-[#002b5c]"
-                            />
+                          {/* 4 Tab Navigation Bar */}
+                          <div className="flex items-center border-b border-gray-200 px-5 bg-white text-xs font-mono font-bold">
                             <button
                               type="button"
-                              onClick={() => setShowStockModal(false)}
-                              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold rounded-lg cursor-pointer"
+                              onClick={() => setFeaturedImageTab('upload')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'upload'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
                             >
-                              Close
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload Files</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('library')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'library'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <ImageIcon className="w-3.5 h-3.5" />
+                              <span>Media Library ({Array.from(new Set([...uploadedMediaHistory, ...articles.map(a => a.image).filter(Boolean)])).length})</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('stock')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'stock'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <Camera className="w-3.5 h-3.5" />
+                              <span>Stock Photos ({CURATED_STOCK_PHOTOS.length})</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('url')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'url'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <LinkIcon className="w-3.5 h-3.5" />
+                              <span>Web Image URL</span>
                             </button>
                           </div>
+
+                          {/* Modal Body / Tab Content */}
+                          <div className="p-5 flex-1 overflow-y-auto min-h-[340px]">
+                            
+                            {/* TAB 1: UPLOAD FILES */}
+                            {featuredImageTab === 'upload' && (
+                              <div className="space-y-4">
+                                <input
+                                  type="file"
+                                  ref={mediaModalFileInputRef}
+                                  onChange={handleImageFileUpload}
+                                  accept="image/*"
+                                  className="hidden"
+                                />
+
+                                <div
+                                  onDragOver={(e) => {
+                                    e.preventDefault();
+                                    setUploadDragActive(true);
+                                  }}
+                                  onDragLeave={() => setUploadDragActive(false)}
+                                  onDrop={(e) => {
+                                    e.preventDefault();
+                                    setUploadDragActive(false);
+                                    if (e.dataTransfer.files?.[0]) {
+                                      handleImageFileUpload(e.dataTransfer.files[0]);
+                                    }
+                                  }}
+                                  onClick={() => mediaModalFileInputRef.current?.click()}
+                                  className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all space-y-3 ${
+                                    uploadDragActive
+                                      ? 'border-[#002b5c] bg-blue-50/50 scale-[0.99]'
+                                      : 'border-gray-300 hover:border-[#002b5c] hover:bg-gray-50/80 bg-gray-50/30'
+                                  }`}
+                                >
+                                  <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto text-[#002b5c]">
+                                    {isUploadingImage ? (
+                                      <Loader2 className="w-7 h-7 animate-spin" />
+                                    ) : (
+                                      <Upload className="w-7 h-7" />
+                                    )}
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    <h4 className="font-serif text-sm sm:text-base font-bold text-gray-900">
+                                      {isUploadingImage ? 'Uploading & Processing Image...' : 'Drop files here or click to browse'}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 font-sans">
+                                      Supports high-res JPG, PNG, WebP, SVG, and AVIF formats
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    disabled={isUploadingImage}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      mediaModalFileInputRef.current?.click();
+                                    }}
+                                    className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded-lg shadow-sm transition-colors cursor-pointer inline-flex items-center space-x-1.5 disabled:opacity-50"
+                                  >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Select Files from Device</span>
+                                  </button>
+
+                                  <div className="text-[10px] text-gray-400 font-mono pt-2">
+                                    Maximum upload file size: 25 MB • Auto-optimized client-side
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* TAB 2: MEDIA LIBRARY */}
+                            {featuredImageTab === 'library' && (
+                              <div className="space-y-3">
+                                {(() => {
+                                  const libraryList = Array.from(
+                                    new Set([
+                                      ...uploadedMediaHistory,
+                                      ...articles.map((a) => a.image).filter(Boolean),
+                                    ])
+                                  );
+
+                                  if (libraryList.length === 0) {
+                                    return (
+                                      <div className="py-16 text-center space-y-2">
+                                        <ImageIcon className="w-10 h-10 text-gray-300 mx-auto" />
+                                        <p className="text-xs text-gray-500 font-mono">
+                                          Media Library is currently empty. Upload photos or select from Stock Photos.
+                                        </p>
+                                        <button
+                                          type="button"
+                                          onClick={() => setFeaturedImageTab('upload')}
+                                          className="text-xs font-bold text-[#002b5c] hover:underline font-mono"
+                                        >
+                                          Go to Upload Files →
+                                        </button>
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[380px] overflow-y-auto pr-1">
+                                      {libraryList.map((imgUrl, idx) => {
+                                        const isSelected = editingArticle.image === imgUrl;
+                                        return (
+                                          <div
+                                            key={idx}
+                                            onClick={() => handleSelectMediaImage(imgUrl)}
+                                            className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                                              isSelected
+                                                ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
+                                                : 'border-gray-200 hover:border-gray-400 hover:shadow-sm'
+                                            }`}
+                                          >
+                                            <div className="aspect-[16/10] bg-gray-100 relative">
+                                              <img
+                                                src={imgUrl.replace(/&amp;/g, '&')}
+                                                alt=""
+                                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-200"
+                                              />
+                                              {isSelected && (
+                                                <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
+                                                  <Check className="w-3 h-3 stroke-[3]" />
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div className="p-1.5 bg-white text-[10px] font-mono text-gray-600 truncate border-t border-gray-100 flex items-center justify-between">
+                                              <span className="truncate">Media #{idx + 1}</span>
+                                              {isSelected && (
+                                                <span className="text-[#002b5c] font-bold text-[9px]">Active</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            )}
+
+                            {/* TAB 3: CURATED STOCK PHOTOS */}
+                            {featuredImageTab === 'stock' && (
+                              <div className="space-y-3">
+                                {/* Search & Category Filter Chips */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
+                                  {/* Filter chips */}
+                                  <div className="flex flex-wrap items-center gap-1">
+                                    {['All', 'AI & Tech', 'Business', 'Markets', 'Energy', 'Science'].map((cat) => (
+                                      <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setStockCategoryFilter(cat)}
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-colors cursor-pointer ${
+                                          stockCategoryFilter === cat
+                                            ? 'bg-[#002b5c] text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                        }`}
+                                      >
+                                        {cat}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {/* Search box */}
+                                  <div className="relative w-full sm:w-48">
+                                    <input
+                                      type="text"
+                                      value={stockSearchQuery}
+                                      onChange={(e) => setStockSearchQuery(e.target.value)}
+                                      placeholder="Search stock photos..."
+                                      className="w-full pl-7 pr-2.5 py-1 text-xs font-mono border border-gray-200 rounded-md focus:outline-none focus:border-[#002b5c]"
+                                    />
+                                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2 top-2 pointer-events-none" />
+                                  </div>
+                                </div>
+
+                                {/* Stock Photos Grid */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[340px] overflow-y-auto pr-1">
+                                  {CURATED_STOCK_PHOTOS.filter((photo) => {
+                                    const matchCat = stockCategoryFilter === 'All' || photo.category === stockCategoryFilter;
+                                    const matchSearch = !stockSearchQuery || photo.label.toLowerCase().includes(stockSearchQuery.toLowerCase());
+                                    return matchCat && matchSearch;
+                                  }).map((photo, i) => {
+                                    const isSelected = editingArticle.image === photo.url;
+                                    return (
+                                      <div
+                                        key={i}
+                                        onClick={() => handleSelectMediaImage(photo.url, photo.label)}
+                                        className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                                          isSelected
+                                            ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
+                                            : 'border-gray-200 hover:border-[#002b5c] hover:shadow-md'
+                                        }`}
+                                      >
+                                        <div className="aspect-[4/3] bg-gray-100 relative">
+                                          <img
+                                            src={photo.url}
+                                            alt={photo.label}
+                                            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                                          />
+                                          {isSelected && (
+                                            <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
+                                              <Check className="w-3 h-3 stroke-[3]" />
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="p-2 bg-white">
+                                          <span className="text-[10px] font-bold text-gray-900 block truncate">
+                                            {photo.label}
+                                          </span>
+                                          <span className="text-[9px] font-mono text-gray-400 block">
+                                            {photo.category}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* TAB 4: WEB IMAGE URL */}
+                            {featuredImageTab === 'url' && (
+                              <div className="space-y-4 max-w-xl mx-auto py-2">
+                                <div className="space-y-1.5">
+                                  <label className="block text-xs font-bold text-gray-700 font-mono">
+                                    Direct Image URL:
+                                  </label>
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="text"
+                                      value={customImageUrlInput}
+                                      onChange={(e) => {
+                                        setCustomImageUrlInput(e.target.value);
+                                        setTestedImageUrl(null);
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (customImageUrlInput.trim()) {
+                                            setTestedImageUrl(customImageUrlInput.trim());
+                                          }
+                                        }
+                                      }}
+                                      placeholder="https://images.unsplash.com/... or https://..."
+                                      className="flex-1 p-2 text-xs font-mono border border-gray-300 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (customImageUrlInput.trim()) {
+                                          setTestedImageUrl(customImageUrlInput.trim());
+                                        }
+                                      }}
+                                      className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer"
+                                    >
+                                      Preview
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {testedImageUrl ? (
+                                  <div className="space-y-3 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-in fade-in duration-150">
+                                    <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 shadow-inner">
+                                      <img
+                                        src={testedImageUrl}
+                                        alt="Preview"
+                                        className="object-cover w-full h-full"
+                                        onError={() => {
+                                          showToast('Could not load image from the provided URL. Please check the link.', 'error');
+                                          setTestedImageUrl(null);
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-mono text-gray-500 truncate">
+                                        {testedImageUrl}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSelectMediaImage(testedImageUrl, 'Custom URL Image')}
+                                        className="px-4 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded shadow-xs cursor-pointer transition-colors"
+                                      >
+                                        Set as Featured Image
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="p-8 border border-dashed border-gray-200 rounded-lg text-center text-xs text-gray-400 font-mono">
+                                    Enter an image URL above and click Preview to test and apply it.
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                          </div>
+
+                          {/* Modal Footer */}
+                          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                            <div className="text-[11px] font-mono text-gray-500">
+                              {editingArticle.image ? (
+                                <span className="flex items-center space-x-1 text-emerald-700 font-bold">
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Featured image is currently configured</span>
+                                </span>
+                              ) : (
+                                <span>No featured image selected</span>
+                              )}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {editingArticle.image && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingArticle({ ...editingArticle, image: '' });
+                                    showToast('Featured image cleared', 'info');
+                                  }}
+                                  className="px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded font-mono font-bold cursor-pointer"
+                                >
+                                  Remove Image
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setShowFeaturedImageModal(false)}
+                                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-mono font-bold rounded cursor-pointer transition-colors"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+
                         </div>
                       </div>
                     )}

@@ -54,11 +54,26 @@ function HeaderNav({
       onMouseLeave={handleMouseLeave}
     >
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between py-1.5 sm:py-2">
-        {/* Desktop Navigation Links (All Categories Centered within 1240px Container) */}
+        {/* Desktop Navigation Links (Home + Categories Centered within Container) */}
         <nav className="flex items-center justify-center flex-wrap xl:flex-nowrap gap-x-1 xl:gap-x-2 py-0.5 flex-1">
           <Link
+            href="/"
+            className={`px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
+              pathname === '/' && !currentCategory
+                ? 'text-[#f7413e] bg-white/10'
+                : 'text-white/95 hover:text-[#f7413e]'
+            }`}
+          >
+            Home
+          </Link>
+
+          <Link
             href="/news"
-            className="px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider text-white/95 hover:text-[#f7413e] transition-colors whitespace-nowrap shrink-0"
+            className={`px-2 xl:px-2.5 py-1 text-[11px] xl:text-xs font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
+              pathname === '/news' && !currentCategory
+                ? 'text-[#f7413e] bg-white/10'
+                : 'text-white/95 hover:text-[#f7413e]'
+            }`}
           >
             All Categories
           </Link>
@@ -430,6 +445,17 @@ export default function Header() {
 
               <div className="mt-6">
                 <nav className="flex flex-col space-y-1">
+                  <Link
+                    href="/"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-2 text-sm font-bold uppercase rounded transition-colors ${
+                      pathname === '/'
+                        ? 'bg-[#f7413e] text-white'
+                        : 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    Home
+                  </Link>
                   <Link
                     href="/news"
                     onClick={() => setMobileMenuOpen(false)}

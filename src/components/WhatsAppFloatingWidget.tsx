@@ -1,9 +1,11 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/data/siteConfig';
 
 export default function WhatsAppFloatingWidget() {
+  const pathname = usePathname();
   const [showBubble, setShowBubble] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
@@ -12,6 +14,7 @@ export default function WhatsAppFloatingWidget() {
   }, []);
 
   if (!isClient) return null;
+  if (pathname?.startsWith('/admin') || pathname?.startsWith('/wp-admin')) return null;
 
   const whatsappUrl =
     siteConfig.socialLinks.whatsapp ||
