@@ -247,6 +247,7 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
         name: data.name || 'ApexChief',
         shortName: data.short_name || 'ApexChief',
         logo: data.contact?.logo || data.tagline_logo || (data as any).logo || '',
+        favicon: data.contact?.favicon || data.favicon_url || (data as any).favicon || '',
         tagline: data.tagline || '',
         description: data.description || '',
         establishedYear: data.established_year || '2023',
@@ -269,6 +270,7 @@ export async function saveSiteConfigInDB(config: any): Promise<boolean> {
     const contactObj = {
       ...(config.contact || {}),
       logo: config.logo || '',
+      favicon: config.favicon || config.faviconUrl || '',
     };
     const { error } = await supabaseAdmin.from('site_settings').upsert({
       id: 'global_config',

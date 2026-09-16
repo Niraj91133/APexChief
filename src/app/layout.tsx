@@ -7,6 +7,7 @@ import SearchModal from '@/components/SearchModal';
 import Analytics from '@/components/Analytics';
 import MainWrapper from '@/components/MainWrapper';
 import WhatsAppFloatingWidget from '@/components/WhatsAppFloatingWidget';
+import FaviconManager from '@/components/FaviconManager';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -72,8 +73,13 @@ export const metadata: Metadata = {
     canonical: 'https://www.apexchief.com',
   },
   icons: {
-    icon: 'https://framerusercontent.com/images/zYn8Xte3IxdFPFqfnQCRr2eGyHY.svg',
-    apple: 'https://framerusercontent.com/images/edl63QIn2mk7QrakefiptPwcgZo.png',
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
   openGraph: {
     title: 'ApexChief – Business, Leadership, Startups & Interview',
@@ -178,6 +184,7 @@ export default function RootLayout({
         <SearchModal />
         <Analytics />
         <WhatsAppFloatingWidget />
+        <FaviconManager />
       </body>
     </html>
   );

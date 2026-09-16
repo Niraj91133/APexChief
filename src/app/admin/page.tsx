@@ -2584,8 +2584,9 @@ export default function AdminDashboard() {
       if (res.ok) {
         try {
           if (siteConfig.logo) localStorage.setItem('apexchief_custom_logo', siteConfig.logo);
+          if (siteConfig.favicon) localStorage.setItem('apexchief_custom_favicon', siteConfig.favicon);
           const bc = new BroadcastChannel('apexchief_config_channel');
-          bc.postMessage({ type: 'LOGO_UPDATED', logo: siteConfig.logo });
+          bc.postMessage({ type: 'CONFIG_UPDATED', logo: siteConfig.logo, favicon: siteConfig.favicon });
         } catch (e) {}
         showToast('Site settings updated successfully', 'success');
         fetchData();

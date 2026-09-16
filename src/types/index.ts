@@ -47,6 +47,7 @@ export interface SiteConfig {
   name: string;
   shortName: string;
   logo?: string;
+  favicon?: string;
   tagline: string;
   description: string;
   establishedYear: string;
@@ -56,6 +57,7 @@ export interface SiteConfig {
     email: string;
     phone: string;
     logo?: string;
+    favicon?: string;
     addressNY: {
       title: string;
       street: string;

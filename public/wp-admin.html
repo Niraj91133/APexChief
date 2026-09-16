@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-icon.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Add Post &lsaquo; ApexChief &mdash; Editorial &amp; Rank Math SEO Suite</title>
   <!-- Tailwind CSS CDN -->
@@ -11580,9 +11582,17 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       const reader = new FileReader();
       reader.onload = function(e) {
         const dataUrl = e.target.result;
-        document.getElementById('setting-favicon-url').value = dataUrl;
+        const input = document.getElementById('setting-favicon-url');
+        if (input) input.value = dataUrl;
+        siteSettings.faviconUrl = dataUrl;
+        try {
+          localStorage.setItem('apexchief_custom_favicon', dataUrl);
+          const bc = new BroadcastChannel('apexchief_config_channel');
+          bc.postMessage({ type: 'FAVICON_UPDATED', favicon: dataUrl });
+        } catch (err) {}
         updateFaviconLivePreview();
-        showToast('Favicon Uploaded', file.name);
+        saveAllSiteSettings(false);
+        showToast('Favicon Uploaded & Live ✨', file.name);
       };
       reader.readAsDataURL(file);
       event.target.value = '';
@@ -11825,22 +11835,31 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       siteSettings.ga4Id = document.getElementById('setting-ga4-id')?.value.trim() || '';
       siteSettings.bingId = document.getElementById('setting-bing-id')?.value.trim() || '';
 
+      siteSettings.faviconUrl = document.getElementById('setting-favicon-url')?.value.trim() || siteSettings.faviconUrl || '';
       const activeLogo = siteSettings.logoLight || siteSettings.logoDark || siteSettings.logoUrl || '';
       try {
         localStorage.setItem('apexchief_site_settings', JSON.stringify(siteSettings));
         if (activeLogo) {
           localStorage.setItem('apexchief_custom_logo', activeLogo);
         }
+        if (siteSettings.faviconUrl) {
+          localStorage.setItem('apexchief_custom_favicon', siteSettings.faviconUrl);
+        }
         try {
           const bc = new BroadcastChannel('apexchief_config_channel');
-          bc.postMessage({ type: 'LOGO_UPDATED', logo: activeLogo, settings: siteSettings });
+          bc.postMessage({
+            type: 'CONFIG_UPDATED',
+            logo: activeLogo,
+            favicon: siteSettings.faviconUrl,
+            settings: siteSettings
+          });
         } catch (e) {}
       } catch (e) {
         console.error('Failed to save settings', e);
       }
 
-      // Automatically sync settings & brand logo to server API
-      if (activeLogo || siteSettings.siteTitle) {
+      // Automatically sync settings, brand logo & favicon to server API
+      if (activeLogo || siteSettings.faviconUrl || siteSettings.siteTitle) {
         try {
           fetch('/api/config', {
             method: 'POST',
@@ -11849,11 +11868,14 @@ let siteSettings = { ...DEFAULT_SETTINGS };
               name: siteSettings.siteTitle || 'ApexChief',
               tagline: siteSettings.tagline || '',
               logo: activeLogo,
+              favicon: siteSettings.faviconUrl,
+              faviconUrl: siteSettings.faviconUrl,
               socialLinks: siteSettings.socialLinks || {},
               contact: {
                 email: siteSettings.adminEmail || '',
                 phone: siteSettings.contactPhone || '',
-                logo: activeLogo
+                logo: activeLogo,
+                favicon: siteSettings.faviconUrl
               }
             })
           }).catch(err => console.error('Failed to sync settings to /api/config:', err));
@@ -11875,8 +11897,18 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       const logoUrl = siteSettings.logoUrl;
       const isImageLogo = siteSettings.logoType === 'image' && !!logoUrl;
 
-      // 1. Update Document Title
+      // 1. Update Document Title & Tab Favicon
       document.title = `${title} — ${tagline}`;
+      const curFav = siteSettings.faviconUrl || localStorage.getItem('apexchief_custom_favicon');
+      if (curFav) {
+        let l = document.querySelector("link[rel~='icon']");
+        if (!l) {
+          l = document.createElement('link');
+          l.rel = 'icon';
+          document.head.appendChild(l);
+        }
+        l.href = curFav;
+      }
 
       // 2. Update Reader Preview Modal Logo & Footer
       const readerBadge = document.getElementById('reader-logo-badge');
