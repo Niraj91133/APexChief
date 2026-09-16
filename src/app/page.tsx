@@ -169,7 +169,7 @@ export default function HomePage() {
                 alt={newsMain.title}
                 fill
                 priority
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-fill transition-opacity duration-300"
               />
             </Link>
             <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans mb-1.5">
@@ -205,7 +205,7 @@ export default function HomePage() {
                   src={newsRightTop.image}
                   alt={newsRightTop.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-fill transition-opacity duration-300"
                 />
               </Link>
               <div className="flex-1 flex flex-col justify-between min-h-[140px]">
@@ -247,7 +247,7 @@ export default function HomePage() {
                       src={newsRightBottom.image}
                       alt={newsRightBottom.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-fill transition-opacity duration-300"
                     />
                   </Link>
                   <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
@@ -281,7 +281,7 @@ export default function HomePage() {
                       src={newsRightBottom2.image}
                       alt={newsRightBottom2.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-fill transition-opacity duration-300"
                     />
                   </Link>
                   <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
@@ -342,7 +342,7 @@ export default function HomePage() {
               src={currentBestArticle.image}
               alt={currentBestArticle.title}
               fill
-              className="object-cover transition-transform duration-500 hover:scale-105"
+              className="object-fill transition-opacity duration-300"
             />
           </Link>
 
@@ -518,7 +518,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={art.image}
                     alt={art.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                 </Link>
 
@@ -569,7 +569,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                       src={art.image}
                       alt={art.title}
                       fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="object-fill transition-opacity duration-300"
                     />
                   </Link>
 
@@ -646,7 +646,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={leadOpinion.image}
                     alt={leadOpinion.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                 </Link>
                 <div className="flex-1">
@@ -745,7 +745,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={art.image}
                     alt={art.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                   <div className="absolute top-2 left-2">
                     <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold">
@@ -819,7 +819,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   src={leadHosp.image}
                   alt={leadHosp.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-fill transition-opacity duration-300"
                 />
                 <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
                   <span className="bg-[#f7413e] text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold shadow-xs">
@@ -865,7 +865,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={art.image}
                     alt={art.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                   <div className="absolute top-2 left-2">
                     <span className="bg-black/80 backdrop-blur-xs text-white text-[9px] font-mono uppercase px-1.5 py-0.5">
@@ -938,7 +938,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               src={featured.image}
               alt={featured.title}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-fill transition-opacity duration-300"
             />
           </Link>
           <div className="lg:col-span-6 flex flex-col justify-center">
@@ -972,7 +972,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={col.image}
                     alt={col.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                 </Link>
                 <div>
@@ -1014,7 +1014,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 src={art.image}
                 alt={art.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-fill transition-opacity duration-300"
               />
             </Link>
             <div className="lg:col-span-6">
@@ -1056,7 +1056,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     src={art.image}
                     alt={art.title}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-fill transition-opacity duration-300"
                   />
                 </Link>
                 <div className="flex-1">
@@ -1085,7 +1085,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 src={mainLead.image}
                 alt={mainLead.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-fill transition-opacity duration-300"
               />
             </Link>
             <div>
@@ -1130,7 +1130,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   src={art.image}
                   alt={art.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="object-fill transition-opacity duration-300"
                 />
               </Link>
               <div>
@@ -1175,7 +1175,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 src={art.image}
                 alt={art.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-fill transition-opacity duration-300"
               />
             </Link>
             <div>

@@ -326,3 +326,29 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
 .dark ::-webkit-scrollbar-thumb:hover {
   background: #555555;
 }
+
+/* ========================================================================= */
+/* Global Image Fill Standard (Prevent Image Zooming & Over-Cropping)       */
+/* ========================================================================= */
+img,
+[class*="group"] img,
+[class*="group/"] img,
+article img,
+section img {
+  object-fit: fill !important;
+}
+
+/* Keep circular avatars properly shaped */
+img.rounded-full,
+[class*="rounded-full"] img {
+  object-fit: cover !important;
+}
+
+/* Prevent unwanted hover zoom scaling on images across all card boxes */
+[class*="group"]:hover img:not(.rounded-full),
+[class*="group/"]:hover img:not(.rounded-full),
+.group:hover img:not(.rounded-full),
+.group\/img:hover img:not(.rounded-full) {
+  transform: none !important;
+}
+

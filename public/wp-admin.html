@@ -68,6 +68,7 @@
       color: #f7413e;
     }
 
+        #featured-image-container img, .featured-image-box img, table img { object-fit: fill !important; }
     /* Sidebar Menu */
     #adminmenuback, #adminmenuwrap {
       background-color: #111827;
@@ -4289,7 +4290,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           <!-- Facebook Card Simulation -->
           <div id="social-preview-facebook" class="border border-gray-300 rounded-lg overflow-hidden bg-white shadow-xs max-w-lg mx-auto">
             <div id="social-fb-image-container" class="aspect-[1.91/1] bg-gray-200 relative overflow-hidden flex items-center justify-center">
-              <img id="social-fb-image" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800" alt="Social Cover" class="w-full h-full object-cover">
+              <img id="social-fb-image" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800" alt="Social Cover" class="w-full h-full object-fill">
             </div>
             <div class="p-3 bg-[#f0f2f5] border-t border-gray-200">
               <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">APEXCHIEF.COM</span>
@@ -7114,7 +7115,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         const altText = mediaObj?.alt || 'Featured Image';
         container.innerHTML = `
           <div class="relative group">
-            <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-36 object-cover rounded shadow mb-2 border border-gray-200" />
+            <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-36 object-fill rounded shadow mb-2 border border-gray-200" />
             <div class="text-[11px] text-gray-500 truncate mb-1.5">
               <strong>Alt:</strong> <span class="italic">${altText}</span>
             </div>

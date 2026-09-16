@@ -28,7 +28,7 @@ export default function ArticleCard({
             fill
             priority={priority}
             sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            className="object-fill transition-opacity duration-300"
           />
           <div className="absolute top-3 left-3">
             <span className="bg-black text-white font-oswald text-xs uppercase px-2.5 py-1 tracking-widest font-bold">
@@ -84,7 +84,7 @@ export default function ArticleCard({
             alt={article.title}
             fill
             sizes="(max-width: 640px) 100vw, 200px"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-fill transition-opacity duration-300"
           />
         </Link>
 
@@ -168,7 +168,7 @@ export default function ArticleCard({
             alt={article.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-fill transition-opacity duration-300"
           />
           <div className="absolute top-2.5 left-2.5">
             <span className="bg-white dark:bg-[#111111] text-black dark:text-white font-oswald text-[10px] uppercase px-2 py-0.5 font-bold tracking-wider border border-gray-200 dark:border-white/10">
@@ -216,7 +216,7 @@ export default function ArticleCard({
           alt={article.title}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className="object-fill transition-opacity duration-300"
         />
         <div className="absolute top-2.5 left-2.5">
           <span className="bg-black text-white font-oswald text-[10px] uppercase px-2 py-0.5 tracking-wider font-bold">

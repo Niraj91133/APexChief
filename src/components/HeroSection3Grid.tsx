@@ -355,7 +355,7 @@ export default function HeroSection3Grid({
                 alt={activeTopArticle.title}
                 fill
                 priority
-                className="object-cover transition-transform duration-500 group-hover/img:scale-105 animate-in fade-in duration-300"
+                className="object-fill transition-opacity duration-300 animate-in fade-in"
               />
               <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
                 <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
@@ -541,24 +541,14 @@ export default function HeroSection3Grid({
               href={`/news/${currentInterview.slug}`}
               className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#111111] border border-black/10 dark:border-white/10 group/img"
             >
-              {/* Layer 1: Ambient Blurred Background */}
-              <Image
-                key={`bg-int-${currentInterview.slug}`}
-                src={currentInterview.image}
-                alt=""
-                fill
-                className="object-cover blur-lg opacity-30 dark:opacity-45 scale-110 pointer-events-none"
-                aria-hidden="true"
-              />
-
-              {/* Layer 2: Full Accurate Uncropped Main Image */}
+              {/* Main Accurate Image Filling Box */}
               <Image
                 key={currentInterview.slug}
                 src={currentInterview.image}
                 alt={currentInterview.title}
                 fill
                 priority
-                className="object-contain object-center relative z-10 transition-opacity duration-300"
+                className="object-fill relative z-10 transition-opacity duration-300"
               />
 
               <div className="absolute top-2.5 left-2.5 z-20">
@@ -730,7 +720,7 @@ export default function HeroSection3Grid({
                           src={art.image}
                           alt={art.title}
                           fill
-                          className="object-cover"
+                          className="object-fill"
                         />
                       </div>
                       <div className="min-w-0">
@@ -858,7 +848,7 @@ export default function HeroSection3Grid({
                             src={art.image}
                             alt={art.title}
                             fill
-                            className="object-cover"
+                            className="object-fill"
                           />
                         </div>
                         <div className="min-w-0">
