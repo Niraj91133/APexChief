@@ -7,7 +7,7 @@ import { Search, Menu, X, Moon, Sun, ChevronDown, ArrowRight } from 'lucide-reac
 import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
 import { CATEGORIES } from '@/data/categories';
-import { Category, Article } from '@/types';
+import { Category, Article, SiteConfig } from '@/types';
 
 function HeaderNav({
   onOpenSearch,
@@ -178,7 +178,32 @@ export default function Header() {
   const [categories, setCategories] = useState<Category[]>(CATEGORIES);
   const [todayDate, setTodayDate] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [config, setConfig] = useState(siteConfig);
+  // Initialize state synchronously from localStorage to prevent flash on refresh
+  const [config, setConfig] = useState<SiteConfig>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem('apexchief_site_settings');
+        const custom = localStorage.getItem('apexchief_custom_logo');
+        if (saved) {
+          const p = JSON.parse(saved);
+          return {
+            ...siteConfig,
+            ...p,
+            logoLight: p.logoLight || siteConfig.logoLight || siteConfig.logo,
+            logoDark: p.logoDark || siteConfig.logoDark || siteConfig.logo,
+            logo: p.logoLight || p.logoDark || custom || siteConfig.logo,
+          };
+        }
+        if (custom) {
+          return { ...siteConfig, logo: custom, logoLight: custom, logoDark: custom };
+        }
+      } catch (e) {}
+    }
+    return siteConfig;
+  });
+
+  const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
+  const logoDarkSrc = config.logoDark || config.logo || '/images/apexchief-logo-dark.png';
 
   // Initialize and compute dynamic real-time today date
   useEffect(() => {
@@ -249,16 +274,17 @@ export default function Header() {
       try {
         const savedSettings = localStorage.getItem('apexchief_site_settings');
         const customLogo = localStorage.getItem('apexchief_custom_logo');
-        let chosenLogo = '';
         if (savedSettings) {
           const parsed = JSON.parse(savedSettings);
-          chosenLogo = parsed.logoLight || parsed.logoDark || parsed.logoUrl || '';
-        }
-        if (!chosenLogo && customLogo) {
-          chosenLogo = customLogo;
-        }
-        if (chosenLogo) {
-          setConfig((prev) => ({ ...prev, logo: chosenLogo }));
+          setConfig((prev: SiteConfig) => ({
+            ...prev,
+            ...parsed,
+            logoLight: parsed.logoLight || prev.logoLight,
+            logoDark: parsed.logoDark || prev.logoDark,
+            logo: parsed.logoLight || parsed.logoDark || customLogo || prev.logo,
+          }));
+        } else if (customLogo) {
+          setConfig((prev: SiteConfig) => ({ ...prev, logo: customLogo, logoLight: customLogo, logoDark: customLogo }));
         }
       } catch (e) {
         // ignore
@@ -269,17 +295,14 @@ export default function Header() {
       fetch('/api/config')
         .then((res) => res.json())
         .then((data) => {
-          if (data && (data.name || data.logo)) {
-            setConfig((prev) => ({
+          if (data && (data.name || data.logo || data.logoLight)) {
+            setConfig((prev: SiteConfig) => ({
               ...prev,
               ...data,
-              logo: data.logo || prev.logo,
+              logoLight: data.logoLight || prev.logoLight,
+              logoDark: data.logoDark || prev.logoDark,
+              logo: data.logo || data.logoLight || prev.logo,
             }));
-            if (data.logo) {
-              try {
-                localStorage.setItem('apexchief_custom_logo', data.logo);
-              } catch (e) {}
-            }
           }
         })
         .catch((err) => console.error('Failed to load site config', err));
@@ -312,7 +335,7 @@ export default function Header() {
       bc = new BroadcastChannel('apexchief_config_channel');
       bc.onmessage = (event) => {
         if (event.data && event.data.logo) {
-          setConfig((prev) => ({ ...prev, logo: event.data.logo }));
+          setConfig((prev: SiteConfig) => ({ ...prev, logo: event.data.logo }));
         } else {
           syncFromLocalStorage();
           fetchServerConfig();
@@ -378,12 +401,19 @@ export default function Header() {
         {/* Center: ApexChief Logo */}
         <div className="flex items-center justify-center text-center px-2">
           <Link href="/" className="inline-block group">
-            {config.logo ? (
-              <img
-                src={config.logo}
-                alt={config.name || 'ApexChief'}
-                className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:invert-0 dark:mix-blend-screen invert mix-blend-multiply"
-              />
+            {logoLightSrc || logoDarkSrc ? (
+              <>
+                <img
+                  src={logoLightSrc}
+                  alt={config.name || 'ApexChief'}
+                  className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                />
+                <img
+                  src={logoDarkSrc}
+                  alt={config.name || 'ApexChief'}
+                  className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                />
+              </>
             ) : (
               <h1 className="font-bebas text-2xl sm:text-3xl md:text-4xl tracking-widest text-black dark:text-white uppercase leading-none transition-colors group-hover:text-[#f7413e]">
                 {config.name}
@@ -486,12 +516,19 @@ export default function Header() {
           <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-[#161616] p-6 shadow-2xl flex flex-col justify-between border-r border-gray-200 dark:border-white/10 transition-colors overflow-y-auto">
             <div>
               <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-white/10">
-                {config.logo ? (
-                  <img
-                    src={config.logo}
-                    alt={config.name || 'ApexChief'}
-                    className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:invert-0 dark:mix-blend-screen invert mix-blend-multiply"
-                  />
+                {logoLightSrc || logoDarkSrc ? (
+                  <>
+                    <img
+                      src={logoLightSrc}
+                      alt={config.name || 'ApexChief'}
+                      className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:hidden block"
+                    />
+                    <img
+                      src={logoDarkSrc}
+                      alt={config.name || 'ApexChief'}
+                      className="h-8 sm:h-9 w-auto max-w-[180px] object-contain hidden dark:block"
+                    />
+                  </>
                 ) : (
                   <span className="font-bebas text-2xl tracking-wider text-black dark:text-white">{config.name}</span>
                 )}

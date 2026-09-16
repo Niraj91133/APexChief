@@ -328,13 +328,20 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
 }
 
 /* ========================================================================= */
-/* Global Image Aspect-Ratio Preservation (No Stretch, No Zoom, Real View)   */
+/* Article and Card Images: Full Box Fill (object-cover) Without Whitespace   */
 /* ========================================================================= */
-img,
-[class*="group"] img,
-[class*="group/"] img,
 article img,
-section img {
+section img,
+[class*="group/img"] img,
+.card-img {
+  object-fit: cover !important;
+  object-position: center !important;
+}
+
+/* Header logo and site logos preserve uncropped contain */
+header img,
+.site-logo,
+.logo-img {
   object-fit: contain !important;
   object-position: center !important;
 }

@@ -2633,7 +2633,7 @@ export default function AdminDashboard() {
                     <img
                       src="/images/format-1.png"
                       alt="Format 1"
-                      className="w-full h-full object-contain transition-opacity duration-200"
+                      className="w-full h-full object-cover transition-opacity duration-200"
                     />
                   </div>
 
@@ -2672,7 +2672,7 @@ export default function AdminDashboard() {
                     <img
                       src="/images/format-2.png"
                       alt="Format 2"
-                      className="w-full h-full object-contain transition-opacity duration-200"
+                      className="w-full h-full object-cover transition-opacity duration-200"
                     />
                   </div>
 
@@ -3345,7 +3345,7 @@ export default function AdminDashboard() {
                                               <img
                                                 src={art.image.replace(/&amp;/g, '&')}
                                                 alt=""
-                                                className="w-full h-full object-contain"
+                                                className="w-full h-full object-cover"
                                                 onError={(e) => {
                                                   (e.currentTarget as HTMLElement).style.display = 'none';
                                                 }}
@@ -3616,7 +3616,7 @@ export default function AdminDashboard() {
                                       <img
                                         src={art.image.replace(/&amp;/g, '&')}
                                         alt=""
-                                        className="object-contain w-full h-full"
+                                        className="object-cover w-full h-full"
                                         onError={(e) => {
                                           (e.currentTarget as HTMLElement).style.display = 'none';
                                         }}
@@ -4095,7 +4095,7 @@ export default function AdminDashboard() {
                                   <img
                                     src={editingArticle.image.replace(/&amp;/g, '&')}
                                     alt="Story Cover"
-                                    className="object-contain w-full h-full"
+                                    className="object-cover w-full h-full"
                                   />
                                   <div className="absolute top-2 right-2 flex items-center space-x-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity">
                                     <button
@@ -4561,7 +4561,7 @@ export default function AdminDashboard() {
                                   <img
                                     src={editingArticle.image.replace(/&amp;/g, '&')}
                                     alt="Featured Preview"
-                                    className="object-contain w-full h-full"
+                                    className="object-cover w-full h-full"
                                   />
                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
                                     <button
@@ -5329,7 +5329,7 @@ export default function AdminDashboard() {
                                               <img
                                                 src={imgUrl.replace(/&amp;/g, '&')}
                                                 alt=""
-                                                className="object-contain w-full h-full transition-opacity duration-200"
+                                                className="object-cover w-full h-full transition-opacity duration-200"
                                               />
                                               {isSelected && (
                                                 <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
@@ -5410,7 +5410,7 @@ export default function AdminDashboard() {
                                           <img
                                             src={photo.url}
                                             alt={photo.label}
-                                            className="object-contain w-full h-full transition-opacity duration-200"
+                                            className="object-cover w-full h-full transition-opacity duration-200"
                                           />
                                           {isSelected && (
                                             <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
@@ -5479,7 +5479,7 @@ export default function AdminDashboard() {
                                       <img
                                         src={testedImageUrl}
                                         alt="Preview"
-                                        className="object-contain w-full h-full"
+                                        className="object-cover w-full h-full"
                                         onError={() => {
                                           showToast('Could not load image from the provided URL. Please check the link.', 'error');
                                           setTestedImageUrl(null);
@@ -5786,7 +5786,7 @@ export default function AdminDashboard() {
                                 <img
                                   src={editingArticle.image.replace(/&amp;/g, '&')}
                                   alt=""
-                                  className="w-full h-full object-contain"
+                                  className="w-full h-full object-cover"
                                 />
                               </div>
                               <p className="text-center text-xs text-gray-500 font-mono italic">

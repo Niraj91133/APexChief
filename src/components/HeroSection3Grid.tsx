@@ -355,7 +355,7 @@ export default function HeroSection3Grid({
                 alt={activeTopArticle.title}
                 fill
                 priority
-                className="object-contain transition-opacity duration-300 animate-in fade-in"
+                className="object-cover transition-opacity duration-300 animate-in fade-in"
               />
               <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
                 <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
@@ -548,7 +548,7 @@ export default function HeroSection3Grid({
                 alt={currentInterview.title}
                 fill
                 priority
-                className="object-contain relative z-10 transition-opacity duration-300"
+                className="object-cover relative z-10 transition-opacity duration-300"
               />
 
               <div className="absolute top-2.5 left-2.5 z-20">
@@ -720,7 +720,7 @@ export default function HeroSection3Grid({
                           src={art.image}
                           alt={art.title}
                           fill
-                          className="object-contain"
+                          className="object-cover"
                         />
                       </div>
                       <div className="min-w-0">
@@ -848,7 +848,7 @@ export default function HeroSection3Grid({
                             src={art.image}
                             alt={art.title}
                             fill
-                            className="object-contain"
+                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">
