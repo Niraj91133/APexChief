@@ -11567,6 +11567,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
         document.getElementById('setting-logo-url').value = dataUrl;
         document.getElementById('logo-type-image').checked = true;
         updateLogoLivePreview();
+        saveAllSiteSettings(false);
         showToast('Logo Uploaded Successfully', file.name);
       };
       reader.readAsDataURL(file);
@@ -11824,15 +11825,44 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       siteSettings.ga4Id = document.getElementById('setting-ga4-id')?.value.trim() || '';
       siteSettings.bingId = document.getElementById('setting-bing-id')?.value.trim() || '';
 
+      const activeLogo = siteSettings.logoLight || siteSettings.logoDark || siteSettings.logoUrl || '';
       try {
         localStorage.setItem('apexchief_site_settings', JSON.stringify(siteSettings));
+        if (activeLogo) {
+          localStorage.setItem('apexchief_custom_logo', activeLogo);
+        }
       } catch (e) {
         console.error('Failed to save settings', e);
       }
 
+      // Automatically sync settings & brand logo to server API
+      if (activeLogo || siteSettings.siteTitle) {
+        try {
+          fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              name: siteSettings.siteTitle || 'ApexChief',
+              tagline: siteSettings.tagline || '',
+              logo: activeLogo,
+              socialLinks: siteSettings.socialLinks || {},
+              contact: {
+                email: siteSettings.adminEmail || '',
+                phone: siteSettings.contactPhone || '',
+                logo: activeLogo
+              }
+            })
+          }).catch(err => console.error('Failed to sync settings to /api/config:', err));
+        } catch (err) {
+          console.error('Error syncing config:', err);
+        }
+      }
+
       applyGlobalSettingsToUI();
       if (typeof confetti === 'function') confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
-      showToast('Settings Saved Successfully ✨', 'Logo, socials, and site configurations live.');
+      if (showToastFeedback) {
+        showToast('Settings Saved Successfully ✨', 'Logo, socials, and site configurations live.');
+      }
     }
 
     function applyGlobalSettingsToUI() {

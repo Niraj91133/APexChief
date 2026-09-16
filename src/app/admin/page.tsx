@@ -1233,7 +1233,15 @@ export default function AdminDashboard() {
           ...prev,
           logo: uploadedUrl,
         }));
-        showToast('✓ Brand Logo uploaded successfully! Click Save to apply.', 'success');
+        try {
+          localStorage.setItem('apexchief_custom_logo', uploadedUrl);
+          fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...siteConfig, logo: uploadedUrl }),
+          }).catch((e) => console.error('Failed to auto-sync logo:', e));
+        } catch (e) {}
+        showToast('✓ Brand Logo uploaded & live! Click Save Settings to persist all changes.', 'success');
       } else {
         throw new Error('Image URL was not returned');
       }

@@ -243,13 +243,34 @@ export default function Header() {
       .catch((err) => console.error('Failed to load categories', err));
   }, []);
 
-  // Fetch dynamic config on mount
+  // Fetch dynamic config on mount with localStorage instant fallback
   useEffect(() => {
+    try {
+      const customLogo = localStorage.getItem('apexchief_custom_logo');
+      const savedSettings = localStorage.getItem('apexchief_site_settings');
+      let localLogo = customLogo;
+      if (!localLogo && savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        if (parsed.logoLight || parsed.logoDark || parsed.logoUrl) {
+          localLogo = parsed.logoLight || parsed.logoDark || parsed.logoUrl;
+        }
+      }
+      if (localLogo) {
+        setConfig((prev) => ({ ...prev, logo: localLogo }));
+      }
+    } catch (e) {
+      // ignore
+    }
+
     fetch('/api/config')
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.name) {
-          setConfig(data);
+        if (data && (data.name || data.logo)) {
+          setConfig((prev) => ({
+            ...prev,
+            ...data,
+            logo: data.logo || prev.logo,
+          }));
         }
       })
       .catch((err) => console.error('Failed to load site config', err));
@@ -310,7 +331,7 @@ export default function Header() {
               <img
                 src={config.logo}
                 alt={config.name || 'ApexChief'}
-                className="h-8 sm:h-10 md:h-12 w-auto max-w-[260px] object-contain transition-transform group-hover:scale-[1.02]"
+                className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:brightness-110"
               />
             ) : (
               <h1 className="font-bebas text-2xl sm:text-3xl md:text-4xl tracking-widest text-black dark:text-white uppercase leading-none transition-colors group-hover:text-[#f7413e]">
@@ -418,7 +439,7 @@ export default function Header() {
                   <img
                     src={config.logo}
                     alt={config.name || 'ApexChief'}
-                    className="h-7 w-auto max-w-[160px] object-contain"
+                    className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:brightness-110"
                   />
                 ) : (
                   <span className="font-bebas text-2xl tracking-wider text-black dark:text-white">{config.name}</span>

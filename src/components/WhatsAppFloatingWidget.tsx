@@ -6,7 +6,6 @@ import { siteConfig } from '@/data/siteConfig';
 
 export default function WhatsAppFloatingWidget() {
   const pathname = usePathname();
-  const [showBubble, setShowBubble] = useState(true);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -22,27 +21,6 @@ export default function WhatsAppFloatingWidget() {
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end space-y-2 select-none print:hidden">
-      {/* Speech Popup Bubble */}
-      {showBubble && (
-        <div className="hidden sm:flex items-center space-x-2 bg-white text-gray-800 text-xs px-4 py-2.5 rounded-full shadow-2xl border border-emerald-100 animate-in fade-in slide-in-from-bottom-2 duration-300">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-          <a
-            href={whatsappUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-emerald-600 font-semibold font-sans flex items-center space-x-1 text-gray-900"
-          >
-            <span>Chat with Editorial Desk</span>
-          </a>
-          <button
-            onClick={() => setShowBubble(false)}
-            className="text-gray-400 hover:text-gray-700 text-base ml-1.5 p-0.5 cursor-pointer leading-none font-bold"
-            aria-label="Dismiss message"
-          >
-            &times;
-          </button>
-        </div>
-      )}
 
       {/* WhatsApp Main Floating Action Button (Prominent Large Sizing) */}
       <a

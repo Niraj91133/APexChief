@@ -74,6 +74,9 @@ export interface SiteConfig {
     instagram: string;
     linkedin: string;
     facebook: string;
+    whatsapp?: string;
+    phoneUrl?: string;
+    [key: string]: string | undefined;
   };
   copyright: string;
 }

@@ -5,12 +5,18 @@ import { getSiteConfigFromDB, saveSiteConfigInDB } from '@/lib/supabaseService';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const dbConfig = await getSiteConfigFromDB();
-  if (dbConfig) {
-    return NextResponse.json(dbConfig);
-  }
-  const config = getSiteConfig();
-  return NextResponse.json(config);
+  const localConfig = getSiteConfig();
+  try {
+    const dbConfig = await getSiteConfigFromDB();
+    if (dbConfig && dbConfig.name) {
+      return NextResponse.json({
+        ...localConfig,
+        ...dbConfig,
+        logo: dbConfig.logo || localConfig.logo || '',
+      });
+    }
+  } catch (e) {}
+  return NextResponse.json(localConfig);
 }
 
 export async function PUT(request: Request) {
