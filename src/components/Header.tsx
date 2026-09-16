@@ -243,37 +243,88 @@ export default function Header() {
       .catch((err) => console.error('Failed to load categories', err));
   }, []);
 
-  // Fetch dynamic config on mount with localStorage instant fallback
+  // Fetch dynamic config on mount with instant localStorage hydration and cross-tab sync
   useEffect(() => {
-    try {
-      const customLogo = localStorage.getItem('apexchief_custom_logo');
-      const savedSettings = localStorage.getItem('apexchief_site_settings');
-      let localLogo = customLogo;
-      if (!localLogo && savedSettings) {
-        const parsed = JSON.parse(savedSettings);
-        if (parsed.logoLight || parsed.logoDark || parsed.logoUrl) {
-          localLogo = parsed.logoLight || parsed.logoDark || parsed.logoUrl;
+    const syncFromLocalStorage = () => {
+      try {
+        const savedSettings = localStorage.getItem('apexchief_site_settings');
+        const customLogo = localStorage.getItem('apexchief_custom_logo');
+        let chosenLogo = '';
+        if (savedSettings) {
+          const parsed = JSON.parse(savedSettings);
+          chosenLogo = parsed.logoLight || parsed.logoDark || parsed.logoUrl || '';
         }
+        if (!chosenLogo && customLogo) {
+          chosenLogo = customLogo;
+        }
+        if (chosenLogo) {
+          setConfig((prev) => ({ ...prev, logo: chosenLogo }));
+        }
+      } catch (e) {
+        // ignore
       }
-      if (localLogo) {
-        setConfig((prev) => ({ ...prev, logo: localLogo }));
-      }
-    } catch (e) {
-      // ignore
-    }
+    };
 
-    fetch('/api/config')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && (data.name || data.logo)) {
-          setConfig((prev) => ({
-            ...prev,
-            ...data,
-            logo: data.logo || prev.logo,
-          }));
+    const fetchServerConfig = () => {
+      fetch('/api/config')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && (data.name || data.logo)) {
+            setConfig((prev) => ({
+              ...prev,
+              ...data,
+              logo: data.logo || prev.logo,
+            }));
+            if (data.logo) {
+              try {
+                localStorage.setItem('apexchief_custom_logo', data.logo);
+              } catch (e) {}
+            }
+          }
+        })
+        .catch((err) => console.error('Failed to load site config', err));
+    };
+
+    // 1. Instant sync from localStorage
+    syncFromLocalStorage();
+
+    // 2. Fetch latest server configuration
+    fetchServerConfig();
+
+    // 3. Cross-tab real-time storage event listener
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'apexchief_site_settings' || e.key === 'apexchief_custom_logo') {
+        syncFromLocalStorage();
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
+    // 4. Tab focus re-check (when switching between admin and landing page)
+    const handleFocus = () => {
+      syncFromLocalStorage();
+      fetchServerConfig();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // 5. BroadcastChannel for instant same-browser cross-tab sync
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('apexchief_config_channel');
+      bc.onmessage = (event) => {
+        if (event.data && event.data.logo) {
+          setConfig((prev) => ({ ...prev, logo: event.data.logo }));
+        } else {
+          syncFromLocalStorage();
+          fetchServerConfig();
         }
-      })
-      .catch((err) => console.error('Failed to load site config', err));
+      };
+    } catch (e) {}
+
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      if (bc) bc.close();
+    };
   }, []);
 
   // Fetch dynamic articles for breaking ticker
@@ -331,7 +382,7 @@ export default function Header() {
               <img
                 src={config.logo}
                 alt={config.name || 'ApexChief'}
-                className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:brightness-110"
+                className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:invert-0 dark:mix-blend-screen invert mix-blend-multiply"
               />
             ) : (
               <h1 className="font-bebas text-2xl sm:text-3xl md:text-4xl tracking-widest text-black dark:text-white uppercase leading-none transition-colors group-hover:text-[#f7413e]">
@@ -439,7 +490,7 @@ export default function Header() {
                   <img
                     src={config.logo}
                     alt={config.name || 'ApexChief'}
-                    className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:brightness-110"
+                    className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:invert-0 dark:mix-blend-screen invert mix-blend-multiply"
                   />
                 ) : (
                   <span className="font-bebas text-2xl tracking-wider text-black dark:text-white">{config.name}</span>

@@ -1235,6 +1235,10 @@ export default function AdminDashboard() {
         }));
         try {
           localStorage.setItem('apexchief_custom_logo', uploadedUrl);
+          try {
+            const bc = new BroadcastChannel('apexchief_config_channel');
+            bc.postMessage({ type: 'LOGO_UPDATED', logo: uploadedUrl });
+          } catch (e) {}
           fetch('/api/config', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -2578,6 +2582,11 @@ export default function AdminDashboard() {
         body: JSON.stringify(siteConfig),
       });
       if (res.ok) {
+        try {
+          if (siteConfig.logo) localStorage.setItem('apexchief_custom_logo', siteConfig.logo);
+          const bc = new BroadcastChannel('apexchief_config_channel');
+          bc.postMessage({ type: 'LOGO_UPDATED', logo: siteConfig.logo });
+        } catch (e) {}
         showToast('Site settings updated successfully', 'success');
         fetchData();
       } else {

@@ -11831,6 +11831,10 @@ let siteSettings = { ...DEFAULT_SETTINGS };
         if (activeLogo) {
           localStorage.setItem('apexchief_custom_logo', activeLogo);
         }
+        try {
+          const bc = new BroadcastChannel('apexchief_config_channel');
+          bc.postMessage({ type: 'LOGO_UPDATED', logo: activeLogo, settings: siteSettings });
+        } catch (e) {}
       } catch (e) {
         console.error('Failed to save settings', e);
       }
