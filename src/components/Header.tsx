@@ -178,29 +178,8 @@ export default function Header() {
   const [categories, setCategories] = useState<Category[]>(CATEGORIES);
   const [todayDate, setTodayDate] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  // Initialize state synchronously from localStorage to prevent flash on refresh
-  const [config, setConfig] = useState<SiteConfig>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('apexchief_site_settings');
-        const custom = localStorage.getItem('apexchief_custom_logo');
-        if (saved) {
-          const p = JSON.parse(saved);
-          return {
-            ...siteConfig,
-            ...p,
-            logoLight: p.logoLight || siteConfig.logoLight || siteConfig.logo,
-            logoDark: p.logoDark || siteConfig.logoDark || siteConfig.logo,
-            logo: p.logoLight || p.logoDark || custom || siteConfig.logo,
-          };
-        }
-        if (custom) {
-          return { ...siteConfig, logo: custom, logoLight: custom, logoDark: custom };
-        }
-      } catch (e) {}
-    }
-    return siteConfig;
-  });
+  // Match SSR initial state to eliminate hydration mismatch, with dynamic client sync in useEffect
+  const [config, setConfig] = useState<SiteConfig>(siteConfig);
 
   const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
   const logoDarkSrc = config.logoDark || config.logo || '/images/apexchief-logo-dark.png';
@@ -406,11 +385,13 @@ export default function Header() {
                 <img
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
+                  suppressHydrationWarning={true}
                   className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
+                  suppressHydrationWarning={true}
                   className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
@@ -521,11 +502,13 @@ export default function Header() {
                     <img
                       src={logoLightSrc}
                       alt={config.name || 'ApexChief'}
+                      suppressHydrationWarning={true}
                       className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:hidden block"
                     />
                     <img
                       src={logoDarkSrc}
                       alt={config.name || 'ApexChief'}
+                      suppressHydrationWarning={true}
                       className="h-8 sm:h-9 w-auto max-w-[180px] object-contain hidden dark:block"
                     />
                   </>
