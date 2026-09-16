@@ -352,9 +352,9 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#121212] shadow-md transition-colors duration-200">
       {/* 1. Main Header Masthead Bar */}
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-3.5 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
         {/* Left: Mobile-only menu button + Live Today's Date */}
-        <div className="flex items-center space-x-3 text-xs font-sans font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider">
+        <div className="flex items-center space-x-3 text-xs font-sans font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider min-w-[130px] sm:min-w-[170px]">
           {/* Mobile hamburger icon only */}
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -378,7 +378,7 @@ export default function Header() {
         </div>
 
         {/* Center: ApexChief Logo */}
-        <div className="flex items-center justify-center text-center px-2">
+        <div className="flex items-center justify-center text-center px-2 flex-1">
           <Link href="/" className="inline-block group">
             {logoLightSrc || logoDarkSrc ? (
               <>
@@ -386,13 +386,13 @@ export default function Header() {
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-9 sm:h-11 md:h-14 w-auto max-w-[280px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
@@ -404,7 +404,7 @@ export default function Header() {
         </div>
 
         {/* Right: Search Box & Working Light/Dark Mode Toggle */}
-        <div className="flex items-center space-x-2 sm:space-x-3">
+        <div className="flex items-center space-x-2 sm:space-x-3 min-w-[130px] sm:min-w-[170px] justify-end">
           {/* Search Box Mockup (clickable) */}
           <button
             onClick={openSearch}
@@ -503,13 +503,13 @@ export default function Header() {
                       src={logoLightSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-8 sm:h-9 w-auto max-w-[180px] object-contain dark:hidden block"
+                      className="h-10 sm:h-12 w-auto max-w-[220px] object-contain dark:hidden block"
                     />
                     <img
                       src={logoDarkSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-8 sm:h-9 w-auto max-w-[180px] object-contain hidden dark:block"
+                      className="h-10 sm:h-12 w-auto max-w-[220px] object-contain hidden dark:block"
                     />
                   </>
                 ) : (
