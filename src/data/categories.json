@@ -1,10 +1,35 @@
 [
   {
+    "name": "Home",
+    "slug": "home",
+    "description": "ApexChief frontpage, breaking editorial highlights, executive briefs, and market indices.",
+    "layout": "world-layout",
+    "order": 1,
+    "isVisible": true,
+    "subcategories": [
+      {
+        "name": "Frontpage Featured",
+        "slug": "frontpage-featured",
+        "description": "Homepage top lead stories and editorial centerpiece features."
+      },
+      {
+        "name": "Hero Highlight",
+        "slug": "hero-highlight",
+        "description": "Hero grid highlights and executive breaking headlines."
+      },
+      {
+        "name": "Market Overview",
+        "slug": "market-overview",
+        "description": "Live market pulse, sovereign wealth indicators, and global indexes."
+      }
+    ]
+  },
+  {
     "name": "Interview",
     "slug": "interview",
     "description": "Exclusive executive dialogues, CEO strategies, founder retrospectives, and industry leadership Q&A.",
     "layout": "world-layout",
-    "order": 1,
+    "order": 2,
     "isVisible": true,
     "subcategories": [
       {
@@ -34,7 +59,7 @@
     "slug": "top-list",
     "description": "Editorial rankings, power indexes, market leaderboards, and top 10 investigative selections.",
     "layout": "world-layout",
-    "order": 2,
+    "order": 3,
     "isVisible": true,
     "subcategories": [
       {
@@ -64,7 +89,7 @@
     "slug": "leadership",
     "description": "Executive strategy, C-suite decision frameworks, corporate governance, and leadership excellence.",
     "layout": "culture-layout",
-    "order": 3,
+    "order": 4,
     "isVisible": true,
     "subcategories": [
       {
@@ -94,7 +119,7 @@
     "slug": "technology",
     "description": "Frontier artificial intelligence, deep-tech hardware, quantum computing, cloud infrastructure, and cybersecurity.",
     "layout": "tech-layout",
-    "order": 4,
+    "order": 5,
     "isVisible": true,
     "subcategories": [
       {
@@ -124,7 +149,7 @@
     "slug": "business",
     "description": "Corporate strategy, global trade logistics, macroeconomic policies, enterprise deals, and M&A.",
     "layout": "business-layout",
-    "order": 5,
+    "order": 6,
     "isVisible": true,
     "subcategories": [
       {
@@ -154,7 +179,7 @@
     "slug": "news",
     "description": "Breaking investigative reporting, real-time market wires, geopolitical developments, and policy regulation.",
     "layout": "world-layout",
-    "order": 6,
+    "order": 7,
     "isVisible": true,
     "subcategories": [
       {
@@ -184,7 +209,7 @@
     "slug": "real-state",
     "description": "Commercial property, prime residential towers, sovereign infrastructure, REITs, and urban architecture.",
     "layout": "business-layout",
-    "order": 7,
+    "order": 8,
     "isVisible": true,
     "subcategories": [
       {
@@ -214,7 +239,7 @@
     "slug": "health",
     "description": "HealthTech, metabolic longevity, clinical biotechnology, wellness innovation, and pharmaceuticals.",
     "layout": "health-layout",
-    "order": 8,
+    "order": 9,
     "isVisible": true,
     "subcategories": [
       {
@@ -244,7 +269,7 @@
     "slug": "retail",
     "description": "Omni-channel retail, direct-to-consumer luxury brands, global commerce, and retail technology.",
     "layout": "business-layout",
-    "order": 9,
+    "order": 10,
     "isVisible": true,
     "subcategories": [
       {
@@ -274,7 +299,7 @@
     "slug": "hospitality",
     "description": "Ultra-luxury resorts, hotel management, aviation, fine dining, and global tourism.",
     "layout": "lifestyle-layout",
-    "order": 10,
+    "order": 11,
     "isVisible": true,
     "subcategories": [
       {
@@ -304,7 +329,7 @@
     "slug": "lifestyle",
     "description": "Contemporary living, luxury culture, executive wellness, travel & leisure, and modern lifestyle trends.",
     "layout": "lifestyle-layout",
-    "order": 11,
+    "order": 12,
     "isVisible": true,
     "subcategories": [
       {
@@ -334,7 +359,7 @@
     "slug": "start-up",
     "description": "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
     "layout": "tech-layout",
-    "order": 12,
+    "order": 13,
     "isVisible": true,
     "subcategories": [
       {
@@ -364,7 +389,7 @@
     "slug": "opinion",
     "description": "Thought leadership, guest columnists, editorial perspectives, and strategic market critiques.",
     "layout": "culture-layout",
-    "order": 13,
+    "order": 14,
     "isVisible": true,
     "subcategories": [
       {

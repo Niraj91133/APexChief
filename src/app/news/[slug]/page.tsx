@@ -294,7 +294,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               fill
               priority
               sizes="(max-width: 1200px) 100vw, 1200px"
-              className="object-fill"
+              className="object-contain"
             />
           </div>
           <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">

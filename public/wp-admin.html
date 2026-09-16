@@ -68,7 +68,7 @@
       color: #f7413e;
     }
 
-        #featured-image-container img, .featured-image-box img, table img { object-fit: fill !important; }
+        #featured-image-container img, .featured-image-box img, table img { object-fit: contain !important; object-position: center !important; }
     /* Sidebar Menu */
     #adminmenuback, #adminmenuwrap {
       background-color: #111827;
@@ -633,18 +633,18 @@
       <div class="py-2">
         
         <!-- Dashboard -->
-        <div onclick="switchView('dashboard')" id="menu-dashboard" class="wp-menu-item">
+        <div onclick="switchView('dashboard')" id="menu-dashboard" class="wp-menu-item active">
           <span class="menu-title">Dashboard</span>
         </div>
 
         <!-- Posts (Active Group) -->
-        <div onclick="switchView('posts-list')" id="menu-posts" class="wp-menu-item active">
+        <div onclick="switchView('posts-list')" id="menu-posts" class="wp-menu-item">
           <i class="fas fa-newspaper w-5 mr-2 text-center"></i>
           <span class="menu-title">Posts</span>
         </div>
         <div id="posts-submenu" class="wp-submenu">
           <a href="#" onclick="switchView('posts-list')" id="sub-all-posts" class="hover:text-white">All Posts</a>
-          <a href="#" onclick="switchView('post-new')" id="sub-add-post" class="active text-white font-semibold">Add Post</a>
+          <a href="#" onclick="switchView('post-new')" id="sub-add-post" class="text-gray-400 hover:text-white">Add Post</a>
           <a href="#" onclick="switchView('categories-page')">Categories</a>
           <a href="#" onclick="switchView('tags-page')">Tags</a>
         </div>
@@ -1497,11 +1497,13 @@
                       <option value="Technology">Technology</option>
                       <option value="Business">Business</option>
                       <option value="News">News</option>
-                      <option value="Real Estate">Real Estate</option>
-                      <option value="Startup">Startup</option>
-                      <option value="Opinion">Opinion</option>
+                      <option value="Real state">Real state</option>
                       <option value="Health">Health</option>
-                      <option value="More">More</option>
+                      <option value="Retail">Retail</option>
+                      <option value="Hospitality">Hospitality</option>
+                      <option value="Lifestyle">Lifestyle</option>
+                      <option value="Start up">Start up</option>
+                      <option value="Opinion">Opinion</option>
                     </select>
                   </div>
 
@@ -4171,7 +4173,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
               <input 
                 type="text" 
                 id="snippet-title" 
-                value="%title%"
+                value="" 
+                placeholder="Enter SEO title or leave empty for headline..."
                 oninput="handleSnippetChange()"
                 class="w-full border border-gray-300 rounded p-2 text-xs focus:border-blue-500 outline-none pr-10 font-sans"
               >
@@ -4215,7 +4218,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
             <input 
               type="text" 
               id="snippet-permalink" 
-              value="why-indias-job-crisis-is-defying-its-economic-boom"
+              value="" 
+              placeholder="post-slug"
               oninput="this.dataset.manual='true'; handleSnippetChange()"
               class="w-full border border-gray-300 rounded p-2 text-xs focus:border-blue-500 outline-none font-mono"
             >
@@ -4240,8 +4244,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
                 rows="3"
                 oninput="handleSnippetChange()"
                 class="w-full border border-gray-300 rounded p-2 text-xs focus:border-blue-500 outline-none font-sans"
-                placeholder="%excerpt%"
-              >%excerpt%</textarea>
+                placeholder="Enter meta description or leave empty for excerpt..."
+              ></textarea>
               <button 
                 type="button"
                 onclick="toggleVariablePicker('desc')" 
@@ -4290,7 +4294,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           <!-- Facebook Card Simulation -->
           <div id="social-preview-facebook" class="border border-gray-300 rounded-lg overflow-hidden bg-white shadow-xs max-w-lg mx-auto">
             <div id="social-fb-image-container" class="aspect-[1.91/1] bg-gray-200 relative overflow-hidden flex items-center justify-center">
-              <img id="social-fb-image" src="https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800" alt="Social Cover" class="w-full h-full object-fill">
+              <img id="social-fb-image" src="" alt="Social Cover" class="w-full h-full object-contain hidden">
             </div>
             <div class="p-3 bg-[#f0f2f5] border-t border-gray-200">
               <span class="text-[10px] uppercase font-bold text-gray-500 tracking-wider">APEXCHIEF.COM</span>
@@ -5339,14 +5343,14 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   <!-- ========================================================================= -->
   <script>
     const STORAGE_KEY_POSTS = 'apexchief_replica_posts';
-    const STORAGE_KEY_CATS = 'apexchief_replica_categories_v2';
+    const STORAGE_KEY_CATS = 'apexchief_replica_categories_v4';
     const STORAGE_KEY_TAGS = 'apexchief_replica_tags';
     const STORAGE_KEY_MEDIA = 'apexchief_replica_media';
     const STORAGE_KEY_PAGES = 'apexchief_replica_pages';
     const STORAGE_KEY_STORIES = 'apexchief_replica_stories';
 
     let currentPostId = 'post_1';
-    let currentFeaturedImage = 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800';
+    let currentFeaturedImage = '';
     let selectedMediaForInsert = null;
     let targetMediaCallback = null;
     let savedSelectionRange = null;
@@ -5354,141 +5358,339 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
     // REAL APEXCHIEF CATEGORIES AND SUBCATEGORIES FROM PROJECT
     const defaultApexChiefCategories = [
+  {
+    "id": "cat_home",
+    "name": "Home",
+    "slug": "home",
+    "description": "ApexChief frontpage, breaking editorial highlights, executive briefs, and market indices.",
+    "subcategories": [
       {
-        id: 'cat_home',
-        name: 'Home',
-        slug: 'home',
-        description: 'ApexChief frontpage, breaking editorial highlights, and market indices.',
-        subcategories: []
+        "name": "Frontpage Featured",
+        "slug": "frontpage-featured"
       },
       {
-        id: 'cat_interview',
-        name: 'Interview',
-        slug: 'interview',
-        description: 'Executive dialogues, founder conversations, and exclusive leadership interviews.',
-        subcategories: [
-          { name: 'CEO Dialogues', slug: 'ceo-dialogues' },
-          { name: 'Founder Journeys', slug: 'founder-journeys' },
-          { name: 'Industry Titans', slug: 'industry-titans' }
-        ]
+        "name": "Hero Highlight",
+        "slug": "hero-highlight"
       },
       {
-        id: 'cat_top_list',
-        name: 'Top - List',
-        slug: 'top-list',
-        description: 'Annual industry rankings, high-growth indexes, and executive power lists.',
-        subcategories: [
-          { name: 'Top 100 Executives', slug: 'top-100-executives' },
-          { name: 'Fastest 50 Companies', slug: 'fastest-50-companies' },
-          { name: 'Power 30 Under 30', slug: 'power-30-under-30' }
-        ]
-      },
-      {
-        id: 'cat_leadership',
-        name: 'Leadership',
-        slug: 'leadership',
-        description: 'Visionary leadership strategies, board governance, and global executive playbooks.',
-        subcategories: [
-          { name: 'Executive Strategy', slug: 'executive-strategy' },
-          { name: 'Board Governance', slug: 'board-governance' },
-          { name: 'Organizational Culture', slug: 'organizational-culture' }
-        ]
-      },
-      {
-        id: 'cat_technology',
-        name: 'Technology',
-        slug: 'technology',
-        description: 'Frontier AI, cybersecurity defenses, enterprise cloud, and deep tech innovations.',
-        subcategories: [
-          { name: 'AI & ML', slug: 'ai-ml' },
-          { name: 'Cybersecurity', slug: 'cybersecurity' },
-          { name: 'Cloud & Infrastructure', slug: 'cloud' },
-          { name: 'Enterprise Tech', slug: 'enterprise-tech' }
-        ]
-      },
-      {
-        id: 'cat_business',
-        name: 'Business',
-        slug: 'business',
-        description: 'Corporate finance, global markets, macroeconomic policy, and dealmaking.',
-        subcategories: [
-          { name: 'Markets', slug: 'markets' },
-          { name: 'Finance & Banking', slug: 'finance' },
-          { name: 'Strategy', slug: 'strategy' },
-          { name: 'Global Economy', slug: 'economy' }
-        ]
-      },
-      {
-        id: 'cat_news',
-        name: 'News',
-        slug: 'news',
-        description: 'Real-time breaking news, policy dispatches, global regulatory developments.',
-        subcategories: [
-          { name: 'Breaking News', slug: 'breaking' },
-          { name: 'Global Dispatches', slug: 'global' },
-          { name: 'Policy & Regulation', slug: 'policy' },
-          { name: 'Investigative', slug: 'investigative' }
-        ]
-      },
-      {
-        id: 'cat_real_estate',
-        name: 'Real Estate',
-        slug: 'real-estate',
-        description: 'Commercial real estate developments, residential markets, PropTech, and mega projects.',
-        subcategories: [
-          { name: 'Commercial', slug: 'commercial' },
-          { name: 'Residential', slug: 'residential' },
-          { name: 'PropTech', slug: 'proptech' },
-          { name: 'Infrastructure', slug: 'infrastructure' }
-        ]
-      },
-      {
-        id: 'cat_startup',
-        name: 'Startup',
-        slug: 'start-up',
-        description: 'Venture capital investments, seed-to-scale playbooks, and disruptive tech founders.',
-        subcategories: [
-          { name: 'Venture Capital', slug: 'venture-capital' },
-          { name: 'Founders', slug: 'founders' },
-          { name: 'Seed Stage', slug: 'seed-stage' },
-          { name: 'Unicorns', slug: 'unicorns' }
-        ]
-      },
-      {
-        id: 'cat_opinion',
-        name: 'Opinion',
-        slug: 'opinion',
-        description: 'Thought leadership op-eds, editorial board commentary, and analyst perspectives.',
-        subcategories: [
-          { name: 'Editorial Board', slug: 'editorial-board' },
-          { name: 'Guest Columns', slug: 'guest-columns' },
-          { name: 'Industry Perspectives', slug: 'industry-perspectives' }
-        ]
-      },
-      {
-        id: 'cat_health',
-        name: 'Health',
-        slug: 'health',
-        description: 'Biotech breakthroughs, pharmaceutical innovations, healthcare IT, and wellness.',
-        subcategories: [
-          { name: 'Biotech', slug: 'biotech' },
-          { name: 'Pharmaceuticals', slug: 'pharma' },
-          { name: 'Healthcare IT', slug: 'healthcare-it' },
-          { name: 'Wellness', slug: 'wellness' }
-        ]
-      },
-      {
-        id: 'cat_more',
-        name: 'More',
-        slug: 'more',
-        description: 'Specialized industry verticals including retail, hospitality, and groceries.',
-        subcategories: [
-          { name: 'Retail', slug: 'retail' },
-          { name: 'Hospitality', slug: 'hospitality' },
-          { name: 'Groceries', slug: 'groceries' }
-        ]
+        "name": "Market Overview",
+        "slug": "market-overview"
       }
-    ];
+    ]
+  },
+  {
+    "id": "cat_interview",
+    "name": "Interview",
+    "slug": "interview",
+    "description": "Exclusive executive dialogues, CEO strategies, founder retrospectives, and industry leadership Q&A.",
+    "subcategories": [
+      {
+        "name": "Executive Dialogues",
+        "slug": "executive-dialogues"
+      },
+      {
+        "name": "Founder Stories",
+        "slug": "founder-stories"
+      },
+      {
+        "name": "Industry Q&A",
+        "slug": "industry-qa"
+      },
+      {
+        "name": "Leadership Fireside",
+        "slug": "leadership-fireside"
+      }
+    ]
+  },
+  {
+    "id": "cat_top_list",
+    "name": "Top - List",
+    "slug": "top-list",
+    "description": "Editorial rankings, power indexes, market leaderboards, and top 10 investigative selections.",
+    "subcategories": [
+      {
+        "name": "Top 10 Index",
+        "slug": "top-10-index"
+      },
+      {
+        "name": "Power 100",
+        "slug": "power-100"
+      },
+      {
+        "name": "Industry Leaders",
+        "slug": "industry-leaders"
+      },
+      {
+        "name": "Best in Business",
+        "slug": "best-in-business"
+      }
+    ]
+  },
+  {
+    "id": "cat_leadership",
+    "name": "Leadership",
+    "slug": "leadership",
+    "description": "Executive strategy, C-suite decision frameworks, corporate governance, and leadership excellence.",
+    "subcategories": [
+      {
+        "name": "CEOs & Founders",
+        "slug": "ceos-founders"
+      },
+      {
+        "name": "Executive Strategy",
+        "slug": "executive-strategy"
+      },
+      {
+        "name": "Boardroom Insights",
+        "slug": "boardroom-insights"
+      },
+      {
+        "name": "Executive Profiles",
+        "slug": "profiles"
+      }
+    ]
+  },
+  {
+    "id": "cat_technology",
+    "name": "Technology",
+    "slug": "technology",
+    "description": "Frontier artificial intelligence, deep-tech hardware, quantum computing, cloud infrastructure, and cybersecurity.",
+    "subcategories": [
+      {
+        "name": "Artificial Intelligence",
+        "slug": "ai"
+      },
+      {
+        "name": "Cloud & Infrastructure",
+        "slug": "cloud-infra"
+      },
+      {
+        "name": "Cybersecurity",
+        "slug": "cybersecurity"
+      },
+      {
+        "name": "DeepTech & Innovation",
+        "slug": "innovation"
+      }
+    ]
+  },
+  {
+    "id": "cat_business",
+    "name": "Business",
+    "slug": "business",
+    "description": "Corporate strategy, global trade logistics, macroeconomic policies, enterprise deals, and M&A.",
+    "subcategories": [
+      {
+        "name": "Corporate Strategy",
+        "slug": "companies"
+      },
+      {
+        "name": "Global Economy",
+        "slug": "economy"
+      },
+      {
+        "name": "Supply Chain & Trade",
+        "slug": "trade"
+      },
+      {
+        "name": "Finance & Banking",
+        "slug": "finance"
+      }
+    ]
+  },
+  {
+    "id": "cat_news",
+    "name": "News",
+    "slug": "news",
+    "description": "Breaking investigative reporting, real-time market wires, geopolitical developments, and policy regulation.",
+    "subcategories": [
+      {
+        "name": "Breaking Wire",
+        "slug": "breaking-wire"
+      },
+      {
+        "name": "Investigations",
+        "slug": "investigations"
+      },
+      {
+        "name": "Policy & Law",
+        "slug": "policy-law"
+      },
+      {
+        "name": "Global Affairs",
+        "slug": "global-affairs"
+      }
+    ]
+  },
+  {
+    "id": "cat_real_state",
+    "name": "Real state",
+    "slug": "real-state",
+    "description": "Commercial property, prime residential towers, sovereign infrastructure, REITs, and urban architecture.",
+    "subcategories": [
+      {
+        "name": "Commercial Property",
+        "slug": "commercial"
+      },
+      {
+        "name": "Luxury Residential",
+        "slug": "luxury-living"
+      },
+      {
+        "name": "Urban Architecture",
+        "slug": "urban-architecture"
+      },
+      {
+        "name": "REITs & Capital",
+        "slug": "reits-capital"
+      }
+    ]
+  },
+  {
+    "id": "cat_health",
+    "name": "Health",
+    "slug": "health",
+    "description": "HealthTech, metabolic longevity, clinical biotechnology, wellness innovation, and pharmaceuticals.",
+    "subcategories": [
+      {
+        "name": "HealthTech & Bio",
+        "slug": "healthtech"
+      },
+      {
+        "name": "Biotech & Pharma",
+        "slug": "biotech"
+      },
+      {
+        "name": "Wellness & Longevity",
+        "slug": "wellness"
+      },
+      {
+        "name": "Healthcare Systems",
+        "slug": "healthcare-systems"
+      }
+    ]
+  },
+  {
+    "id": "cat_retail",
+    "name": "Retail",
+    "slug": "retail",
+    "description": "Omni-channel retail, direct-to-consumer luxury brands, global commerce, and retail technology.",
+    "subcategories": [
+      {
+        "name": "E-Commerce & DTC",
+        "slug": "ecommerce-dtc"
+      },
+      {
+        "name": "Luxury & Fashion",
+        "slug": "luxury-fashion"
+      },
+      {
+        "name": "Retail Tech & AI",
+        "slug": "retail-tech"
+      },
+      {
+        "name": "Consumer Trends",
+        "slug": "consumer-trends"
+      }
+    ]
+  },
+  {
+    "id": "cat_hospitality",
+    "name": "Hospitality",
+    "slug": "hospitality",
+    "description": "Ultra-luxury resorts, hotel management, aviation, fine dining, and global tourism.",
+    "subcategories": [
+      {
+        "name": "Luxury Hotels & Resorts",
+        "slug": "luxury-resorts"
+      },
+      {
+        "name": "Travel & Aviation",
+        "slug": "travel-aviation"
+      },
+      {
+        "name": "Fine Dining & Culinary",
+        "slug": "fine-dining"
+      },
+      {
+        "name": "Tourism Economics",
+        "slug": "tourism-economics"
+      }
+    ]
+  },
+  {
+    "id": "cat_lifestyle",
+    "name": "Lifestyle",
+    "slug": "lifestyle",
+    "description": "Contemporary living, luxury culture, executive wellness, travel & leisure, and modern lifestyle trends.",
+    "subcategories": [
+      {
+        "name": "Living & Design",
+        "slug": "living-design"
+      },
+      {
+        "name": "Culture & Style",
+        "slug": "culture-style"
+      },
+      {
+        "name": "Food & Gastronomy",
+        "slug": "food-gastronomy"
+      },
+      {
+        "name": "Wellness & Leisure",
+        "slug": "wellness-leisure"
+      }
+    ]
+  },
+  {
+    "id": "cat_start_up",
+    "name": "Start up",
+    "slug": "start-up",
+    "description": "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
+    "subcategories": [
+      {
+        "name": "Seed & Series A",
+        "slug": "seed-funding"
+      },
+      {
+        "name": "Venture Capital",
+        "slug": "venture-capital"
+      },
+      {
+        "name": "Bootstrapping",
+        "slug": "bootstrapping"
+      },
+      {
+        "name": "Unicorns & Scaleups",
+        "slug": "scaleups"
+      }
+    ]
+  },
+  {
+    "id": "cat_opinion",
+    "name": "Opinion",
+    "slug": "opinion",
+    "description": "Thought leadership, guest columnists, editorial perspectives, and strategic market critiques.",
+    "subcategories": [
+      {
+        "name": "Guest Columns",
+        "slug": "guest-columns"
+      },
+      {
+        "name": "Editorial Board",
+        "slug": "editorial-board"
+      },
+      {
+        "name": "Market Perspectives",
+        "slug": "market-perspectives"
+      },
+      {
+        "name": "Policy Commentary",
+        "slug": "policy-commentary"
+      }
+    ]
+  }
+];
 
     let posts = JSON.parse(localStorage.getItem(STORAGE_KEY_POSTS)) || defaultPosts;
     let categories = JSON.parse(localStorage.getItem(STORAGE_KEY_CATS)) || defaultApexChiefCategories;
@@ -6752,6 +6954,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (currentFeaturedImage) {
         const found = mediaList.find(m => m.url === currentFeaturedImage);
         if (found) selectedMediaForInsert = found;
+      } else {
+        selectedMediaForInsert = null;
       }
       
       switchMediaTab('library');
@@ -6831,8 +7035,10 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
       if (emptyMsg) emptyMsg.classList.add('hidden');
 
-      // If nothing selected or selected item is filtered out, select first item
-      if (!selectedMediaForInsert || !items.some(m => m.id === selectedMediaForInsert.id)) {
+      // If target is featured and no image was chosen, do not auto-select first item
+      if (targetMediaCallback === 'featured' && !currentFeaturedImage && !selectedMediaForInsert) {
+        // keep selectedMediaForInsert null until user clicks
+      } else if (!selectedMediaForInsert || !items.some(m => m.id === selectedMediaForInsert.id)) {
         selectedMediaForInsert = items[0];
       }
 
@@ -7115,7 +7321,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         const altText = mediaObj?.alt || 'Featured Image';
         container.innerHTML = `
           <div class="relative group">
-            <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-36 object-fill rounded shadow mb-2 border border-gray-200" />
+            <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-36 object-contain rounded shadow mb-2 border border-gray-200 bg-gray-50" />
             <div class="text-[11px] text-gray-500 truncate mb-1.5">
               <strong>Alt:</strong> <span class="italic">${altText}</span>
             </div>
@@ -8252,15 +8458,15 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       document.getElementById('focus-keyword').value = '';
       const kwInput = document.getElementById('focus-keyword-input');
       if (kwInput) kwInput.value = '';
-      document.getElementById('snippet-title').value = '%title%';
-      document.getElementById('snippet-description').value = '%excerpt%';
+      document.getElementById('snippet-title').value = '';
+      document.getElementById('snippet-description').value = '';
 
       const snippetSlug = document.getElementById('snippet-permalink');
       if (snippetSlug) {
-        snippetSlug.value = 'new-post';
+        snippetSlug.value = '';
         snippetSlug.dataset.manual = '';
       }
-      updatePermalinkDisplay('new-post');
+      updatePermalinkDisplay('');
       cancelPermalinkSlug();
 
       // Reset Publish & Placement box
@@ -9243,10 +9449,10 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     function handleSnippetChange() {
-      const titleInput = document.getElementById('snippet-title')?.value || '%title%';
+      const titleInput = document.getElementById('snippet-title')?.value || '';
       const snippetSlugEl = document.getElementById('snippet-permalink');
       const permalinkInput = snippetSlugEl?.value || '';
-      const descInput = document.getElementById('snippet-description')?.value || '%excerpt%';
+      const descInput = document.getElementById('snippet-description')?.value || '';
       
       // Sync snippet permalink input directly to title permalink bar below headline
       if (permalinkInput) {
@@ -9260,16 +9466,19 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         const modalSerpSlug = document.getElementById('modal-serp-slug');
         if (modalSerpSlug) modalSerpSlug.innerText = cleanSlug;
       }
-      const postTitle = document.getElementById('post-title')?.value.trim() || 'Why India\'s Job Crisis is Defying Its Economic Boom';
+      const postTitle = document.getElementById('post-title')?.value.trim() || '';
       const contentHTML = document.getElementById('editor-content')?.innerHTML || '';
       const focusKw = document.getElementById('focus-keyword')?.value.trim() || '';
       const primaryCat = document.getElementById('placement-category-select')?.value || 'Business';
       const subCat = document.getElementById('placement-subcategory-select')?.value || 'Companies';
 
       // 1. Resolve variables
-      const resolvedTitle = resolveSnippetVariables(titleInput, postTitle, contentHTML, focusKw, primaryCat, subCat);
-      const resolvedDesc = resolveSnippetVariables(descInput, postTitle, contentHTML, focusKw, primaryCat, subCat);
-      const resolvedSlug = generateSlug(permalinkInput || postTitle || 'post');
+      const fallbackTitle = postTitle ? `${postTitle} — ApexChief` : 'ApexChief — Business & Executive Insights';
+      const resolvedTitle = titleInput ? resolveSnippetVariables(titleInput, postTitle, contentHTML, focusKw, primaryCat, subCat) : fallbackTitle;
+      const cleanExcerpt = generateCleanPostExcerpt(contentHTML, 155);
+      const fallbackDesc = cleanExcerpt || 'Explore the latest in-depth investigative reports, CEO dialogues, and executive analysis on ApexChief.';
+      const resolvedDesc = descInput ? resolveSnippetVariables(descInput, postTitle, contentHTML, focusKw, primaryCat, subCat) : fallbackDesc;
+      const resolvedSlug = generateSlug(permalinkInput || postTitle || 'new-post');
 
       // 2. Measure Pixel Widths (Exact Google Desktop SERP standard)
       const titlePx = measureGoogleSerpWidth(resolvedTitle, '20px Arial, sans-serif');
@@ -11783,7 +11992,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
         if (btnText) btnText.innerText = 'Sign In & Launch Workspace';
 
         if (selectedGatewayWorkspace === 'classic') {
-          switchView('post-new');
+          switchView('dashboard');
           showToast('Welcome to ApexChief Classic WP Suite! 🚀', 'Rank Math SEO and editorial tools unlocked.');
         } else {
           switchView('modern-portal');
@@ -11945,7 +12154,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
           if (auth.workspace === 'modern') {
             switchView('modern-portal');
           } else {
-            switchView('post-new');
+            switchView('dashboard');
           }
         } catch (e) {
           openWorkspaceSelector();

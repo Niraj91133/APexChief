@@ -328,14 +328,15 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
 }
 
 /* ========================================================================= */
-/* Global Image Fill Standard (Prevent Image Zooming & Over-Cropping)       */
+/* Global Image Aspect-Ratio Preservation (No Stretch, No Zoom, Real View)   */
 /* ========================================================================= */
 img,
 [class*="group"] img,
 [class*="group/"] img,
 article img,
 section img {
-  object-fit: fill !important;
+  object-fit: contain !important;
+  object-position: center !important;
 }
 
 /* Keep circular avatars properly shaped */

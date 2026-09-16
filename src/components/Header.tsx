@@ -67,7 +67,7 @@ function HeaderNav({
             Home
           </Link>
 
-          {categories.map((cat) => {
+          {categories.filter((c) => c.slug !== 'home').map((cat) => {
             const hasSubs = cat.subcategories && cat.subcategories.length > 0;
             const isHovered = hoveredCat === cat.slug;
             const isActive = currentCategory?.toLowerCase() === cat.slug.toLowerCase();
@@ -445,7 +445,7 @@ export default function Header() {
                   >
                     Home
                   </Link>
-                  {categories.map((cat) => {
+                  {categories.filter((c) => c.slug !== 'home').map((cat) => {
                     const hasSubs = cat.subcategories && cat.subcategories.length > 0;
                     const isExpanded = expandedMobileCat === cat.slug;
 
