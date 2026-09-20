@@ -459,13 +459,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-11 sm:h-13 md:h-15 lg:h-18 xl:h-[76px] w-auto max-w-[210px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform duration-200 group-hover:scale-[1.02] dark:hidden block"
+                  className="h-[34px] sm:h-10 md:h-11 lg:h-13 xl:h-[58px] w-auto max-w-[175px] sm:max-w-[220px] md:max-w-[270px] lg:max-w-[320px] xl:max-w-[350px] object-contain transition-transform duration-200 group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-11 sm:h-13 md:h-15 lg:h-18 xl:h-[76px] w-auto max-w-[210px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform duration-200 group-hover:scale-[1.02] hidden dark:block"
+                  className="h-[34px] sm:h-10 md:h-11 lg:h-13 xl:h-[58px] w-auto max-w-[175px] sm:max-w-[220px] md:max-w-[270px] lg:max-w-[320px] xl:max-w-[350px] object-contain transition-transform duration-200 group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
@@ -576,13 +576,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                       src={logoLightSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-10 sm:h-12 w-auto max-w-[200px] object-contain dark:hidden block"
+                      className="h-8 sm:h-9 w-auto max-w-[160px] object-contain dark:hidden block"
                     />
                     <img
                       src={logoDarkSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-10 sm:h-12 w-auto max-w-[200px] object-contain hidden dark:block"
+                      className="h-8 sm:h-9 w-auto max-w-[160px] object-contain hidden dark:block"
                     />
                   </>
                 ) : (
