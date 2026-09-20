@@ -111,7 +111,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: article.title,
       description: article.excerpt,
       images: [article.image],
-      creator: siteConfig.socialLinks?.twitter || '@ApexChief',
+      creator: siteConfig.socialLinks?.twitter || '@apexchief01',
     },
   };
 }

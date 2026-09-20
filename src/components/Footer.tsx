@@ -65,7 +65,7 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
           <div className="flex items-center space-x-2 text-[#fefdf3]">
             {/* X / Twitter */}
             <a
-              href={siteConfig.socialLinks.twitter}
+              href={site.socialLinks?.twitter || siteConfig.socialLinks.twitter}
               target="_blank"
               rel="noreferrer"
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#f7413e] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
@@ -78,7 +78,7 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
 
             {/* Instagram */}
             <a
-              href={siteConfig.socialLinks.instagram}
+              href={site.socialLinks?.instagram || siteConfig.socialLinks.instagram}
               target="_blank"
               rel="noreferrer"
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#f7413e] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"

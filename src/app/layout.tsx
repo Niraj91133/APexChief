@@ -104,8 +104,8 @@ export const metadata: Metadata = {
     title: 'ApexChief – Business, Leadership, Technology & interview',
     description:
       'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
-    site: '@ApexChief',
-    creator: '@ApexChief',
+    site: '@apexchief01',
+    creator: '@apexchief01',
     images: ['https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png'],
   },
   robots: {

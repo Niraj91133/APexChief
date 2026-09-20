@@ -13,10 +13,10 @@ export const siteConfig: SiteConfig = {
   logoDark: "/images/apexchief-logo-dark.png",
   favicon: "/favicon.ico",
   socialLinks: {
-    twitter: "https://x.com/ApexChief",
+    twitter: "https://x.com/apexchief01?s=11",
     linkedin: "https://linkedin.com/company/apexchief",
     facebook: "https://facebook.com/ApexChief",
-    instagram: "https://instagram.com/ApexChiefOfficial",
+    instagram: "https://www.instagram.com/apex.chief?stkn=cjBuZXkxNzZoZXR1&utm_source=qr",
     youtube: "https://youtube.com/@ApexChief",
     telegram: "https://t.me/apexchief_intel",
     whatsapp: "",
