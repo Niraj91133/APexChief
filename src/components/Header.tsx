@@ -421,13 +421,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-9 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[180px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[220px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-9 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[180px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[220px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
