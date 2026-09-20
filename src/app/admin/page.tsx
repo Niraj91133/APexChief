@@ -755,7 +755,7 @@ export default function AdminDashboard() {
   const [siteConfig, setSiteConfig] = useState<any>({
     name: 'ApexChief',
     shortName: 'ApexChief',
-    tagline: 'Modern media stories & weekly editorial features — EST. 2023',
+    tagline: 'Business, Leadership, Technology & interview',
     currentDate: 'Monday, May 25, 2026',
     edition: 'Vol. XIV, No. 128 — Global Edition',
     contact: {

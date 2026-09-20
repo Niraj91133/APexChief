@@ -3,8 +3,8 @@ import { SiteConfig } from '@/types';
 export const siteConfig: SiteConfig = {
   name: "ApexChief",
   shortName: "ApexChief",
-  tagline: "Editorial & Rank Math SEO Suite",
-  description: "Global business journalism, executive perspectives, sovereign wealth intelligence, and industry analysis.",
+  tagline: "Business, Leadership, Technology & interview",
+  description: "ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.",
   establishedYear: "2026",
   currentDate: "Sunday, September 20, 2026",
   edition: "Global Edition",
