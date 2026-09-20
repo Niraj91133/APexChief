@@ -490,23 +490,31 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         />
       </Suspense>
 
-      {/* 3. Breaking News Ticker Bar */}
-      <div className="w-full bg-[#161616] text-[#eff0e0] border-t border-[#222222] py-1 sm:py-1.5 px-4 overflow-hidden relative shadow-inner">
-        <div className="max-w-[1240px] mx-auto flex items-center text-xs">
-          <div className="flex items-center space-x-2 shrink-0 pr-4 border-r border-[#333333] z-10 bg-[#161616]">
-            <span className="w-2 h-2 rounded-full bg-[#f7413e] animate-pulse"></span>
-            <span className="font-bebas text-sm sm:text-base tracking-widest text-[#f7413e] uppercase">
-              Breaking
-            </span>
-          </div>
+      {/* 3. Breaking News Scrolling Marquee Bar */}
+      <div className="w-full bg-black text-white flex items-center overflow-hidden border-b border-gray-200 dark:border-white/10 h-9 sm:h-10 select-none">
+        {/* Red Badge */}
+        <div className="bg-[#f7413e] text-white px-3 sm:px-4 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shrink-0 z-10 border-r border-black/20 h-full">
+          <span className="text-white animate-pulse">⚡</span>
+          <span>BREAKING</span>
+        </div>
 
-          <div className="overflow-x-auto no-scrollbar flex items-center space-x-6 whitespace-nowrap pl-4 select-none scroll-smooth">
-            {breakingArticles.map((art, idx) => (
-              <span key={art.slug || idx} className="inline-flex items-center">
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="font-sans font-medium text-xs text-gray-200 hover:text-[#f7413e] transition-colors"
-                >
+        {/* Scrolling items */}
+        <div className="flex-1 overflow-hidden relative flex items-center h-full">
+          <div className="animate-marquee whitespace-nowrap flex items-center space-x-12 text-xs font-sans font-medium text-white/90">
+            {breakingArticles.map((art) => (
+              <span key={art.slug} className="inline-flex items-center">
+                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
+                  {art.title}
+                </Link>
+                <span className="mx-2 text-white/40">•</span>
+                <span className="text-gray-300 font-mono text-[10px]">{art.date}</span>
+                <span className="ml-2.5 text-[#fbbf24] font-semibold text-[10px] uppercase font-mono">[{art.category}]</span>
+              </span>
+            ))}
+            {/* Duplicate for seamless loop */}
+            {breakingArticles.map((art) => (
+              <span key={`${art.slug}-dup`} className="inline-flex items-center">
+                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
                   {art.title}
                 </Link>
                 <span className="mx-2 text-white/40">•</span>
