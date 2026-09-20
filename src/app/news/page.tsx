@@ -245,8 +245,8 @@ function NewsContent() {
   return (
     <div className="w-full pt-1">
       {/* Sleek Minimal 1-Line Breadcrumb / Label Header */}
-      <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5 px-0.5">
-        <div className="flex items-center space-x-1.5 truncate">
+      <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5 px-0.5 overflow-hidden">
+        <div className="flex items-center space-x-1.5 flex-wrap overflow-hidden no-scrollbar">
           <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">
             Home
           </Link>
@@ -257,13 +257,13 @@ function NewsContent() {
           {activeCategory !== 'all' && currentCategoryObj && (
             <>
               <span>/</span>
-              <span className="text-black dark:text-white font-bold truncate">{currentCategoryObj.name}</span>
+              <span className="text-black dark:text-white font-bold truncate max-w-[120px] sm:max-w-none">{currentCategoryObj.name}</span>
             </>
           )}
           {activeSub && (
             <>
               <span>/</span>
-              <span className="text-[#f7413e] font-bold truncate">{activeSub}</span>
+              <span className="text-[#f7413e] font-bold truncate max-w-[120px] sm:max-w-none">{activeSub}</span>
             </>
           )}
         </div>
@@ -276,7 +276,7 @@ function NewsContent() {
       <div className="bg-gray-50 dark:bg-[#181818] border border-gray-200 dark:border-white/10 rounded-md p-2 sm:p-2.5 mb-5 shadow-xs">
         <div className="flex items-center justify-between gap-2 sm:gap-4">
           {/* Left Corner: Filter Button & Quick Active Tags */}
-          <div className="flex items-center space-x-2 overflow-x-auto scrollbar-none py-0.5 flex-1 min-w-0">
+          <div className="flex items-center space-x-2 overflow-x-auto no-scrollbar scrollbar-none py-0.5 flex-1 min-w-0">
             {/* Filter Drawer Trigger Button */}
             <button
               onClick={() => setIsFilterDrawerOpen(true)}

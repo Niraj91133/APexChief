@@ -61,9 +61,9 @@ export default function ArticleCard({
         <div className="mt-auto pt-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
           <Link
             href={`/news/${article.slug}`}
-            className="inline-flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-black dark:text-white group-hover:text-[#f7413e] group-hover:translate-x-1 transition-all"
+            className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
           >
-            <span>Read Full Story</span>
+            <span>Read More</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
           </Link>
           <span className="text-[11px] font-mono text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-[#222222] px-2 py-0.5 rounded">
@@ -111,7 +111,13 @@ export default function ArticleCard({
 
           <div className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
             <span className="font-mono text-[11px]">{article.readTime}</span>
-            <span className="font-bold text-[#f7413e]">{article.category}</span>
+            <Link
+              href={`/news/${article.slug}`}
+              className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
+            >
+              <span>Read More</span>
+              <ArrowUpRight className="w-3 h-3" />
+            </Link>
           </div>
         </div>
       </article>
@@ -134,7 +140,7 @@ export default function ArticleCard({
         </Link>
         <div className="flex items-center justify-between text-[11px] text-gray-600 dark:text-gray-400 mt-2">
           <span className="font-mono">{article.readTime}</span>
-          <span className="text-[#f7413e] font-medium text-[10px] uppercase">Read Story</span>
+          <span className="inline-block bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded">Read More</span>
         </div>
       </article>
     );
@@ -197,10 +203,10 @@ export default function ArticleCard({
           <span className="font-mono text-gray-600 dark:text-gray-400">{article.readTime}</span>
           <Link
             href={`/news/${article.slug}`}
-            className="font-bold text-black dark:text-white group-hover:text-[#f7413e] flex items-center space-x-1"
+            className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
           >
-            <span>Read</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span>Read More</span>
+            <ArrowUpRight className="w-3 h-3" />
           </Link>
         </div>
       </article>
@@ -245,10 +251,10 @@ export default function ArticleCard({
         <span className="font-mono text-[11px]">{article.readTime}</span>
         <Link
           href={`/news/${article.slug}`}
-          className="font-bold text-black dark:text-white group-hover:text-[#f7413e] flex items-center space-x-1"
+          className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
         >
-          <span>Read Story</span>
-          <ArrowUpRight className="w-3.5 h-3.5" />
+          <span>Read More</span>
+          <ArrowUpRight className="w-3 h-3" />
         </Link>
       </div>
     </article>

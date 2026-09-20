@@ -1157,11 +1157,13 @@ export default function AdminDashboard() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const imageFileInputRef = useRef<HTMLInputElement>(null);
 
-  // Logo Upload Handler in Settings Tab
+  // Logo Upload Handler in Settings Tab (Light & Dark Mode)
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingLogoDark, setIsUploadingLogoDark] = useState(false);
   const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const logoDarkFileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, mode: 'light' | 'dark' = 'light') => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -1170,8 +1172,12 @@ export default function AdminDashboard() {
       return;
     }
 
-    setIsUploadingLogo(true);
-    showToast('Uploading brand logo to ImageKit CDN...', 'info');
+    if (mode === 'dark') {
+      setIsUploadingLogoDark(true);
+    } else {
+      setIsUploadingLogo(true);
+    }
+    showToast(`Uploading ${mode === 'dark' ? 'Dark Mode' : 'Light Mode'} brand logo to ImageKit CDN...`, 'info');
 
     try {
       const { blob, base64, fileName } = await compressImageForUpload(file);
@@ -1237,23 +1243,45 @@ export default function AdminDashboard() {
       }
 
       if (uploadedUrl) {
-        setSiteConfig((prev: any) => ({
-          ...prev,
-          logo: uploadedUrl,
-        }));
-        try {
-          localStorage.setItem('apexchief_custom_logo', uploadedUrl);
+        if (mode === 'dark') {
+          setSiteConfig((prev: any) => ({
+            ...prev,
+            logoDark: uploadedUrl,
+          }));
           try {
-            const bc = new BroadcastChannel('apexchief_config_channel');
-            bc.postMessage({ type: 'LOGO_UPDATED', logo: uploadedUrl });
+            localStorage.setItem('apexchief_custom_logo_dark', uploadedUrl);
+            try {
+              const bc = new BroadcastChannel('apexchief_config_channel');
+              bc.postMessage({ type: 'LOGO_UPDATED', logoDark: uploadedUrl });
+            } catch (e) {}
+            fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...siteConfig, logoDark: uploadedUrl }),
+            }).catch((e) => console.error('Failed to auto-sync dark logo:', e));
           } catch (e) {}
-          fetch('/api/config', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...siteConfig, logo: uploadedUrl }),
-          }).catch((e) => console.error('Failed to auto-sync logo:', e));
-        } catch (e) {}
-        showToast('✓ Brand Logo uploaded & live! Click Save Settings to persist all changes.', 'success');
+          showToast('✓ Dark Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
+        } else {
+          setSiteConfig((prev: any) => ({
+            ...prev,
+            logo: uploadedUrl,
+            logoLight: uploadedUrl,
+          }));
+          try {
+            localStorage.setItem('apexchief_custom_logo', uploadedUrl);
+            localStorage.setItem('apexchief_custom_logo_light', uploadedUrl);
+            try {
+              const bc = new BroadcastChannel('apexchief_config_channel');
+              bc.postMessage({ type: 'LOGO_UPDATED', logo: uploadedUrl, logoLight: uploadedUrl });
+            } catch (e) {}
+            fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...siteConfig, logo: uploadedUrl, logoLight: uploadedUrl }),
+            }).catch((e) => console.error('Failed to auto-sync light logo:', e));
+          } catch (e) {}
+          showToast('✓ Light Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
+        }
       } else {
         throw new Error('Image URL was not returned');
       }
@@ -1261,8 +1289,13 @@ export default function AdminDashboard() {
       console.error('Logo upload error:', err);
       showToast('Upload error: ' + (err.message || 'Unknown error'), 'error');
     } finally {
-      setIsUploadingLogo(false);
-      if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+      if (mode === 'dark') {
+        setIsUploadingLogoDark(false);
+        if (logoDarkFileInputRef.current) logoDarkFileInputRef.current.value = '';
+      } else {
+        setIsUploadingLogo(false);
+        if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+      }
     }
   };
 
@@ -2613,9 +2646,17 @@ export default function AdminDashboard() {
       if (res.ok) {
         try {
           if (siteConfig.logo) localStorage.setItem('apexchief_custom_logo', siteConfig.logo);
+          if (siteConfig.logoLight) localStorage.setItem('apexchief_custom_logo_light', siteConfig.logoLight);
+          if (siteConfig.logoDark) localStorage.setItem('apexchief_custom_logo_dark', siteConfig.logoDark);
           if (siteConfig.favicon) localStorage.setItem('apexchief_custom_favicon', siteConfig.favicon);
           const bc = new BroadcastChannel('apexchief_config_channel');
-          bc.postMessage({ type: 'CONFIG_UPDATED', logo: siteConfig.logo, favicon: siteConfig.favicon });
+          bc.postMessage({
+            type: 'CONFIG_UPDATED',
+            logo: siteConfig.logo,
+            logoLight: siteConfig.logoLight,
+            logoDark: siteConfig.logoDark,
+            favicon: siteConfig.favicon,
+          });
         } catch (e) {}
         showToast('Site settings updated successfully', 'success');
         fetchData();
@@ -6234,104 +6275,168 @@ export default function AdminDashboard() {
                           />
                         </div>
 
-                        {/* BRAND LOGO UPLOAD & PREVIEW SECTION */}
-                        <div className="sm:col-span-2 p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-4">
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div>
-                              <div className="flex items-center space-x-1.5">
-                                <LucideImage className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
-                                <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
-                                  Landing Page Header Brand Logo
-                                </span>
-                                <InfoTooltip text="Upload a transparent PNG, SVG, or WebP logo. When set, this logo will appear in the main website header masthead and mobile drawer navigation. If left blank, the Brand Title text will be displayed." />
-                              </div>
-                              <p className="text-[11px] text-[#575757] dark:text-gray-400 mt-0.5">
-                                Recommended format: Transparent PNG or SVG (height: 40px – 70px)
-                              </p>
-                            </div>
-
-                            {/* Hidden file input */}
-                            <input
-                              type="file"
-                              ref={logoFileInputRef}
-                              onChange={handleLogoUpload}
-                              accept="image/png,image/svg+xml,image/webp,image/jpeg"
-                              className="hidden"
-                            />
-
-                            <div className="flex items-center space-x-2">
-                              <button
-                                type="button"
-                                disabled={isUploadingLogo}
-                                onClick={() => logoFileInputRef.current?.click()}
-                                className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
-                              >
-                                {isUploadingLogo ? (
-                                  <>
-                                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    <span>Uploading to CDN...</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Upload className="w-3.5 h-3.5" />
-                                    <span>{siteConfig.logo ? 'Change Brand Logo' : 'Upload Brand Logo'}</span>
-                                  </>
-                                )}
-                              </button>
-
-                              {siteConfig.logo && (
-                                <button
-                                  type="button"
-                                  onClick={() => setSiteConfig({ ...siteConfig, logo: '' })}
-                                  className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
-                                  title="Remove Logo (Reverts to Text Masthead)"
-                                >
-                                  <X className="w-3.5 h-3.5" />
-                                  <span>Remove</span>
-                                </button>
-                              )}
-                            </div>
+                        {/* BRAND LOGO (DUAL LIGHT & DARK MODE) UPLOAD & PREVIEW SECTION */}
+                        <div className="sm:col-span-2 space-y-4">
+                          <div className="flex items-center space-x-1.5 mb-1">
+                            <LucideImage className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
+                            <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                              Website Brand Logos (Light &amp; Dark Mode)
+                            </span>
+                            <InfoTooltip text="Upload transparent PNG, SVG, or WebP logos. Light Mode Logo displays on white backgrounds. Dark Mode Logo displays on black backgrounds. Both logos maintain identical sizing." />
                           </div>
 
-                          {/* Preview Area */}
-                          {siteConfig.logo ? (
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-3 bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 rounded-xs">
-                              <div className="p-2.5 bg-gray-100 dark:bg-gray-900 border border-dashed border-gray-300 dark:border-gray-700 rounded flex items-center justify-center min-w-[140px] max-h-20 overflow-hidden">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* CARD 1: LIGHT MODE LOGO */}
+                            <div className="p-4 bg-white dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-3 shadow-2xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                                  <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                                    Light Mode Logo
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">Dark text / For white header</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                ref={logoFileInputRef}
+                                onChange={(e) => handleLogoUpload(e, 'light')}
+                                accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                                className="hidden"
+                              />
+
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  type="button"
+                                  disabled={isUploadingLogo}
+                                  onClick={() => logoFileInputRef.current?.click()}
+                                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
+                                >
+                                  {isUploadingLogo ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <span>Uploading...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload className="w-3.5 h-3.5" />
+                                      <span>{siteConfig.logoLight || siteConfig.logo ? 'Change Light Logo' : 'Upload Light Logo'}</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                {(siteConfig.logoLight || siteConfig.logo) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSiteConfig({ ...siteConfig, logoLight: '', logo: '' })}
+                                    className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
+                                    title="Reset Light Logo"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                    <span>Reset</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Light Preview Container */}
+                              <div className="p-3 bg-[#ffffff] border border-dashed border-gray-300 rounded flex items-center justify-center min-h-[70px]">
                                 <img
-                                  src={siteConfig.logo}
-                                  alt="Brand Logo Preview"
-                                  className="max-h-12 max-w-[220px] object-contain"
+                                  src={siteConfig.logoLight || siteConfig.logo || '/images/apexchief-logo-light.png'}
+                                  alt="Light Mode Logo Preview"
+                                  className="max-h-12 max-w-[200px] object-contain"
                                 />
                               </div>
-                              <div className="flex-1 min-w-0">
-                                <span className="text-[10px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                  <Check className="w-3 h-3" /> Active Header Logo
-                                </span>
-                                <p className="text-xs text-[#575757] dark:text-gray-400 truncate mt-0.5 font-mono">
-                                  {siteConfig.logo}
-                                </p>
+
+                              <div>
+                                <label className="block text-[10px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
+                                  Direct Light Logo URL:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={siteConfig.logoLight || siteConfig.logo || ''}
+                                  onChange={(e) => setSiteConfig({ ...siteConfig, logoLight: e.target.value, logo: e.target.value })}
+                                  placeholder="https://ik.imagekit.io/.../apexchief-logo-light.png"
+                                  className="block w-full px-2.5 py-1 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#161c2e] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                                />
                               </div>
                             </div>
-                          ) : (
-                            <div className="p-3 bg-white dark:bg-[#161c2e] border border-dashed border-[#211d1d]/15 dark:border-white/10 rounded-xs text-center py-4">
-                              <p className="text-xs text-[#575757] dark:text-gray-400">
-                                No custom logo uploaded. The website header is currently displaying the text title: <strong className="text-[#002b5c] dark:text-sky-400">{siteConfig.name || 'ApexChief'}</strong>
-                              </p>
-                            </div>
-                          )}
 
-                          {/* Direct URL input */}
-                          <div>
-                            <label className="block text-[11px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
-                              Or enter Direct Logo URL:
-                            </label>
-                            <input
-                              type="text"
-                              value={siteConfig.logo || ''}
-                              onChange={(e) => setSiteConfig({ ...siteConfig, logo: e.target.value })}
-                              placeholder="https://ik.imagekit.io/.../your-brand-logo.png"
-                              className="block w-full px-3 py-1.5 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#0e1322] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
-                            />
+                            {/* CARD 2: DARK MODE LOGO */}
+                            <div className="p-4 bg-white dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-3 shadow-2xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+                                  <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                                    Dark Mode Logo
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">White text / For dark header</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                ref={logoDarkFileInputRef}
+                                onChange={(e) => handleLogoUpload(e, 'dark')}
+                                accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                                className="hidden"
+                              />
+
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  type="button"
+                                  disabled={isUploadingLogoDark}
+                                  onClick={() => logoDarkFileInputRef.current?.click()}
+                                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
+                                >
+                                  {isUploadingLogoDark ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <span>Uploading...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload className="w-3.5 h-3.5" />
+                                      <span>{siteConfig.logoDark ? 'Change Dark Logo' : 'Upload Dark Logo'}</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                {siteConfig.logoDark && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSiteConfig({ ...siteConfig, logoDark: '' })}
+                                    className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
+                                    title="Reset Dark Logo"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                    <span>Reset</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Dark Preview Container (Pure Black Background) */}
+                              <div className="p-3 bg-[#121212] border border-dashed border-gray-700 rounded flex items-center justify-center min-h-[70px]">
+                                <img
+                                  src={siteConfig.logoDark || '/images/apexchief-logo-dark.png'}
+                                  alt="Dark Mode Logo Preview"
+                                  className="max-h-12 max-w-[200px] object-contain"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
+                                  Direct Dark Logo URL:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={siteConfig.logoDark || ''}
+                                  onChange={(e) => setSiteConfig({ ...siteConfig, logoDark: e.target.value })}
+                                  placeholder="https://ik.imagekit.io/.../apexchief-logo-dark.png"
+                                  className="block w-full px-2.5 py-1 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#161c2e] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                                />
+                              </div>
+                            </div>
                           </div>
                         </div>
 

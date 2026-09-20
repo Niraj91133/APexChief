@@ -186,10 +186,17 @@ export default function HomePage() {
             <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-4 line-clamp-3">
               {newsMain.excerpt}
             </p>
-            <div className="flex items-center space-x-3 pt-3 border-t border-[#211d1d]/10">
+            <div className="flex items-center justify-between pt-3 border-t border-[#211d1d]/10">
               <div className="text-[11px] font-serif text-[#575757]">
                 {newsMain.date}
               </div>
+              <Link
+                href={`/news/${newsMain.slug}`}
+                className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
+              >
+                <span>Read Story</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
 
@@ -227,9 +234,10 @@ export default function HomePage() {
                 </div>
                 <Link
                   href={`/news/${newsRightTop.slug}`}
-                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-3"
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs mt-3 w-fit"
                 >
-                  Read more
+                  <span>Read more</span>
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
@@ -264,9 +272,10 @@ export default function HomePage() {
                 </div>
                 <Link
                   href={`/news/${newsRightBottom.slug}`}
-                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-2"
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs mt-2 w-fit"
                 >
-                  Read more
+                  <span>Read more</span>
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
 
@@ -298,9 +307,10 @@ export default function HomePage() {
                 </div>
                 <Link
                   href={`/news/${newsRightBottom2.slug}`}
-                  className="inline-block text-[12px] font-serif italic text-[#002b5c] hover:text-[#f7413e] transition-colors font-medium mt-2"
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs mt-2 w-fit"
                 >
-                  Read more
+                  <span>Read more</span>
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
             </div>
@@ -360,8 +370,17 @@ export default function HomePage() {
               <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-6 max-w-xl">
                 {currentBestArticle.excerpt}
               </p>
-              <div className="text-xs font-serif italic text-[#575757]">
-                {currentBestArticle.date}
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-xs font-serif italic text-[#575757]">
+                  {currentBestArticle.date}
+                </div>
+                <Link
+                  href={`/news/${currentBestArticle.slug}`}
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
+                >
+                  <span>Read Story</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
             </div>
 
@@ -682,9 +701,10 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               </div>
               <Link
                 href={`/news/${leadOpinion.slug}`}
-                className="text-xs font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-semibold"
+                className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
               >
-                Read Essay →
+                <span>Read Essay</span>
+                <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
           </div>
@@ -709,8 +729,9 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 </div>
                 <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
                   <span className="font-serif italic text-gray-600 dark:text-gray-400">By {art.author}</span>
-                  <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e]">
-                    Read →
+                  <Link href={`/news/${art.slug}`} className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded transition-all shadow-xs">
+                    <span>Read</span>
+                    <ArrowRight className="w-2.5 h-2.5" />
                   </Link>
                 </div>
               </div>
@@ -770,8 +791,9 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
 
               <div className="flex items-center justify-between pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
                 <span className="font-serif italic text-[#575757] dark:text-gray-400">{art.date}</span>
-                <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-semibold">
-                  Read Report →
+                <Link href={`/news/${art.slug}`} className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs">
+                  <span>Read Report</span>
+                  <ArrowRight className="w-2.5 h-2.5" />
                 </Link>
               </div>
             </div>

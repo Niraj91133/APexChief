@@ -222,8 +222,8 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
       <article className="w-full" itemScope itemType="https://schema.org/NewsArticle">
         {/* Top Breadcrumb & Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center justify-between pb-4 mb-6 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-[#a3a3a3]">
-          <div className="flex items-center space-x-2">
+        <nav aria-label="Breadcrumb" className="flex items-center justify-between flex-wrap gap-2 pb-4 mb-6 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-[#a3a3a3] overflow-hidden no-scrollbar">
+          <div className="flex items-center space-x-2 flex-wrap">
             <Link
               href="/"
               className="hover:text-[#211d1d] dark:hover:text-[#ffffff] transition-colors"

@@ -327,6 +327,24 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
   background: #555555;
 }
 
+/* Hide scrollbars across all browsers for no-scrollbar and scrollbar-none */
+.no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar,
+[class*="no-scrollbar"]::-webkit-scrollbar,
+[class*="scrollbar-none"]::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.no-scrollbar,
+.scrollbar-none,
+[class*="no-scrollbar"],
+[class*="scrollbar-none"] {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 /* ========================================================================= */
 /* Article and Card Images: Full Box Fill (object-cover) Without Whitespace   */
 /* ========================================================================= */

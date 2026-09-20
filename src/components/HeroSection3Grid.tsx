@@ -403,9 +403,9 @@ export default function HeroSection3Grid({
               </div>
               <Link
                 href={`/news/${activeTopArticle.slug}`}
-                className="inline-flex items-center space-x-1 text-[12px] font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-medium"
+                className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
               >
-                <span>Read full story</span>
+                <span>Read More</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -616,10 +616,10 @@ export default function HeroSection3Grid({
           <div className="pt-3 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="inline-flex items-center space-x-1 text-[12px] font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] transition-colors font-medium"
+              className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
             >
-              <span>Read dialogue</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <span>Read Dialogue</span>
+              <ArrowRight className="w-3 h-3" />
             </Link>
 
             <button
@@ -749,7 +749,7 @@ export default function HeroSection3Grid({
                     <Link
                       href={`/news/${art.slug}`}
                       onClick={() => setIsTop10ModalOpen(false)}
-                      className="shrink-0 text-xs font-mono uppercase font-bold text-[#211d1d] dark:text-white group-hover/modal-item:text-[#f7413e] flex items-center space-x-1"
+                      className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
                     >
                       <span>Read Story</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -877,7 +877,7 @@ export default function HeroSection3Grid({
                       <Link
                         href={`/news/${art.slug}`}
                         onClick={() => setIsInterviewsModalOpen(false)}
-                        className="shrink-0 text-xs font-mono uppercase font-bold text-[#211d1d] dark:text-white group-hover/modal-item:text-[#f7413e] flex items-center space-x-1"
+                        className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
                       >
                         <span>Read Dialogue</span>
                         <ArrowUpRight className="w-3.5 h-3.5" />

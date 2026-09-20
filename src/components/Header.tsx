@@ -58,11 +58,10 @@ function HeaderNav({
         <nav className="flex items-center justify-center flex-wrap gap-x-0.5 lg:gap-x-1 xl:gap-x-1.5 py-0.5 text-center">
           <Link
             href="/"
-            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
-              pathname === '/' && !currentCategory
+            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${pathname === '/' && !currentCategory
                 ? 'text-[#f7413e] bg-white/10'
                 : 'text-white/95 hover:text-[#f7413e]'
-            }`}
+              }`}
           >
             Home
           </Link>
@@ -80,20 +79,18 @@ function HeaderNav({
               >
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-0.5 px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
-                    isActive
+                  className={`inline-flex items-center space-x-0.5 px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${isActive
                       ? 'text-[#f7413e] bg-white/10'
                       : isHovered
-                      ? 'text-[#f7413e] bg-white/5'
-                      : 'text-white/90 hover:text-[#f7413e]'
-                  }`}
+                        ? 'text-[#f7413e] bg-white/5'
+                        : 'text-white/90 hover:text-[#f7413e]'
+                    }`}
                 >
                   <span>{cat.name}</span>
                   {hasSubs && (
                     <ChevronDown
-                      className={`w-2.5 h-2.5 transition-transform duration-200 ${
-                        isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
-                      }`}
+                      className={`w-2.5 h-2.5 transition-transform duration-200 ${isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
+                        }`}
                     />
                   )}
                 </Link>
@@ -182,8 +179,8 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   const [config, setConfig] = useState<SiteConfig>(initialConfig || siteConfig);
 
   const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
-  const logoDarkSrc = (config.logoDark && config.logoDark !== config.logoLight && config.logoDark !== config.logo) 
-    ? config.logoDark 
+  const logoDarkSrc = (config.logoDark && config.logoDark !== config.logoLight && config.logoDark !== config.logo)
+    ? config.logoDark
     : '/images/apexchief-logo-dark.png';
 
   // Sync state if initialConfig updates from parent
@@ -355,7 +352,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
           fetchServerConfig();
         }
       };
-    } catch (e) {}
+    } catch (e) { }
 
     return () => {
       window.removeEventListener('storage', handleStorage);
@@ -376,7 +373,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   }, []);
 
   const breakingDynamic = liveArticles.filter((a) => a.isBreaking);
-  const breakingArticles = breakingDynamic.length > 0 
+  const breakingArticles = breakingDynamic.length > 0
     ? [...breakingDynamic, ...ARTICLES.filter((a) => !breakingDynamic.some((b) => b.slug === a.slug))].slice(0, 6)
     : ARTICLES.slice(0, 5);
 
@@ -421,13 +418,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-[52px] sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[270px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[90px] w-auto max-w-[220px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-[52px] sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[270px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[90px] w-auto max-w-[220px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
@@ -449,7 +446,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
             <span>Search stories...</span>
             <span className="ml-3 bg-white dark:bg-[#333333] border border-gray-200 dark:border-transparent dark:text-white/80 px-1.5 py-0.5 rounded text-[9px] font-mono text-gray-500">/</span>
           </button>
-          
+
           <button
             onClick={openSearch}
             className="md:hidden p-1.5 text-black dark:text-white hover:text-[#f7413e] transition-colors cursor-pointer"
@@ -490,31 +487,23 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         />
       </Suspense>
 
-      {/* 3. Breaking News Scrolling Marquee Bar */}
-      <div className="w-full bg-black text-white flex items-center overflow-hidden border-b border-gray-200 dark:border-white/10 h-9 sm:h-10 select-none">
-        {/* Red Badge */}
-        <div className="bg-[#f7413e] text-white px-3 sm:px-4 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center space-x-1.5 shrink-0 z-10 border-r border-black/20 h-full">
-          <span className="text-white animate-pulse">⚡</span>
-          <span>BREAKING</span>
-        </div>
+      {/* 3. Breaking News Ticker Bar */}
+      <div className="w-full bg-[#161616] text-[#eff0e0] border-t border-[#222222] py-1 sm:py-1.5 px-4 overflow-hidden relative shadow-inner">
+        <div className="max-w-[1240px] mx-auto flex items-center text-xs">
+          <div className="flex items-center space-x-2 shrink-0 pr-4 border-r border-[#333333] z-10 bg-[#161616]">
+            <span className="w-2 h-2 rounded-full bg-[#f7413e] animate-pulse"></span>
+            <span className="font-bebas text-sm sm:text-base tracking-widest text-[#f7413e] uppercase">
+              Breaking
+            </span>
+          </div>
 
-        {/* Scrolling items */}
-        <div className="flex-1 overflow-hidden relative flex items-center h-full">
-          <div className="animate-marquee whitespace-nowrap flex items-center space-x-12 text-xs font-sans font-medium text-white/90">
-            {breakingArticles.map((art) => (
-              <span key={art.slug} className="inline-flex items-center">
-                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
-                  {art.title}
-                </Link>
-                <span className="mx-2 text-white/40">•</span>
-                <span className="text-gray-300 font-mono text-[10px]">{art.date}</span>
-                <span className="ml-2.5 text-[#fbbf24] font-semibold text-[10px] uppercase font-mono">[{art.category}]</span>
-              </span>
-            ))}
-            {/* Duplicate for seamless loop */}
-            {breakingArticles.map((art) => (
-              <span key={`${art.slug}-dup`} className="inline-flex items-center">
-                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
+          <div className="overflow-x-auto no-scrollbar flex items-center space-x-6 whitespace-nowrap pl-4 select-none scroll-smooth">
+            {breakingArticles.map((art, idx) => (
+              <span key={art.slug || idx} className="inline-flex items-center">
+                <Link
+                  href={`/news/${art.slug}`}
+                  className="font-sans font-medium text-xs text-gray-200 hover:text-[#f7413e] transition-colors"
+                >
                   {art.title}
                 </Link>
                 <span className="mx-2 text-white/40">•</span>
@@ -538,13 +527,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                       src={logoLightSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-12 sm:h-14 w-auto max-w-[240px] object-contain dark:hidden block"
+                      className="h-11 sm:h-12 w-auto max-w-[220px] object-contain dark:hidden block"
                     />
                     <img
                       src={logoDarkSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-12 sm:h-14 w-auto max-w-[240px] object-contain hidden dark:block"
+                      className="h-11 sm:h-12 w-auto max-w-[220px] object-contain hidden dark:block"
                     />
                   </>
                 ) : (
@@ -564,11 +553,10 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   <Link
                     href="/"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-3 py-2 text-sm font-bold uppercase rounded transition-colors ${
-                      pathname === '/'
+                    className={`px-3 py-2 text-sm font-bold uppercase rounded transition-colors ${pathname === '/'
                         ? 'bg-[#f7413e] text-white'
                         : 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10'
-                    }`}
+                      }`}
                   >
                     Home
                   </Link>
@@ -593,9 +581,8 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                               aria-label="Toggle subcategories"
                             >
                               <ChevronDown
-                                className={`w-4 h-4 transition-transform duration-200 ${
-                                  isExpanded ? 'rotate-180 text-[#f7413e]' : ''
-                                }`}
+                                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#f7413e]' : ''
+                                  }`}
                               />
                             </button>
                           )}

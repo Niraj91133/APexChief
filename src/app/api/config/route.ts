@@ -10,7 +10,11 @@ export async function GET() {
     const dbConfig = await getSiteConfigFromDB();
     if (dbConfig && dbConfig.name) {
       const activeLogoLight = dbConfig.logoLight || localConfig.logoLight || '/images/apexchief-logo-light.png';
-      const activeLogoDark = dbConfig.logoDark || localConfig.logoDark || '/images/apexchief-logo-dark.png';
+      // Ensure dark logo is strictly distinct from light logo
+      const isDarkSameAsLight = dbConfig.logoDark && (dbConfig.logoDark === dbConfig.logoLight || dbConfig.logoDark === dbConfig.logo);
+      const activeLogoDark = (!dbConfig.logoDark || isDarkSameAsLight)
+        ? (localConfig.logoDark || '/images/apexchief-logo-dark.png')
+        : dbConfig.logoDark;
       const activeLogo = dbConfig.logo || localConfig.logo || activeLogoLight;
 
       return NextResponse.json({
@@ -33,15 +37,17 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: 'Missing site name' }, { status: 400 });
     }
 
+    const localConfig = getSiteConfig();
+
     // Preserve distinct logoLight and logoDark
     if (newConfig.logo && !newConfig.logoLight) {
       newConfig.logoLight = newConfig.logo;
     }
-    if (newConfig.logo && !newConfig.logoDark) {
-      newConfig.logoDark = newConfig.logo;
+    if (!newConfig.logo && newConfig.logoLight) {
+      newConfig.logo = newConfig.logoLight;
     }
-    if (!newConfig.logo && (newConfig.logoLight || newConfig.logoDark)) {
-      newConfig.logo = newConfig.logoLight || newConfig.logoDark;
+    if (!newConfig.logoDark || newConfig.logoDark === newConfig.logoLight) {
+      newConfig.logoDark = localConfig.logoDark || '/images/apexchief-logo-dark.png';
     }
 
     if (newConfig.favicon || newConfig.faviconUrl) {
