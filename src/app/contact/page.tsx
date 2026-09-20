@@ -244,14 +244,14 @@ export default function ContactPage() {
               <span>United States Bureau</span>
             </div>
             <h4 className="font-serif text-lg font-bold text-[#0a0a0a]">
-              {siteConfig.contact.addressNY.title}
+              {siteConfig.contact.addressNY?.title || 'Global Headquarters - New York'}
             </h4>
             <p className="text-sm text-[#575757] mt-1">
-              {siteConfig.contact.addressNY.street}
+              {siteConfig.contact.addressNY?.street || '100 Financial Center Blvd, Suite 4800'}
               <br />
-              {siteConfig.contact.addressNY.city}
+              {siteConfig.contact.addressNY?.city || 'New York, NY 10005'}
               <br />
-              {siteConfig.contact.addressNY.country}
+              {siteConfig.contact.addressNY?.country || 'United States'}
             </p>
           </div>
 
@@ -262,14 +262,14 @@ export default function ContactPage() {
               <span>European Bureau</span>
             </div>
             <h4 className="font-serif text-lg font-bold text-[#0a0a0a]">
-              {siteConfig.contact.addressLondon.title}
+              {siteConfig.contact.addressLondon?.title || 'European Bureau - London'}
             </h4>
             <p className="text-sm text-[#575757] mt-1">
-              {siteConfig.contact.addressLondon.street}
+              {siteConfig.contact.addressLondon?.street || '1 Canada Square, Canary Wharf'}
               <br />
-              {siteConfig.contact.addressLondon.city}
+              {siteConfig.contact.addressLondon?.city || 'London E14 5AA'}
               <br />
-              {siteConfig.contact.addressLondon.country}
+              {siteConfig.contact.addressLondon?.country || 'United Kingdom'}
             </p>
           </div>
         </div>

@@ -53,10 +53,50 @@ export async function POST(request: Request) {
 
     await upsertCategoryInDB(newCategory);
 
-    categories.push(newCategory);
+    return NextResponse.json(newCategory, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const updatedCategory: CategoryInfo = await request.json();
+    if (!updatedCategory.slug) {
+      return NextResponse.json({ error: 'Missing slug' }, { status: 400 });
+    }
+
+    await upsertCategoryInDB(updatedCategory);
+
+    const categories = getCategories();
+    const idx = categories.findIndex((c) => c.slug.toLowerCase() === updatedCategory.slug.toLowerCase());
+    if (idx !== -1) {
+      categories[idx] = { ...categories[idx], ...updatedCategory };
+    } else {
+      categories.push(updatedCategory);
+    }
     saveCategories(categories);
 
-    return NextResponse.json(newCategory);
+    return NextResponse.json(updatedCategory);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const slug = searchParams.get('slug');
+    if (!slug) {
+      return NextResponse.json({ error: 'Missing slug parameter' }, { status: 400 });
+    }
+
+    const categories = getCategories();
+    const filtered = categories.filter((c) => c.slug.toLowerCase() !== slug.toLowerCase());
+    saveCategories(filtered);
+    await bulkSaveCategoriesInDB(filtered);
+
+    return NextResponse.json({ success: true, message: `Category ${slug} deleted` });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
   }

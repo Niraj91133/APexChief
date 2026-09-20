@@ -69,13 +69,13 @@ export interface SiteConfig {
     logoLight?: string;
     logoDark?: string;
     favicon?: string;
-    addressNY: {
+    addressNY?: {
       title: string;
       street: string;
       city: string;
       country: string;
     };
-    addressLondon: {
+    addressLondon?: {
       title: string;
       street: string;
       city: string;

@@ -94,7 +94,19 @@ export function saveSiteConfig(config: typeof siteConfig): boolean {
   try {
     initDB();
 
-    const configCopy = { ...config };
+    const baseConfig = getSiteConfig();
+    const configCopy = {
+      ...baseConfig,
+      ...config,
+      contact: {
+        ...baseConfig.contact,
+        ...(config.contact || {})
+      },
+      socialLinks: {
+        ...baseConfig.socialLinks,
+        ...(config.socialLinks || {})
+      }
+    };
 
     // 1. Process base64 logo image payloads into static physical files
     try {

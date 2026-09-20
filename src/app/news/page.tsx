@@ -183,7 +183,20 @@ function NewsContent() {
       const normCat = activeCategory.toLowerCase().trim().replace(/[-\s]/g, '');
       list = list.filter((a) => {
         const artCat = a.category.toLowerCase().trim().replace(/[-\s]/g, '');
-        return artCat === normCat;
+        if (artCat === normCat) return true;
+        if (normCat === 'interview' && (a.placement === 'interview' || a.tag.toLowerCase().includes('interview') || a.title.toLowerCase().startsWith('interview:'))) {
+          return true;
+        }
+        if ((normCat === 'toplist' || normCat === 'top10') && (a.placement === 'top10' || a.tag.toLowerCase().includes('top 10') || a.title.toLowerCase().includes('top 10'))) {
+          return true;
+        }
+        if ((normCat === 'realstate' || normCat === 'realestate') && (artCat === 'realstate' || artCat === 'realestate' || a.tag.toLowerCase().includes('real estate'))) {
+          return true;
+        }
+        if ((normCat === 'startup' || normCat === 'startups') && (artCat === 'startup' || artCat === 'startups' || a.tag.toLowerCase().includes('startup') || a.tag.toLowerCase().includes('scaleup'))) {
+          return true;
+        }
+        return false;
       });
     }
 
@@ -450,7 +463,12 @@ function NewsContent() {
                       const isActive = activeCategory.toLowerCase().trim() === cat.slug.toLowerCase().trim() && !activeRegion;
                       const count = articles.filter((a) => {
                         const artCat = a.category.toLowerCase().trim().replace(/[-\s]/g, '');
-                        return artCat === norm;
+                        if (artCat === norm) return true;
+                        if (norm === 'interview' && (a.placement === 'interview' || a.tag.toLowerCase().includes('interview') || a.title.toLowerCase().startsWith('interview:'))) return true;
+                        if ((norm === 'toplist' || norm === 'top10') && (a.placement === 'top10' || a.tag.toLowerCase().includes('top 10') || a.title.toLowerCase().includes('top 10'))) return true;
+                        if ((norm === 'realstate' || norm === 'realestate') && (artCat === 'realstate' || artCat === 'realestate' || a.tag.toLowerCase().includes('real estate'))) return true;
+                        if ((norm === 'startup' || norm === 'startups') && (artCat === 'startup' || artCat === 'startups' || a.tag.toLowerCase().includes('startup') || a.tag.toLowerCase().includes('scaleup'))) return true;
+                        return false;
                       }).length;
 
                       return (

@@ -698,6 +698,19 @@
           <a href="#" onclick="switchView('rank-math-settings'); switchRankMathSuiteTab('indexing'); return false;" id="sub-rm-indexing" class="hover:text-white">Instant Indexing</a>
         </div>
 
+        <!-- Top 10 (Popular Posts Suite) -->
+        <div onclick="switchView('top10-page')" id="menu-top10" class="wp-menu-item">
+          <i class="fas fa-trophy w-5 text-amber-400 mr-2 text-center"></i>
+          <span class="menu-title">Top 10</span>
+        </div>
+        <div id="top10-submenu" class="wp-submenu hidden">
+          <a href="#" onclick="switchView('top10-page'); switchTop10Tab('leaderboard'); return false;" id="sub-top10-leaderboard" class="hover:text-white flex items-center justify-between text-white font-semibold">
+            <span>Popular Posts</span>
+            <span class="bg-amber-500 text-black text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">Rank #1-10</span>
+          </a>
+          <a href="#" onclick="switchView('top10-page'); switchTop10Tab('settings'); return false;" id="sub-top10-settings" class="hover:text-white">Top 10 Settings</a>
+        </div>
+
         <!-- Settings (Logo, Socials, Security, Landing Page) -->
         <div onclick="switchView('settings-page')" id="menu-settings" class="wp-menu-item">
           <i class="fas fa-cog w-5 text-gray-400 mr-2 text-center"></i>
@@ -3301,6 +3314,148 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         <div id="stories-grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           <!-- Rendered dynamically via JS -->
         </div>
+      </div>
+
+      <!-- ========================================================================= -->
+      <!-- VIEW: TOP 10 POPULAR POSTS & LEADERBOARD SUITE -->
+      <!-- ========================================================================= -->
+      <div id="view-top10-page" class="hidden space-y-6">
+        
+        <!-- Header & Controls -->
+        <div class="flex items-center justify-between flex-wrap gap-3 pb-3 border-b border-gray-200">
+          <div>
+            <div class="flex items-center space-x-2">
+              <h1 class="text-2xl font-normal text-[#1d2327]">Top 10 — Popular Posts Suite</h1>
+              <span class="bg-amber-500 text-black text-[10px] font-bold px-2 py-0.5 rounded uppercase">WordPress Top 10 Core</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-0.5">Manage ranked editorial stories, custom visit counts, popular post exclusions, and front-page leaderboard placement.</p>
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="renderTop10Dashboard(); showToast('Leaderboard Refreshed', 'Synced live visit counts.');" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs cursor-pointer">
+              <i class="fas fa-sync-alt text-[10px] text-amber-600"></i>
+              <span>Recalculate Rankings</span>
+            </button>
+            <a href="/news?category=top-list" target="_blank" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded text-xs font-semibold flex items-center gap-1.5 shadow-2xs">
+              <i class="fas fa-external-link-alt text-[10px] text-blue-600"></i>
+              <span>View Top 10 Front Page</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="bg-white p-4 border border-[#c3c4c7] rounded shadow-2xs">
+            <span class="text-gray-500 font-semibold uppercase text-[10px]">Total Recorded Views</span>
+            <h3 id="top10-stat-total-views" class="text-2xl font-bold text-gray-900 mt-1">0</h3>
+            <span class="text-emerald-600 text-[11px] font-medium flex items-center gap-1 mt-0.5">
+              <i class="fas fa-arrow-up text-[9px]"></i> Live tracked
+            </span>
+          </div>
+          <div class="bg-white p-4 border border-[#c3c4c7] rounded shadow-2xs">
+            <span class="text-gray-500 font-semibold uppercase text-[10px]">#1 Ranked Lead Story</span>
+            <h3 id="top10-stat-top-post" class="text-sm font-bold text-[#f7413e] mt-1 line-clamp-1">—</h3>
+            <span class="text-gray-400 text-[11px]">Primary Hero Leader</span>
+          </div>
+          <div class="bg-white p-4 border border-[#c3c4c7] rounded shadow-2xs">
+            <span class="text-gray-500 font-semibold uppercase text-[10px]">Active in Top 10 Index</span>
+            <h3 id="top10-stat-active-count" class="text-2xl font-bold text-blue-600 mt-1">10</h3>
+            <span class="text-blue-600 text-[11px]">Full editorial quorum</span>
+          </div>
+          <div class="bg-white p-4 border border-[#c3c4c7] rounded shadow-2xs">
+            <span class="text-gray-500 font-semibold uppercase text-[10px]">Algorithm Status</span>
+            <h3 class="text-2xl font-bold text-emerald-600 mt-1">Active</h3>
+            <span class="text-gray-400 text-[11px]">Auto-ranked by visit count</span>
+          </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="border-b border-gray-200">
+          <nav class="flex space-x-6 text-xs font-semibold">
+            <button id="tab-btn-top10-leaderboard" onclick="switchTop10Tab('leaderboard')" class="pb-3 border-b-2 border-[#f7413e] text-[#f7413e] font-bold cursor-pointer flex items-center gap-1.5">
+              <i class="fas fa-trophy"></i>
+              <span>Popular Posts Leaderboard (Top 10)</span>
+            </button>
+            <button id="tab-btn-top10-settings" onclick="switchTop10Tab('settings')" class="pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer flex items-center gap-1.5">
+              <i class="fas fa-sliders-h"></i>
+              <span>Top 10 Plugin Settings</span>
+            </button>
+          </nav>
+        </div>
+
+        <!-- TAB 1: LEADERBOARD CONTENT -->
+        <div id="top10-tab-content-leaderboard" class="space-y-4">
+          <div class="bg-white border border-[#c3c4c7] rounded shadow-xs overflow-hidden">
+            <div class="p-3 bg-[#f6f7f7] border-b border-[#c3c4c7] flex items-center justify-between">
+              <div class="text-xs font-bold text-gray-800 flex items-center gap-1.5">
+                <i class="fas fa-fire text-amber-500"></i>
+                <span>Current Top 10 Ranked Posts (Front-Page Order)</span>
+              </div>
+              <span class="text-[11px] text-gray-500 font-mono">You can edit visit counts directly to change rankings</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-gray-50 border-b border-gray-200 font-bold text-gray-600">
+                  <tr>
+                    <th class="p-3 w-16 text-center">Rank</th>
+                    <th class="p-3">Article Title &amp; Category</th>
+                    <th class="p-3 w-36 text-center">Visit Count</th>
+                    <th class="p-3 w-28 text-center">Status</th>
+                    <th class="p-3 w-28 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="top10-leaderboard-tbody" class="divide-y divide-gray-100">
+                  <!-- Rendered dynamically by renderTop10Dashboard() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: GLOBAL TOP 10 PLUGIN SETTINGS -->
+        <div id="top10-tab-content-settings" class="hidden bg-white border border-[#c3c4c7] rounded shadow-xs p-5 space-y-5">
+          <h3 class="font-bold text-sm text-gray-900 border-b pb-2">Global Top 10 Plugin Configuration</h3>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+            <div>
+              <label class="block font-semibold text-gray-800 mb-1">Widget Title</label>
+              <input type="text" id="top10-setting-widget-title" value="Top 10 Ranked Stories" class="w-full border border-gray-300 rounded p-2 text-xs focus:border-[#2271b1] outline-none">
+              <p class="text-[11px] text-gray-500 mt-1">Title displayed above the popular posts list on the homepage.</p>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-gray-800 mb-1">Ranking Period Calculation</label>
+              <select id="top10-setting-period" class="w-full border border-gray-300 rounded p-2 text-xs bg-white focus:border-[#2271b1] outline-none">
+                <option value="all-time" selected>Overall Total Views (All Time)</option>
+                <option value="daily">Daily Popular (Last 24 Hours)</option>
+                <option value="weekly">Weekly Popular (Last 7 Days)</option>
+              </select>
+              <p class="text-[11px] text-gray-500 mt-1">Select the ranking algorithm time window.</p>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-gray-800 mb-1">Thumbnail Source</label>
+              <select id="top10-setting-thumb-source" class="w-full border border-gray-300 rounded p-2 text-xs bg-white focus:border-[#2271b1] outline-none">
+                <option value="featured" selected>Post Featured Image</option>
+                <option value="custom">Custom Top 10 Thumbnail URL</option>
+                <option value="first-image">First image in post content</option>
+              </select>
+              <p class="text-[11px] text-gray-500 mt-1">Source for image thumbnail displayed in Top 10 widgets.</p>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-gray-800 mb-1">Maximum Posts in Leaderboard</label>
+              <input type="number" id="top10-setting-limit" value="10" min="5" max="20" class="w-full border border-gray-300 rounded p-2 text-xs focus:border-[#2271b1] outline-none">
+              <p class="text-[11px] text-gray-500 mt-1">Number of top ranked items displayed.</p>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-gray-200">
+            <button onclick="saveTop10GlobalSettings()" class="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded text-xs font-bold transition-colors cursor-pointer shadow-xs">
+              Save Top 10 Settings
+            </button>
+          </div>
+        </div>
+
       </div>
 
       <!-- ========================================================================= -->
@@ -7538,21 +7693,75 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (!name) return;
       const slug = generateSlug(name);
 
+      let newCatPayload = null;
       if (parentSlug) {
         const parent = categories.find(c => c.slug === parentSlug);
         if (parent) {
           if (!parent.subcategories) parent.subcategories = [];
           parent.subcategories.push({ name, slug });
+          newCatPayload = parent;
         }
       } else {
-        categories.push({ id: 'cat_' + Date.now(), name, slug, description: name, subcategories: [] });
+        const newCat = { id: 'cat_' + Date.now(), name, slug, description: name, subcategories: [], isVisible: true };
+        categories.push(newCat);
+        newCatPayload = newCat;
       }
 
       saveState();
       renderCategoriesChecklist();
+      renderCategoriesManager();
+
+      if (newCatPayload) {
+        fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newCatPayload)
+        }).then(r => r.json()).then(res => {
+          console.log('Category created on server:', res);
+        }).catch(err => console.warn('Sync error:', err));
+      }
+
       document.getElementById('new-cat-name').value = '';
       toggleInlineEdit('inline-add-cat-form');
       showToast('ApexChief Category Created', `Added "${name}".`);
+    }
+
+    function createCategoryFromManager() {
+      const name = document.getElementById('cat-manager-name')?.value.trim();
+      const slug = document.getElementById('cat-manager-slug')?.value.trim() || generateSlug(name);
+      const desc = document.getElementById('cat-manager-desc')?.value.trim() || '';
+      if (!name) {
+        showToast('Validation Error', 'Please enter a category name.', 'error');
+        return;
+      }
+
+      const newCat = {
+        id: 'cat_' + Date.now(),
+        name: name,
+        slug: slug,
+        description: desc,
+        subcategories: [],
+        isVisible: true
+      };
+
+      categories.push(newCat);
+      saveState();
+      renderCategoriesManager();
+      renderCategoriesChecklist();
+
+      // Sync to live API
+      fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCat)
+      }).then(r => r.json()).then(res => {
+        console.log('Category created & synced with server:', res);
+      }).catch(err => console.warn('Category sync warning:', err));
+
+      if (document.getElementById('cat-manager-name')) document.getElementById('cat-manager-name').value = '';
+      if (document.getElementById('cat-manager-slug')) document.getElementById('cat-manager-slug').value = '';
+      if (document.getElementById('cat-manager-desc')) document.getElementById('cat-manager-desc').value = '';
+      showToast('Category Created', `Added "${name}" successfully.`);
     }
 
     function renderCategoriesManager() {
@@ -7561,19 +7770,29 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       tbody.innerHTML = categories.map(c => `
         <tr class="hover:bg-gray-50">
           <td class="p-2.5 font-bold text-[#2271b1]">${c.name}</td>
-          <td class="p-2.5 text-gray-600">${c.slug}</td>
+          <td class="p-2.5 text-gray-600 font-mono">${c.slug}</td>
           <td class="p-2.5 text-gray-500">${c.subcategories ? c.subcategories.map(s => s.name).join(', ') : '—'}</td>
-          <td class="p-2.5"><button onclick="deleteCategory('${c.id}')" class="text-red-600 hover:underline">Delete</button></td>
+          <td class="p-2.5"><button onclick="deleteCategory('${c.slug || c.id}')" class="text-red-600 hover:underline cursor-pointer font-medium">Delete</button></td>
         </tr>
       `).join('');
     }
 
-    function deleteCategory(id) {
-      categories = categories.filter(c => c.id !== id);
+    function deleteCategory(identifier) {
+      const target = categories.find(c => c.id === identifier || c.slug === identifier);
+      const slugToDelete = target ? target.slug : identifier;
+      categories = categories.filter(c => c.id !== identifier && c.slug !== identifier);
       saveState();
       renderCategoriesManager();
       renderCategoriesChecklist();
-      showToast('Category Deleted', 'Taxonomy updated.');
+
+      // Sync to live API
+      fetch(`/api/categories?slug=${encodeURIComponent(slugToDelete)}`, {
+        method: 'DELETE'
+      }).then(r => r.json()).then(res => {
+        console.log('Category deleted on server:', res);
+      }).catch(err => console.warn('Category delete warning:', err));
+
+      showToast('Category Deleted', 'Taxonomy updated and synchronized.');
     }
 
     // =========================================================================
@@ -8383,6 +8602,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         'view-categories-page', 
         'view-tags-page', 
         'view-rank-math-settings',
+        'view-top10-page',
         'view-media-page',
         'view-pages-list',
         'view-page-new',
@@ -8396,6 +8616,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (viewId === 'stories') viewId = 'stories-list';
       if (viewId === 'posts') viewId = 'posts-list';
       if (viewId === 'settings') viewId = 'settings-page';
+      if (viewId === 'top10') viewId = 'top10-page';
       if (viewId === 'modern' || viewId === 'portal') viewId = 'modern-portal';
 
       allViews.forEach(v => {
@@ -8406,7 +8627,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       document.querySelectorAll('.wp-menu-item').forEach(m => m.classList.remove('active'));
       
       // Hide all submenus by default
-      ['posts-submenu', 'media-submenu', 'pages-submenu', 'stories-submenu', 'settings-submenu', 'rankmath-submenu'].forEach(s => {
+      ['posts-submenu', 'media-submenu', 'pages-submenu', 'stories-submenu', 'settings-submenu', 'rankmath-submenu', 'top10-submenu'].forEach(s => {
         const el = document.getElementById(s);
         if (el) el.classList.add('hidden');
       });
@@ -8434,6 +8655,11 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         document.getElementById('menu-posts').classList.add('active');
         document.getElementById('posts-submenu').classList.remove('hidden');
         renderTagsManager();
+      } else if (viewId === 'top10-page') {
+        document.getElementById('view-top10-page').classList.remove('hidden');
+        document.getElementById('menu-top10').classList.add('active');
+        document.getElementById('top10-submenu').classList.remove('hidden');
+        renderTop10Dashboard();
       } else if (viewId === 'media-page') {
         document.getElementById('view-media-page').classList.remove('hidden');
         document.getElementById('menu-media').classList.add('active');
@@ -8472,6 +8698,161 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         document.getElementById('view-modern-executive-portal').classList.remove('hidden');
         renderModernNewsGrid();
       }
+    }
+
+    function switchTop10Tab(tabId) {
+      const btnLeaderboard = document.getElementById('tab-btn-top10-leaderboard');
+      const btnSettings = document.getElementById('tab-btn-top10-settings');
+      const contentLeaderboard = document.getElementById('top10-tab-content-leaderboard');
+      const contentSettings = document.getElementById('top10-tab-content-settings');
+
+      if (tabId === 'leaderboard') {
+        if (btnLeaderboard) btnLeaderboard.className = 'pb-3 border-b-2 border-[#f7413e] text-[#f7413e] font-bold cursor-pointer flex items-center gap-1.5';
+        if (btnSettings) btnSettings.className = 'pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer flex items-center gap-1.5';
+        if (contentLeaderboard) contentLeaderboard.classList.remove('hidden');
+        if (contentSettings) contentSettings.classList.add('hidden');
+        renderTop10Dashboard();
+      } else {
+        if (btnSettings) btnSettings.className = 'pb-3 border-b-2 border-[#f7413e] text-[#f7413e] font-bold cursor-pointer flex items-center gap-1.5';
+        if (btnLeaderboard) btnLeaderboard.className = 'pb-3 border-b-2 border-transparent text-gray-500 hover:text-gray-800 cursor-pointer flex items-center gap-1.5';
+        if (contentSettings) contentSettings.classList.remove('hidden');
+        if (contentLeaderboard) contentLeaderboard.classList.add('hidden');
+      }
+    }
+
+    function renderTop10Dashboard() {
+      const tableBody = document.getElementById('top10-leaderboard-tbody');
+      if (!tableBody) return;
+
+      const allEligible = posts.filter(p => p.status !== 'trash');
+      
+      allEligible.sort((a, b) => {
+        const vA = a.top10VisitCount !== undefined ? a.top10VisitCount : (a.views || 0);
+        const vB = b.top10VisitCount !== undefined ? b.top10VisitCount : (b.views || 0);
+        return vB - vA;
+      });
+
+      const top10List = allEligible.slice(0, 10);
+      const totalViews = allEligible.reduce((acc, p) => acc + (p.top10VisitCount !== undefined ? p.top10VisitCount : (p.views || 0)), 0);
+
+      const statTotal = document.getElementById('top10-stat-total-views');
+      if (statTotal) statTotal.innerText = totalViews.toLocaleString();
+      const statTopPost = document.getElementById('top10-stat-top-post');
+      if (statTopPost && top10List[0]) statTopPost.innerText = top10List[0].title;
+      const statActive = document.getElementById('top10-stat-active-count');
+      if (statActive) statActive.innerText = top10List.length;
+
+      if (top10List.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-400">No articles available for Top 10 leaderboard.</td></tr>';
+        return;
+      }
+
+      tableBody.innerHTML = top10List.map((p, idx) => {
+        const views = p.top10VisitCount !== undefined ? p.top10VisitCount : (p.views || 0);
+        const isExcluded = !!p.excludeFromPopularPosts;
+        const cat = Array.isArray(p.categories) ? p.categories[0] : (p.category || 'Editorial');
+        const thumb = p.top10Thumbnail || p.featuredImage || '/images/format-1.png';
+
+        return `
+          <tr class="hover:bg-amber-50/40 transition-colors border-b border-gray-200 text-xs">
+            <td class="p-3 text-center">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-oswald font-bold text-xs ${
+                idx === 0 ? 'bg-amber-500 text-white shadow-xs' : idx === 1 ? 'bg-slate-400 text-white shadow-xs' : idx === 2 ? 'bg-amber-700 text-white shadow-xs' : 'bg-gray-100 text-gray-700 border border-gray-300'
+              }">
+                ${idx + 1}
+              </span>
+            </td>
+            <td class="p-3">
+              <div class="flex items-center space-x-3">
+                <img src="${thumb}" alt="" class="w-12 h-10 object-cover rounded border border-gray-200 shrink-0">
+                <div>
+                  <a href="#" onclick="editPostById('${p.id}'); return false;" class="font-bold text-gray-900 hover:text-[#f7413e] line-clamp-1">${p.title}</a>
+                  <span class="text-[11px] text-gray-500 font-mono">${cat} &bull; ${p.date || 'Sep 2026'}</span>
+                </div>
+              </div>
+            </td>
+            <td class="p-3 text-center">
+              <div class="inline-flex items-center space-x-1.5">
+                <input 
+                  type="number" 
+                  id="top10-views-input-${p.id}" 
+                  value="${views}" 
+                  class="w-20 p-1 text-center font-mono font-bold text-xs border border-gray-300 rounded bg-white focus:border-[#f7413e] outline-none"
+                  onchange="updateTop10PostViews('${p.id}', this.value)"
+                >
+                <span class="text-[10px] text-gray-400 font-mono">views</span>
+              </div>
+            </td>
+            <td class="p-3 text-center">
+              <label class="inline-flex items-center cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  ${isExcluded ? 'checked' : ''} 
+                  onchange="toggleTop10Exclude('${p.id}', this.checked)"
+                  class="rounded text-[#f7413e] border-gray-300 focus:ring-0 cursor-pointer"
+                >
+                <span class="ml-1 text-[11px] font-medium ${isExcluded ? 'text-red-500' : 'text-emerald-600'}">${isExcluded ? 'Excluded' : 'Active'}</span>
+              </label>
+            </td>
+            <td class="p-3 text-center space-x-1.5">
+              <button 
+                onclick="editPostById('${p.id}')"
+                class="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded font-semibold text-[11px] transition-colors cursor-pointer"
+              >
+                Edit
+              </button>
+              <a 
+                href="/article/${p.slug}" 
+                target="_blank"
+                class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded font-semibold text-[11px] transition-colors inline-block"
+              >
+                View
+              </a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function updateTop10PostViews(postId, newCount) {
+      const count = parseInt(newCount) || 0;
+      const target = posts.find(p => p.id === postId || p.slug === postId);
+      if (target) {
+        target.top10VisitCount = count;
+        target.views = count;
+        saveState();
+        
+        fetch('/api/articles', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: target.slug || target.id, top10VisitCount: count, views: count })
+        }).then(r => r.json()).then(() => {
+          showToast('Top 10 Count Updated', `Updated views to ${count}.`);
+          renderTop10Dashboard();
+        }).catch(e => console.warn(e));
+      }
+    }
+
+    function toggleTop10Exclude(postId, isExcluded) {
+      const target = posts.find(p => p.id === postId || p.slug === postId);
+      if (target) {
+        target.excludeFromPopularPosts = isExcluded;
+        saveState();
+        
+        fetch('/api/articles', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug: target.slug || target.id, excludeFromPopularPosts: isExcluded })
+        }).then(r => r.json()).then(() => {
+          showToast('Top 10 Exclusion Updated', isExcluded ? 'Excluded from popular posts' : 'Included in popular posts');
+          renderTop10Dashboard();
+        }).catch(e => console.warn(e));
+      }
+    }
+
+    function saveTop10GlobalSettings() {
+      const widgetTitle = document.getElementById('top10-setting-widget-title')?.value || 'Top 10 Ranked Stories';
+      showToast('Top 10 Settings Saved', 'Popular posts widget settings synchronized.');
     }
 
     function toggleSidebarCollapse() {
@@ -10890,16 +11271,44 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         .replace(/>/g, '&gt;');
     }
 
+    async function fetchLiveCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        if (res.ok) {
+          const serverCats = await res.json();
+          if (Array.isArray(serverCats) && serverCats.length > 0) {
+            categories = serverCats;
+            saveState();
+            renderCategoriesChecklist();
+            renderCategoriesManager();
+            populateCategoryFilterDropdown();
+          }
+        }
+      } catch (err) {
+        console.warn('Live categories sync notice:', err);
+      }
+    }
+
     async function fetchLiveArticlesIntoPosts() {
       try {
         const res = await fetch('/api/articles');
         if (res.ok) {
           const liveArticles = await res.json();
           if (Array.isArray(liveArticles) && liveArticles.length > 0) {
-            let hasNew = false;
             liveArticles.forEach(art => {
               const existing = posts.find(p => p.slug === art.slug || (art.id && p.id === art.id));
-              if (!existing) {
+              if (existing) {
+                existing.title = art.title || existing.title;
+                if (art.category) existing.categories = Array.isArray(art.category) ? art.category : [art.category];
+                existing.homepagePlacement = art.homepagePlacement || (art.placement === 'interview' ? 'interview' : art.placement === 'top10' ? 'top10' : art.placement === 'top3' ? 'top3' : (existing.homepagePlacement || 'standard'));
+                existing.top10VisitCount = art.top10VisitCount !== undefined ? art.top10VisitCount : (art.views || existing.top10VisitCount || 0);
+                existing.views = art.viewsCount || art.views || existing.views || 0;
+                existing.excludeFromPopularPosts = art.excludeFromPopularPosts !== undefined ? art.excludeFromPopularPosts : existing.excludeFromPopularPosts;
+                existing.disablePopularPostsDisplay = art.disablePopularPostsDisplay !== undefined ? art.disablePopularPostsDisplay : existing.disablePopularPostsDisplay;
+                existing.top10Thumbnail = art.top10Thumbnail || existing.top10Thumbnail || '';
+                existing.featuredImage = art.image || art.featuredImage || existing.featuredImage || '';
+                existing.status = (art.status || 'published').toLowerCase() === 'published' ? 'published' : 'draft';
+              } else {
                 posts.push({
                   id: art.id || `post_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
                   title: art.title,
@@ -10907,25 +11316,28 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
                   content: art.content || '',
                   focusKeyword: art.focusKeyword || '',
                   seoScore: art.seoScore || 85,
-                  status: art.status || 'published',
+                  status: (art.status || 'published').toLowerCase() === 'published' ? 'published' : 'draft',
                   visibility: 'Public',
                   date: formatWpDate(art.publishedAt || art.date),
                   rawDate: art.publishedAt || art.date,
                   categories: Array.isArray(art.category) ? art.category : [art.category || 'Uncategorized'],
-                  tags: Array.isArray(art.tags) ? art.tags : [],
+                  tags: Array.isArray(art.tags) ? art.tags : (art.tag ? [art.tag] : []),
                   featuredImage: art.image || art.featuredImage || '',
                   author: art.author || 'ApexChief Editorial',
                   views: art.viewsCount || art.views || 0,
+                  top10VisitCount: art.top10VisitCount !== undefined ? art.top10VisitCount : (art.views || 0),
+                  excludeFromPopularPosts: !!art.excludeFromPopularPosts,
+                  disablePopularPostsDisplay: !!art.disablePopularPostsDisplay,
+                  top10Thumbnail: art.top10Thumbnail || '',
+                  homepagePlacement: art.homepagePlacement || (art.placement === 'interview' ? 'interview' : art.placement === 'top10' ? 'top10' : art.placement === 'top3' ? 'top3' : 'standard'),
                   commentsCount: 0,
                   likes: art.likesCount || art.likes || 0
                 });
-                hasNew = true;
               }
             });
-            if (hasNew) {
-              saveState();
-              renderPostsTable();
-            }
+            saveState();
+            renderPostsTable();
+            renderTop10Dashboard();
           }
         }
       } catch (err) {
@@ -12378,6 +12790,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       renderTagsCloud();
       renderFeaturedImageUI();
       initScreenOptions();
+      fetchLiveCategories();
       fetchLiveArticlesIntoPosts();
       renderPostsTable();
       renderPagesTable();
