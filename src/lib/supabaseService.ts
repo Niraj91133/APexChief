@@ -243,17 +243,27 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
     }
 
     if (data) {
+      const logoVal = data.contact?.logo || data.tagline_logo || (data as any).logo || '';
+      const logoLightVal = data.contact?.logoLight || data.logoLight || logoVal || '';
+      const logoDarkVal = data.contact?.logoDark || data.logoDark || logoVal || '';
       return {
         name: data.name || 'ApexChief',
         shortName: data.short_name || 'ApexChief',
-        logo: data.contact?.logo || data.tagline_logo || (data as any).logo || '',
+        logo: logoVal,
+        logoLight: logoLightVal,
+        logoDark: logoDarkVal,
         favicon: data.contact?.favicon || data.favicon_url || (data as any).favicon || '',
         tagline: data.tagline || '',
         description: data.description || '',
         establishedYear: data.established_year || '2023',
         currentDate: data.current_date_text || 'Monday, May 25, 2026',
         edition: data.edition || 'Vol. XIV, No. 128 — Global Edition',
-        contact: data.contact || siteConfig.contact,
+        contact: {
+          ...(data.contact || siteConfig.contact),
+          logo: logoVal,
+          logoLight: logoLightVal,
+          logoDark: logoDarkVal,
+        },
         socialLinks: data.social_links || siteConfig.socialLinks,
         copyright: data.copyright || siteConfig.copyright,
       };
@@ -267,9 +277,14 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
 
 export async function saveSiteConfigInDB(config: any): Promise<boolean> {
   try {
+    const logoLightVal = config.logoLight || config.logo || '';
+    const logoDarkVal = config.logoDark || config.logo || '';
+    const logoVal = config.logo || logoLightVal || logoDarkVal || '';
     const contactObj = {
       ...(config.contact || {}),
-      logo: config.logo || '',
+      logo: logoVal,
+      logoLight: logoLightVal,
+      logoDark: logoDarkVal,
       favicon: config.favicon || config.faviconUrl || '',
     };
     const { error } = await supabaseAdmin.from('site_settings').upsert({

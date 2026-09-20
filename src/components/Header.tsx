@@ -167,7 +167,7 @@ function HeaderNav({
   );
 }
 
-export default function Header() {
+export default function Header({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
   const pathname = usePathname();
   if (pathname && pathname.startsWith('/admin')) {
     return null;
@@ -178,11 +178,24 @@ export default function Header() {
   const [categories, setCategories] = useState<Category[]>(CATEGORIES);
   const [todayDate, setTodayDate] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
-  // Match SSR initial state to eliminate hydration mismatch, with dynamic client sync in useEffect
-  const [config, setConfig] = useState<SiteConfig>(siteConfig);
+  // Match SSR initial state with server-provided initialConfig to completely eliminate any logo flash
+  const [config, setConfig] = useState<SiteConfig>(initialConfig || siteConfig);
 
   const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
   const logoDarkSrc = config.logoDark || config.logo || '/images/apexchief-logo-dark.png';
+
+  // Sync state if initialConfig updates from parent
+  useEffect(() => {
+    if (initialConfig) {
+      setConfig((prev) => ({
+        ...prev,
+        ...initialConfig,
+        logo: initialConfig.logo || prev.logo,
+        logoLight: initialConfig.logoLight || prev.logoLight,
+        logoDark: initialConfig.logoDark || prev.logoDark,
+      }));
+    }
+  }, [initialConfig]);
 
   // Initialize and compute dynamic real-time today date
   useEffect(() => {
@@ -252,18 +265,28 @@ export default function Header() {
     const syncFromLocalStorage = () => {
       try {
         const savedSettings = localStorage.getItem('apexchief_site_settings');
+        const customLogoLight = localStorage.getItem('apexchief_custom_logo_light');
+        const customLogoDark = localStorage.getItem('apexchief_custom_logo_dark');
         const customLogo = localStorage.getItem('apexchief_custom_logo');
         if (savedSettings) {
           const parsed = JSON.parse(savedSettings);
+          const activeLight = parsed.logoLight || customLogoLight || parsed.logo || customLogo;
+          const activeDark = parsed.logoDark || customLogoDark || parsed.logo || customLogo;
+          const activeLogo = parsed.logo || customLogo || activeLight || activeDark;
           setConfig((prev: SiteConfig) => ({
             ...prev,
             ...parsed,
-            logoLight: parsed.logoLight || prev.logoLight,
-            logoDark: parsed.logoDark || prev.logoDark,
-            logo: parsed.logoLight || parsed.logoDark || customLogo || prev.logo,
+            logo: activeLogo || prev.logo,
+            logoLight: activeLight || prev.logoLight,
+            logoDark: activeDark || prev.logoDark,
           }));
-        } else if (customLogo) {
-          setConfig((prev: SiteConfig) => ({ ...prev, logo: customLogo, logoLight: customLogo, logoDark: customLogo }));
+        } else if (customLogoLight || customLogoDark || customLogo) {
+          setConfig((prev: SiteConfig) => ({
+            ...prev,
+            logoLight: customLogoLight || customLogo || prev.logoLight,
+            logoDark: customLogoDark || customLogo || prev.logoDark,
+            logo: customLogo || prev.logo,
+          }));
         }
       } catch (e) {
         // ignore
@@ -274,13 +297,13 @@ export default function Header() {
       fetch('/api/config')
         .then((res) => res.json())
         .then((data) => {
-          if (data && (data.name || data.logo || data.logoLight)) {
+          if (data && (data.name || data.logo || data.logoLight || data.logoDark)) {
             setConfig((prev: SiteConfig) => ({
               ...prev,
               ...data,
               logoLight: data.logoLight || prev.logoLight,
               logoDark: data.logoDark || prev.logoDark,
-              logo: data.logo || data.logoLight || prev.logo,
+              logo: data.logo || prev.logo,
             }));
           }
         })
@@ -295,7 +318,12 @@ export default function Header() {
 
     // 3. Cross-tab real-time storage event listener
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'apexchief_site_settings' || e.key === 'apexchief_custom_logo') {
+      if (
+        e.key === 'apexchief_site_settings' ||
+        e.key === 'apexchief_custom_logo' ||
+        e.key === 'apexchief_custom_logo_light' ||
+        e.key === 'apexchief_custom_logo_dark'
+      ) {
         syncFromLocalStorage();
       }
     };
@@ -313,8 +341,13 @@ export default function Header() {
     try {
       bc = new BroadcastChannel('apexchief_config_channel');
       bc.onmessage = (event) => {
-        if (event.data && event.data.logo) {
-          setConfig((prev: SiteConfig) => ({ ...prev, logo: event.data.logo }));
+        if (event.data && (event.data.logoLight || event.data.logoDark || event.data.logo)) {
+          setConfig((prev: SiteConfig) => ({
+            ...prev,
+            logoLight: event.data.logoLight || prev.logoLight,
+            logoDark: event.data.logoDark || prev.logoDark,
+            logo: event.data.logo || prev.logo,
+          }));
         } else {
           syncFromLocalStorage();
           fetchServerConfig();
@@ -354,7 +387,7 @@ export default function Header() {
       {/* 1. Main Header Masthead Bar */}
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
         {/* Left: Mobile-only menu button + Live Today's Date */}
-        <div className="flex items-center space-x-3 text-xs font-sans font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider min-w-[130px] sm:min-w-[170px]">
+        <div className="flex items-center space-x-2 sm:space-x-3 text-xs font-sans font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider shrink-0 sm:min-w-[130px] md:min-w-[170px]">
           {/* Mobile hamburger icon only */}
           <button
             onClick={() => setMobileMenuOpen(true)}
@@ -378,7 +411,7 @@ export default function Header() {
         </div>
 
         {/* Center: ApexChief Logo */}
-        <div className="flex items-center justify-center text-center px-2 flex-1">
+        <div className="flex items-center justify-center text-center px-1 sm:px-2 flex-1 min-w-0">
           <Link href="/" className="inline-block group">
             {logoLightSrc || logoDarkSrc ? (
               <>
@@ -386,13 +419,13 @@ export default function Header() {
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                  className="h-9 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[180px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-11 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                  className="h-9 sm:h-14 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[180px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
@@ -404,7 +437,7 @@ export default function Header() {
         </div>
 
         {/* Right: Search Box & Working Light/Dark Mode Toggle */}
-        <div className="flex items-center space-x-2 sm:space-x-3 min-w-[130px] sm:min-w-[170px] justify-end">
+        <div className="flex items-center space-x-1 sm:space-x-3 shrink-0 sm:min-w-[130px] md:min-w-[170px] justify-end">
           {/* Search Box Mockup (clickable) */}
           <button
             onClick={openSearch}

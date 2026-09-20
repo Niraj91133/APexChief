@@ -93,33 +93,55 @@ export function getSiteConfig(): typeof siteConfig {
 export function saveSiteConfig(config: typeof siteConfig): boolean {
   try {
     initDB();
-    fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2), 'utf-8');
 
-    // Save static logo files for ultra-fast SSR with zero flash
+    const configCopy = { ...config };
+
+    // 1. Process base64 logo image payloads into static physical files
     try {
-      const configCopy = { ...config };
       if (config.logoLight && config.logoLight.startsWith('data:image/')) {
         const rawLight = config.logoLight.replace(/^data:image\/[a-z]+;base64,/, '');
-        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-light.png'), Buffer.from(rawLight, 'base64'));
+        const buf = Buffer.from(rawLight, 'base64');
+        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-light.png'), buf);
+        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo.png'), buf);
         configCopy.logoLight = '/images/apexchief-logo-light.png';
+        configCopy.logo = '/images/apexchief-logo-light.png';
       }
       if (config.logoDark && config.logoDark.startsWith('data:image/')) {
         const rawDark = config.logoDark.replace(/^data:image\/[a-z]+;base64,/, '');
-        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-dark.png'), Buffer.from(rawDark, 'base64'));
+        const buf = Buffer.from(rawDark, 'base64');
+        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-dark.png'), buf);
         configCopy.logoDark = '/images/apexchief-logo-dark.png';
       }
       if (config.logo && config.logo.startsWith('data:image/')) {
         const raw = config.logo.replace(/^data:image\/[a-z]+;base64,/, '');
-        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo.png'), Buffer.from(raw, 'base64'));
-        configCopy.logo = configCopy.logoLight || '/images/apexchief-logo.png';
+        const buf = Buffer.from(raw, 'base64');
+        if (!config.logoLight || !config.logoLight.startsWith('data:image/')) {
+          fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-light.png'), buf);
+          configCopy.logoLight = '/images/apexchief-logo-light.png';
+        }
+        if (!config.logoDark || !config.logoDark.startsWith('data:image/')) {
+          fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo-dark.png'), buf);
+          configCopy.logoDark = '/images/apexchief-logo-dark.png';
+        }
+        fs.writeFileSync(path.join(process.cwd(), 'public/images/apexchief-logo.png'), buf);
+        configCopy.logo = configCopy.logoLight || '/images/apexchief-logo-light.png';
       }
+    } catch (err) {
+      console.error('Error writing static logo assets', err);
+    }
 
+    // 2. Write siteConfig.json with processed config
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(configCopy, null, 2), 'utf-8');
+
+    // 3. Write siteConfig.ts for zero-latency SSR compilation
+    try {
       const tsFile = path.join(process.cwd(), 'src/data/siteConfig.ts');
       const tsContent = "import { SiteConfig } from '@/types';\n\nexport const siteConfig: SiteConfig = " + JSON.stringify(configCopy, null, 2) + ';\n';
       fs.writeFileSync(tsFile, tsContent, 'utf-8');
     } catch (err) {
-      console.error('Error writing static logo assets', err);
+      console.error('Error writing siteConfig.ts', err);
     }
+
     return true;
   } catch (e) {
     console.error('Error saving siteConfig.json', e);

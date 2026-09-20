@@ -9,10 +9,16 @@ export async function GET() {
   try {
     const dbConfig = await getSiteConfigFromDB();
     if (dbConfig && dbConfig.name) {
+      const activeLogo = dbConfig.logo || localConfig.logo || '';
+      const activeLogoLight = dbConfig.logoLight || dbConfig.logo || localConfig.logoLight || localConfig.logo || '';
+      const activeLogoDark = dbConfig.logoDark || dbConfig.logo || localConfig.logoDark || localConfig.logo || '';
+
       return NextResponse.json({
         ...localConfig,
         ...dbConfig,
-        logo: dbConfig.logo || localConfig.logo || '',
+        logo: activeLogo,
+        logoLight: activeLogoLight,
+        logoDark: activeLogoDark,
         favicon: dbConfig.favicon || localConfig.favicon || '',
       });
     }
@@ -25,6 +31,17 @@ export async function PUT(request: Request) {
     const newConfig = await request.json();
     if (!newConfig.name) {
       return NextResponse.json({ error: 'Missing site name' }, { status: 400 });
+    }
+
+    // Preserve distinct logoLight and logoDark
+    if (newConfig.logo && !newConfig.logoLight) {
+      newConfig.logoLight = newConfig.logo;
+    }
+    if (newConfig.logo && !newConfig.logoDark) {
+      newConfig.logoDark = newConfig.logo;
+    }
+    if (!newConfig.logo && (newConfig.logoLight || newConfig.logoDark)) {
+      newConfig.logo = newConfig.logoLight || newConfig.logoDark;
     }
 
     if (newConfig.favicon || newConfig.faviconUrl) {
@@ -51,7 +68,7 @@ export async function PUT(request: Request) {
     // 1. Save to Supabase
     await saveSiteConfigInDB(newConfig);
 
-    // 2. Backup to local JSON
+    // 2. Backup to local JSON & update static logo assets
     saveSiteConfig(newConfig);
 
     return NextResponse.json(newConfig);

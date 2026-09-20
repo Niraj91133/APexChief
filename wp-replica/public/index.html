@@ -1075,6 +1075,98 @@
             </div>
 
             <!-- ================================================================= -->
+            <!-- POST APPEARANCE & LAYOUT SETTINGS BOX -->
+            <!-- ================================================================= -->
+            <div class="postbox bg-white border border-[#c3c4c7] shadow-sm rounded p-4 space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Sidebar Position -->
+                <div>
+                  <label class="block text-xs font-semibold text-[#1d2327] mb-1">Sidebar Position (Appearance)</label>
+                  <select id="post-sidebar-position" class="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none">
+                    <option value="right" selected>Right</option>
+                    <option value="left">Left</option>
+                    <option value="none">No Sidebar</option>
+                  </select>
+                  <p class="text-[11px] text-[#646970] mt-1 italic">Select Sidebar Appaearance</p>
+                </div>
+
+                <!-- Show Featured Image -->
+                <div>
+                  <label class="block text-xs font-semibold text-[#1d2327] mb-1">Show featured image on single post</label>
+                  <select id="post-show-featured-image" class="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none">
+                    <option value="Yes" selected>Yes</option>
+                    <option value="No">No</option>
+                  </select>
+                  <p class="text-[11px] text-[#646970] mt-1 italic">Optional usage. Only for &quot;Classic Featured Image&quot;</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ================================================================= -->
+            <!-- TOP 10 POPULAR POSTS META BOX -->
+            <!-- ================================================================= -->
+            <div class="postbox bg-white border border-[#c3c4c7] shadow-sm rounded overflow-hidden">
+              <div class="postbox-header bg-white border-b border-[#c3c4c7] py-2 px-3.5 flex items-center justify-between cursor-pointer" onclick="toggleAccordion('top10-body')">
+                <h2 class="text-xs font-bold text-[#1d2327]">Top 10</h2>
+                <div class="flex items-center space-x-2 text-gray-400">
+                  <i id="icon-top10-body" class="fas fa-chevron-up text-xs"></i>
+                </div>
+              </div>
+
+              <div id="content-top10-body" class="p-4 space-y-4 text-xs bg-white text-[#2c3338]">
+                <!-- Visit Count -->
+                <div>
+                  <label class="block font-semibold text-[#1d2327] mb-1">Visit count:</label>
+                  <input 
+                    type="number" 
+                    id="top10-visit-count" 
+                    value="0" 
+                    class="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  >
+                  <p class="text-[11px] text-[#646970] mt-1 italic">
+                    Enter a number above to update the visit count. Leaving the above box blank will set the count to zero
+                  </p>
+                </div>
+
+                <!-- Disable Popular Posts Display Checkbox -->
+                <div>
+                  <label class="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                    <input type="checkbox" id="top10-disable-display" class="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0">
+                    <span>Disable Popular Posts display:</span>
+                  </label>
+                  <p class="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                    If this is checked, then Top 10 will not display the popular posts widgets when viewing this post.
+                  </p>
+                </div>
+
+                <!-- Exclude this post from the popular posts list Checkbox -->
+                <div>
+                  <label class="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                    <input type="checkbox" id="top10-exclude-list" class="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0">
+                    <span>Exclude this post from the popular posts list:</span>
+                  </label>
+                  <p class="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                    If this is checked, then this post will be excluded from the popular posts list.
+                  </p>
+                </div>
+
+                <!-- Location of thumbnail -->
+                <div>
+                  <label class="block font-semibold text-[#1d2327] mb-1">Location of thumbnail:</label>
+                  <input 
+                    type="text" 
+                    id="top10-thumbnail-url" 
+                    placeholder="https://..." 
+                    class="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] font-mono focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                  >
+                  <p class="text-[11px] text-[#646970] mt-1 italic leading-relaxed">
+                    Enter the full URL to the image (JPG, PNG or GIF) you'd like to use. This image will be used for the post. It will be resized to the thumbnail size set under Top 10 Settings &raquo; Thumbnail options. The URL above is saved in the meta field:<strong>post-image</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ================================================================= -->
             <!-- RANK MATH SEO META BOX -->
             <!-- ================================================================= -->
             <div class="postbox border-2 border-blue-500/30 shadow-md">
@@ -1427,12 +1519,18 @@
               </div>
             </div>
 
+            <!-- Thank You Footer -->
+            <div class="mt-8 pt-4 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500">
+              <div>Thank you for using <a href="#" class="text-[#2271b1] hover:underline font-semibold">Rank Math</a></div>
+              <div>Version 7.1</div>
+            </div>
+
           </div>
 
           <!-- ================================================================= -->
           <!-- RIGHT SIDEBAR METABOXES -->
           <!-- ================================================================= -->
-          <div class="md:col-span-5 lg:col-span-4 space-y-4 sticky top-12">
+          <div class="md:col-span-5 lg:col-span-4 space-y-4">
             
             <!-- 1. PUBLISH & PLACEMENT METABOX -->
             <div class="postbox bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden mb-4">
@@ -1763,6 +1861,20 @@
                   <div>
                     <a href="#" onclick="openFeaturedImageModal(); return false;" class="text-[#2271b1] underline font-semibold">Set featured image</a>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 7. Viewport Images - Mobile Box -->
+            <div class="postbox">
+              <div class="postbox-header">
+                <h2>Viewport Images - Mobile</h2>
+                <i onclick="toggleAccordion('viewport-images-body')" class="fas fa-chevron-up text-gray-400 cursor-pointer"></i>
+              </div>
+              <div id="content-viewport-images-body" class="p-3 text-xs space-y-2">
+                <textarea id="viewport-images-mobile" rows="3" placeholder="https://image-url-for-mobile..." class="w-full border border-gray-300 rounded p-2 text-xs font-mono"></textarea>
+                <div class="text-right">
+                  <a href="#" onclick="showToast('Viewport Images', 'Optional mobile responsive imagery configuration.'); return false;" class="text-[11px] text-[#2271b1] hover:underline">Learn More</a>
                 </div>
               </div>
             </div>
@@ -8279,6 +8391,22 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
       document.getElementById('post-status-label').innerText = 'DRAFT';
 
+      // Reset Appearance & Top 10 fields
+      const sbPos = document.getElementById('post-sidebar-position');
+      if (sbPos) sbPos.value = 'right';
+      const showFeat = document.getElementById('post-show-featured-image');
+      if (showFeat) showFeat.value = 'Yes';
+      const top10Count = document.getElementById('top10-visit-count');
+      if (top10Count) top10Count.value = '0';
+      const top10Dis = document.getElementById('top10-disable-display');
+      if (top10Dis) top10Dis.checked = false;
+      const top10Ex = document.getElementById('top10-exclude-list');
+      if (top10Ex) top10Ex.checked = false;
+      const top10Thumb = document.getElementById('top10-thumbnail-url');
+      if (top10Thumb) top10Thumb.value = '';
+      const viewMobile = document.getElementById('viewport-images-mobile');
+      if (viewMobile) viewMobile.value = '';
+
       currentFeaturedImage = '';
       renderFeaturedImageUI();
       renderTagsCloud();
@@ -8344,6 +8472,22 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         }
       }
 
+      // Restore Appearance & Top 10 settings
+      const sbPos = document.getElementById('post-sidebar-position');
+      if (sbPos) sbPos.value = p.sidebarPosition || 'right';
+      const showFeat = document.getElementById('post-show-featured-image');
+      if (showFeat) showFeat.value = p.showFeaturedImage === false || p.showFeaturedImage === 'No' || p.showFeaturedImage === 'no' ? 'No' : 'Yes';
+      const top10Count = document.getElementById('top10-visit-count');
+      if (top10Count) top10Count.value = p.top10VisitCount !== undefined ? p.top10VisitCount : (p.views || 0);
+      const top10Dis = document.getElementById('top10-disable-display');
+      if (top10Dis) top10Dis.checked = !!p.disablePopularPostsDisplay;
+      const top10Ex = document.getElementById('top10-exclude-list');
+      if (top10Ex) top10Ex.checked = !!p.excludeFromPopularPosts;
+      const top10Thumb = document.getElementById('top10-thumbnail-url');
+      if (top10Thumb) top10Thumb.value = p.top10Thumbnail || '';
+      const viewMobile = document.getElementById('viewport-images-mobile');
+      if (viewMobile) viewMobile.value = p.viewportImagesMobile || '';
+
       currentFeaturedImage = p.featuredImage || '';
       renderFeaturedImageUI();
       renderTagsCloud();
@@ -8367,6 +8511,14 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const primaryCategory = document.getElementById('placement-category-select')?.value || 'Business';
       const subCategory = document.getElementById('placement-subcategory-select')?.value || 'Companies';
       const cardTag = document.getElementById('placement-card-tag-input')?.value.trim() || subCategory;
+
+      const sidebarPosition = document.getElementById('post-sidebar-position')?.value || 'right';
+      const showFeaturedImage = document.getElementById('post-show-featured-image')?.value || 'Yes';
+      const top10VisitCount = parseInt(document.getElementById('top10-visit-count')?.value) || 0;
+      const disablePopularPostsDisplay = document.getElementById('top10-disable-display')?.checked || false;
+      const excludeFromPopularPosts = document.getElementById('top10-exclude-list')?.checked || false;
+      const top10Thumbnail = document.getElementById('top10-thumbnail-url')?.value.trim() || '';
+      const viewportImagesMobile = document.getElementById('viewport-images-mobile')?.value.trim() || '';
 
       const selectedCats = [];
       document.querySelectorAll('#categories-checklist input[type="checkbox"]:checked').forEach(c => {
@@ -8394,6 +8546,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         homepagePlacement: homepagePlacement,
         subCategory: subCategory,
         cardTag: cardTag,
+        sidebarPosition: sidebarPosition,
+        showFeaturedImage: showFeaturedImage,
+        top10VisitCount: top10VisitCount,
+        disablePopularPostsDisplay: disablePopularPostsDisplay,
+        excludeFromPopularPosts: excludeFromPopularPosts,
+        top10Thumbnail: top10Thumbnail,
+        viewportImagesMobile: viewportImagesMobile,
         visibility: document.getElementById('post-visibility-label').innerText,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         categories: selectedCats.length ? selectedCats : [primaryCategory],
@@ -8453,6 +8612,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           content: content,
           placement: placementVal,
           isBreaking: breakingTicker,
+          sidebarPosition: sidebarPosition,
+          showFeaturedImage: showFeaturedImage,
+          top10VisitCount: top10VisitCount,
+          disablePopularPostsDisplay: disablePopularPostsDisplay,
+          excludeFromPopularPosts: excludeFromPopularPosts,
+          top10Thumbnail: top10Thumbnail,
+          viewportImagesMobile: viewportImagesMobile,
           status: status === 'published' ? 'Published' : 'Draft',
           paragraphs: extractedParagraphs,
           sections: []

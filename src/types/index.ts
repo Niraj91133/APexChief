@@ -31,10 +31,17 @@ export interface Article {
   focusKeyword?: string;
   status?: string;
   articleType?: string;
-  homepagePriority?: string;
   publishDate?: string;
   publishTime?: string;
   publishTimezone?: string;
+  sidebarPosition?: 'right' | 'left' | 'none';
+  showFeaturedImage?: boolean | string;
+  top10VisitCount?: number;
+  disablePopularPostsDisplay?: boolean;
+  excludeFromPopularPosts?: boolean;
+  top10Thumbnail?: string;
+  viewportImagesMobile?: string;
+  homepagePriority?: string;
 }
 
 export interface SubCategory {

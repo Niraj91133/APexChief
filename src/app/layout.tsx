@@ -8,6 +8,7 @@ import Analytics from '@/components/Analytics';
 import MainWrapper from '@/components/MainWrapper';
 import WhatsAppFloatingWidget from '@/components/WhatsAppFloatingWidget';
 import FaviconManager from '@/components/FaviconManager';
+import { siteConfig } from '@/data/siteConfig';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -174,13 +175,13 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="min-h-screen bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
+        className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
       >
-        <Header />
+        <Header initialConfig={siteConfig} />
         <MainWrapper>
           {children}
         </MainWrapper>
-        <Footer />
+        <Footer initialConfig={siteConfig} />
         <SearchModal />
         <Analytics />
         <WhatsAppFloatingWidget />

@@ -782,6 +782,7 @@ export default function AdminDashboard() {
   const [articleWordCount, setArticleWordCount] = useState<number>(0);
   const [storyHistory, setStoryHistory] = useState<StoryVersion[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [top10AccordionOpen, setTop10AccordionOpen] = useState(true);
   const [editingArticle, setEditingArticle] = useState<Article>({
     id: '',
     slug: '',
@@ -801,6 +802,13 @@ export default function AdminDashboard() {
     featured: false,
     placement: 'category',
     isBreaking: false,
+    sidebarPosition: 'right',
+    showFeaturedImage: 'Yes',
+    top10VisitCount: 0,
+    disablePopularPostsDisplay: false,
+    excludeFromPopularPosts: false,
+    top10Thumbnail: '',
+    viewportImagesMobile: '',
   });
 
   // Rich Formatting & Multi-Target Typography State (110+ Google Fonts)
@@ -2370,6 +2378,13 @@ export default function AdminDashboard() {
       featured: false,
       placement: 'category',
       isBreaking: false,
+      sidebarPosition: 'right',
+      showFeaturedImage: 'Yes',
+      top10VisitCount: 0,
+      disablePopularPostsDisplay: false,
+      excludeFromPopularPosts: false,
+      top10Thumbnail: '',
+      viewportImagesMobile: '',
     });
     setCmsMetadata({
       status: 'Published',
@@ -2402,6 +2417,13 @@ export default function AdminDashboard() {
       subcategory: (art as any).subcategory || '',
       placement: (art as any).placement || 'category',
       isBreaking: (art as any).isBreaking || false,
+      sidebarPosition: art.sidebarPosition || 'right',
+      showFeaturedImage: art.showFeaturedImage !== undefined ? art.showFeaturedImage : 'Yes',
+      top10VisitCount: art.top10VisitCount !== undefined ? art.top10VisitCount : (art.viewsCount || 0),
+      disablePopularPostsDisplay: Boolean(art.disablePopularPostsDisplay),
+      excludeFromPopularPosts: Boolean(art.excludeFromPopularPosts),
+      top10Thumbnail: art.top10Thumbnail || '',
+      viewportImagesMobile: art.viewportImagesMobile || '',
     });
     if (art.image) {
       setUploadedMediaHistory((prev) => Array.from(new Set([art.image, ...prev])));
@@ -2461,6 +2483,13 @@ export default function AdminDashboard() {
       authorAvatar: editingArticle.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
       image: finalImage,
       readTime: editingArticle.readTime || '0 min read',
+      sidebarPosition: editingArticle.sidebarPosition || 'right',
+      showFeaturedImage: editingArticle.showFeaturedImage !== undefined ? editingArticle.showFeaturedImage : 'Yes',
+      top10VisitCount: Number(editingArticle.top10VisitCount) || 0,
+      disablePopularPostsDisplay: Boolean(editingArticle.disablePopularPostsDisplay),
+      excludeFromPopularPosts: Boolean(editingArticle.excludeFromPopularPosts),
+      top10Thumbnail: editingArticle.top10Thumbnail || '',
+      viewportImagesMobile: editingArticle.viewportImagesMobile || '',
       ...({
         articleType: cmsMetadata.articleType || 'News',
         status: cmsMetadata.status || 'Published',
@@ -4490,6 +4519,132 @@ export default function AdminDashboard() {
                             )}
                           </div>
 
+                          {/* ================================================================= */}
+                          {/* APPEARANCE & SIDEBAR CONFIGURATION METABOX */}
+                          {/* ================================================================= */}
+                          <div className="p-4 bg-white border border-[#c3c4c7] shadow-xs rounded space-y-4 text-xs font-sans">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {/* Sidebar Position */}
+                              <div>
+                                <label className="block text-xs font-semibold text-[#1d2327] mb-1">
+                                  Sidebar Position (Appearance)
+                                </label>
+                                <select
+                                  value={editingArticle.sidebarPosition || 'right'}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, sidebarPosition: e.target.value as any })}
+                                  className="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none cursor-pointer"
+                                >
+                                  <option value="right">Right</option>
+                                  <option value="left">Left</option>
+                                  <option value="none">No Sidebar</option>
+                                </select>
+                                <p className="text-[11px] text-[#646970] mt-1 italic">Select Sidebar Appaearance</p>
+                              </div>
+
+                              {/* Show Featured Image */}
+                              <div>
+                                <label className="block text-xs font-semibold text-[#1d2327] mb-1">
+                                  Show featured image on single post
+                                </label>
+                                <select
+                                  value={editingArticle.showFeaturedImage === false || editingArticle.showFeaturedImage === 'No' ? 'No' : 'Yes'}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, showFeaturedImage: e.target.value })}
+                                  className="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none cursor-pointer"
+                                >
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                                <p className="text-[11px] text-[#646970] mt-1 italic">Optional usage. Only for &quot;Classic Featured Image&quot;</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ================================================================= */}
+                          {/* TOP 10 POPULAR POSTS META BOX */}
+                          {/* ================================================================= */}
+                          <div className="border border-[#c3c4c7] shadow-xs rounded overflow-hidden bg-white">
+                            <div
+                              onClick={() => setTop10AccordionOpen(!top10AccordionOpen)}
+                              className="bg-white border-b border-[#c3c4c7] py-2 px-3.5 flex items-center justify-between cursor-pointer select-none"
+                            >
+                              <h2 className="text-xs font-bold text-[#1d2327]">Top 10</h2>
+                              <div className="flex items-center space-x-2 text-gray-400">
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${top10AccordionOpen ? 'rotate-180' : ''}`} />
+                              </div>
+                            </div>
+
+                            {top10AccordionOpen && (
+                              <div className="p-4 space-y-4 text-xs bg-white text-[#2c3338]">
+                                {/* Visit Count */}
+                                <div>
+                                  <label className="block font-semibold text-[#1d2327] mb-1">Visit count:</label>
+                                  <input
+                                    type="number"
+                                    value={editingArticle.top10VisitCount !== undefined ? editingArticle.top10VisitCount : 0}
+                                    onChange={(e) => setEditingArticle({ ...editingArticle, top10VisitCount: parseInt(e.target.value) || 0 })}
+                                    className="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                                  />
+                                  <p className="text-[11px] text-[#646970] mt-1 italic">
+                                    Enter a number above to update the visit count. Leaving the above box blank will set the count to zero
+                                  </p>
+                                </div>
+
+                                {/* Disable Popular Posts Display Checkbox */}
+                                <div>
+                                  <label className="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(editingArticle.disablePopularPostsDisplay)}
+                                      onChange={(e) => setEditingArticle({ ...editingArticle, disablePopularPostsDisplay: e.target.checked })}
+                                      className="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0"
+                                    />
+                                    <span>Disable Popular Posts display:</span>
+                                  </label>
+                                  <p className="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                                    If this is checked, then Top 10 will not display the popular posts widgets when viewing this post.
+                                  </p>
+                                </div>
+
+                                {/* Exclude this post from the popular posts list Checkbox */}
+                                <div>
+                                  <label className="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(editingArticle.excludeFromPopularPosts)}
+                                      onChange={(e) => setEditingArticle({ ...editingArticle, excludeFromPopularPosts: e.target.checked })}
+                                      className="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0"
+                                    />
+                                    <span>Exclude this post from the popular posts list:</span>
+                                  </label>
+                                  <p className="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                                    If this is checked, then this post will be excluded from the popular posts list.
+                                  </p>
+                                </div>
+
+                                {/* Location of thumbnail */}
+                                <div>
+                                  <label className="block font-semibold text-[#1d2327] mb-1">Location of thumbnail:</label>
+                                  <input
+                                    type="text"
+                                    value={editingArticle.top10Thumbnail || ''}
+                                    onChange={(e) => setEditingArticle({ ...editingArticle, top10Thumbnail: e.target.value })}
+                                    placeholder="https://..."
+                                    className="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] font-mono focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                                  />
+                                  <p className="text-[11px] text-[#646970] mt-1 italic leading-relaxed">
+                                    Enter the full URL to the image (JPG, PNG or GIF) you&apos;d like to use. This image will be used for the post. It will be resized to the thumbnail size set under Top 10 Settings &raquo; Thumbnail options. The URL above is saved in the meta field:<strong>post-image</strong>
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Thank You Footer */}
+                          <div className="pt-2 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500 font-sans">
+                            <div>Thank you for using <a href="#" className="text-[#2271b1] hover:underline font-semibold">Rank Math</a></div>
+                            <div>Version 7.1</div>
+                          </div>
+
                         </div>
                       </div>
 
@@ -5039,6 +5194,25 @@ export default function AdminDashboard() {
                                 ))}
                               </div>
                             )}
+                          </div>
+                        </div>
+
+                        {/* 3. VIEWPORT IMAGES - MOBILE METABOX */}
+                        <div className="bg-white border border-[#c3c4c7] shadow-xs rounded p-4 space-y-2 font-sans text-xs">
+                          <label className="block text-xs font-semibold text-[#1d2327]">
+                            Viewport Images - Mobile
+                          </label>
+                          <textarea
+                            rows={4}
+                            value={editingArticle.viewportImagesMobile || ''}
+                            onChange={(e) => setEditingArticle({ ...editingArticle, viewportImagesMobile: e.target.value })}
+                            placeholder=""
+                            className="w-full border border-[#8c8f94] rounded p-2 text-xs text-[#2c3338] font-mono focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none resize-y"
+                          />
+                          <div className="text-right pt-1">
+                            <a href="#" className="text-xs text-[#2271b1] hover:underline">
+                              Learn More
+                            </a>
                           </div>
                         </div>
 

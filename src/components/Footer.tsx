@@ -4,13 +4,15 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/data/siteConfig';
+import { SiteConfig } from '@/types';
 
-export default function Footer() {
+export default function Footer({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
   const pathname = usePathname();
   if (pathname && pathname.startsWith('/admin')) {
     return null;
   }
 
+  const site = initialConfig || siteConfig;
   const currentYear = new Date().getFullYear();
 
   return (
@@ -21,7 +23,7 @@ export default function Footer() {
           <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
             <Link href="/" className="inline-block group">
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#fefdf3] uppercase group-hover:text-[#f7413e] transition-colors">
-                {siteConfig.name}
+                {site.name}
               </span>
             </Link>
             <span className="hidden sm:inline-block text-[#eff0e0]/20">|</span>
@@ -39,7 +41,7 @@ export default function Footer() {
               >
                 {currentYear}
               </Link>{' '}
-              {siteConfig.name}. All Rights Reserved.
+              {site.name}. All Rights Reserved.
             </p>
           </div>
 

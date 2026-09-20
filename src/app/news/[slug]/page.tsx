@@ -127,8 +127,20 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const relatedArticles = getRelatedArticles(article.slug, article.category, 3);
+  const allArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
+  const relatedArticles = allArticles
+    .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts && (a.category.toLowerCase() === article.category.toLowerCase() || true))
+    .slice(0, 3);
+
+  const top10RankedArticles = allArticles
+    .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts)
+    .sort((a, b) => ((b.top10VisitCount || b.viewsCount || 0) - (a.top10VisitCount || a.viewsCount || 0)))
+    .slice(0, 5);
+
   const articleUrl = `${baseUrl}/news/${article.slug}`;
+  const shouldShowFeaturedImage = article.showFeaturedImage !== false && article.showFeaturedImage !== 'No' && article.showFeaturedImage !== 'no';
+  const sidebarPos = article.sidebarPosition || 'none'; // 'right' | 'left' | 'none'
+  const shouldShowPopularPosts = !article.disablePopularPostsDisplay;
 
   // Structured Data Schema for Google Search Rich Results (NewsArticle & BreadcrumbList)
   const jsonLd = {
@@ -285,106 +297,178 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* Hero Featured Image */}
-        <div className="max-w-5xl mx-auto my-8">
-          <div className="relative aspect-[16/9] w-full bg-[#eff0e0] dark:bg-[#1a1a1a] overflow-hidden border border-[#211d1d]/20 dark:border-white/15">
-            <Image
-              src={article.image}
-              alt={article.title}
-              fill
-              priority
-              sizes="(max-width: 1200px) 100vw, 1200px"
-              className="object-cover"
-            />
+        {/* Hero Featured Image (Controlled by "Show featured image on single post") */}
+        {shouldShowFeaturedImage && (
+          <div className="max-w-5xl mx-auto my-8">
+            <div className="relative aspect-[16/9] w-full bg-[#eff0e0] dark:bg-[#1a1a1a] overflow-hidden border border-[#211d1d]/20 dark:border-white/15">
+              <Image
+                src={article.image}
+                alt={article.title}
+                fill
+                priority
+                sizes="(max-width: 1200px) 100vw, 1200px"
+                className="object-cover"
+              />
+            </div>
+            <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">
+              Photography & Editorial Archive — {siteConfig.name} Special Report
+            </div>
           </div>
-          <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">
-            Photography & Editorial Archive — {siteConfig.name} Special Report
-          </div>
-        </div>
+        )}
 
-        {/* Article Body Content */}
-        <div className="max-w-3xl mx-auto my-10" itemProp="articleBody">
-          {/* Social Share Bar */}
-          <ShareButtons title={article.title} />
+        {/* Main Content Layout with Dynamic Sidebar Position */}
+        <div className={`max-w-5xl mx-auto my-10 ${
+          sidebarPos === 'right'
+            ? 'flex flex-col lg:flex-row gap-8 items-start'
+            : sidebarPos === 'left'
+            ? 'flex flex-col lg:flex-row-reverse gap-8 items-start'
+            : 'max-w-3xl mx-auto'
+        }`}>
+          {/* Article Body Content */}
+          <div className={sidebarPos !== 'none' ? 'w-full lg:w-2/3' : 'w-full'} itemProp="articleBody">
+            {/* Social Share Bar */}
+            <ShareButtons title={article.title} />
 
-          {/* Rich Body Content (WYSIWYG HTML or Structured Paragraphs) */}
-          {article.content ? (
-            <div
-              dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
-              className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-serif"
-            />
-          ) : (
-            <>
-              {/* Lead Paragraph with Drop Cap */}
-              {article.paragraphs[0] && (
-                <p className="drop-cap font-serif text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
-                  {linkifyText(article.paragraphs[0])}
-                </p>
-              )}
-
-              {/* Subheadings and Content Sections */}
-              {article.sections && article.sections.length > 0 ? (
-                article.sections.map((sec, idx) => (
-                  <section key={idx} className="my-8">
-                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
-                      {linkifyText(sec.heading)}
-                    </h2>
-                    <p className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
-                      {linkifyText(sec.content)}
-                    </p>
-                  </section>
-                ))
-              ) : (
-                article.paragraphs.slice(1).map((p, idx) => (
-                  <p
-                    key={idx}
-                    className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
-                  >
-                    {linkifyText(p)}
+            {/* Rich Body Content (WYSIWYG HTML or Structured Paragraphs) */}
+            {article.content ? (
+              <div
+                dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
+                className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-serif"
+              />
+            ) : (
+              <>
+                {/* Lead Paragraph with Drop Cap */}
+                {article.paragraphs[0] && (
+                  <p className="drop-cap font-serif text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
+                    {linkifyText(article.paragraphs[0])}
                   </p>
-                ))
-              )}
-            </>
-          )}
+                )}
 
-          {/* Editorial Pull Quote */}
-          <div className="my-10 p-6 sm:p-8 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
-            <Quote className="w-8 h-8 text-[#f7413e]/20 absolute top-4 right-4" />
-            <blockquote className="font-serif italic text-lg sm:text-xl text-[#0a0a0a] dark:text-[#ffffff] leading-relaxed mb-3">
-              &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
-            </blockquote>
-            <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">
-              — {siteConfig.name} Editorial Board
-            </cite>
+                {/* Subheadings and Content Sections */}
+                {article.sections && article.sections.length > 0 ? (
+                  article.sections.map((sec, idx) => (
+                    <section key={idx} className="my-8">
+                      <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
+                        {linkifyText(sec.heading)}
+                      </h2>
+                      <p className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
+                        {linkifyText(sec.content)}
+                      </p>
+                    </section>
+                  ))
+                ) : (
+                  article.paragraphs.slice(1).map((p, idx) => (
+                    <p
+                      key={idx}
+                      className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
+                    >
+                      {linkifyText(p)}
+                    </p>
+                  ))
+                )}
+              </>
+            )}
+
+            {/* Editorial Pull Quote */}
+            <div className="my-10 p-6 sm:p-8 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
+              <Quote className="w-8 h-8 text-[#f7413e]/20 absolute top-4 right-4" />
+              <blockquote className="font-serif italic text-lg sm:text-xl text-[#0a0a0a] dark:text-[#ffffff] leading-relaxed mb-3">
+                &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
+              </blockquote>
+              <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">
+                — {siteConfig.name} Editorial Board
+              </cite>
+            </div>
           </div>
+
+          {/* Optional Sidebar (Appearance Position: Right / Left) */}
+          {sidebarPos !== 'none' && (
+            <aside className="w-full lg:w-1/3 space-y-6 shrink-0">
+              {/* Top 10 / Popular Posts Widget */}
+              {shouldShowPopularPosts && top10RankedArticles.length > 0 && (
+                <div className="bg-gray-50 dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-4 rounded-md">
+                  <div className="flex items-center space-x-2 pb-2 mb-3 border-b border-[#f7413e]">
+                    <span className="w-2 h-2 bg-[#f7413e]"></span>
+                    <h3 className="font-oswald text-sm font-bold uppercase tracking-wider text-black dark:text-white">
+                      Popular Top 10 Stories
+                    </h3>
+                  </div>
+                  <div className="space-y-3">
+                    {top10RankedArticles.map((pop, idx) => (
+                      <Link
+                        key={pop.slug}
+                        href={`/news/${pop.slug}`}
+                        className="flex items-start space-x-3 group block"
+                      >
+                        <span className="font-oswald text-xs font-bold text-[#f7413e] shrink-0 mt-0.5">
+                          0{idx + 1}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="text-xs font-bold font-serif line-clamp-2 text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug">
+                            {pop.title}
+                          </h4>
+                          <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">
+                            {pop.category}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sidebar Newsletter Widget */}
+              <div className="bg-[#0a0a0a] text-white p-5 rounded-md border border-white/10 text-center">
+                <span className="text-[10px] font-mono text-[#f7413e] uppercase font-bold tracking-widest block mb-1">
+                  ApexChief Dispatch
+                </span>
+                <h4 className="font-serif text-lg font-bold mb-2">Executive Briefing</h4>
+                <p className="text-xs text-gray-400 mb-4 font-sans">
+                  Direct intelligence on global markets and technology.
+                </p>
+                <div className="space-y-2">
+                  <input
+                    type="email"
+                    placeholder="Enter executive email..."
+                    className="w-full bg-white/10 border border-white/20 rounded px-3 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-[#f7413e]"
+                  />
+                  <button className="w-full bg-[#f7413e] hover:bg-[#d63431] text-white py-1.5 rounded text-xs font-oswald uppercase tracking-wider font-bold transition-colors">
+                    Subscribe
+                  </button>
+                </div>
+              </div>
+            </aside>
+          )}
         </div>
 
         {/* Newsletter Dispatch Component */}
         <NewsletterBanner />
 
-        {/* Related Stories Recommendation Grid */}
-        <section className="my-14 pt-8 border-t-2 border-[#211d1d] dark:border-white/30">
-          <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#211d1d]/15 dark:border-white/15">
-            <div className="flex items-center space-x-2">
-              <span className="w-2.5 h-2.5 bg-[#f7413e]"></span>
-              <h3 className="font-serif text-2xl font-bold text-[#0a0a0a] dark:text-[#ffffff]">
-                Related Editorial Stories
-              </h3>
+        {/* Related Stories Recommendation Grid (Controlled by "Disable Popular Posts display") */}
+        {shouldShowPopularPosts && (
+          <section className="my-14 pt-8 border-t-2 border-[#211d1d] dark:border-white/30">
+            <div className="flex items-center justify-between mb-6 pb-2 border-b border-[#211d1d]/15 dark:border-white/15">
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 bg-[#f7413e]"></span>
+                <h3 className="font-serif text-2xl font-bold text-[#0a0a0a] dark:text-[#ffffff]">
+                  Related Editorial Stories
+                </h3>
+              </div>
+              <Link
+                href={`/news?category=${article.category.toLowerCase()}`}
+                className="text-xs font-oswald uppercase tracking-wider font-bold text-[#211d1d] dark:text-[#f5f4ef] hover:text-[#f7413e] dark:hover:text-[#f7413e]"
+              >
+                More in {article.category} →
+              </Link>
             </div>
-            <Link
-              href={`/news?category=${article.category.toLowerCase()}`}
-              className="text-xs font-oswald uppercase tracking-wider font-bold text-[#211d1d] dark:text-[#f5f4ef] hover:text-[#f7413e] dark:hover:text-[#f7413e]"
-            >
-              More in {article.category} →
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {relatedArticles.map((rel) => (
-              <ArticleCard key={rel.slug} article={rel} variant="standard" />
-            ))}
-          </div>
-        </section>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedArticles.map((rel) => (
+                <ArticleCard key={rel.slug} article={rel} variant="standard" />
+              ))}
+            </div>
+          </section>
+        )}
       </article>
     </>
   );
