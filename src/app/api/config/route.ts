@@ -9,13 +9,15 @@ export async function GET() {
   try {
     const dbConfig = await getSiteConfigFromDB();
     if (dbConfig && dbConfig.name) {
-      const activeLogoLight = dbConfig.logoLight || localConfig.logoLight || '/images/apexchief-logo-light.png';
-      // Ensure dark logo is strictly distinct from light logo
-      const isDarkSameAsLight = dbConfig.logoDark && (dbConfig.logoDark === dbConfig.logoLight || dbConfig.logoDark === dbConfig.logo);
-      const activeLogoDark = (!dbConfig.logoDark || isDarkSameAsLight)
-        ? (localConfig.logoDark || '/images/apexchief-logo-dark.png')
-        : dbConfig.logoDark;
-      const activeLogo = dbConfig.logo || localConfig.logo || activeLogoLight;
+      let activeLogoLight = dbConfig.logoLight || localConfig.logoLight || '/images/apexchief-logo-light.png';
+      if (activeLogoLight.includes('logo-dark')) {
+        activeLogoLight = '/images/apexchief-logo-light.png';
+      }
+      let activeLogoDark = dbConfig.logoDark || localConfig.logoDark || '/images/apexchief-logo-dark.png';
+      if (activeLogoDark.includes('logo-light') || activeLogoDark === activeLogoLight) {
+        activeLogoDark = '/images/apexchief-logo-dark.png';
+      }
+      const activeLogo = activeLogoLight;
 
       return NextResponse.json({
         ...localConfig,

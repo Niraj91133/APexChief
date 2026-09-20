@@ -243,9 +243,19 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
     }
 
     if (data) {
-      const logoLightVal = data.contact?.logoLight || data.logoLight || data.contact?.logo || data.tagline_logo || (data as any).logo || '';
-      const logoDarkVal = data.contact?.logoDark || data.logoDark || '';
-      const logoVal = data.contact?.logo || data.tagline_logo || (data as any).logo || logoLightVal || '';
+      let logoLightVal = data.contact?.logoLight || data.logoLight || '';
+      let logoDarkVal = data.contact?.logoDark || data.logoDark || '';
+      let logoVal = data.contact?.logo || data.tagline_logo || (data as any).logo || '';
+
+      if (!logoLightVal || logoLightVal.includes('logo-dark')) {
+        logoLightVal = '/images/apexchief-logo-light.png';
+      }
+      if (!logoDarkVal || logoDarkVal.includes('logo-light') || logoDarkVal === logoLightVal) {
+        logoDarkVal = '/images/apexchief-logo-dark.png';
+      }
+      if (!logoVal || logoVal.includes('logo-dark')) {
+        logoVal = logoLightVal;
+      }
       return {
         name: data.name || 'ApexChief',
         shortName: data.short_name || 'ApexChief',
@@ -277,9 +287,15 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
 
 export async function saveSiteConfigInDB(config: any): Promise<boolean> {
   try {
-    const logoLightVal = config.logoLight || config.logo || '';
-    const logoDarkVal = config.logoDark || config.logo || '';
-    const logoVal = config.logo || logoLightVal || logoDarkVal || '';
+    let logoLightVal = config.logoLight || config.logo || '';
+    if (logoLightVal.includes('logo-dark')) {
+      logoLightVal = '/images/apexchief-logo-light.png';
+    }
+    let logoDarkVal = config.logoDark || '';
+    if (!logoDarkVal || logoDarkVal.includes('logo-light') || logoDarkVal === logoLightVal) {
+      logoDarkVal = '/images/apexchief-logo-dark.png';
+    }
+    const logoVal = logoLightVal;
     const contactObj = {
       ...(config.contact || {}),
       logo: logoVal,

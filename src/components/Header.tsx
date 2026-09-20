@@ -178,10 +178,24 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   // Match SSR initial state with server-provided initialConfig to completely eliminate any logo flash
   const [config, setConfig] = useState<SiteConfig>(initialConfig || siteConfig);
 
-  const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
-  const logoDarkSrc = (config.logoDark && config.logoDark !== config.logoLight && config.logoDark !== config.logo)
-    ? config.logoDark
-    : '/images/apexchief-logo-dark.png';
+  const getCleanLogoLight = (cfg: SiteConfig) => {
+    let src = cfg.logoLight || cfg.logo || '/images/apexchief-logo-light.png';
+    if (!src || src.includes('logo-dark')) {
+      src = '/images/apexchief-logo-light.png';
+    }
+    return src;
+  };
+
+  const getCleanLogoDark = (cfg: SiteConfig) => {
+    let src = cfg.logoDark || '/images/apexchief-logo-dark.png';
+    if (!src || src.includes('logo-light') || src === cfg.logoLight) {
+      src = '/images/apexchief-logo-dark.png';
+    }
+    return src;
+  };
+
+  const logoLightSrc = getCleanLogoLight(config);
+  const logoDarkSrc = getCleanLogoDark(config);
 
   // Sync state if initialConfig updates from parent
   useEffect(() => {
@@ -263,28 +277,47 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   useEffect(() => {
     const syncFromLocalStorage = () => {
       try {
-        const savedSettings = localStorage.getItem('apexchief_site_settings');
+        // Clean up any stale dark logo paths mistakenly placed in light mode
         const customLogoLight = localStorage.getItem('apexchief_custom_logo_light');
-        const customLogoDark = localStorage.getItem('apexchief_custom_logo_dark');
+        if (customLogoLight && customLogoLight.includes('logo-dark')) {
+          localStorage.removeItem('apexchief_custom_logo_light');
+        }
         const customLogo = localStorage.getItem('apexchief_custom_logo');
+        if (customLogo && customLogo.includes('logo-dark')) {
+          localStorage.removeItem('apexchief_custom_logo');
+        }
+
+        const savedSettings = localStorage.getItem('apexchief_site_settings');
+        const customLogoDark = localStorage.getItem('apexchief_custom_logo_dark');
+        const validCustomLight = localStorage.getItem('apexchief_custom_logo_light');
+        const validCustomLogo = localStorage.getItem('apexchief_custom_logo');
+
         if (savedSettings) {
           const parsed = JSON.parse(savedSettings);
-          const activeLight = parsed.logoLight || customLogoLight || parsed.logo || customLogo || '';
-          const activeDark = parsed.logoDark || customLogoDark || '';
-          const activeLogo = parsed.logo || customLogo || activeLight || '';
+          let activeLight = parsed.logoLight || validCustomLight || parsed.logo || validCustomLogo || '';
+          if (activeLight.includes('logo-dark')) {
+            activeLight = '/images/apexchief-logo-light.png';
+            parsed.logoLight = activeLight;
+            try { localStorage.setItem('apexchief_site_settings', JSON.stringify(parsed)); } catch (e) {}
+          }
+          let activeDark = parsed.logoDark || customLogoDark || '';
+          if (activeDark.includes('logo-light') || activeDark === activeLight) {
+            activeDark = '/images/apexchief-logo-dark.png';
+          }
+          const activeLogo = activeLight;
           setConfig((prev: SiteConfig) => ({
             ...prev,
             ...parsed,
             logo: activeLogo || prev.logo,
             logoLight: activeLight || prev.logoLight,
-            logoDark: activeDark || (parsed.logoDark ? parsed.logoDark : ''),
+            logoDark: activeDark || prev.logoDark || '/images/apexchief-logo-dark.png',
           }));
-        } else if (customLogoLight || customLogoDark || customLogo) {
+        } else if (validCustomLight || customLogoDark || validCustomLogo) {
           setConfig((prev: SiteConfig) => ({
             ...prev,
-            logoLight: customLogoLight || customLogo || prev.logoLight,
-            logoDark: customLogoDark || '',
-            logo: customLogo || prev.logo,
+            logoLight: validCustomLight || validCustomLogo || prev.logoLight,
+            logoDark: customLogoDark || '/images/apexchief-logo-dark.png',
+            logo: validCustomLogo || validCustomLight || prev.logo,
           }));
         }
       } catch (e) {
@@ -297,12 +330,20 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         .then((res) => res.json())
         .then((data) => {
           if (data && (data.name || data.logo || data.logoLight || data.logoDark)) {
+            let activeLight = data.logoLight || data.logo || '';
+            if (activeLight.includes('logo-dark')) {
+              activeLight = '/images/apexchief-logo-light.png';
+            }
+            let activeDark = data.logoDark || '';
+            if (activeDark.includes('logo-light') || activeDark === activeLight) {
+              activeDark = '/images/apexchief-logo-dark.png';
+            }
             setConfig((prev: SiteConfig) => ({
               ...prev,
               ...data,
-              logoLight: data.logoLight || prev.logoLight,
-              logoDark: data.logoDark || prev.logoDark,
-              logo: data.logo || prev.logo,
+              logoLight: activeLight || prev.logoLight,
+              logoDark: activeDark || prev.logoDark,
+              logo: activeLight || prev.logo,
             }));
           }
         })
@@ -411,20 +452,20 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
 
         {/* Center: ApexChief Logo */}
         <div className="flex items-center justify-center text-center px-1 sm:px-2 flex-1 min-w-0">
-          <Link href="/" className="inline-block group">
+          <Link href="/" className="inline-flex items-center justify-center group py-0.5">
             {logoLightSrc || logoDarkSrc ? (
               <>
                 <img
                   src={logoLightSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-14 sm:h-16 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] dark:hidden block"
+                  className="h-11 sm:h-13 md:h-15 lg:h-18 xl:h-[76px] w-auto max-w-[210px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform duration-200 group-hover:scale-[1.02] dark:hidden block"
                 />
                 <img
                   src={logoDarkSrc}
                   alt={config.name || 'ApexChief'}
                   suppressHydrationWarning={true}
-                  className="h-14 sm:h-16 md:h-18 lg:h-22 xl:h-[92px] w-auto max-w-[240px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform group-hover:scale-[1.02] hidden dark:block"
+                  className="h-11 sm:h-13 md:h-15 lg:h-18 xl:h-[76px] w-auto max-w-[210px] sm:max-w-[320px] md:max-w-[380px] lg:max-w-[440px] object-contain transition-transform duration-200 group-hover:scale-[1.02] hidden dark:block"
                 />
               </>
             ) : (
@@ -535,13 +576,13 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                       src={logoLightSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-13 sm:h-14 w-auto max-w-[240px] object-contain dark:hidden block"
+                      className="h-10 sm:h-12 w-auto max-w-[200px] object-contain dark:hidden block"
                     />
                     <img
                       src={logoDarkSrc}
                       alt={config.name || 'ApexChief'}
                       suppressHydrationWarning={true}
-                      className="h-13 sm:h-14 w-auto max-w-[240px] object-contain hidden dark:block"
+                      className="h-10 sm:h-12 w-auto max-w-[200px] object-contain hidden dark:block"
                     />
                   </>
                 ) : (
