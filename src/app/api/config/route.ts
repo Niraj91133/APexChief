@@ -9,9 +9,9 @@ export async function GET() {
   try {
     const dbConfig = await getSiteConfigFromDB();
     if (dbConfig && dbConfig.name) {
-      const activeLogo = dbConfig.logo || localConfig.logo || '';
-      const activeLogoLight = dbConfig.logoLight || dbConfig.logo || localConfig.logoLight || localConfig.logo || '';
-      const activeLogoDark = dbConfig.logoDark || dbConfig.logo || localConfig.logoDark || localConfig.logo || '';
+      const activeLogoLight = dbConfig.logoLight || localConfig.logoLight || '/images/apexchief-logo-light.png';
+      const activeLogoDark = dbConfig.logoDark || localConfig.logoDark || '/images/apexchief-logo-dark.png';
+      const activeLogo = dbConfig.logo || localConfig.logo || activeLogoLight;
 
       return NextResponse.json({
         ...localConfig,

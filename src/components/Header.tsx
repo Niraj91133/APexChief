@@ -182,7 +182,9 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   const [config, setConfig] = useState<SiteConfig>(initialConfig || siteConfig);
 
   const logoLightSrc = config.logoLight || config.logo || '/images/apexchief-logo-light.png';
-  const logoDarkSrc = config.logoDark || config.logo || '/images/apexchief-logo-dark.png';
+  const logoDarkSrc = (config.logoDark && config.logoDark !== config.logoLight && config.logoDark !== config.logo) 
+    ? config.logoDark 
+    : '/images/apexchief-logo-dark.png';
 
   // Sync state if initialConfig updates from parent
   useEffect(() => {
@@ -270,21 +272,21 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         const customLogo = localStorage.getItem('apexchief_custom_logo');
         if (savedSettings) {
           const parsed = JSON.parse(savedSettings);
-          const activeLight = parsed.logoLight || customLogoLight || parsed.logo || customLogo;
-          const activeDark = parsed.logoDark || customLogoDark || parsed.logo || customLogo;
-          const activeLogo = parsed.logo || customLogo || activeLight || activeDark;
+          const activeLight = parsed.logoLight || customLogoLight || parsed.logo || customLogo || '';
+          const activeDark = parsed.logoDark || customLogoDark || '';
+          const activeLogo = parsed.logo || customLogo || activeLight || '';
           setConfig((prev: SiteConfig) => ({
             ...prev,
             ...parsed,
             logo: activeLogo || prev.logo,
             logoLight: activeLight || prev.logoLight,
-            logoDark: activeDark || prev.logoDark,
+            logoDark: activeDark || (parsed.logoDark ? parsed.logoDark : ''),
           }));
         } else if (customLogoLight || customLogoDark || customLogo) {
           setConfig((prev: SiteConfig) => ({
             ...prev,
             logoLight: customLogoLight || customLogo || prev.logoLight,
-            logoDark: customLogoDark || customLogo || prev.logoDark,
+            logoDark: customLogoDark || '',
             logo: customLogo || prev.logo,
           }));
         }

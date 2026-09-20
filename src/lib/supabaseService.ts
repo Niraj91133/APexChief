@@ -243,9 +243,9 @@ export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
     }
 
     if (data) {
-      const logoVal = data.contact?.logo || data.tagline_logo || (data as any).logo || '';
-      const logoLightVal = data.contact?.logoLight || data.logoLight || logoVal || '';
-      const logoDarkVal = data.contact?.logoDark || data.logoDark || logoVal || '';
+      const logoLightVal = data.contact?.logoLight || data.logoLight || data.contact?.logo || data.tagline_logo || (data as any).logo || '';
+      const logoDarkVal = data.contact?.logoDark || data.logoDark || '';
+      const logoVal = data.contact?.logo || data.tagline_logo || (data as any).logo || logoLightVal || '';
       return {
         name: data.name || 'ApexChief',
         shortName: data.short_name || 'ApexChief',
