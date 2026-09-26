@@ -46,7 +46,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!article) {
     return {
-      title: `Story Not Found — ${siteConfig.name}`,
+      title: 'Story Not Found',
       description: 'The requested editorial story could not be found.',
       robots: {
         index: false,
@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   ].filter(Boolean) as string[];
 
   return {
-    title: `${article.title} — ${siteConfig.name}`,
+    title: article.title,
     description: article.excerpt,
     keywords: keywords,
     authors: [{ name: article.author }],
@@ -178,7 +178,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           url: baseUrl,
           logo: {
             '@type': 'ImageObject',
-            url: 'https://framerusercontent.com/images/zYn8Xte3IxdFPFqfnQCRr2eGyHY.svg',
+            url: `${baseUrl}/favicon.png`,
           },
         },
       },

@@ -416,42 +416,48 @@ export default function HomePage() {
       {/* ========================================================================= */}
       {/* 10. NEWSLETTER DISPATCH BANNER                                            */}
       {/* ========================================================================= */}
-      <section className="w-full bg-white dark:bg-[#1a1d26] text-[#211d1d] dark:text-[#fefdf3] p-8 sm:p-12 text-center relative overflow-hidden border border-[#211d1d]/15 dark:border-white/10 shadow-xs">
+      <section className="w-full bg-[#faf8f2] dark:bg-[#151922] text-[#0a0a0a] dark:text-[#fefdf3] p-8 sm:p-12 text-center relative overflow-hidden border border-[#211d1d]/20 dark:border-white/15 shadow-xs">
         <div className="max-w-2xl mx-auto relative z-10">
-          <Mail className="w-8 h-8 text-[#f7413e] mx-auto mb-3 animate-bounce" />
-          <span className="text-[11px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
-            Weekly Editorial Briefing
-          </span>
-          <h3 className="font-serif text-3xl sm:text-4xl font-bold mt-2 mb-4 text-[#211d1d] dark:text-[#fefdf3]">
+          <div className="inline-flex items-center space-x-2 bg-black dark:bg-white text-white dark:text-black px-3.5 py-1 text-xs font-mono uppercase tracking-widest font-bold mb-4">
+            <Mail className="w-3.5 h-3.5 text-[#f7413e]" />
+            <span>Weekly Editorial Briefing</span>
+          </div>
+          <h3 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold mt-1 mb-3 text-[#0a0a0a] dark:text-white">
             Curated Journalism Delivered Directly
           </h3>
-          <p className="text-xs sm:text-sm text-[#575757] dark:text-[#eff0e0]/80 leading-relaxed mb-6 font-sans">
-            Join over 45,000 discerning readers receiving our weekly digest of original reporting, investigative cultural essays, and global industry intelligence.
+          <p className="text-xs sm:text-sm md:text-base text-[#4a4a4a] dark:text-[#d1d5db] leading-relaxed mb-6 font-sans">
+            Join over 45,000 discerning readers receiving our weekly digest of original reporting, investigative cultural essays, and global industry intelligence every Friday.
           </p>
 
           {newsletterSubscribed ? (
-            <div className="bg-emerald-50 dark:bg-[#f7413e]/20 border border-emerald-500 dark:border-[#f7413e] p-4 text-sm text-emerald-800 dark:text-[#fefdf3] flex items-center justify-center space-x-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-[#f7413e]" />
-              <span>Thank you for subscribing! Your briefing will arrive every Friday.</span>
+            <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500 text-emerald-800 dark:text-emerald-300 p-4 font-sans text-sm inline-flex items-center justify-center space-x-2 shadow-xs">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span className="font-medium">Thank you for subscribing! Your briefing will arrive every Friday.</span>
             </div>
           ) : (
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2.5 justify-center max-w-md mx-auto">
               <input
                 type="email"
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="Enter your email address..."
                 required
-                className="bg-[#faf8f2] dark:bg-[#111318] text-[#211d1d] dark:text-[#fefdf3] border border-[#211d1d]/20 dark:border-white/20 px-4 py-3 text-xs rounded-none focus:outline-none focus:ring-2 focus:ring-[#f7413e] flex-1 font-sans placeholder:text-[#575757]/60 dark:placeholder:text-gray-400"
+                className="bg-white dark:bg-[#0d1117] text-[#0a0a0a] dark:text-white border border-[#211d1d]/30 dark:border-white/20 px-4 py-3 text-xs sm:text-sm rounded-none focus:outline-none focus:border-[#f7413e] focus:ring-1 focus:ring-[#f7413e] flex-1 font-sans placeholder:text-[#737373] dark:placeholder:text-[#9ca3af]"
               />
               <button
                 type="submit"
-                className="bg-[#f7413e] hover:bg-[#d92d2a] text-[#fefdf3] font-oswald text-xs uppercase px-6 py-3 font-bold tracking-widest transition-colors rounded-none cursor-pointer"
+                className="bg-[#f7413e] hover:bg-[#d92d2a] text-white font-oswald text-xs uppercase px-6 py-3 font-bold tracking-widest transition-all rounded-none cursor-pointer shadow-xs shrink-0"
               >
                 Subscribe
               </button>
             </form>
           )}
+
+          <div className="mt-6 pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-xs text-[#525252] dark:text-[#a3a3a3] font-mono">
+            <span>✓ Every Friday Edition</span>
+            <span>✓ 100% Free &amp; No Spam</span>
+            <span>✓ One-Click Unsubscribe</span>
+          </div>
         </div>
       </section>
     </div>
@@ -1019,7 +1025,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   }
 
   // =========================================================================
-  // 2. Tech / Innovation / Technology / Start Up layout (Split list + Right lead)
+  // 2. Tech / Innovation / Technology / Startups layout (Split list + Right lead)
   // =========================================================================
   if (layout === 'tech-layout') {
     if (categoryArticles.length === 1) {

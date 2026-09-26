@@ -207,8 +207,8 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    "name": "Real state",
-    "slug": "real-state",
+    "name": "Real Estate",
+    "slug": "real-estate",
     "description": "Commercial property, prime residential towers, sovereign infrastructure, REITs, and urban architecture.",
     "layout": "business-layout",
     "order": 8,
@@ -357,8 +357,8 @@ export const CATEGORIES: Category[] = [
     ]
   },
   {
-    "name": "Start up",
-    "slug": "start-up",
+    "name": "Startups",
+    "slug": "startups",
     "description": "Venture capital deals, seed-to-scale playbooks, bootstrapped SaaS models, and disruptive tech founders.",
     "layout": "tech-layout",
     "order": 13,

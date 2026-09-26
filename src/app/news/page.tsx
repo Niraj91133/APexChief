@@ -30,10 +30,10 @@ const resolveCategoryAndSub = (catParam: string, subParam: string | null) => {
     return { category: 'technology', sub: 'ai', region: null };
   }
   if (norm === 'real-estate' || norm === 'realestate' || norm === 'realstate' || norm === 'real-state') {
-    return { category: 'real-state', sub: normSub || null, region: null };
+    return { category: 'real-estate', sub: normSub || null, region: null };
   }
   if (norm === 'startup' || norm === 'startups' || norm === 'start-up') {
-    return { category: 'start-up', sub: normSub || null, region: null };
+    return { category: 'startups', sub: normSub || null, region: null };
   }
   if (norm === 'top-list' || norm === 'top10' || norm === 'top-10' || norm === 'top - list') {
     return { category: 'top-list', sub: normSub || null, region: null };
@@ -85,7 +85,14 @@ function NewsContent() {
     setActiveCategory(res.category);
     setActiveSub(res.sub);
     setActiveRegion(res.region);
-  }, [searchParams]);
+
+    const catName = categories.find((c) => c.slug === res.category)?.name;
+    if (res.category && res.category !== 'all' && catName) {
+      document.title = `${catName} Archive | ApexChief`;
+    } else {
+      document.title = 'Editorial News Archive | ApexChief';
+    }
+  }, [searchParams, categories]);
 
   // Fetch dynamic articles
   useEffect(() => {

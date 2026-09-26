@@ -50,13 +50,16 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
             <Link href="/" className="hover:text-white transition-colors">
               Home
             </Link>
+            <Link href="/news" className="hover:text-white transition-colors">
+              Archive
+            </Link>
             <Link href="/contact" className="hover:text-white transition-colors">
               Contact
             </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
+            <Link href="/privacy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
+            <Link href="/terms" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
           </nav>

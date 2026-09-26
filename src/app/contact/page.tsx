@@ -27,6 +27,10 @@ export default function ContactPage() {
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
+    document.title = 'Contact Editorial Desk | ApexChief';
+  }, []);
+
+  useEffect(() => {
     fetch('/api/categories')
       .then((res) => res.json())
       .then((data) => {
@@ -61,13 +65,13 @@ export default function ContactPage() {
       {/* Hero Masthead */}
       <div className="max-w-3xl mb-12">
         <div className="inline-block bg-[#0a0a0a] text-[#fefdf3] text-[10px] font-oswald uppercase px-2.5 py-1 tracking-widest font-bold mb-3">
-          Get in Touch
+          ApexChief Newsroom Desk
         </div>
         <h1 className="font-serif text-4xl sm:text-6xl font-bold text-[#0a0a0a] tracking-tight mb-4">
-          Contact The Editorial Team
+          Contact ApexChief Editorial Desk
         </h1>
         <p className="font-serif italic text-base sm:text-lg text-[#575757] leading-relaxed">
-          Have a story idea, partnership inquiry, or media question? Reach out to our editorial team and let&rsquo;s start the conversation.
+          Have an executive briefing pitch, investigative tip, leadership story, or strategic editorial inquiry? Connect directly with our global editorial newsroom.
         </p>
       </div>
 
@@ -89,7 +93,7 @@ export default function ContactPage() {
                 Message Dispatched
               </h3>
               <p className="text-sm text-[#575757] mt-2 max-w-md mx-auto">
-                Thank you for contacting The Modern Times. Our editorial desk will review your inquiry and follow up within 1-2 business days.
+                Thank you for contacting ApexChief. Our editorial desk will review your inquiry and follow up within 1-2 business days.
               </p>
               <button
                 onClick={() => {
@@ -119,7 +123,7 @@ export default function ContactPage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Eleanor Vance"
+                    placeholder="e.g. Alex Rivera"
                     className="w-full bg-[#fefdf3] text-[#211d1d] px-3.5 py-2.5 rounded border border-[#211d1d]/20 focus:outline-none focus:border-[#211d1d]"
                   />
                 </div>
@@ -133,7 +137,7 @@ export default function ContactPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="e.g. eleanor@example.com"
+                    placeholder="e.g. alex.rivera@enterprise.com"
                     className="w-full bg-[#fefdf3] text-[#211d1d] px-3.5 py-2.5 rounded border border-[#211d1d]/20 focus:outline-none focus:border-[#211d1d]"
                   />
                 </div>

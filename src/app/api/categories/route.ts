@@ -7,6 +7,8 @@ import {
   bulkSaveCategoriesInDB,
 } from '@/lib/supabaseService';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const dbCategories = await getCategoriesFromDB();

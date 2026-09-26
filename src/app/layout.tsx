@@ -46,8 +46,8 @@ const bebas = Bebas_Neue({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com'),
   title: {
-    default: 'ApexChief – Business, Leadership, Technology & interview',
-    template: '%s — ApexChief',
+    default: 'ApexChief | Business, Technology & Global News',
+    template: '%s | ApexChief',
   },
   description:
     'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
@@ -83,17 +83,17 @@ export const metadata: Metadata = {
     apple: '/apple-icon.png',
   },
   openGraph: {
-    title: 'ApexChief – Business, Leadership, Technology & interview',
+    title: 'ApexChief | Business, Technology & Global News',
     description:
       'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
     url: 'https://www.apexchief.com',
     siteName: 'ApexChief',
     images: [
       {
-        url: 'https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png',
+        url: 'https://www.apexchief.com/images/apexchief-logo-light.png',
         width: 1200,
         height: 630,
-        alt: 'ApexChief – Business, Leadership, Technology & interview',
+        alt: 'ApexChief | Business, Technology & Global News',
       },
     ],
     locale: 'en_US',
@@ -101,12 +101,12 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ApexChief – Business, Leadership, Technology & interview',
+    title: 'ApexChief | Business, Technology & Global News',
     description:
       'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
     site: '@apexchief01',
     creator: '@apexchief01',
-    images: ['https://framerusercontent.com/images/wTPVxDx1qGqgRyxQ2Ro8amC7p4.png'],
+    images: ['https://www.apexchief.com/images/apexchief-logo-light.png'],
   },
   robots: {
     index: true,
@@ -129,7 +129,7 @@ const jsonLd = {
       '@id': 'https://www.apexchief.com/#website',
       url: 'https://www.apexchief.com',
       name: 'ApexChief',
-      headline: 'ApexChief – Business, Leadership, Technology & interview',
+      headline: 'ApexChief | Business, Technology & Global News',
       description:
         'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
       publisher: {
@@ -153,7 +153,7 @@ const jsonLd = {
       url: 'https://www.apexchief.com',
       logo: {
         '@type': 'ImageObject',
-        url: 'https://framerusercontent.com/images/zYn8Xte3IxdFPFqfnQCRr2eGyHY.svg',
+        url: 'https://www.apexchief.com/favicon.png',
       },
       description:
         'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',

@@ -7,6 +7,8 @@ import {
   deleteArticleFromDB,
 } from '@/lib/supabaseService';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   // Try Supabase first
   const dbArticles = await getArticlesFromDB();

@@ -23,7 +23,7 @@ export const siteConfig: SiteConfig = {
     github: ""
   },
   contact: {
-    email: "admin@apexchief.com",
+    email: "apexchiefofficial@gmail.com",
     phone: "+1 (800) 420-APEX • 100 Financial Center Blvd, New York, NY",
     logo: "/images/apexchief-logo-light.png",
     logoLight: "/images/apexchief-logo-light.png",
