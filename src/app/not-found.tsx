@@ -44,7 +44,7 @@ export default function NotFound() {
           href="/news"
           className="border border-[#211d1d] hover:bg-[#211d1d] hover:text-[#fefdf3] text-[#211d1d] font-oswald text-xs font-bold uppercase tracking-widest px-6 py-3 rounded transition-all inline-flex items-center space-x-2"
         >
-          <span>Browse All 56 Stories</span>
+          <span>Browse Editorial Archive</span>
         </Link>
       </div>
 
