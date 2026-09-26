@@ -309,15 +309,15 @@ export default function HeroSection3Grid({
                 <span className="flex items-center justify-center w-5 h-5 bg-[#f7413e] text-white text-[11px] font-mono font-bold">
                   <Trophy className="w-3 h-3" />
                 </span>
-                <span className="font-mono text-xs uppercase tracking-widest text-[#f7413e] font-bold">
-                  RANK 0{activeTopIndex + 1} OF 0{visibleTopCount}
-                </span>
+                <h3 className="font-bebas text-2xl sm:text-3xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
+                  TOP STORIES
+                </h3>
               </div>
 
               {/* Carousel Next/Prev Controls */}
               <div className="flex items-center space-x-1.5">
                 <span className="text-xs font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
-                  0{activeTopIndex + 1}/0{visibleTopCount}
+                  0{activeTopIndex + 1} / 0{visibleTopCount}
                 </span>
                 <button
                   onClick={() =>
@@ -509,7 +509,7 @@ export default function HeroSection3Grid({
               {/* Slider Next/Prev Arrows & Slide Counter */}
               <div className="flex items-center space-x-1.5">
                 <span className="text-xs font-mono text-gray-500 dark:text-gray-400 font-bold mr-1">
-                  0{sliderIndex + 1}/0{activeInterviews.length}
+                  0{sliderIndex + 1} / 0{activeInterviews.length}
                 </span>
                 <button
                   onClick={() =>
