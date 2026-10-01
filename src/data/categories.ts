@@ -417,3 +417,19 @@ export const CATEGORIES: Category[] = [
     ]
   }
 ];
+
+export function getCategorySlug(categoryName: string): string {
+  if (!categoryName) return 'news';
+  const norm = categoryName.toLowerCase().trim();
+  if (norm === 'top - list' || norm === 'top list' || norm === 'top-list' || norm === 'top 10' || norm === 'top10') {
+    return 'top-list';
+  }
+  if (norm === 'real estate' || norm === 'real-estate' || norm === 'realestate') {
+    return 'real-estate';
+  }
+  const match = CATEGORIES.find(
+    (c) => c.name.toLowerCase() === norm || c.slug.toLowerCase() === norm
+  );
+  if (match) return match.slug;
+  return norm.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'news';
+}

@@ -3279,10 +3279,10 @@ export default function AdminDashboard() {
                         </div>
                         <div className="flex items-center space-x-2 text-[11px] font-mono">
                           <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#002b5c] dark:text-sky-400 font-bold">
-                            GA4: G-02WC3EL89S
+                            GA4: G-T7QCMV9GG6
                           </span>
                           <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#f7413e] dark:text-rose-400 font-bold">
-                            Clarity: ydgkxqb6b8
+                            Clarity: yqgk6g2wdg
                           </span>
                         </div>
                       </div>
@@ -3303,7 +3303,7 @@ export default function AdminDashboard() {
                           </p>
                           <div className="flex items-center space-x-2 pt-1">
                             <a
-                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/recordings"
+                              href="https://clarity.microsoft.com/projects/view/yqgk6g2wdg/recordings"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
@@ -3312,7 +3312,7 @@ export default function AdminDashboard() {
                               <ExternalLink className="w-3 h-3" />
                             </a>
                             <a
-                              href="https://clarity.microsoft.com/projects/view/ydgkxqb6b8/heatmaps"
+                              href="https://clarity.microsoft.com/projects/view/yqgk6g2wdg/heatmaps"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="px-3 py-1.5 bg-white dark:bg-[#161c2e] hover:bg-[#f3f1e6] dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 border border-[#211d1d]/20 dark:border-white/15 text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"

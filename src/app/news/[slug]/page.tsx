@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { getArticles, getArticleBySlug, getRelatedArticles, getSiteConfig } from '@/data/db';
 import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getCategorySlug } from '@/data/categories';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterBanner from '@/components/NewsletterBanner';
 import {
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const dbArticles = await getArticlesFromDB();
   const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
   const siteConfig = getSiteConfig();
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3007';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
   if (!article) {
     return {
@@ -121,7 +122,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const dbArticles = await getArticlesFromDB();
   const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
   const siteConfig = getSiteConfig();
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3007';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
   if (!article) {
     notFound();
@@ -196,7 +197,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             '@type': 'ListItem',
             position: 2,
             name: article.category,
-            item: `${baseUrl}/news?category=${article.category.toLowerCase()}`,
+            item: `${baseUrl}/news?category=${getCategorySlug(article.category)}`,
           },
           {
             '@type': 'ListItem',
@@ -239,7 +240,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             </Link>
             <span>/</span>
             <Link
-              href={`/news?category=${article.category.toLowerCase()}`}
+              href={`/news?category=${getCategorySlug(article.category)}`}
               className="text-[#f7413e] font-bold hover:underline"
             >
               {article.category}
@@ -455,7 +456,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 </h3>
               </div>
               <Link
-                href={`/news?category=${article.category.toLowerCase()}`}
+                href={`/news?category=${getCategorySlug(article.category)}`}
                 className="text-xs font-oswald uppercase tracking-wider font-bold text-[#211d1d] dark:text-[#f5f4ef] hover:text-[#f7413e] dark:hover:text-[#f7413e]"
               >
                 More in {article.category} →

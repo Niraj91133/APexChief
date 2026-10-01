@@ -6,8 +6,8 @@ import Script from 'next/script';
 
 export default function Analytics() {
   const pathname = usePathname();
-  const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'ydgkxqb6b8';
-  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-02WC3EL89S';
+  const clarityId = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || 'yqgk6g2wdg';
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || 'G-T7QCMV9GG6';
 
   useEffect(() => {
     if (!pathname || pathname.startsWith('/admin') || typeof window === 'undefined') return;

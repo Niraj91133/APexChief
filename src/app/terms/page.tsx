@@ -4,8 +4,23 @@ import { ArrowLeft, Scale, BookOpen, AlertCircle, FileCheck, ShieldCheck, Mail }
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service',
+  title: 'Terms of Service | ApexChief',
   description: 'Read the official Terms of Service governing access, editorial syndication, copyright, and usage across ApexChief media properties.',
+  alternates: {
+    canonical: 'https://www.apexchief.com/terms',
+  },
+  openGraph: {
+    title: 'Terms of Service | ApexChief',
+    description: 'Read the official Terms of Service governing access, editorial syndication, copyright, and usage across ApexChief media properties.',
+    url: 'https://www.apexchief.com/terms',
+    siteName: 'ApexChief',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Terms of Service | ApexChief',
+    description: 'Read the official Terms of Service governing access, editorial syndication, copyright, and usage across ApexChief media properties.',
+  },
 };
 
 export default function TermsOfServicePage() {

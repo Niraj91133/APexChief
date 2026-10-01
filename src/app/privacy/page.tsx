@@ -4,8 +4,23 @@ import { ArrowLeft, Shield, Lock, Eye, FileText, Globe, Mail } from 'lucide-reac
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
+  title: 'Privacy Policy | ApexChief',
   description: 'Learn how ApexChief collects, protects, and handles your personal information with uncompromising journalistic standards and privacy security.',
+  alternates: {
+    canonical: 'https://www.apexchief.com/privacy',
+  },
+  openGraph: {
+    title: 'Privacy Policy | ApexChief',
+    description: 'Learn how ApexChief collects, protects, and handles your personal information with uncompromising journalistic standards and privacy security.',
+    url: 'https://www.apexchief.com/privacy',
+    siteName: 'ApexChief',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Privacy Policy | ApexChief',
+    description: 'Learn how ApexChief collects, protects, and handles your personal information with uncompromising journalistic standards and privacy security.',
+  },
 };
 
 export default function PrivacyPolicyPage() {
