@@ -1,165 +1,59 @@
 'use client';
 
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Search, Menu, X, Moon, Sun, ChevronDown, ArrowRight } from 'lucide-react';
+import { Search, Menu, X, Moon, Sun, ArrowRight } from 'lucide-react';
 import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
 import { CATEGORIES } from '@/data/categories';
 import { Category, Article, SiteConfig } from '@/types';
 
 function HeaderNav({
-  onOpenSearch,
-  mobileMenuOpen,
-  setMobileMenuOpen,
   categories,
 }: {
-  onOpenSearch: () => void;
-  mobileMenuOpen: boolean;
-  setMobileMenuOpen: (open: boolean) => void;
   categories: Category[];
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const currentCategory = searchParams.get('category');
-  const currentSub = searchParams.get('sub');
-
-  const [hoveredCat, setHoveredCat] = useState<string | null>(null);
-  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setHoveredCat(null);
-  }, [pathname, currentCategory, currentSub, setMobileMenuOpen]);
-
-  const handleMouseEnter = (slug: string) => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-    }
-    setHoveredCat(slug);
-  };
-
-  const handleMouseLeave = () => {
-    hoverTimeoutRef.current = setTimeout(() => {
-      setHoveredCat(null);
-    }, 180);
-  };
-
-  const activeCategoryObj = categories.find((c) => c.slug === hoveredCat);
 
   return (
-    <div
-      className="category-nav-bar hidden lg:block w-full bg-black text-white border-b border-black transition-all relative z-40"
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className="category-nav-bar hidden lg:block w-full bg-black text-white border-b border-black transition-all relative z-40">
       <div className="w-full max-w-[1440px] mx-auto px-2 sm:px-4 flex items-center justify-center py-1.5">
         {/* Desktop Navigation Links (Home + Categories Centered within Container) */}
         <nav className="flex items-center justify-center flex-wrap gap-x-0.5 lg:gap-x-1 xl:gap-x-1.5 py-0.5 text-center">
           <Link
             href="/"
-            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${pathname === '/' && !currentCategory
+            className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
+              pathname === '/' && !currentCategory
                 ? 'text-[#f7413e] bg-white/10'
                 : 'text-white/95 hover:text-[#f7413e]'
-              }`}
+            }`}
           >
             Home
           </Link>
 
           {categories.filter((c) => c.slug !== 'home').map((cat) => {
-            const hasSubs = cat.subcategories && cat.subcategories.length > 0;
-            const isHovered = hoveredCat === cat.slug;
             const isActive = currentCategory?.toLowerCase() === cat.slug.toLowerCase();
 
             return (
-              <div
-                key={cat.slug}
-                className="relative group py-0.5 shrink-0"
-                onMouseEnter={() => handleMouseEnter(cat.slug)}
-              >
+              <div key={cat.slug} className="py-0.5 shrink-0">
                 <Link
                   href={`/news?category=${cat.slug}`}
-                  className={`inline-flex items-center space-x-0.5 px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${isActive
+                  className={`inline-flex items-center px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
+                    isActive
                       ? 'text-[#f7413e] bg-white/10'
-                      : isHovered
-                        ? 'text-[#f7413e] bg-white/5'
-                        : 'text-white/90 hover:text-[#f7413e]'
-                    }`}
+                      : 'text-white/90 hover:text-[#f7413e]'
+                  }`}
                 >
                   <span>{cat.name}</span>
-                  {hasSubs && (
-                    <ChevronDown
-                      className={`w-2.5 h-2.5 transition-transform duration-200 ${isHovered ? 'rotate-180 text-[#f7413e]' : 'text-white/40 group-hover:text-[#f7413e]'
-                        }`}
-                    />
-                  )}
                 </Link>
               </div>
             );
           })}
         </nav>
       </div>
-
-      {/* Hover Subcategory Mega Dropdown Panel */}
-      {hoveredCat && activeCategoryObj && activeCategoryObj.subcategories && (
-        <div
-          className="absolute top-full left-0 w-full bg-[#0a0a0a] text-white border-b-2 border-[#f7413e] shadow-2xl z-50 animate-in fade-in slide-in-from-top-1 duration-150"
-          onMouseEnter={() => {
-            if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-          }}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-5">
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              {/* Left Column: Pillar Title & Description */}
-              <div className="md:w-1/3 border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-6">
-                <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold">
-                  <span>Editorial Pillar</span>
-                </div>
-                <Link
-                  href={`/news?category=${activeCategoryObj.slug}`}
-                  className="font-serif text-2xl font-bold text-white hover:text-[#f7413e] transition-colors block mt-1"
-                >
-                  {activeCategoryObj.name}
-                </Link>
-                <p className="text-xs text-gray-400 mt-1.5 leading-relaxed font-sans">
-                  {activeCategoryObj.description}
-                </p>
-                <Link
-                  href={`/news?category=${activeCategoryObj.slug}`}
-                  className="inline-flex items-center space-x-1.5 text-xs font-mono uppercase text-[#f7413e] hover:underline font-bold mt-3"
-                >
-                  <span>Explore All {activeCategoryObj.name}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-
-              {/* Right Column: Subcategory Grid Items */}
-              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 w-full">
-                {activeCategoryObj.subcategories.map((sub) => (
-                  <Link
-                    key={sub.slug}
-                    href={`/news?category=${activeCategoryObj.slug}&sub=${sub.slug}`}
-                    className="group flex flex-col p-2.5 rounded bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-[#f7413e]/40 transition-all"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-oswald text-xs uppercase font-bold text-white group-hover:text-[#f7413e] tracking-wider transition-colors">
-                        {sub.name}
-                      </span>
-                      <ArrowRight className="w-3 h-3 text-white/30 group-hover:text-[#f7413e] group-hover:translate-x-0.5 transition-all" />
-                    </div>
-                    {sub.description && (
-                      <span className="text-[11px] text-gray-400 mt-1 line-clamp-1 font-sans leading-tight">
-                        {sub.description}
-                      </span>
-                    )}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -171,9 +65,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   }
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [expandedMobileCat, setExpandedMobileCat] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>(CATEGORIES);
-  const [todayDate, setTodayDate] = useState('');
   const [isDarkMode, setIsDarkMode] = useState(false);
   // Match SSR initial state with server-provided initialConfig to completely eliminate any logo flash
   const [config, setConfig] = useState<SiteConfig>(initialConfig || siteConfig);
@@ -209,18 +101,6 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
       }));
     }
   }, [initialConfig]);
-
-  // Initialize and compute dynamic real-time today date
-  useEffect(() => {
-    const now = new Date();
-    const formatted = now.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-    setTodayDate(formatted);
-  }, []);
 
   // Initialize and handle light / dark mode toggle (Default is Light Mode)
   useEffect(() => {
@@ -426,9 +306,9 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
     <header className="sticky top-0 z-50 w-full bg-white dark:bg-[#121212] shadow-md transition-colors duration-200">
       {/* 1. Main Header Masthead Bar */}
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-2.5 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
-        {/* Left: Mobile-only menu button + Live Today's Date */}
+        {/* Left: Mobile-only menu button */}
         <div className="flex items-center space-x-2 sm:space-x-3 text-xs font-sans font-semibold text-gray-900 dark:text-gray-100 uppercase tracking-wider shrink-0 sm:min-w-[130px] md:min-w-[170px]">
-          {/* Mobile hamburger icon only */}
+          {/* Mobile hamburger icon */}
           <button
             onClick={() => setMobileMenuOpen(true)}
             className="lg:hidden p-1 text-black dark:text-white hover:text-[#f7413e] transition-colors cursor-pointer"
@@ -436,18 +316,6 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
           >
             <Menu className="w-5 h-5" />
           </button>
-          {/* Live Today's Date */}
-          <div className="hidden sm:flex flex-col text-left">
-            <span className="text-[11px] sm:text-xs font-sans tracking-wide text-black dark:text-white font-semibold">
-              {todayDate || config.currentDate}
-            </span>
-            <span className="text-[9px] text-gray-500 dark:text-gray-400 font-mono tracking-wider">
-              DAILY GLOBAL EDITION
-            </span>
-          </div>
-          <span className="sm:hidden text-[11px] font-sans tracking-wide text-black dark:text-white font-semibold">
-            {todayDate ? todayDate.split(',')[0] : 'Today'}
-          </span>
         </div>
 
         {/* Center: ApexChief Logo */}
@@ -512,7 +380,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         </div>
       </div>
 
-      {/* 2. Category Navigation Bar with Subcategory Hover Menus */}
+      {/* 2. Category Navigation Bar */}
       <Suspense
         fallback={
           <div className="w-full bg-black py-3 text-center text-xs font-mono text-white">
@@ -520,12 +388,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
           </div>
         }
       >
-        <HeaderNav
-          onOpenSearch={openSearch}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-          categories={categories}
-        />
+        <HeaderNav categories={categories} />
       </Suspense>
 
       {/* 3. Breaking News Scrolling Marquee Bar (Continuous Auto-Scroll) */}
@@ -564,7 +427,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
         </div>
       </div>
 
-      {/* Mobile Drawer Menu with Accordion Subcategories */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-[#161616] p-6 shadow-2xl flex flex-col justify-between border-r border-gray-200 dark:border-white/10 transition-colors overflow-y-auto">
@@ -602,66 +465,48 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   <Link
                     href="/"
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`px-3 py-2 text-sm font-bold uppercase rounded transition-colors ${pathname === '/'
+                    className={`px-3 py-2 text-sm font-bold uppercase rounded transition-colors ${
+                      pathname === '/'
                         ? 'bg-[#f7413e] text-white'
                         : 'text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10'
-                      }`}
+                    }`}
                   >
                     Home
                   </Link>
-                  {categories.filter((c) => c.slug !== 'home').map((cat) => {
-                    const hasSubs = cat.subcategories && cat.subcategories.length > 0;
-                    const isExpanded = expandedMobileCat === cat.slug;
-
-                    return (
-                      <div key={cat.slug} className="border-b border-gray-100 dark:border-white/5 pb-1">
-                        <div className="flex items-center justify-between">
-                          <Link
-                            href={`/news?category=${cat.slug}`}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="px-3 py-2 text-sm font-bold uppercase text-gray-900 dark:text-gray-100 hover:text-[#f7413e] transition-colors flex-1"
-                          >
-                            {cat.name}
-                          </Link>
-                          {hasSubs && (
-                            <button
-                              onClick={() => setExpandedMobileCat(isExpanded ? null : cat.slug)}
-                              className="p-2 text-gray-500 hover:text-[#f7413e] cursor-pointer"
-                              aria-label="Toggle subcategories"
-                            >
-                              <ChevronDown
-                                className={`w-4 h-4 transition-transform duration-200 ${isExpanded ? 'rotate-180 text-[#f7413e]' : ''
-                                  }`}
-                              />
-                            </button>
-                          )}
-                        </div>
-
-                        {/* Accordion Subcategories */}
-                        {hasSubs && isExpanded && (
-                          <div className="pl-5 pr-2 py-1 space-y-1 bg-gray-50 dark:bg-white/[0.03] rounded">
-                            {cat.subcategories?.map((sub) => (
-                              <Link
-                                key={sub.slug}
-                                href={`/news?category=${cat.slug}&sub=${sub.slug}`}
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="block py-1.5 px-2 text-xs font-medium text-gray-700 dark:text-gray-300 hover:text-[#f7413e] transition-colors"
-                              >
-                                • {sub.name}
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {categories.filter((c) => c.slug !== 'home').map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={`/news?category=${cat.slug}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-3 py-2 text-sm font-bold uppercase text-gray-900 dark:text-gray-100 hover:text-[#f7413e] hover:bg-gray-50 dark:hover:bg-white/5 rounded transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                  <div className="pt-2 border-t border-gray-200 dark:border-white/10 mt-2">
+                    <Link
+                      href="/write-for-us"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-3 py-2 text-xs font-bold uppercase text-[#f7413e] hover:bg-[#f7413e]/10 rounded flex items-center justify-between"
+                    >
+                      <span>Write For Us</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                    <Link
+                      href="/contact"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="px-3 py-2 text-xs font-bold uppercase text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-white/5 rounded block"
+                    >
+                      Contact Newsroom
+                    </Link>
+                  </div>
                 </nav>
               </div>
             </div>
 
             <div className="pt-6 border-t border-gray-200 dark:border-white/10 flex items-center justify-between mt-6">
               <span className="text-xs font-mono uppercase text-gray-600 dark:text-gray-400">
-                {todayDate || config.currentDate}
+                ApexChief Media
               </span>
               <button
                 onClick={toggleDarkMode}

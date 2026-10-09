@@ -1,0 +1,27 @@
+# ApexChief
+
+> ApexChief is a premier global digital media platform covering business, executive leadership, technology, artificial intelligence, startups, innovation, and emerging industry trends.
+
+## Core Editorial Pillars
+
+- [Technology & AI](https://www.apexchief.com/news?category=technology): Enterprise artificial intelligence, quantum computing, autonomous agents, and cybersecurity grids.
+- [Leadership & Governance](https://www.apexchief.com/news?category=leadership): C-suite decision frameworks, corporate strategy, board governance, and executive interviews.
+- [Global Business & Markets](https://www.apexchief.com/news?category=business): Macroeconomic trends, private markets, capital deployment, and corporate finance.
+- [Startups & Venture Capital](https://www.apexchief.com/news?category=startups): Bootstrapped scaleups, unicorn growth, seed-stage investing, and founder case studies.
+- [Executive Interviews](https://www.apexchief.com/news?category=interview): Exclusive long-form dialogues with founders, CEOs, and industry visionaries.
+- [Top Ranked Articles](https://www.apexchief.com/news?category=top-list): Curated power indexes, top 10 frameworks, and market leaderboards.
+- [Opinion & Columns](https://www.apexchief.com/news?category=opinion): Critical thought leadership and expert market critiques.
+- [Commercial Real Estate](https://www.apexchief.com/news?category=real-estate): PropTech innovations, mass-timber architecture, and sustainable commercial developments.
+
+## Key Pages & Information
+
+- [Newsroom Archive](https://www.apexchief.com/news): Complete searchable directory of investigative reporting and editorial articles.
+- [Write For Us / Contributors](https://www.apexchief.com/write-for-us): Contributor guidelines, editorial criteria, and pitch submissions for authors and executives.
+- [Contact Editorial Desk](https://www.apexchief.com/contact): Newsroom bureau contact details in New York and London, press releases, and editorial inquiries.
+- [Privacy Policy](https://www.apexchief.com/privacy): Data handling, privacy protection, and journalistic governance standards.
+- [Terms of Service](https://www.apexchief.com/terms): Terms of access, copyright, and syndication policies.
+- [XML Sitemap](https://www.apexchief.com/sitemap.xml): Full machine-readable URL index.
+
+## Optional Extended Documentation
+
+- [Full LLMs Context Directory](https://www.apexchief.com/llms-full.txt): Comprehensive plain-text archive of ApexChief editorial guides and dispatches.

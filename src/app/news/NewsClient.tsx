@@ -186,18 +186,15 @@ export default function NewsClient() {
     if (activeCategory !== 'all') {
       const normCat = activeCategory.toLowerCase().trim().replace(/[-\s]/g, '');
       list = list.filter((a) => {
-        const artCat = a.category.toLowerCase().trim().replace(/[-\s]/g, '');
+        const artCat = (a.category || '').toLowerCase().trim().replace(/[-\s]/g, '');
         if (artCat === normCat) return true;
-        if (normCat === 'interview' && (a.placement === 'interview' || a.tag.toLowerCase().includes('interview') || a.title.toLowerCase().startsWith('interview:'))) {
+        if ((normCat === 'toplist' || normCat === 'top10') && (artCat === 'toplist' || artCat === 'top10' || a.placement === 'top10')) {
           return true;
         }
-        if ((normCat === 'toplist' || normCat === 'top10') && (a.placement === 'top10' || a.tag.toLowerCase().includes('top 10') || a.title.toLowerCase().includes('top 10'))) {
+        if ((normCat === 'realstate' || normCat === 'realestate') && (artCat === 'realstate' || artCat === 'realestate')) {
           return true;
         }
-        if ((normCat === 'realstate' || normCat === 'realestate') && (artCat === 'realstate' || artCat === 'realestate' || a.tag.toLowerCase().includes('real estate'))) {
-          return true;
-        }
-        if ((normCat === 'startup' || normCat === 'startups') && (artCat === 'startup' || artCat === 'startups' || a.tag.toLowerCase().includes('startup') || a.tag.toLowerCase().includes('scaleup'))) {
+        if ((normCat === 'startup' || normCat === 'startups') && (artCat === 'startup' || artCat === 'startups')) {
           return true;
         }
         return false;

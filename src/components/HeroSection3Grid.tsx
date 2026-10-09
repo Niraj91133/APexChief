@@ -416,10 +416,10 @@ export default function HeroSection3Grid({
             <div className="flex items-center justify-between mb-2.5">
               <div className="flex items-center space-x-2">
                 <span className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
-                  TOP 5 RANKED STORIES
+                  TOP RANKED ARTICLES
                 </span>
                 <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 hidden sm:inline">
-                  • LATEST EDITORIAL PICKS
+                  • LATEST INDUSTRY NEWS
                 </span>
               </div>
               <div className="flex items-center space-x-3">

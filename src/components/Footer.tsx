@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/data/siteConfig';
 import { SiteConfig } from '@/types';
+import { Mail, MapPin, ArrowUpRight, ShieldCheck } from 'lucide-react';
 
 export default function Footer({ initialConfig }: { initialConfig?: SiteConfig } = {}) {
   const pathname = usePathname();
@@ -16,55 +17,194 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full bg-[#000000] text-[#eff0e0] mt-8 sm:mt-12 border-t border-[#222222]">
-      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Brand & Copyright */}
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-center sm:text-left">
+    <footer className="w-full bg-[#0a0a0a] text-[#eff0e0] mt-12 sm:mt-16 border-t border-[#222222]">
+      {/* 1. Main Navigation & Information Grid */}
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
+          {/* Column 1: Brand & Editorial Mission (4 cols) */}
+          <div className="lg:col-span-4 space-y-4">
             <Link href="/" className="inline-block group">
-              <span className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#fefdf3] uppercase group-hover:text-[#f7413e] transition-colors">
+              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white uppercase group-hover:text-[#f7413e] transition-colors">
                 {site.name}
               </span>
             </Link>
-            <span className="hidden sm:inline-block text-[#eff0e0]/20">|</span>
-            <p className="text-xs text-[#eff0e0]/60 font-sans tracking-wide">
-              ©{' '}
-              <Link
-                href="/admin"
-                onClick={() => {
-                  try {
-                    localStorage.removeItem('admin_logged_in');
-                    localStorage.removeItem('apexchief_auth_session');
-                  } catch (e) {}
-                }}
-                className="text-inherit hover:text-inherit no-underline cursor-default focus:outline-none"
-              >
-                {currentYear}
-              </Link>{' '}
-              {site.name}. All Rights Reserved.
+            <p className="text-xs sm:text-sm text-[#eff0e0]/70 font-sans leading-relaxed">
+              ApexChief is a premier digital media platform delivering investigative reporting, executive intelligence, deep-tech analyses, founder interviews, and global market insights.
             </p>
+
+            <div className="space-y-2 pt-2 text-xs text-[#eff0e0]/80 font-mono">
+              <div className="flex items-start space-x-2">
+                <MapPin className="w-3.5 h-3.5 text-[#f7413e] shrink-0 mt-0.5" />
+                <span>NY Bureau: 100 Financial Center Blvd, New York, NY</span>
+              </div>
+              <div className="flex items-start space-x-2">
+                <MapPin className="w-3.5 h-3.5 text-[#f7413e] shrink-0 mt-0.5" />
+                <span>London Bureau: 1 Canada Square, Canary Wharf, London</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Mail className="w-3.5 h-3.5 text-[#f7413e] shrink-0" />
+                <a
+                  href="mailto:apexchiefofficial@gmail.com"
+                  className="hover:text-[#f7413e] transition-colors"
+                >
+                  apexchiefofficial@gmail.com
+                </a>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Essential Links */}
-          <nav className="flex items-center flex-wrap justify-center gap-x-5 gap-y-1 text-xs text-[#eff0e0]/75">
-            <Link href="/" className="hover:text-white transition-colors">
-              Home
-            </Link>
-            <Link href="/news" className="hover:text-white transition-colors">
-              Archive
-            </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
-              Contact
-            </Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
-          </nav>
+          {/* Column 2: Editorial Pillars (3 cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+              Editorial Pillars
+            </h4>
+            <ul className="space-y-2 text-xs text-[#eff0e0]/75 font-sans">
+              <li>
+                <Link href="/news?category=technology" className="hover:text-white transition-colors">
+                  Technology &amp; AI Frontier
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=leadership" className="hover:text-white transition-colors">
+                  Leadership &amp; Governance
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=business" className="hover:text-white transition-colors">
+                  Global Business &amp; Markets
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=startups" className="hover:text-white transition-colors">
+                  Startups &amp; Venture Capital
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=interview" className="hover:text-white transition-colors">
+                  Executive Interviews
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=top-list" className="hover:text-white transition-colors">
+                  Top Ranked Articles &amp; Indexes
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=opinion" className="hover:text-white transition-colors">
+                  Opinion &amp; Guest Perspectives
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-          {/* Social Links */}
+          {/* Column 3: More Verticals (2 cols) */}
+          <div className="lg:col-span-2 space-y-3">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+              Special Coverage
+            </h4>
+            <ul className="space-y-2 text-xs text-[#eff0e0]/75 font-sans">
+              <li>
+                <Link href="/news?category=real-estate" className="hover:text-white transition-colors">
+                  Commercial Real Estate
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=lifestyle" className="hover:text-white transition-colors">
+                  Lifestyle &amp; Architecture
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=hospitality" className="hover:text-white transition-colors">
+                  Luxury Hospitality
+                </Link>
+              </li>
+              <li>
+                <Link href="/news?category=health" className="hover:text-white transition-colors">
+                  Biotech &amp; Healthcare
+                </Link>
+              </li>
+              <li>
+                <Link href="/news" className="hover:text-white transition-colors font-bold text-[#f7413e]">
+                  All News Archives →
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Editorial Desk & Trust (3 cols) */}
+          <div className="lg:col-span-3 space-y-3">
+            <h4 className="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">
+              Editorial Desk &amp; Trust
+            </h4>
+            <ul className="space-y-2 text-xs text-[#eff0e0]/75 font-sans">
+              <li>
+                <Link
+                  href="/write-for-us"
+                  className="text-white hover:text-[#f7413e] font-semibold flex items-center space-x-1"
+                >
+                  <span>Write For Us / Contributors</span>
+                  <ArrowUpRight className="w-3 h-3 text-[#f7413e]" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact Editorial Desk
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy &amp; Data Governance
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  Terms of Service &amp; Syndication
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="/llms.txt"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  LLMs / AI Discoverability (llms.txt)
+                </a>
+              </li>
+            </ul>
+
+            <div className="pt-3 border-t border-white/10">
+              <div className="flex items-center space-x-1.5 text-[11px] text-[#eff0e0]/60">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Verified Independent Editorial Standards</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Sub-Footer Bar with Socials & Legal */}
+      <div className="border-t border-[#1e1e1e] bg-black py-5">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          {/* Copyright & Hidden Admin Access */}
+          <div className="text-xs text-[#eff0e0]/60 font-sans tracking-wide text-center md:text-left">
+            ©{' '}
+            <Link
+              href="/admin"
+              onClick={() => {
+                try {
+                  localStorage.removeItem('admin_logged_in');
+                  localStorage.removeItem('apexchief_auth_session');
+                } catch (e) {}
+              }}
+              className="text-inherit hover:text-inherit no-underline cursor-default focus:outline-none"
+            >
+              {currentYear}
+            </Link>{' '}
+            {site.name} Media Group. All Rights Reserved.
+          </div>
+
+          {/* Social Icons & Direct Channels */}
           <div className="flex items-center space-x-2 text-[#fefdf3]">
             {/* X / Twitter */}
             <a
@@ -76,19 +216,6 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
             >
               <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-
-            {/* Instagram */}
-            <a
-              href={site.socialLinks?.instagram || siteConfig.socialLinks.instagram}
-              target="_blank"
-              rel="noreferrer"
-              className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#f7413e] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
-              aria-label="Instagram"
-            >
-              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
               </svg>
             </a>
 
@@ -118,9 +245,22 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
               </svg>
             </a>
 
+            {/* Instagram */}
+            <a
+              href={site.socialLinks?.instagram || siteConfig.socialLinks.instagram}
+              target="_blank"
+              rel="noreferrer"
+              className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#f7413e] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
+              aria-label="Instagram"
+            >
+              <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+              </svg>
+            </a>
+
             {/* WhatsApp */}
             <a
-              href={siteConfig.socialLinks.whatsapp || 'https://wa.me/919876543210'}
+              href={site.socialLinks?.whatsapp || siteConfig.socialLinks.whatsapp || 'https://wa.me/18004202739?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...'}
               target="_blank"
               rel="noreferrer"
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#25D366] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
@@ -134,7 +274,7 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
 
             {/* Direct Hotline / Call */}
             <a
-              href={siteConfig.socialLinks.phoneUrl || 'tel:+12125554821'}
+              href={siteConfig.socialLinks.phoneUrl || 'tel:+18004202739'}
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#002b5c] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
               aria-label="Direct Phone Call"
               title="Call Newsroom Hotline"
@@ -149,4 +289,3 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
     </footer>
   );
 }
-

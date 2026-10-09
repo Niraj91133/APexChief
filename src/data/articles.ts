@@ -637,45 +637,16 @@ export const ARTICLES: Article[] = [
     "sections": []
   },
   {
-    "id": "leadership-sarah-chen-interview",
-    "slug": "interview-sarah-chen-on-building-ai-native-operating-systems",
-    "title": "Interview: Sarah Chen on Building the First AI-Native Enterprise Operating System",
-    "category": "Leadership",
-    "subcategory": "Interviews",
-    "region": "Global",
-    "contentType": "Interview",
-    "tag": "CEOs",
-    "date": "Sep 02, 2026",
-    "author": "Admin",
-    "authorRole": "Editor-at-Large",
-    "authorAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300",
-    "image": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=1200",
-    "readTime": "7 min read",
-    "excerpt": "The founder and CEO of Nexus Intelligence discusses why graphical user interfaces are becoming obsolete and how autonomous software layers will replace conventional enterprise ERPs.",
-    "paragraphs": [
-      "Sarah Chen founded Nexus Intelligence with a daring hypothesis: within a decade, corporate employees will never click a button in traditional software suites again. Instead, contextual intelligence layers will understand operational intent, executing complex cross-department actions autonomously.",
-      "\"We spent twenty years teaching humans how to think like database tables and folder hierarchies,\" Chen explains during our exclusive conversation at their San Francisco design studio. \"The next twenty years will be about machines translating complex human judgment into perfectly coordinated execution pipelines.\"",
-      "Her company, recently valued at $4.2 billion, has integrated its autonomous operations engine across aerospace manufacturing networks, international shipping lines, and sovereign health agencies."
-    ],
-    "sections": [
-      {
-        "heading": "On the Death of the Graphical User Interface (GUI)",
-        "content": "\"The GUI was a brilliant bridge for an era when computers were dumb arithmetic boxes,\" Chen reflects. \"When your software understands natural language and business context, navigating ten drop-down menus to approve an invoice is pure friction.\""
-      }
-    ],
-    "placement": "interview"
-  },
-  {
     "id": "leadership-marcus-graham-vc",
-    "slug": "interview-marcus-graham-on-the-100-year-horizon-of-deep-tech-capital",
-    "title": "Interview: Marcus Graham on Sovereign Funds and the 100-Year Horizon of Deep Tech Capital",
+    "slug": "marcus-graham-on-the-100-year-horizon-of-deep-tech-capital",
+    "title": "Executive Perspective: Marcus Graham on Sovereign Funds and the 100-Year Horizon of Deep Tech Capital",
     "category": "Leadership",
-    "subcategory": "Interviews",
+    "subcategory": "Executive Strategy",
     "region": "North America",
-    "contentType": "Interview",
+    "contentType": "Feature",
     "tag": "Venture Capital",
     "date": "Aug 29, 2026",
-    "author": "Admin",
+    "author": "Julian Vance",
     "authorRole": "Managing Editor, Private Markets",
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200",
@@ -685,7 +656,8 @@ export const ARTICLES: Article[] = [
       "Marcus Graham has backed some of the most audacious hard-tech ventures of the century. In an expansive conversation, he dissects why standard venture capital fund structures often fail deep-tech innovators.",
       "\"If you want to build a commercial nuclear fusion plant or a biological synthesizer, you cannot be forced to engineer a liquidity exit in year seven to satisfy a five-year IRR metric,\" Graham asserts."
     ],
-    "sections": []
+    "sections": [],
+    "placement": "category"
   },
   {
     "id": "leadership-maya-lin-profile",
