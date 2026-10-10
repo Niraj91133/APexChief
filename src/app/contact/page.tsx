@@ -44,7 +44,7 @@ const jsonLd = {
         name: 'ApexChief',
         url: 'https://www.apexchief.com',
         email: 'apexchiefofficial@gmail.com',
-        telephone: '+18004202739',
+        telephone: '+916206539717',
         address: [
           {
             '@type': 'PostalAddress',

@@ -17,7 +17,7 @@ export default function WhatsAppFloatingWidget() {
 
   const whatsappUrl =
     siteConfig.socialLinks.whatsapp ||
-    'https://wa.me/18004202739?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...';
+    'https://wa.me/916206539717?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...';
 
   return (
     <div className="fixed bottom-6 right-6 z-[9999] flex flex-col items-end space-y-2 select-none print:hidden">

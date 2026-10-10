@@ -260,7 +260,7 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
 
             {/* WhatsApp */}
             <a
-              href={site.socialLinks?.whatsapp || siteConfig.socialLinks.whatsapp || 'https://wa.me/18004202739?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...'}
+              href={site.socialLinks?.whatsapp || siteConfig.socialLinks.whatsapp || 'https://wa.me/916206539717?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...'}
               target="_blank"
               rel="noreferrer"
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#25D366] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
@@ -274,7 +274,7 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
 
             {/* Direct Hotline / Call */}
             <a
-              href={siteConfig.socialLinks.phoneUrl || 'tel:+18004202739'}
+              href={siteConfig.socialLinks.phoneUrl || 'tel:+916206539717'}
               className="w-7 h-7 rounded-md bg-[#161616] hover:bg-[#002b5c] flex items-center justify-center transition-all duration-200 text-[#eff0e0] hover:text-white"
               aria-label="Direct Phone Call"
               title="Call Newsroom Hotline"

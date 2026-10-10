@@ -19,12 +19,13 @@ export const siteConfig: SiteConfig = {
     instagram: "https://www.instagram.com/apex.chief?stkn=cjBuZXkxNzZoZXR1&utm_source=qr",
     youtube: "https://youtube.com/@ApexChief",
     telegram: "https://t.me/apexchief_intel",
-    whatsapp: "https://wa.me/18004202739?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...",
+    whatsapp: "https://wa.me/916206539717?text=Hello%20ApexChief%20Editorial%20Team%2C%20I%20would%20like%20to%20inquire%20about...",
+    phoneUrl: "tel:+916206539717",
     github: ""
   },
   contact: {
     email: "apexchiefofficial@gmail.com",
-    phone: "+1 (800) 420-APEX • 100 Financial Center Blvd, New York, NY",
+    phone: "+91 6206539717",
     logo: "/images/apexchief-logo-light.png",
     logoLight: "/images/apexchief-logo-light.png",
     logoDark: "/images/apexchief-logo-dark.png",
