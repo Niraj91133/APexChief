@@ -21,13 +21,16 @@ export default function HomePage() {
   // Fetch dynamic articles on mount
   useEffect(() => {
     fetch('/api/articles')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setArticles(data);
         }
       })
-      .catch((err) => console.error('Failed to load articles', err));
+      .catch(() => {});
   }, []);
 
   const getArt = (slug: string): Article => {
@@ -124,13 +127,16 @@ export default function HomePage() {
 
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setCategories(data);
         }
       })
-      .catch((err) => console.error('Failed to load categories', err));
+      .catch(() => {});
   }, []);
 
   return (

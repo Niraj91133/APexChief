@@ -94,21 +94,27 @@ export default function NewsClient() {
   // Fetch dynamic articles
   useEffect(() => {
     fetch('/api/articles')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) setArticles(data);
       })
-      .catch((err) => console.error('Failed to load articles', err));
+      .catch(() => {});
   }, []);
 
   // Fetch dynamic categories
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) setCategories(data.filter((c) => c.isVisible !== false));
       })
-      .catch((err) => console.error('Failed to load categories', err));
+      .catch(() => {});
   }, []);
 
   // Prevent background scroll when drawer is open

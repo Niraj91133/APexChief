@@ -9,13 +9,16 @@ export default function NotFound() {
 
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setCategories(data.filter((cat) => cat.isVisible !== false));
         }
       })
-      .catch((err) => console.error('Failed to load categories for 404', err));
+      .catch(() => {});
   }, []);
   return (
     <div className="py-16 sm:py-24 text-center max-w-2xl mx-auto">

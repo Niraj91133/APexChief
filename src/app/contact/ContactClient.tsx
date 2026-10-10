@@ -26,13 +26,16 @@ export default function ContactClient() {
 
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           setCategories(data);
         }
       })
-      .catch((err) => console.error('Failed to load categories for contact form', err));
+      .catch(() => {});
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {

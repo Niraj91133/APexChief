@@ -143,14 +143,17 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   // Fetch dynamic categories
   useEffect(() => {
     fetch('/api/categories')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) {
           const visibleCategories = data.filter((cat) => cat.isVisible !== false);
           setCategories(visibleCategories);
         }
       })
-      .catch((err) => console.error('Failed to load categories', err));
+      .catch(() => {});
   }, []);
 
   // Fetch dynamic config on mount with instant localStorage hydration and cross-tab sync
@@ -207,7 +210,10 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
 
     const fetchServerConfig = () => {
       fetch('/api/config')
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) return null;
+          return res.json();
+        })
         .then((data) => {
           if (data && (data.name || data.logo || data.logoLight || data.logoDark)) {
             let activeLight = data.logoLight || data.logo || '';
@@ -227,7 +233,9 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
             }));
           }
         })
-        .catch((err) => console.error('Failed to load site config', err));
+        .catch(() => {
+          // Graceful fallback: settings are already loaded from localStorage/static defaults
+        });
     };
 
     // 1. Instant sync from localStorage
@@ -250,9 +258,15 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
     window.addEventListener('storage', handleStorage);
 
     // 4. Tab focus re-check (when switching between admin and landing page)
+    let lastFocusFetchTime = Date.now();
     const handleFocus = () => {
       syncFromLocalStorage();
-      fetchServerConfig();
+      // Throttle network fetches on tab focus (at most once every 60s)
+      const now = Date.now();
+      if (now - lastFocusFetchTime > 60000) {
+        lastFocusFetchTime = now;
+        fetchServerConfig();
+      }
     };
     window.addEventListener('focus', handleFocus);
 
@@ -286,11 +300,14 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   const [liveArticles, setLiveArticles] = useState<Article[]>([]);
   useEffect(() => {
     fetch('/api/articles')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
       .then((data) => {
         if (Array.isArray(data)) setLiveArticles(data);
       })
-      .catch((err) => console.error('Failed to load breaking articles', err));
+      .catch(() => {});
   }, []);
 
   const breakingDynamic = liveArticles.filter((a) => a.isBreaking);
