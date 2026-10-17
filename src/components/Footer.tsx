@@ -24,12 +24,17 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
           {/* Column 1: Brand & Simple Mission (Spans 2 cols on desktop) */}
           <div className="sm:col-span-2 lg:col-span-2 space-y-4">
             <Link href="/" className="inline-block group">
-              <span className="font-serif text-2xl sm:text-3xl font-bold tracking-tight text-white group-hover:text-[#f7413e] transition-colors">
-                {site.name}
-              </span>
+              <img
+                src={site.logoDark || '/images/apexchief-logo-dark.png'}
+                alt={site.name || 'ApexChief'}
+                className="h-10 sm:h-12 w-auto max-w-[220px] object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+              />
             </Link>
-            <p className="text-sm text-neutral-400 leading-relaxed max-w-sm">
-              Clear, reliable stories and insights on business, technology, leadership, and the people shaping the future.
+            <p className="text-sm text-neutral-300 font-medium leading-relaxed max-w-sm">
+              Global Business, Technology &amp; Leadership News
+            </p>
+            <p className="text-xs text-neutral-400 leading-relaxed max-w-sm">
+              ApexChief delivers executive interviews, startup innovations, emerging tech breakthroughs, and market intelligence for modern leaders and entrepreneurs.
             </p>
 
             <div className="pt-2 space-y-2 text-sm text-neutral-400">
