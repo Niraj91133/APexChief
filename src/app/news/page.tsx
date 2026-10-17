@@ -76,28 +76,26 @@ export async function generateMetadata({ searchParams }: NewsPageProps): Promise
   };
 }
 
+import { redirect, permanentRedirect } from 'next/navigation';
+
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
   const rawCat = params.category?.trim();
   const sub = params.sub?.trim();
 
+  // 301 Permanent Redirection if user/bot visits /news?category=...
+  if (params.category !== undefined) {
+    if (!rawCat || rawCat.toLowerCase() === 'all') {
+      permanentRedirect('/category');
+    }
+    const cleanSlug = getCategorySlug(rawCat);
+    permanentRedirect(sub ? `/category/${cleanSlug}?sub=${encodeURIComponent(sub)}` : `/category/${cleanSlug}`);
+  }
+
   let pageTitle = 'News Archive & Editorial Intelligence | ApexChief';
   let pageDescription = 'Explore all investigative journalism, market analysis, technology breakthroughs, exclusive interviews, and executive leadership stories on ApexChief.';
   let pageUrl = `${baseUrl}/news`;
-
-  if (rawCat && rawCat.toLowerCase() !== 'all') {
-    const slug = getCategorySlug(rawCat);
-    const catObj = CATEGORIES.find(
-      (c) => c.slug.toLowerCase() === slug.toLowerCase() || c.name.toLowerCase() === rawCat.toLowerCase()
-    );
-    const catName = catObj?.name || rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
-    pageUrl = sub
-      ? `${baseUrl}/news?category=${slug}&sub=${encodeURIComponent(sub)}`
-      : `${baseUrl}/news?category=${slug}`;
-    pageTitle = `${catName} Archive & Executive Stories | ApexChief`;
-    pageDescription = catObj?.description || `Explore latest ${catName} reporting, industry investigations, CEO perspectives, and executive intelligence on ApexChief.`;
-  }
 
   const jsonLd = {
     '@context': 'https://schema.org',

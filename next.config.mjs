@@ -25,6 +25,17 @@ const nextConfig = {
         destination: '/category/:category',
         permanent: true,
       },
+      {
+        source: '/news',
+        has: [
+          {
+            type: 'query',
+            key: 'category',
+          },
+        ],
+        destination: '/category',
+        permanent: true,
+      },
       // 301 Redirections for deleted blog posts
       {
         source: '/news/ai-business-trends-2026-the-growth-playbook',
