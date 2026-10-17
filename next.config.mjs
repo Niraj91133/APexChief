@@ -27,6 +27,11 @@ const nextConfig = {
       },
       // 301 Redirections for deleted blog posts
       {
+        source: '/news/ai-business-trends-2026-the-growth-playbook',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/news/top-10-solid-state-high-density-battery-paradigms-commercial-scale',
         destination: '/',
         permanent: true,
