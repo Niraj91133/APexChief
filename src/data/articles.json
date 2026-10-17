@@ -873,29 +873,6 @@
     "status": "Published"
   },
   {
-    "id": "top-10-high-density-battery-platforms",
-    "slug": "top-10-solid-state-high-density-battery-paradigms-commercial-scale",
-    "title": "Top 10 Solid-State & High-Density Battery Paradigms Entering Commercial Scale",
-    "category": "Top - List",
-    "subcategory": "Top 10 Index",
-    "tag": "Energy Storage",
-    "date": "Sep 13, 2026",
-    "author": "Elena Rostova",
-    "authorRole": "Chief Technology Editor",
-    "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
-    "image": "https://images.unsplash.com/photo-1513836279014-a89f7a76ae86?w=1200",
-    "readTime": "4 min read",
-    "excerpt": "Silicon-anode and sulfide-electrolyte chemistry breakthroughs exceed 450 Wh/kg, paving the way for heavy freight electrification and aerial regional transport.",
-    "paragraphs": [
-      "Silicon-anode and sulfide-electrolyte chemistry breakthroughs exceed 450 Wh/kg, paving the way for heavy freight electrification and aerial regional transport."
-    ],
-    "sections": [],
-    "featured": false,
-    "placement": "top10",
-    "isBreaking": false,
-    "status": "Published"
-  },
-  {
     "id": "top-10-cyber-mesh-defenses",
     "slug": "top-10-cybersecurity-mesh-architectures-defending-enterprise-cloud-grids",
     "title": "Top 10 Cybersecurity Mesh Architectures Defending Enterprise Cloud Grids",
