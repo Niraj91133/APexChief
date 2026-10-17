@@ -40,7 +40,7 @@ function HeaderNav({
             return (
               <div key={cat.slug} className="py-0.5 shrink-0">
                 <Link
-                  href={`/news?category=${cat.slug}`}
+                  href={`/category/${cat.slug}`}
                   className={`inline-flex items-center px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
@@ -489,7 +489,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
                   {categories.filter((c) => c.slug !== 'home').map((cat) => (
                     <Link
                       key={cat.slug}
-                      href={`/news?category=${cat.slug}`}
+                      href={`/category/${cat.slug}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className="px-3 py-2 text-sm font-bold uppercase text-gray-900 dark:text-gray-100 hover:text-[#f7413e] hover:bg-gray-50 dark:hover:bg-white/5 rounded transition-colors"
                     >

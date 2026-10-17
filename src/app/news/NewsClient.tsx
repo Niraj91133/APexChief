@@ -51,11 +51,15 @@ const resolveCategoryAndSub = (catParam: string, subParam: string | null) => {
   return { category: norm || 'all', sub: normSub || null, region: null };
 };
 
-export default function NewsClient() {
+interface NewsClientProps {
+  defaultCategory?: string;
+}
+
+export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const rawCategoryParam = searchParams.get('category') || 'all';
+  const rawCategoryParam = defaultCategory || searchParams.get('category') || 'all';
   const rawSubParam = searchParams.get('sub') || null;
 
   const resolved = useMemo(
@@ -76,7 +80,7 @@ export default function NewsClient() {
   // Sync state if url param changes
   useEffect(() => {
     const res = resolveCategoryAndSub(
-      searchParams.get('category') || 'all',
+      defaultCategory || searchParams.get('category') || 'all',
       searchParams.get('sub') || null
     );
     setActiveCategory(res.category);
@@ -89,7 +93,7 @@ export default function NewsClient() {
     } else {
       document.title = 'Editorial News Archive | ApexChief';
     }
-  }, [searchParams, categories]);
+  }, [searchParams, categories, defaultCategory]);
 
   // Fetch dynamic articles
   useEffect(() => {
@@ -146,19 +150,20 @@ export default function NewsClient() {
     setActiveRegion(null);
     setDisplayCount(12);
     if (slug === 'all') {
-      router.push('/news', { scroll: false });
+      router.push('/category', { scroll: false });
     } else {
-      router.push(`/news?category=${slug}`, { scroll: false });
+      router.push(`/category/${slug}`, { scroll: false });
     }
   };
 
   const handleSubChange = (subSlug: string | null) => {
     setActiveSub(subSlug);
     setDisplayCount(12);
+    const basePath = activeCategory === 'all' ? '/category' : `/category/${activeCategory}`;
     if (!subSlug) {
-      router.push(`/news?category=${activeCategory}`, { scroll: false });
+      router.push(basePath, { scroll: false });
     } else {
-      router.push(`/news?category=${activeCategory}&sub=${subSlug}`, { scroll: false });
+      router.push(`${basePath}?sub=${subSlug}`, { scroll: false });
     }
   };
 
@@ -169,7 +174,7 @@ export default function NewsClient() {
     setActiveSub(null);
     setActiveRegion(null);
     setDisplayCount(12);
-    router.push('/news', { scroll: false });
+    router.push('/category', { scroll: false });
   };
 
   // Find active category definition object

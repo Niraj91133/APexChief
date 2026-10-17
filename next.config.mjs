@@ -12,6 +12,20 @@ const nextConfig = {
         destination: '/',
         permanent: true,
       },
+      // 301 Redirection for category parameter queries to clean category paths
+      {
+        source: '/news',
+        has: [
+          {
+            type: 'query',
+            key: 'category',
+            value: '(?<category>[^&]+)',
+          },
+        ],
+        destination: '/category/:category',
+        permanent: true,
+      },
+      // 301 Redirections for deleted blog posts
       {
         source: '/news/top-10-spatial-computing-autonomous-robotics-advanced-manufacturing',
         destination: '/',

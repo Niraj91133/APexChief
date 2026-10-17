@@ -59,7 +59,7 @@ export default function NotFound() {
           {categories.map((cat) => (
             <Link
               key={cat.slug}
-              href={`/news?category=${cat.slug}`}
+              href={`/category/${cat.slug}`}
               className="text-xs bg-[#eff0e0] hover:bg-[#211d1d] hover:text-[#fefdf3] px-3 py-1.5 rounded transition-colors text-[#211d1d]"
             >
               {cat.name}

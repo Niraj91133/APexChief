@@ -197,7 +197,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             '@type': 'ListItem',
             position: 2,
             name: article.category,
-            item: `${baseUrl}/news?category=${getCategorySlug(article.category)}`,
+            item: `${baseUrl}/category/${getCategorySlug(article.category)}`,
           },
           {
             '@type': 'ListItem',
@@ -240,7 +240,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             </Link>
             <span>/</span>
             <Link
-              href={`/news?category=${getCategorySlug(article.category)}`}
+              href={`/category/${getCategorySlug(article.category)}`}
               className="text-[#f7413e] font-bold hover:underline"
             >
               {article.category}
@@ -456,7 +456,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 </h3>
               </div>
               <Link
-                href={`/news?category=${getCategorySlug(article.category)}`}
+                href={`/category/${getCategorySlug(article.category)}`}
                 className="text-xs font-oswald uppercase tracking-wider font-bold text-[#211d1d] dark:text-[#f5f4ef] hover:text-[#f7413e] dark:hover:text-[#f7413e]"
               >
                 More in {article.category} →

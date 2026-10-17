@@ -58,32 +58,32 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
             </h3>
             <ul className="space-y-2.5 text-sm text-neutral-400">
               <li>
-                <Link href="/news?category=technology" className="hover:text-white transition-colors">
+                <Link href="/category/technology" className="hover:text-white transition-colors">
                   Technology
                 </Link>
               </li>
               <li>
-                <Link href="/news?category=business" className="hover:text-white transition-colors">
+                <Link href="/category/business" className="hover:text-white transition-colors">
                   Business
                 </Link>
               </li>
               <li>
-                <Link href="/news?category=leadership" className="hover:text-white transition-colors">
+                <Link href="/category/leadership" className="hover:text-white transition-colors">
                   Leadership
                 </Link>
               </li>
               <li>
-                <Link href="/news?category=startups" className="hover:text-white transition-colors">
+                <Link href="/category/startups" className="hover:text-white transition-colors">
                   Startups
                 </Link>
               </li>
               <li>
-                <Link href="/news?category=interview" className="hover:text-white transition-colors">
+                <Link href="/category/interview" className="hover:text-white transition-colors">
                   Interviews
                 </Link>
               </li>
               <li>
-                <Link href="/news?category=opinion" className="hover:text-white transition-colors">
+                <Link href="/category/opinion" className="hover:text-white transition-colors">
                   Opinion
                 </Link>
               </li>

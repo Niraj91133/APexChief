@@ -507,7 +507,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
         {cat.name}
       </h2>
       <Link
-        href={`/news?category=${cat.slug}`}
+        href={`/category/${cat.slug}`}
         className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider"
       >
         <span>Explore {cat.name} Archive</span>
@@ -637,7 +637,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
             <span className="text-gray-600 dark:text-gray-400">Complete 10-tier global enterprise rankings &amp; institutional leaderboards.</span>
           </div>
           <Link
-            href={`/news?category=top-list`}
+            href={`/category/top-list`}
             className="text-[#f7413e] hover:underline font-bold uppercase tracking-wider shrink-0 flex items-center space-x-1"
           >
             <span>Explore All 10 Rankings</span>

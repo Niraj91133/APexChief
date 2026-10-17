@@ -45,7 +45,7 @@ export default function CategorySection({
         </div>
 
         <Link
-          href={`/news?category=${categorySlug}`}
+          href={`/category/${categorySlug}`}
           className="inline-flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-[#211d1d] hover:text-[#f7413e] transition-colors py-1 group flex-shrink-0"
         >
           <span>See All {categoryName}</span>
