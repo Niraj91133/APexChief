@@ -1,0 +1,6644 @@
+'use client';
+
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import Link from 'next/link';
+import {
+  Settings,
+  Plus,
+  Trash2,
+  Edit,
+  Eye,
+  BookOpen,
+  User,
+  ImageIcon,
+  Calendar,
+  CalendarDays,
+  List,
+  FileText,
+  Check,
+  CheckCircle2,
+  LogOut,
+  Lock,
+  ChevronRight,
+  ChevronDown,
+  RefreshCw,
+  Search,
+  Layers,
+  ArrowUp,
+  ArrowDown,
+  Layout,
+  Star,
+  Zap,
+  Tag as TagIcon,
+  Clock,
+  Sparkles,
+  AlertCircle,
+  Copy,
+  ArrowLeft,
+  ExternalLink,
+  Bookmark,
+  Globe,
+  Bold,
+  Italic,
+  Underline,
+  Strikethrough,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  Link as LinkIcon,
+  Quote,
+  Code,
+  Image as LucideImage,
+  Type,
+  Grid,
+  Video,
+  Code2,
+  Sliders,
+  Paperclip,
+  Share2,
+  Box,
+  Compass,
+  Palette,
+  Camera,
+  History as HistoryIcon,
+  RotateCcw,
+  Upload,
+  Loader2,
+  X,
+  BarChart2,
+  BarChart3,
+  TrendingUp,
+  Users,
+  Activity,
+  Key,
+  ShieldCheck,
+  EyeOff,
+  Smartphone,
+  Monitor,
+  Tablet,
+  Globe2,
+  Sun,
+  Moon
+} from 'lucide-react';
+import { Article, ArticleSection, CategoryInfo, SubCategory } from '@/types';
+import { CATEGORIES } from '@/data/categories';
+import { AnalyticsData } from '@/lib/supabaseService';
+
+// Default password for verification
+const DEFAULT_ADMIN_PASSWORD = 'Apexchief2026@';
+
+interface AuthorProfile {
+  name: string;
+  role: string;
+  avatar: string;
+}
+
+const PREDEFINED_AUTHORS: AuthorProfile[] = [
+  {
+    name: 'Admin',
+    role: 'Chief Editor',
+    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+  },
+  {
+    name: 'Sarah Khan',
+    role: 'News Editor',
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300',
+  },
+  {
+    name: 'Marcus Webb',
+    role: 'Finance Writer',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300',
+  },
+  {
+    name: 'Theodore Vance',
+    role: 'Special Correspondent',
+    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
+  },
+  {
+    name: 'Elena Rostova',
+    role: 'Senior Reporter',
+    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300',
+  }
+];
+
+const CURATED_STOCK_PHOTOS = [
+  // 1. Tech & AI
+  { label: 'Enterprise AI & Architecture', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200' },
+  { label: 'DeepTech & Neural Silicon', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200' },
+  { label: 'Quantum Computing Lab', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1200' },
+  { label: 'Data Center & Cloud Grid', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200' },
+  { label: 'Robotics & Autonomous Vision', category: 'AI & Tech', url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1200' },
+  // 2. Business & Finance
+  { label: 'Global Capital & Green Bonds', category: 'Business', url: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200' },
+  { label: 'Executive Boardroom Dialogue', category: 'Business', url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200' },
+  { label: 'Founders & Bootstrapped SaaS', category: 'Business', url: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200' },
+  { label: 'Global Trade & Logistics', category: 'Business', url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200' },
+  { label: 'Financial Trading Floor', category: 'Business', url: 'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1200' },
+  // 3. Markets & Global Cities
+  { label: 'UAE & MENA Corridor', category: 'Markets', url: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200' },
+  { label: 'New York Wall Street', category: 'Markets', url: 'https://images.unsplash.com/photo-1502899576159-f224dc2349fa?w=1200' },
+  { label: 'London Canary Wharf Skyline', category: 'Markets', url: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1200' },
+  { label: 'Tokyo Financial District', category: 'Markets', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1200' },
+  // 4. Clean Energy & Sustainability
+  { label: 'Clean Energy Infrastructure', category: 'Energy', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200' },
+  { label: 'Solar Farm Array', category: 'Energy', url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1200' },
+  { label: 'Wind Turbine Horizons', category: 'Energy', url: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200' },
+  // 5. Science & Space
+  { label: 'Lunar Exploration & Space', category: 'Science', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200' },
+  { label: 'Biotech Genome Research', category: 'Science', url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200' },
+  { label: 'Neuroscience & Brain Health', category: 'Science', url: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1200' },
+];
+
+const GOOGLE_FONTS_COLLECTION = [
+  // 1. MODERN SANS-SERIF (35 FONTS)
+  { name: 'Inter', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Roboto', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Open Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Lato', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Montserrat', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Poppins', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Raleway', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Nunito', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Ubuntu', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Rubik', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Work Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'DM Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Plus Jakarta Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Outfit', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Manrope', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Urbanist', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Barlow', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Quicksand', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Cabin', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Karla', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Fira Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'PT Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Source Sans 3', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Mulish', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Space Grotesk', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Syne', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Epilogue', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Geist', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Instrument Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Figtree', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Red Hat Display', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Albert Sans', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Lexend', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Schibsted Grotesk', category: 'Sans-Serif (Clean & Modern)' },
+  { name: 'Kanit', category: 'Sans-Serif (Clean & Modern)' },
+
+  // 2. LUXURY & EDITORIAL SERIF (35 FONTS)
+  { name: 'Playfair Display', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Merriweather', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Lora', category: 'Serif (Editorial & Luxury)' },
+  { name: 'PT Serif', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Cinzel', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Cormorant Garamond', category: 'Serif (Editorial & Luxury)' },
+  { name: 'EB Garamond', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Libre Baskerville', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Bodoni Moda', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Prata', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Fraunces', category: 'Serif (Editorial & Luxury)' },
+  { name: 'DM Serif Display', category: 'Serif (Editorial & Luxury)' },
+  { name: 'DM Serif Text', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Newsreader', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Spectral', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Cardo', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Vollkorn', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Castoro', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Frank Ruhl Libre', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Faustina', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Literata', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Bona Nova', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Marcellus', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Old Standard TT', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Arapey', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Gloock', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Italiana', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Rozha One', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Baskervville', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Noto Serif', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Coustard', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Bellefair', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Abhaya Libre', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Zilla Slab', category: 'Serif (Editorial & Luxury)' },
+  { name: 'Cinzel Decorative', category: 'Serif (Editorial & Luxury)' },
+
+  // 3. EXPRESSIVE DISPLAY & HEADLINES (20 FONTS)
+  { name: 'Bebas Neue', category: 'Display & Headlines' },
+  { name: 'Abril Fatface', category: 'Display & Headlines' },
+  { name: 'Righteous', category: 'Display & Headlines' },
+  { name: 'Staatliches', category: 'Display & Headlines' },
+  { name: 'Anton', category: 'Display & Headlines' },
+  { name: 'Bungee', category: 'Display & Headlines' },
+  { name: 'Shrikhand', category: 'Display & Headlines' },
+  { name: 'Alfa Slab One', category: 'Display & Headlines' },
+  { name: 'Bricolage Grotesque', category: 'Display & Headlines' },
+  { name: 'Cabinet Grotesk', category: 'Display & Headlines' },
+  { name: 'Clash Display', category: 'Display & Headlines' },
+  { name: 'Unbounded', category: 'Display & Headlines' },
+  { name: 'Chakra Petch', category: 'Display & Headlines' },
+  { name: 'Audiowide', category: 'Display & Headlines' },
+  { name: 'Russo One', category: 'Display & Headlines' },
+  { name: 'Monoton', category: 'Display & Headlines' },
+  { name: 'Faster One', category: 'Display & Headlines' },
+  { name: 'Federo', category: 'Display & Headlines' },
+  { name: 'Lilita One', category: 'Display & Headlines' },
+  { name: 'Black Han Sans', category: 'Display & Headlines' },
+
+  // 4. TECH & MONOSPACE (10 FONTS)
+  { name: 'JetBrains Mono', category: 'Monospace & Tech' },
+  { name: 'Fira Code', category: 'Monospace & Tech' },
+  { name: 'Source Code Pro', category: 'Monospace & Tech' },
+  { name: 'Roboto Mono', category: 'Monospace & Tech' },
+  { name: 'Inconsolata', category: 'Monospace & Tech' },
+  { name: 'Space Mono', category: 'Monospace & Tech' },
+  { name: 'Courier Prime', category: 'Monospace & Tech' },
+  { name: 'IBM Plex Mono', category: 'Monospace & Tech' },
+  { name: 'Ubuntu Mono', category: 'Monospace & Tech' },
+  { name: 'Share Tech Mono', category: 'Monospace & Tech' },
+
+  // 5. HANDWRITING & SIGNATURE (10 FONTS)
+  { name: 'Dancing Script', category: 'Handwriting & Signature' },
+  { name: 'Pacifico', category: 'Handwriting & Signature' },
+  { name: 'Caveat', category: 'Handwriting & Signature' },
+  { name: 'Great Vibes', category: 'Handwriting & Signature' },
+  { name: 'Satisfy', category: 'Handwriting & Signature' },
+  { name: 'Sacramento', category: 'Handwriting & Signature' },
+  { name: 'Alex Brush', category: 'Handwriting & Signature' },
+  { name: 'Permanent Marker', category: 'Handwriting & Signature' },
+  { name: 'Shadows Into Light', category: 'Handwriting & Signature' },
+  { name: 'Indie Flower', category: 'Handwriting & Signature' }
+];
+
+// Interactive Editorial Info Tooltip Component
+function InfoTooltip({ text }: { text: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <span className="relative inline-flex items-center ml-1 align-middle">
+      <button
+        type="button"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          setShow(!show);
+        }}
+        className="w-3.5 h-3.5 rounded-full bg-gray-200 hover:bg-[#002b5c] hover:text-white text-gray-700 text-[9px] font-mono font-bold inline-flex items-center justify-center cursor-pointer transition-colors focus:outline-none"
+        title="Editorial Info"
+      >
+        i
+      </button>
+      {show && (
+        <span className="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-52 p-2 bg-[#1a1a1a] text-white text-[10px] rounded shadow-xl border border-white/10 leading-snug pointer-events-none block normal-case font-normal text-left">
+          {text}
+          <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-[#1a1a1a]" />
+        </span>
+      )}
+    </span>
+  );
+}
+
+// Accurate dynamic word-count and reading-time metrics algorithm (200 words/min)
+const calculateArticleMetrics = (
+  title?: string,
+  excerpt?: string,
+  contentHtml?: string,
+  paragraphs?: string[],
+  sections?: ArticleSection[]
+): { words: number; readTime: string } => {
+  let cleanBodyText = '';
+  if (contentHtml) {
+    cleanBodyText = contentHtml.replace(/<[^>]*>?/gm, ' ');
+  } else if (paragraphs && paragraphs.length) {
+    cleanBodyText = paragraphs.join(' ');
+  }
+  const sectionsText = (sections || []).map((s) => `${s.heading || ''} ${s.content || ''}`).join(' ');
+  const combined = `${title || ''} ${excerpt || ''} ${cleanBodyText} ${sectionsText}`;
+  const words = combined.trim().split(/\s+/).filter((w) => w.length > 0 && !/^[\s\.,!?:;\-_—]+$/.test(w)).length;
+
+  if (words === 0) {
+    return { words: 0, readTime: '0 min read' };
+  }
+  const minutes = Math.max(1, Math.ceil(words / 200));
+  return {
+    words,
+    readTime: `${minutes} min read`,
+  };
+};
+
+interface SeoAuditItem {
+  id: string;
+  category: 'title' | 'meta' | 'content' | 'media' | 'slug';
+  label: string;
+  score: number;
+  maxScore: number;
+  passed: boolean;
+  message: string;
+}
+
+interface SeoAuditReport {
+  score: number;
+  label: 'EXCELLENT' | 'GOOD' | 'NEEDS WORK' | 'POOR';
+  color: string;
+  titleScore: number;
+  metaScore: number;
+  contentScore: number;
+  mediaScore: number;
+  slugScore: number;
+  items: SeoAuditItem[];
+  criticalFixes: string[];
+}
+
+// Brutal 100-Point News & Editorial SEO Health Algorithm
+const calculateLiveSeoAudit = (
+  title: string = '',
+  excerpt: string = '',
+  contentHtml: string = '',
+  image: string = '',
+  slug: string = '',
+  sections: ArticleSection[] = []
+): SeoAuditReport => {
+  const t = (title || '').trim();
+  const e = (excerpt || '').trim();
+  const cleanBody = (contentHtml || '').replace(/<[^>]*>?/gm, ' ').trim();
+  const sectionsText = (sections || []).map((s) => `${s.heading || ''} ${s.content || ''}`).join(' ');
+  const fullText = `${cleanBody} ${sectionsText}`.trim();
+  const totalWords = fullText.split(/\s+/).filter(Boolean).length;
+  const s = (slug || '').trim();
+  const img = (image || '').trim();
+
+  // If nothing has been written yet, strictly return 0%
+  if (!t && !e && totalWords === 0) {
+    return {
+      score: 0,
+      label: 'POOR',
+      color: 'text-gray-500 bg-gray-50 border-gray-200',
+      titleScore: 0,
+      metaScore: 0,
+      contentScore: 0,
+      mediaScore: 0,
+      slugScore: 0,
+      items: [
+        { id: 't-len', category: 'title', label: 'Headline Length (40-70 Chars)', score: 0, maxScore: 10, passed: false, message: 'Headline is missing. Write an impactful title.' },
+        { id: 't-power', category: 'title', label: 'High-Impact Power Word in Title', score: 0, maxScore: 5, passed: false, message: 'Add a power/action word for higher CTR.' },
+        { id: 't-num', category: 'title', label: 'Data / Number Anchor in Title', score: 0, maxScore: 5, passed: false, message: 'Add a number or year (e.g. 2026, Top 5) for stronger SERP presence.' },
+        { id: 't-fmt', category: 'title', label: 'Clean Capitalization & Grammar', score: 0, maxScore: 5, passed: false, message: 'Capitalize first letter and write headline.' },
+        { id: 'e-len', category: 'meta', label: 'Meta Excerpt Length (110-160 Chars)', score: 0, maxScore: 10, passed: false, message: 'Lead summary excerpt is missing.' },
+        { id: 'e-kw', category: 'meta', label: 'Primary Keyword Consistency', score: 0, maxScore: 5, passed: false, message: 'Include core headline keywords in excerpt.' },
+        { id: 'e-punct', category: 'meta', label: 'Clean Snippet Punctuation', score: 0, maxScore: 5, passed: false, message: 'End excerpt with proper punctuation.' },
+        { id: 'c-words', category: 'content', label: 'Story Article Word Count', score: 0, maxScore: 15, passed: false, message: 'Story canvas is empty. Write or generate draft.' },
+        { id: 'c-h2', category: 'content', label: 'Subheadings & Semantic Structure', score: 0, maxScore: 8, passed: false, message: 'Add H2 subheadings or chapter blocks.' },
+        { id: 'c-scan', category: 'content', label: 'Paragraph Scannability', score: 0, maxScore: 7, passed: false, message: 'Break content into multiple short paragraphs.' },
+        { id: 'm-cover', category: 'media', label: 'Featured Cover Image', score: 0, maxScore: 10, passed: false, message: 'Add a high-resolution cover image.' },
+        { id: 'm-proto', category: 'media', label: 'Secure High-Res Image Protocol', score: 0, maxScore: 5, passed: false, message: 'Use a valid HTTPS image link.' },
+        { id: 's-clean', category: 'slug', label: 'SEO-Friendly Clean URL Slug', score: 0, maxScore: 5, passed: false, message: 'Slug will be generated from headline.' },
+        { id: 's-len', category: 'slug', label: 'Slug Word Density (3-9 Words)', score: 0, maxScore: 5, passed: false, message: 'Keep slug between 3 and 9 descriptive keywords.' },
+      ],
+      criticalFixes: [
+        'Write an impactful Headline Title (40-70 chars)',
+        'Add a Lead Summary Excerpt (110-160 chars)',
+        'Write story body content or generate with AI'
+      ]
+    };
+  }
+
+  const items: SeoAuditItem[] = [];
+
+  // --- 1. TITLE AUDIT (25 pts) ---
+  const tLen = t.length;
+  let tLenScore = 0;
+  let tLenMsg = '';
+  if (tLen >= 40 && tLen <= 70) {
+    tLenScore = 10;
+    tLenMsg = `Perfect headline length (${tLen} chars). Google displays this without truncating.`;
+  } else if (tLen >= 25 && tLen < 40) {
+    tLenScore = 6;
+    tLenMsg = `Headline is slightly short (${tLen} chars). Aim for 40-70 characters.`;
+  } else if (tLen > 70 && tLen <= 85) {
+    tLenScore = 6;
+    tLenMsg = `Headline is slightly long (${tLen} chars). May get truncated on mobile SERP.`;
+  } else if (tLen > 0) {
+    tLenScore = 2;
+    tLenMsg = `Headline length (${tLen} chars) is outside optimal 40-70 range.`;
+  } else {
+    tLenScore = 0;
+    tLenMsg = `Headline is missing. Write an impactful title.`;
+  }
+  items.push({
+    id: 't-len',
+    category: 'title',
+    label: 'Headline Length (40-70 Chars)',
+    score: tLenScore,
+    maxScore: 10,
+    passed: tLenScore >= 8,
+    message: tLenMsg,
+  });
+
+  const POWER_WORDS = [
+    'exclusive', 'breakthrough', 'crisis', 'reveal', 'shocking', 'unprecedented',
+    'surge', 'plunge', 'transform', 'strategy', 'analysis', 'investigation',
+    'future', 'record', 'battle', 'why', 'how', 'what', 'key', 'top',
+    'global', 'warning', 'first', 'major', 'secret', 'critical', 'rise', 'fall',
+    'revolution', 'billion', 'million', 'market', 'power', 'deal', 'shock', 'huge'
+  ];
+  const tLower = t.toLowerCase();
+  const hasPowerWord = POWER_WORDS.some((pw) => tLower.includes(pw));
+  items.push({
+    id: 't-power',
+    category: 'title',
+    label: 'High-Impact Power Word in Title',
+    score: hasPowerWord ? 5 : (t ? 1 : 0),
+    maxScore: 5,
+    passed: hasPowerWord,
+    message: hasPowerWord
+      ? 'Contains strong editorial trigger word that boosts search CTR.'
+      : 'Add a power/action word (e.g. Analysis, Surge, Strategy, Future, Global) for higher CTR.',
+  });
+
+  const hasNumbers = /\d+/.test(t);
+  items.push({
+    id: 't-num',
+    category: 'title',
+    label: 'Data / Number Anchor in Title',
+    score: hasNumbers ? 5 : (t ? 2 : 0),
+    maxScore: 5,
+    passed: hasNumbers,
+    message: hasNumbers
+      ? 'Contains numerical data/year which increases click-through rates by up to 36%.'
+      : 'Consider adding a number or year (e.g. 2026, Top 5, $10B) for stronger SERP presence.',
+  });
+
+  const hasGoodFormat = t.length > 0 && /^[A-Z0-9]/.test(t) && !t.includes('!!!') && !t.includes('???');
+  items.push({
+    id: 't-fmt',
+    category: 'title',
+    label: 'Clean Capitalization & Grammar',
+    score: hasGoodFormat ? 5 : 0,
+    maxScore: 5,
+    passed: hasGoodFormat,
+    message: hasGoodFormat ? 'Clean capitalization and editorial headline formatting.' : 'Capitalize first letter and avoid spam punctuation.',
+  });
+
+  // --- 2. LEAD SUMMARY / META EXCERPT (20 pts) ---
+  const eLen = e.length;
+  let eLenScore = 0;
+  let eLenMsg = '';
+  if (eLen >= 110 && eLen <= 165) {
+    eLenScore = 10;
+    eLenMsg = `Optimal meta summary length (${eLen} chars) for search snippets.`;
+  } else if (eLen >= 70 && eLen < 110) {
+    eLenScore = 6;
+    eLenMsg = `Summary is short (${eLen} chars). Expand to 110-160 chars for full snippet coverage.`;
+  } else if (eLen > 165 && eLen <= 220) {
+    eLenScore = 6;
+    eLenMsg = `Summary is long (${eLen} chars). Google may truncate the end.`;
+  } else if (eLen > 0) {
+    eLenScore = 2;
+    eLenMsg = `Summary length (${eLen} chars) is outside optimal 110-160 range.`;
+  } else {
+    eLenScore = 0;
+    eLenMsg = `Lead summary / meta excerpt is missing.`;
+  }
+  items.push({
+    id: 'e-len',
+    category: 'meta',
+    label: 'Meta Excerpt Length (110-160 Chars)',
+    score: eLenScore,
+    maxScore: 10,
+    passed: eLenScore >= 8,
+    message: eLenMsg,
+  });
+
+  const titleWords = t.toLowerCase().split(/\s+/).filter((w) => w.length > 3 && !['with', 'from', 'that', 'this', 'have', 'what', 'your', 'about'].includes(w));
+  const excerptLower = e.toLowerCase();
+  const matchedKeywords = titleWords.filter((w) => excerptLower.includes(w));
+  const hasKeywordAlignment = matchedKeywords.length >= 2 || (titleWords.length > 0 && matchedKeywords.length >= 1);
+  items.push({
+    id: 'e-kw',
+    category: 'meta',
+    label: 'Primary Keyword Consistency',
+    score: hasKeywordAlignment ? 5 : (e ? 2 : 0),
+    maxScore: 5,
+    passed: hasKeywordAlignment,
+    message: hasKeywordAlignment
+      ? `Lead excerpt reinforces primary headline topics (${matchedKeywords.slice(0, 3).join(', ')}).`
+      : 'Include 1-2 core keywords from your headline into the excerpt.',
+  });
+
+  const hasPunctuation = e.length > 0 && /[.\?!]$/.test(e);
+  items.push({
+    id: 'e-punct',
+    category: 'meta',
+    label: 'Clean Snippet Punctuation',
+    score: hasPunctuation ? 5 : 0,
+    maxScore: 5,
+    passed: hasPunctuation,
+    message: hasPunctuation ? 'Meta snippet ends cleanly with proper punctuation.' : 'End lead excerpt with a period or question mark for search snippets.',
+  });
+
+  // --- 3. CONTENT DEPTH & READABILITY (30 pts) ---
+  let wScore = 0;
+  let wMsg = '';
+  if (totalWords >= 600) {
+    wScore = 15;
+    wMsg = `Comprehensive editorial depth (${totalWords} words). High topical authority.`;
+  } else if (totalWords >= 350) {
+    wScore = 11;
+    wMsg = `Solid standard article length (${totalWords} words). Aim for 600+ for cornerstone rankings.`;
+  } else if (totalWords >= 180) {
+    wScore = 6;
+    wMsg = `Short story (${totalWords} words). Expand with deeper analysis.`;
+  } else if (totalWords > 0) {
+    wScore = 2;
+    wMsg = `Very thin content (${totalWords} words). Search engines prioritize deep coverage.`;
+  } else {
+    wScore = 0;
+    wMsg = `Story canvas is empty. Use AI Auto-Draft or write paragraphs.`;
+  }
+  items.push({
+    id: 'c-words',
+    category: 'content',
+    label: 'Story Article Word Count',
+    score: wScore,
+    maxScore: 15,
+    passed: wScore >= 11,
+    message: wMsg,
+  });
+
+  const hasHeadings = /<h[2-4]/i.test(contentHtml) || sections.length > 0 || /<blockquote/i.test(contentHtml);
+  items.push({
+    id: 'c-h2',
+    category: 'content',
+    label: 'Subheadings & Semantic Structure',
+    score: hasHeadings && totalWords >= 50 ? 8 : (totalWords > 150 ? 2 : 0),
+    maxScore: 8,
+    passed: hasHeadings && totalWords >= 50,
+    message: hasHeadings
+      ? 'Good semantic hierarchy with subheadings and structured blocks.'
+      : 'Add H2 subheadings or chapter blocks to break text into digestible sections.',
+  });
+
+  const pCount = (contentHtml.match(/<p>/gi) || []).length;
+  const isScannable = totalWords >= 200 || (pCount >= 3 && totalWords >= 80);
+  items.push({
+    id: 'c-scan',
+    category: 'content',
+    label: 'Paragraph Scannability',
+    score: totalWords < 50 ? 0 : (isScannable ? 7 : 2),
+    maxScore: 7,
+    passed: isScannable,
+    message: isScannable ? 'Scannable paragraph flow for reader engagement.' : 'Break content into multiple short paragraphs.',
+  });
+
+  // --- 4. MEDIA & VISUAL COVER (15 pts) ---
+  const hasImg = img.length > 5;
+  const isHighResImg = hasImg && (img.startsWith('http://') || img.startsWith('https://'));
+  items.push({
+    id: 'm-cover',
+    category: 'media',
+    label: 'Featured Cover Image',
+    score: hasImg ? 10 : 0,
+    maxScore: 10,
+    passed: hasImg,
+    message: hasImg ? 'Featured editorial cover image attached for Google News & Social Cards.' : 'Add a high-resolution cover image.',
+  });
+  items.push({
+    id: 'm-proto',
+    category: 'media',
+    label: 'Secure High-Res Image Protocol',
+    score: isHighResImg ? 5 : 0,
+    maxScore: 5,
+    passed: isHighResImg,
+    message: isHighResImg ? 'Valid secure image source attached.' : 'Use a valid HTTPS image link.',
+  });
+
+  // --- 5. PERMALINK / SLUG (10 pts) ---
+  const isValidSlug = s.length > 2 && /^[a-z0-9-]+$/.test(s) && t.length > 0;
+  const sWords = s.split('-').filter(Boolean).length;
+  const isGoodSlugLen = sWords >= 3 && sWords <= 9 && t.length > 0;
+  items.push({
+    id: 's-clean',
+    category: 'slug',
+    label: 'SEO-Friendly Clean URL Slug',
+    score: isValidSlug ? 5 : 0,
+    maxScore: 5,
+    passed: isValidSlug,
+    message: isValidSlug ? `Clean URL permalink: /news/${s}` : 'Slug should only contain lowercase letters, numbers, and hyphens.',
+  });
+  items.push({
+    id: 's-len',
+    category: 'slug',
+    label: 'Slug Word Density (3-9 Words)',
+    score: isGoodSlugLen ? 5 : (s && t ? 2 : 0),
+    maxScore: 5,
+    passed: isGoodSlugLen,
+    message: isGoodSlugLen ? 'Optimal keyword slug length.' : 'Keep URL slug between 3 and 9 descriptive keywords.',
+  });
+
+  const totalScore = Math.min(100, Math.round(items.reduce((acc, curr) => acc + curr.score, 0)));
+  
+  let label: 'EXCELLENT' | 'GOOD' | 'NEEDS WORK' | 'POOR' = 'POOR';
+  let color = 'text-rose-600 bg-rose-50 border-rose-200';
+  if (totalScore >= 85) {
+    label = 'EXCELLENT';
+    color = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+  } else if (totalScore >= 70) {
+    label = 'GOOD';
+    color = 'text-sky-700 bg-sky-50 border-sky-200';
+  } else if (totalScore >= 45) {
+    label = 'NEEDS WORK';
+    color = 'text-amber-700 bg-amber-50 border-amber-200';
+  }
+
+  const titleScore = items.filter((i) => i.category === 'title').reduce((a, c) => a + c.score, 0);
+  const metaScore = items.filter((i) => i.category === 'meta').reduce((a, c) => a + c.score, 0);
+  const contentScore = items.filter((i) => i.category === 'content').reduce((a, c) => a + c.score, 0);
+  const mediaScore = items.filter((i) => i.category === 'media').reduce((a, c) => a + c.score, 0);
+  const slugScore = items.filter((i) => i.category === 'slug').reduce((a, c) => a + c.score, 0);
+
+  const criticalFixes = items
+    .filter((i) => !i.passed)
+    .map((i) => i.message)
+    .slice(0, 3);
+
+  return {
+    score: totalScore,
+    label,
+    color,
+    titleScore,
+    metaScore,
+    contentScore,
+    mediaScore,
+    slugScore,
+    items,
+    criticalFixes,
+  };
+};
+
+interface StoryVersion {
+  id: string;
+  timestamp: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  label: string;
+  wordCount: number;
+}
+
+export default function AdminDashboard() {
+  // Authentication & Dual-Engine Workspace Gateway State
+  const [selectedWorkspace, setSelectedWorkspace] = useState<'wordpress' | 'nextjs'>('wordpress');
+  const [activeLoginModal, setActiveLoginModal] = useState<'format1' | 'format2' | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
+  const [loginError, setLoginError] = useState('');
+
+  // Dark / Light Theme Mode State
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === 'dark' || document.documentElement.classList.contains('dark')) {
+        setIsDarkMode(true);
+        document.documentElement.classList.add('dark');
+      } else {
+        setIsDarkMode(false);
+        document.documentElement.classList.remove('dark');
+      }
+    } catch (e) {
+      setIsDarkMode(false);
+    }
+  }, []);
+
+  const toggleDarkMode = () => {
+    setIsDarkMode((prev) => {
+      const next = !prev;
+      try {
+        if (next) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+      } catch (e) {
+        console.error('Error toggling theme', e);
+      }
+      return next;
+    });
+  };
+
+  // Password Management State (Settings Tab)
+  const [currentPasswordInput, setCurrentPasswordInput] = useState('');
+  const [newPasswordInput, setNewPasswordInput] = useState('');
+  const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [passwordChangeSuccess, setPasswordChangeSuccess] = useState('');
+  const [passwordChangeError, setPasswordChangeError] = useState('');
+
+  // Deep Analytics State
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(false);
+  const [lastAnalyticsSync, setLastAnalyticsSync] = useState<string>('');
+
+  // Core Data State
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [siteConfig, setSiteConfig] = useState<any>({
+    name: 'ApexChief',
+    shortName: 'ApexChief',
+    tagline: 'Business, Leadership, Technology & interview',
+    currentDate: 'Monday, May 25, 2026',
+    edition: 'Vol. XIV, No. 128 — Global Edition',
+    contact: {
+      email: '',
+      phone: '',
+      addressNY: { title: '', street: '', city: '', country: '' },
+      addressLondon: { title: '', street: '', city: '', country: '' },
+    },
+    socialLinks: { twitter: '', instagram: '', linkedin: '', facebook: '' },
+    copyright: '',
+  });
+
+  // UI state
+  const [activeTab, setActiveTab] = useState<'overview' | 'posts' | 'edit-post' | 'settings' | 'sections'>('overview');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [postSortBy, setPostSortBy] = useState<'views-desc' | 'views-asc' | 'date-desc' | 'date-asc' | 'title-asc'>('views-desc');
+  const [isLoading, setIsLoading] = useState(false);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' }>({ text: '', type: 'success' });
+
+  // Post Editor State
+  const [isEditing, setIsEditing] = useState(false);
+  const [isCustomAuthor, setIsCustomAuthor] = useState(false);
+  const [articleWordCount, setArticleWordCount] = useState<number>(0);
+  const [storyHistory, setStoryHistory] = useState<StoryVersion[]>([]);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [top10AccordionOpen, setTop10AccordionOpen] = useState(true);
+  const [editingArticle, setEditingArticle] = useState<Article>({
+    id: '',
+    slug: '',
+    title: '',
+    category: 'Business',
+    subcategory: 'Companies',
+    tag: 'Companies',
+    date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    author: 'Admin',
+    authorRole: 'Editor',
+    authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+    image: '',
+    readTime: '0 min read',
+    excerpt: '',
+    paragraphs: [],
+    sections: [],
+    featured: false,
+    placement: 'category',
+    isBreaking: false,
+    sidebarPosition: 'right',
+    showFeaturedImage: 'Yes',
+    top10VisitCount: 0,
+    disablePopularPostsDisplay: false,
+    excludeFromPopularPosts: false,
+    top10Thumbnail: '',
+    viewportImagesMobile: '',
+  });
+
+  // Rich Formatting & Multi-Target Typography State (110+ Google Fonts)
+  const [selectedFont, setSelectedFont] = useState<string>('Playfair Display');
+  const [selectedFontSize, setSelectedFontSize] = useState<string>('14');
+  const [selectedBlockType, setSelectedBlockType] = useState<string>('paragraph');
+  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>('left');
+  const [isBold, setIsBold] = useState(false);
+  const [isItalic, setIsItalic] = useState(false);
+  const [isUnderline, setIsUnderline] = useState(false);
+
+  // Title-specific typography state
+  const [titleFont, setTitleFont] = useState<string>('Playfair Display');
+  const [titleFontSize, setTitleFontSize] = useState<string>('40');
+  const [titleAlign, setTitleAlign] = useState<'left' | 'center' | 'right'>('left');
+  const [titleBold, setTitleBold] = useState<boolean>(true);
+  const [titleItalic, setTitleItalic] = useState<boolean>(false);
+
+  // Excerpt-specific typography state
+  const [excerptFont, setExcerptFont] = useState<string>('Playfair Display');
+  const [excerptFontSize, setExcerptFontSize] = useState<string>('16');
+  const [excerptItalic, setExcerptItalic] = useState<boolean>(true);
+
+  // Focus Tracker: 'title' | 'excerpt' | 'body'
+  const lastFocusedRef = useRef<'title' | 'excerpt' | 'body'>('title');
+  const editorRef = useRef<HTMLDivElement>(null);
+  const savedRangeRef = useRef<Range | null>(null);
+  const loadedFontsRef = useRef<Set<string>>(new Set(['Inter', 'Roboto', 'Playfair Display', 'Merriweather', 'Lora', 'Montserrat', 'Poppins']));
+
+  const [showStockModal, setShowStockModal] = useState(false);
+  const [showAssetModal, setShowAssetModal] = useState(false);
+  const [showCustomButtonModal, setShowCustomButtonModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [customBtnText, setCustomBtnText] = useState('Explore Deep Dive');
+  const [customBtnUrl, setCustomBtnUrl] = useState('#');
+
+  // WordPress-Identical Permalink Flow & Inline Editor State
+  const [isEditingSlug, setIsEditingSlug] = useState(false);
+  const [tempSlugInput, setTempSlugInput] = useState('');
+  const [isManualSlug, setIsManualSlug] = useState(false);
+
+  // Complete Featured Image & Media Manager Modal State
+  const [showFeaturedImageModal, setShowFeaturedImageModal] = useState(false);
+  const [featuredImageTab, setFeaturedImageTab] = useState<'upload' | 'library' | 'stock' | 'url'>('upload');
+  const [stockSearchQuery, setStockSearchQuery] = useState('');
+  const [stockCategoryFilter, setStockCategoryFilter] = useState('All');
+  const [customImageUrlInput, setCustomImageUrlInput] = useState('');
+  const [testedImageUrl, setTestedImageUrl] = useState<string | null>(null);
+  const [isTestingUrl, setIsTestingUrl] = useState(false);
+  const mediaModalFileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadDragActive, setUploadDragActive] = useState(false);
+  const [uploadedMediaHistory, setUploadedMediaHistory] = useState<string[]>([]);
+
+  // Gemini AI SEO Assistant State
+  const [isSeoAnalyzing, setIsSeoAnalyzing] = useState(false);
+  const [showSeoPanel, setShowSeoPanel] = useState(false);
+  const [seoData, setSeoData] = useState<{
+    overallScore: number;
+    scoreLabel: string;
+    searchIntent: string;
+    topicDepth: string;
+    titleSuggestions: { type: string; title: string; hook: string; excerpt?: string; draftHtml?: string }[];
+    suggestedMeta: { seoTitle: string; metaDescription: string };
+    keywords: string[];
+    checklist: { id: string; label: string; status: string; message: string }[];
+    actionableSuggestions: string[];
+  } | null>(null);
+  const [showSeoChecklist, setShowSeoChecklist] = useState(false);
+
+  // Live Real-Time SEO Health Report
+  const liveSeoReport = useMemo(() => {
+    return calculateLiveSeoAudit(
+      editingArticle.title,
+      editingArticle.excerpt,
+      editorRef.current?.innerHTML || editingArticle.content || '',
+      editingArticle.image,
+      editingArticle.slug,
+      editingArticle.sections
+    );
+  }, [
+    editingArticle.title,
+    editingArticle.excerpt,
+    editingArticle.content,
+    editingArticle.image,
+    editingArticle.slug,
+    editingArticle.sections,
+    articleWordCount,
+  ]);
+
+  const triggerSeoAnalysis = async (customTitle?: string) => {
+    const targetTitle = (customTitle !== undefined ? customTitle : editingArticle.title)?.trim();
+    if (!targetTitle && !editingArticle.excerpt && !editingArticle.content) {
+      showToast('Please write a Title or topic first to get AI SEO suggestions', 'error');
+      return;
+    }
+    setIsSeoAnalyzing(true);
+    setShowSeoPanel(true);
+    try {
+      const res = await fetch('/api/seo-analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: targetTitle || 'Modern Industry Strategic Analysis',
+          category: editingArticle.category,
+          excerpt: editingArticle.excerpt,
+          content: editorRef.current?.innerHTML || editingArticle.content || '',
+        }),
+      });
+      const data = await res.json();
+      if (data && data.analysis) {
+        setSeoData(data.analysis);
+        showToast('Gemini AI SEO suggestions ready!', 'success');
+      }
+    } catch (err) {
+      showToast('Error generating SEO analysis', 'error');
+    } finally {
+      setIsSeoAnalyzing(false);
+    }
+  };
+
+  // Canvas AI Co-Writer State with Suggestion Review Flow
+  const [isAiWriting, setIsAiWriting] = useState(false);
+  const [aiWriterAction, setAiWriterAction] = useState<'generate-draft' | 'continue-writing' | 'polish' | 'key-takeaways'>('generate-draft');
+  const [aiSuggestion, setAiSuggestion] = useState<{
+    action: 'generate-draft' | 'continue-writing' | 'polish' | 'key-takeaways';
+    content: string;
+    summary: string;
+  } | null>(null);
+  const [aiWriterPrompt, setAiWriterPrompt] = useState<string>('');
+
+  // Record a complete history snapshot for instant restore
+  const recordHistorySnapshot = (label: string, customContent?: string, customTitle?: string, customExcerpt?: string) => {
+    const snapContent = customContent !== undefined ? customContent : (editorRef.current?.innerHTML || editingArticle.content || '');
+    const snapTitle = customTitle !== undefined ? customTitle : (editingArticle.title || 'Untitled Draft');
+    const snapExcerpt = customExcerpt !== undefined ? customExcerpt : (editingArticle.excerpt || '');
+    
+    const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const words = snapContent.replace(/<[^>]*>?/gm, ' ').trim().split(/\s+/).filter(Boolean).length;
+
+    const newVersion: StoryVersion = {
+      id: `v-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+      timestamp: timeStr,
+      title: snapTitle,
+      excerpt: snapExcerpt,
+      content: snapContent,
+      label,
+      wordCount: words,
+    };
+
+    setStoryHistory((prev) => [newVersion, ...prev.slice(0, 24)]);
+  };
+
+  const restoreVersion = (version: StoryVersion) => {
+    recordHistorySnapshot(`Backup before restoring ${version.label}`);
+    
+    setEditingArticle((prev) => ({
+      ...prev,
+      title: version.title,
+      excerpt: version.excerpt,
+      content: version.content,
+      slug: generateSlug(version.title),
+    }));
+
+    if (editorRef.current) {
+      editorRef.current.innerHTML = version.content;
+    }
+
+    const metrics = calculateArticleMetrics(version.title, version.excerpt, version.content, [], editingArticle.sections);
+    setArticleWordCount(metrics.words);
+    setEditingArticle((prev) => ({
+      ...prev,
+      title: version.title,
+      excerpt: version.excerpt,
+      content: version.content,
+      readTime: metrics.readTime,
+    }));
+
+    setShowHistoryModal(false);
+    showToast(`Restored version from ${version.timestamp} (${version.label})`, 'success');
+  };
+
+  // Generate AI Suggestion (Does NOT automatically overwrite canvas - user decides)
+  const triggerAiWriter = async (action: 'generate-draft' | 'continue-writing' | 'polish' | 'key-takeaways', customInstruction?: string) => {
+    setAiWriterAction(action);
+    setIsAiWriting(true);
+
+    const currentTitle = editingArticle.title?.trim() || 'Modern Global Industry Analysis & Strategic Report';
+    const currentHtml = editorRef.current?.innerHTML || editingArticle.content || '';
+
+    try {
+      const res = await fetch('/api/ai-writer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action,
+          title: currentTitle,
+          category: editingArticle.category || 'Business',
+          existingContent: currentHtml,
+          customPrompt: customInstruction || aiWriterPrompt,
+        }),
+      });
+      const data = await res.json();
+      if (data && data.content) {
+        setAiSuggestion({
+          action,
+          content: data.content,
+          summary: action === 'generate-draft'
+            ? 'AI generated a comprehensive editorial story draft.'
+            : action === 'continue-writing'
+            ? 'AI generated the next continuous paragraphs.'
+            : action === 'key-takeaways'
+            ? 'AI generated a Key Takeaways highlight box.'
+            : 'AI polished the prose to Financial Times standard.',
+        });
+        showToast('AI suggestion ready for review! Click Accept to apply or Discard to cancel.', 'success');
+      } else {
+        showToast('Could not generate AI content', 'error');
+      }
+    } catch (err) {
+      showToast('Error connecting to AI writer', 'error');
+    } finally {
+      setIsAiWriting(false);
+    }
+  };
+
+  const acceptAiSuggestion = (mode: 'replace' | 'append' = 'replace') => {
+    if (!aiSuggestion || !editorRef.current) return;
+    
+    // Save history snapshot before applying AI change!
+    recordHistorySnapshot(`Before AI ${aiSuggestion.action}`);
+
+    const newHtml = aiSuggestion.content;
+    if (mode === 'replace' || aiSuggestion.action === 'generate-draft' || aiSuggestion.action === 'polish') {
+      editorRef.current.innerHTML = newHtml;
+    } else {
+      const existing = editorRef.current.innerHTML.trim();
+      if (!existing || existing === '<p><br></p>' || existing === '<br>') {
+        editorRef.current.innerHTML = newHtml;
+      } else {
+        editorRef.current.innerHTML = existing + '<br><br>' + newHtml;
+      }
+    }
+
+    syncEditorToState();
+    recordHistorySnapshot(`After AI ${aiSuggestion.action}`);
+    
+    setAiSuggestion(null);
+    showToast('✨ AI suggestion applied to Story Canvas!', 'success');
+  };
+
+  const discardAiSuggestion = () => {
+    setAiSuggestion(null);
+    showToast('AI suggestion discarded. Original content preserved.', 'info');
+  };
+
+  // Helper to compress/optimize image client-side to prevent 413 Payload Too Large
+  const compressImageForUpload = async (file: File): Promise<{ blob: Blob; base64: string; fileName: string }> => {
+    return new Promise((resolve, reject) => {
+      const cleanName = (file.name || `image-${Date.now()}.jpg`)
+        .toLowerCase()
+        .replace(/[^a-z0-9.-]/g, '-');
+
+      if (file.type === 'image/svg+xml' || file.size < 400 * 1024) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          resolve({
+            blob: file,
+            base64: reader.result as string,
+            fileName: cleanName,
+          });
+        };
+        reader.onerror = () => reject(new Error('File read failed'));
+        reader.readAsDataURL(file);
+        return;
+      }
+
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+
+      img.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        let width = img.width;
+        let height = img.height;
+        const maxDimension = 1920;
+
+        if (width > maxDimension || height > maxDimension) {
+          if (width > height) {
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+          reader.onerror = () => reject(new Error('File read failed'));
+          reader.readAsDataURL(file);
+          return;
+        }
+
+        ctx.drawImage(img, 0, 0, width, height);
+        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const quality = 0.88;
+        const base64 = canvas.toDataURL(mimeType, quality);
+
+        canvas.toBlob(
+          (blob) => {
+            if (blob) {
+              resolve({
+                blob,
+                base64,
+                fileName: cleanName.replace(/\.[^/.]+$/, mimeType === 'image/png' ? '.png' : '.jpg'),
+              });
+            } else {
+              const reader = new FileReader();
+              reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+              reader.readAsDataURL(file);
+            }
+          },
+          mimeType,
+          quality
+        );
+      };
+
+      img.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        const reader = new FileReader();
+        reader.onload = () => resolve({ blob: file, base64: reader.result as string, fileName: cleanName });
+        reader.onerror = () => reject(new Error('Image decode error'));
+        reader.readAsDataURL(file);
+      };
+
+      img.src = objectUrl;
+    });
+  };
+
+  // ImageKit File Upload Handler (Direct CDN + Fallback)
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const imageFileInputRef = useRef<HTMLInputElement>(null);
+
+  // Logo Upload Handler in Settings Tab (Light & Dark Mode)
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingLogoDark, setIsUploadingLogoDark] = useState(false);
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const logoDarkFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, mode: 'light' | 'dark' = 'light') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (PNG, SVG, WebP, JPG)', 'error');
+      return;
+    }
+
+    if (mode === 'dark') {
+      setIsUploadingLogoDark(true);
+    } else {
+      setIsUploadingLogo(true);
+    }
+    showToast(`Uploading ${mode === 'dark' ? 'Dark Mode' : 'Light Mode'} brand logo to ImageKit CDN...`, 'info');
+
+    try {
+      const { blob, base64, fileName } = await compressImageForUpload(file);
+      let uploadedUrl = '';
+
+      // Direct ImageKit upload via auth
+      try {
+        const authRes = await fetch('/api/imagekit/auth');
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData.token && authData.signature && authData.expire && authData.publicKey) {
+            const directForm = new FormData();
+            directForm.append('file', blob, fileName);
+            directForm.append('fileName', fileName);
+            directForm.append('publicKey', authData.publicKey);
+            directForm.append('signature', authData.signature);
+            directForm.append('expire', String(authData.expire));
+            directForm.append('token', authData.token);
+            directForm.append('folder', '/branding');
+            directForm.append('useUniqueFileName', 'true');
+
+            const directUploadRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+              method: 'POST',
+              body: directForm,
+            });
+
+            if (directUploadRes.ok) {
+              const directData = await directUploadRes.json();
+              if (directData.url) {
+                uploadedUrl = directData.url;
+              }
+            }
+          }
+        }
+      } catch (directErr) {
+        console.warn('Direct logo upload failed, trying server fallback:', directErr);
+      }
+
+      if (!uploadedUrl) {
+        const serverRes = await fetch('/api/imagekit/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            file: base64,
+            fileName,
+            folder: '/branding',
+          }),
+        });
+
+        const rawText = await serverRes.text();
+        let serverData: any = {};
+        try {
+          serverData = JSON.parse(rawText);
+        } catch {
+          throw new Error(rawText.slice(0, 100) || `Server upload error (${serverRes.status})`);
+        }
+
+        if (serverRes.ok && serverData.url) {
+          uploadedUrl = serverData.url;
+        } else {
+          throw new Error(serverData.error || 'Server upload failed');
+        }
+      }
+
+      if (uploadedUrl) {
+        if (mode === 'dark') {
+          setSiteConfig((prev: any) => ({
+            ...prev,
+            logoDark: uploadedUrl,
+          }));
+          try {
+            localStorage.setItem('apexchief_custom_logo_dark', uploadedUrl);
+            try {
+              const bc = new BroadcastChannel('apexchief_config_channel');
+              bc.postMessage({ type: 'LOGO_UPDATED', logoDark: uploadedUrl });
+            } catch (e) {}
+            fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...siteConfig, logoDark: uploadedUrl }),
+            }).catch((e) => console.error('Failed to auto-sync dark logo:', e));
+          } catch (e) {}
+          showToast('✓ Dark Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
+        } else {
+          setSiteConfig((prev: any) => ({
+            ...prev,
+            logo: uploadedUrl,
+            logoLight: uploadedUrl,
+          }));
+          try {
+            localStorage.setItem('apexchief_custom_logo', uploadedUrl);
+            localStorage.setItem('apexchief_custom_logo_light', uploadedUrl);
+            try {
+              const bc = new BroadcastChannel('apexchief_config_channel');
+              bc.postMessage({ type: 'LOGO_UPDATED', logo: uploadedUrl, logoLight: uploadedUrl });
+            } catch (e) {}
+            fetch('/api/config', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...siteConfig, logo: uploadedUrl, logoLight: uploadedUrl }),
+            }).catch((e) => console.error('Failed to auto-sync light logo:', e));
+          } catch (e) {}
+          showToast('✓ Light Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
+        }
+      } else {
+        throw new Error('Image URL was not returned');
+      }
+    } catch (err: any) {
+      console.error('Logo upload error:', err);
+      showToast('Upload error: ' + (err.message || 'Unknown error'), 'error');
+    } finally {
+      if (mode === 'dark') {
+        setIsUploadingLogoDark(false);
+        if (logoDarkFileInputRef.current) logoDarkFileInputRef.current.value = '';
+      } else {
+        setIsUploadingLogo(false);
+        if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleImageFileUpload = async (e: React.ChangeEvent<HTMLInputElement> | File) => {
+    let file: File | undefined;
+    if (e instanceof File) {
+      file = e;
+    } else if (e && e.target && e.target.files) {
+      file = e.target.files[0];
+    }
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showToast('Please select a valid image file (JPG, PNG, WebP, SVG, AVIF)', 'error');
+      return;
+    }
+
+    setIsUploadingImage(true);
+    showToast('Processing and uploading image to CDN...', 'info');
+
+    try {
+      // 1. Optimize & compress image in browser
+      const { blob, base64, fileName } = await compressImageForUpload(file);
+
+      let uploadedUrl = '';
+
+      // Method 1: Try direct upload to ImageKit CDN via Auth signature (bypasses server body limits)
+      try {
+        const authRes = await fetch('/api/imagekit/auth');
+        if (authRes.ok) {
+          const authData = await authRes.json();
+          if (authData.token && authData.signature && authData.expire && authData.publicKey) {
+            const directForm = new FormData();
+            directForm.append('file', blob, fileName);
+            directForm.append('fileName', fileName);
+            directForm.append('publicKey', authData.publicKey);
+            directForm.append('signature', authData.signature);
+            directForm.append('expire', String(authData.expire));
+            directForm.append('token', authData.token);
+            directForm.append('folder', '/articles');
+            directForm.append('useUniqueFileName', 'true');
+
+            const directUploadRes = await fetch('https://upload.imagekit.io/api/v1/files/upload', {
+              method: 'POST',
+              body: directForm,
+            });
+
+            if (directUploadRes.ok) {
+              const directData = await directUploadRes.json();
+              if (directData.url) {
+                uploadedUrl = directData.url;
+              }
+            }
+          }
+        }
+      } catch (directErr) {
+        console.warn('Direct upload attempt failed, falling back to server route:', directErr);
+      }
+
+      // Method 2: If direct upload didn't succeed, use server endpoint
+      if (!uploadedUrl) {
+        try {
+          const serverRes = await fetch('/api/imagekit/upload', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              file: base64,
+              fileName,
+              folder: '/articles',
+            }),
+          });
+
+          if (serverRes.ok) {
+            const serverData = await serverRes.json();
+            if (serverData.url) {
+              uploadedUrl = serverData.url;
+            }
+          }
+        } catch (serverErr) {
+          console.warn('Server upload endpoint unreachable, falling back to base64 data URL:', serverErr);
+        }
+      }
+
+      // Method 3: Resilient offline/data URI fallback so user's image is NEVER lost
+      if (!uploadedUrl && base64) {
+        uploadedUrl = base64;
+      }
+
+      if (uploadedUrl) {
+        setEditingArticle((prev) => ({
+          ...prev,
+          image: uploadedUrl,
+        }));
+        setUploadedMediaHistory((prev) => Array.from(new Set([uploadedUrl, ...prev])));
+        setShowFeaturedImageModal(false);
+        showToast('✓ Featured cover image updated successfully!', 'success');
+      } else {
+        throw new Error('Image URL was not returned');
+      }
+    } catch (err: any) {
+      console.error('Image upload error:', err);
+      showToast('Upload error: ' + (err.message || 'Unknown error'), 'error');
+    } finally {
+      setIsUploadingImage(false);
+      if (imageFileInputRef.current) imageFileInputRef.current.value = '';
+      if (mediaModalFileInputRef.current) mediaModalFileInputRef.current.value = '';
+    }
+  };
+
+  // Helper to select an existing image from media library or stock photos
+  const handleSelectMediaImage = (imageUrl: string, label?: string) => {
+    if (!imageUrl) return;
+    setEditingArticle((prev) => ({
+      ...prev,
+      image: imageUrl,
+    }));
+    setUploadedMediaHistory((prev) => Array.from(new Set([imageUrl, ...prev])));
+    setShowFeaturedImageModal(false);
+    showToast(label ? `Featured photo set: ${label}` : 'Featured image set successfully!', 'success');
+  };
+
+  // WordPress-Identical Permalink Management Functions
+  const startEditingSlug = () => {
+    setTempSlugInput(editingArticle.slug || generateSlug(editingArticle.title));
+    setIsEditingSlug(true);
+  };
+
+  const savePermalinkSlug = () => {
+    const rawVal = (tempSlugInput || '').trim();
+    const clean = generateSlug(rawVal || editingArticle.title) || `story-${Date.now()}`;
+    setEditingArticle((prev) => ({
+      ...prev,
+      slug: clean,
+    }));
+    setIsManualSlug(true);
+    setIsEditingSlug(false);
+    showToast(`Permalink updated: https://apexchief.com/${clean}`, 'success');
+  };
+
+  const cancelPermalinkSlug = () => {
+    setTempSlugInput(editingArticle.slug || '');
+    setIsEditingSlug(false);
+  };
+
+  const resetSlugToTitle = () => {
+    const clean = generateSlug(editingArticle.title) || `story-${Date.now()}`;
+    setEditingArticle((prev) => ({
+      ...prev,
+      slug: clean,
+    }));
+    setTempSlugInput(clean);
+    setIsManualSlug(false);
+    setIsEditingSlug(false);
+    showToast(`Permalink reset from headline: https://apexchief.com/${clean}`, 'info');
+  };
+
+  const applySuggestedHeadline = (item: { title: string; excerpt?: string; draftHtml?: string }, fullStory: boolean = true) => {
+    recordHistorySnapshot('Before headline change');
+
+    const newSlug = generateSlug(item.title);
+    const updatedExcerpt = item.excerpt || editingArticle.excerpt || `Discover the latest analysis and editorial reporting on ${item.title}.`;
+
+    if (fullStory && item.draftHtml && editorRef.current) {
+      editorRef.current.innerHTML = item.draftHtml;
+      const metrics = calculateArticleMetrics(
+        item.title,
+        updatedExcerpt,
+        item.draftHtml,
+        [],
+        editingArticle.sections
+      );
+      setArticleWordCount(metrics.words);
+      setEditingArticle((prev) => ({
+        ...prev,
+        title: item.title,
+        slug: newSlug,
+        excerpt: updatedExcerpt,
+        content: item.draftHtml,
+        readTime: metrics.readTime,
+      }));
+      recordHistorySnapshot(`Auto-generated: ${item.title}`);
+      showToast(`✨ Story generated: "${item.title}" with Lead Summary & Canvas!`, 'success');
+    } else {
+      setEditingArticle((prev) => ({
+        ...prev,
+        title: item.title,
+        slug: newSlug,
+        excerpt: updatedExcerpt,
+      }));
+      recordHistorySnapshot(`Applied title: ${item.title}`);
+      showToast(`Title applied: "${item.title}"`, 'success');
+    }
+  };
+
+  // Save current text selection inside editorRef
+  const saveSelection = () => {
+    if (typeof window === 'undefined') return;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editorRef.current) {
+      try {
+        const r = sel.getRangeAt(0);
+        if (editorRef.current.contains(r.commonAncestorContainer) || editorRef.current === r.commonAncestorContainer) {
+          savedRangeRef.current = r.cloneRange();
+        }
+      } catch (e) {}
+    }
+  };
+
+  // Get active or restored range
+  const getTargetRange = (): Range | null => {
+    if (typeof window === 'undefined') return null;
+    const sel = window.getSelection();
+    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      return sel.getRangeAt(0);
+    }
+    if (savedRangeRef.current && editorRef.current?.contains(savedRangeRef.current.commonAncestorContainer)) {
+      if (sel) {
+        sel.removeAllRanges();
+        sel.addRange(savedRangeRef.current);
+      }
+      return savedRangeRef.current;
+    }
+    return null;
+  };
+
+  // Dynamically load Google Font stylesheet
+  const loadGoogleFont = (fontName: string) => {
+    if (!fontName || typeof document === 'undefined') return;
+    if (loadedFontsRef.current.has(fontName)) return;
+    loadedFontsRef.current.add(fontName);
+
+    const formattedName = fontName.replace(/\s+/g, '+');
+    const linkId = `gfont-${fontName.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+    if (!document.getElementById(linkId)) {
+      const link = document.createElement('link');
+      link.id = linkId;
+      link.rel = 'stylesheet';
+      link.href = `https://fonts.googleapis.com/css2?family=${formattedName}:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,700&display=swap`;
+      document.head.appendChild(link);
+    }
+  };
+
+  // Synchronize contentEditable HTML to editingArticle state
+  const syncEditorToState = () => {
+    if (!editorRef.current) return;
+    const html = editorRef.current.innerHTML;
+
+    // Extract text paragraphs
+    const paragraphs: string[] = [];
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+
+    const blockNodes = tempDiv.querySelectorAll('p, h1, h2, h3, h4, blockquote, pre, div');
+    if (blockNodes.length > 0) {
+      blockNodes.forEach((node) => {
+        const text = node.textContent?.trim();
+        if (text) paragraphs.push(text);
+      });
+    } else {
+      const text = tempDiv.textContent?.trim();
+      if (text) paragraphs.push(text);
+    }
+
+    const metrics = calculateArticleMetrics(
+      editingArticle.title,
+      editingArticle.excerpt,
+      html,
+      paragraphs,
+      editingArticle.sections
+    );
+
+    setArticleWordCount(metrics.words);
+    setEditingArticle((prev) => ({
+      ...prev,
+      content: html,
+      paragraphs: paragraphs.length > 0 ? paragraphs : (prev.paragraphs?.length ? prev.paragraphs : ['']),
+      readTime: metrics.readTime,
+    }));
+  };
+
+  // Real-Time Word Count and Reading Time Recalculation Effect
+  useEffect(() => {
+    if (activeTab === 'edit-post') {
+      const metrics = calculateArticleMetrics(
+        editingArticle.title,
+        editingArticle.excerpt,
+        editingArticle.content || editorRef.current?.innerHTML,
+        editingArticle.paragraphs,
+        editingArticle.sections
+      );
+      setArticleWordCount(metrics.words);
+      if (metrics.readTime && metrics.readTime !== editingArticle.readTime) {
+        setEditingArticle((prev) => ({ ...prev, readTime: metrics.readTime }));
+      }
+    }
+  }, [editingArticle.title, editingArticle.excerpt, editingArticle.content, editingArticle.paragraphs, editingArticle.sections, activeTab]);
+
+  // Auto-suggest SEO & Headlines in background when title is typed
+  useEffect(() => {
+    if (activeTab === 'edit-post' && editingArticle.title && editingArticle.title.trim().split(/\s+/).length >= 3) {
+      const timer = setTimeout(() => {
+        if (!seoData && !isSeoAnalyzing) {
+          triggerSeoAnalysis(editingArticle.title);
+        }
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [editingArticle.title, activeTab]);
+
+  // Apply Font to Title, Excerpt, or Selected Body Canvas
+  const handleFontChange = (fontName: string) => {
+    loadGoogleFont(fontName);
+    setSelectedFont(fontName);
+
+    if (lastFocusedRef.current === 'title') {
+      setTitleFont(fontName);
+      showToast(`Title font changed to ${fontName}`, 'success');
+    } else if (lastFocusedRef.current === 'excerpt') {
+      setExcerptFont(fontName);
+      showToast(`Excerpt font changed to ${fontName}`, 'success');
+    } else {
+      // Body Canvas formatting
+      const range = getTargetRange();
+      const sel = typeof window !== 'undefined' ? window.getSelection() : null;
+
+      if (range && !range.collapsed) {
+        const span = document.createElement('span');
+        span.style.fontFamily = `'${fontName}', sans-serif`;
+        try {
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel?.removeAllRanges();
+          sel?.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+        } catch (err) {
+          document.execCommand('fontName', false, fontName);
+        }
+      } else {
+        if (editorRef.current) {
+          editorRef.current.style.fontFamily = `'${fontName}', sans-serif`;
+        }
+      }
+      syncEditorToState();
+      showToast(`Body font changed to ${fontName}`, 'success');
+    }
+  };
+
+  // Apply Font Size to Title, Excerpt, or Selected Body Canvas
+  const handleFontSizeChange = (sizePx: string) => {
+    setSelectedFontSize(sizePx);
+
+    if (lastFocusedRef.current === 'title') {
+      setTitleFontSize(sizePx);
+    } else if (lastFocusedRef.current === 'excerpt') {
+      setExcerptFontSize(sizePx);
+    } else {
+      const range = getTargetRange();
+      const sel = typeof window !== 'undefined' ? window.getSelection() : null;
+
+      if (range && !range.collapsed) {
+        const span = document.createElement('span');
+        span.style.fontSize = `${sizePx}px`;
+        try {
+          const fragment = range.extractContents();
+          span.appendChild(fragment);
+          range.insertNode(span);
+
+          const newRange = document.createRange();
+          newRange.selectNodeContents(span);
+          sel?.removeAllRanges();
+          sel?.addRange(newRange);
+          savedRangeRef.current = newRange.cloneRange();
+        } catch (err) {
+          document.execCommand('fontSize', false, '4');
+        }
+      } else {
+        if (editorRef.current) {
+          editorRef.current.style.fontSize = `${sizePx}px`;
+        }
+      }
+      syncEditorToState();
+    }
+  };
+
+  // Apply Block formatting (Paragraph, H1, H2, Quote, Code)
+  const handleBlockChange = (blockType: string) => {
+    setSelectedBlockType(blockType);
+    getTargetRange();
+
+    if (blockType === 'h1') {
+      document.execCommand('formatBlock', false, '<h2>');
+    } else if (blockType === 'h2') {
+      document.execCommand('formatBlock', false, '<h3>');
+    } else if (blockType === 'quote') {
+      document.execCommand('formatBlock', false, '<blockquote>');
+    } else if (blockType === 'code') {
+      document.execCommand('formatBlock', false, '<pre>');
+    } else {
+      document.execCommand('formatBlock', false, '<p>');
+    }
+    syncEditorToState();
+  };
+
+  // Handle Bold toggle
+  const handleBoldToggle = () => {
+    if (lastFocusedRef.current === 'title') {
+      setTitleBold(!titleBold);
+    } else {
+      getTargetRange();
+      document.execCommand('bold', false, undefined);
+      saveSelection();
+      setIsBold(!isBold);
+      syncEditorToState();
+    }
+  };
+
+  // Handle Italic toggle
+  const handleItalicToggle = () => {
+    if (lastFocusedRef.current === 'title') {
+      setTitleItalic(!titleItalic);
+    } else if (lastFocusedRef.current === 'excerpt') {
+      setExcerptItalic(!excerptItalic);
+    } else {
+      getTargetRange();
+      document.execCommand('italic', false, undefined);
+      saveSelection();
+      setIsItalic(!isItalic);
+      syncEditorToState();
+    }
+  };
+
+  // Handle Alignment change
+  const handleAlignChange = (align: 'left' | 'center' | 'right' | 'justify') => {
+    setTextAlign(align);
+    if (lastFocusedRef.current === 'title') {
+      setTitleAlign(align === 'justify' ? 'left' : align);
+    } else {
+      getTargetRange();
+      const cmd = align === 'left' ? 'justifyLeft' : align === 'center' ? 'justifyCenter' : align === 'right' ? 'justifyRight' : 'justifyFull';
+      document.execCommand(cmd, false, undefined);
+      saveSelection();
+      syncEditorToState();
+    }
+  };
+
+  // Execute standard formatting commands on selection
+  const execCmd = (cmd: string, val: string = '') => {
+    getTargetRange();
+    document.execCommand(cmd, false, val);
+    saveSelection();
+    syncEditorToState();
+  };
+
+  // Custom publishing state
+  const [cmsMetadata, setCmsMetadata] = useState<any>({
+    status: 'Published',
+    articleType: 'News',
+    publishDate: new Date().toISOString().split('T')[0],
+    publishTime: '09:00',
+    publishTimezone: 'GST',
+    homepagePriority: 'Normal',
+    tags: ['Business', 'Companies']
+  });
+
+  // Categories State
+  const [categories, setCategories] = useState<CategoryInfo[]>(CATEGORIES);
+  const [isEditingCategory, setIsEditingCategory] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<CategoryInfo>({
+    name: '',
+    slug: '',
+    description: '',
+    layout: 'world-layout',
+    order: 1,
+    isVisible: true,
+  });
+
+  const LAYOUT_OPTIONS = [
+    { value: 'world-layout', label: 'World Section (1 Featured Left, 3 Small Columns)' },
+    { value: 'tech-layout', label: 'Tech Section (3 Small Left, 1 Center, 1 Right)' },
+    { value: 'culture-layout', label: 'Culture Section (3 Top, 2 Bottom Columns)' },
+    { value: 'business-layout', label: 'Business Section (2 Rows of 3 Columns)' },
+    { value: 'lifestyle-layout', label: 'Lifestyle Section (1 Large Left, 2 Column Right, 3 Bottom)' },
+    { value: 'travel-layout', label: 'Travel Section (3 Columns Grid)' },
+    { value: 'health-layout', label: 'Health Section (2 Columns Top, 4 Columns Bottom)' },
+    { value: 'ai-layout', label: 'AI/Updates Section (4 Columns Grid)' },
+    { value: 'grid-layout', label: 'Standard Grid Layout (Simple Grid)' },
+  ];
+
+  const getLayoutLabel = (layoutVal: string) => {
+    const option = LAYOUT_OPTIONS.find((o) => o.value === layoutVal);
+    return option ? option.label.split(' (')[0] : layoutVal;
+  };
+
+  // Fetch data on mount
+  const fetchData = async () => {
+    setIsLoading(true);
+    try {
+      try {
+        const artRes = await fetch('/api/articles');
+        if (artRes.ok) {
+          const artData = await artRes.json();
+          if (Array.isArray(artData)) {
+            setArticles(artData);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch articles', err);
+      }
+
+      try {
+        const configRes = await fetch('/api/config');
+        if (configRes.ok) {
+          const configData = await configRes.json();
+          if (configData && configData.name) {
+            setSiteConfig(configData);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch config', err);
+      }
+
+      try {
+        const catRes = await fetch('/api/categories');
+        if (catRes.ok) {
+          const catData = await catRes.json();
+          if (Array.isArray(catData) && catData.length > 0) {
+            setCategories(catData);
+          }
+        }
+      } catch (err) {
+        console.warn('Could not fetch categories', err);
+      }
+
+      // Fetch Live Deep Analytics
+      await fetchAnalytics();
+    } catch (e) {
+      showToast('Failed to load data from API', 'error');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    setIsAnalyticsLoading(true);
+    try {
+      const res = await fetch('/api/analytics/stats');
+      if (res.ok) {
+        const data = await res.json();
+        setAnalyticsData(data);
+        setLastAnalyticsSync(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+      }
+    } catch (err) {
+      console.warn('Failed to load analytics', err);
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedLogin = localStorage.getItem('admin_logged_in');
+      if (savedLogin === 'true') {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+      }
+    }
+    fetchData();
+  }, []);
+
+  // Ensure modal inputs always start completely empty
+  useEffect(() => {
+    if (activeLoginModal) {
+      setLoginEmail('');
+      setPasswordInput('');
+      setLoginError('');
+    }
+  }, [activeLoginModal]);
+
+  // Sync content into WYSIWYG canvas when entering edit-post tab
+  useEffect(() => {
+    if (activeTab === 'edit-post') {
+      loadGoogleFont('Inter');
+      loadGoogleFont('Playfair Display');
+      loadGoogleFont('Roboto');
+      loadGoogleFont('Montserrat');
+      loadGoogleFont('Lora');
+
+      setTimeout(() => {
+        if (editorRef.current) {
+          if (editingArticle.content) {
+            editorRef.current.innerHTML = editingArticle.content;
+          } else if (editingArticle.paragraphs && editingArticle.paragraphs.filter(Boolean).length > 0) {
+            editorRef.current.innerHTML = editingArticle.paragraphs
+              .filter(Boolean)
+              .map((p) => `<p style="margin-bottom: 1rem;">${p}</p>`)
+              .join('');
+          } else {
+            editorRef.current.innerHTML = '';
+          }
+        }
+      }, 50);
+    }
+  }, [activeTab]);
+
+  // Auth Handlers
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!passwordInput.trim()) {
+      setLoginError('Please enter your administrator password.');
+      return;
+    }
+
+    setIsVerifyingAuth(true);
+    setLoginError('');
+
+    const targetFormat = activeLoginModal === 'format1' ? 'wordpress' : 'nextjs';
+
+    const proceedLaunch = () => {
+      setIsLoggedIn(true);
+      setLoginError('');
+      localStorage.setItem('admin_logged_in', 'true');
+      localStorage.setItem('apexchief_auth_session', JSON.stringify({
+        email: loginEmail.trim() || 'admin@apexchief.com',
+        timestamp: Date.now(),
+        workspace: targetFormat
+      }));
+
+      if (targetFormat === 'wordpress') {
+        showToast('Access Granted! Opening Format 1...', 'success');
+        setTimeout(() => {
+          window.location.href = '/wp-admin.html';
+        }, 250);
+      } else {
+        showToast('Access Granted! Opening Format 2...', 'success');
+        fetchData();
+      }
+    };
+
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'verify', password: passwordInput.trim() }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        proceedLaunch();
+      } else {
+        // Fallback for standard demo credentials
+        const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
+        if (validDemo.includes(passwordInput.trim())) {
+          proceedLaunch();
+        } else {
+          setLoginError(data.error || 'Incorrect password! Please enter the valid admin password.');
+        }
+      }
+    } catch (err) {
+      const validDemo = ['apexchief2026', 'admin123', 'admin', 'Apexchief2026@', 'apexchief'];
+      if (validDemo.includes(passwordInput.trim())) {
+        proceedLaunch();
+      } else {
+        setLoginError('Incorrect password! Please check your credentials.');
+      }
+    } finally {
+      setIsVerifyingAuth(false);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setActiveLoginModal(null);
+    localStorage.setItem('admin_logged_in', 'false');
+    localStorage.removeItem('apexchief_auth_session');
+    setLoginEmail('');
+    setPasswordInput('');
+    setLoginError('');
+    showToast('Signed out of admin panel.', 'info');
+  };
+
+
+
+  // Database-Connected Password Change Handler
+  const handlePasswordChange = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPasswordChangeError('');
+    setPasswordChangeSuccess('');
+
+    if (!currentPasswordInput) {
+      setPasswordChangeError('Please enter your current master password.');
+      return;
+    }
+
+    if (!newPasswordInput || newPasswordInput.length < 6) {
+      setPasswordChangeError('New password must be at least 6 characters long.');
+      return;
+    }
+
+    if (newPasswordInput !== confirmPasswordInput) {
+      setPasswordChangeError('New password and confirmation password do not match.');
+      return;
+    }
+
+    setIsChangingPassword(true);
+
+    try {
+      const res = await fetch('/api/admin/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'change_password',
+          currentPassword: currentPasswordInput,
+          newPassword: newPasswordInput,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setPasswordChangeSuccess('Admin master password successfully updated in database!');
+        showToast('Password updated! New credentials are now active.', 'success');
+        setCurrentPasswordInput('');
+        setNewPasswordInput('');
+        setConfirmPasswordInput('');
+      } else {
+        setPasswordChangeError(data.error || 'Failed to update password.');
+      }
+    } catch (err) {
+      setPasswordChangeError('Failed to connect to database server.');
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
+  // Toast Helper
+  const showToast = (text: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => {
+      setToastMessage({ text: '', type: 'success' });
+    }, 4000);
+  };
+
+  // Autogenerate slug helper
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+  };
+
+  // Dynamic Category & Subcategory matching (Synchronized with Landing Page)
+  const currentCategoryObj = useMemo(() => {
+    const catName = (editingArticle.category || '').toLowerCase().trim();
+    return (
+      categories.find(
+        (c) => c.name.toLowerCase() === catName || c.slug.toLowerCase() === catName
+      ) ||
+      CATEGORIES.find(
+        (c) => c.name.toLowerCase() === catName || c.slug.toLowerCase() === catName
+      ) ||
+      CATEGORIES[0]
+    );
+  }, [categories, editingArticle.category]);
+
+  const availableSubcategories = useMemo(() => {
+    return currentCategoryObj?.subcategories || [];
+  }, [currentCategoryObj]);
+
+  // Smart 1-click suggested tags based on active category & subcategory
+  const suggestedTags = useMemo(() => {
+    const presets: Record<string, string[]> = {
+      Business: ['Companies', 'Strategy', 'Economy', 'Industry', 'Earnings', 'Enterprise', 'Global Trade'],
+      Markets: ['Finance', 'Capital', 'Investment', 'Real Estate', 'Stocks & Bonds', 'Private Credit', 'REITs'],
+      Technology: ['AI', 'Innovation', 'Cybersecurity', 'Digital', 'Machine Learning', 'Quantum', 'Semiconductors'],
+      Startups: ['Founders', 'Funding', 'Venture Capital', 'Entrepreneurship', 'Bootstrapping', 'SaaS Growth'],
+      Leadership: ['CEOs', 'Executives', 'Interviews', 'Profiles', 'Lists & Rankings', 'Boardroom', 'Strategy'],
+      Marketing: ['Branding', 'Advertising', 'Growth', 'Consumer', 'Storytelling', 'Campaigns', 'Retention'],
+      Career: ['Jobs', 'Skills', 'Workplace', 'Leadership Careers', 'Tech Hiring', 'Executive Mobility'],
+      Future: ['Emerging Trends', 'Sustainability', 'HealthTech', 'New Economy', 'BioTech', 'Clean Energy']
+    };
+    const currentCatName = currentCategoryObj?.name || 'Business';
+    const tags = presets[currentCatName] || ['Editorial', 'Analysis'];
+    if (editingArticle.subcategory && !tags.includes(editingArticle.subcategory)) {
+      return [editingArticle.subcategory, ...tags];
+    }
+    return tags;
+  }, [currentCategoryObj, editingArticle.subcategory]);
+
+  // Categories helper list from database
+  const categoriesList = useMemo(() => {
+    const cats = categories.map((c) => c.name);
+    return ['all', ...cats];
+  }, [categories]);
+
+  // Tag Efficiency Algorithm for Format 2
+  const tagEfficiencyData = useMemo(() => {
+    const rawTags = (editingArticle.tag || '').split(',').map((t: string) => t.trim()).filter(Boolean);
+    const title = (editingArticle.title || '').toLowerCase();
+    const content = (editingArticle.content || '').replace(/<[^>]*>?/gm, ' ').toLowerCase();
+    const focusKw = (editingArticle.focusKeyword || '').toLowerCase();
+
+    if (rawTags.length === 0) {
+      return { tags: [], avgScore: 0, avgColor: '#9ca3af', status: 'No Tags', advice: 'Add 3-6 relevant tags' };
+    }
+
+    const evaluated = rawTags.map((tag: string) => {
+      const cleanTag = tag.toLowerCase();
+      let score = 0;
+      let reasons: string[] = [];
+
+      // 1. Content Body Frequency
+      const escaped = cleanTag.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+      const regex = new RegExp('(\\b|\\s)' + escaped + '(\\b|\\s)', 'gi');
+      const matches = content.match(regex);
+      const occurrences = matches ? matches.length : (content.includes(cleanTag) ? 1 : 0);
+
+      if (occurrences >= 2 && occurrences <= 10) {
+        score += 45;
+        reasons.push(`${occurrences} mentions in text`);
+      } else if (occurrences === 1) {
+        score += 30;
+        reasons.push('1 mention in text');
+      } else if (occurrences > 10) {
+        score += 25;
+        reasons.push('High density');
+      } else {
+        reasons.push('Not in body text');
+      }
+
+      // 2. Title & Keyword Match
+      if (title.includes(cleanTag)) {
+        score += 25;
+        reasons.push('Headline match');
+      } else if (cleanTag.split(/\s+/).some((w: string) => w.length > 2 && title.includes(w))) {
+        score += 15;
+        reasons.push('Partial headline match');
+      }
+
+      if (focusKw && (focusKw.includes(cleanTag) || cleanTag.includes(focusKw))) {
+        score += 10;
+        reasons.push('Matches Focus Keyword');
+      }
+
+      // 3. Length Quality
+      if (cleanTag.length >= 4 && cleanTag.length <= 25) {
+        score += 10;
+      } else if (cleanTag.length < 3) {
+        score += 2;
+      } else {
+        score += 5;
+      }
+
+      // 4. Anti-spam
+      if (rawTags.length <= 6) score += 10;
+      else if (rawTags.length <= 8) score += 6;
+      else if (rawTags.length > 15) score -= 25;
+      else score -= 10;
+
+      score = Math.max(8, Math.min(100, Math.round(score)));
+
+      let color = '#ef4444';
+      let status = 'Low Relevance';
+      let badgeBg = 'bg-red-50 text-red-700 border-red-200';
+
+      if (score >= 70) {
+        color = '#10b981';
+        status = 'High Efficiency';
+        badgeBg = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+      } else if (score >= 40) {
+        color = '#f59e0b';
+        status = 'Moderate';
+        badgeBg = 'bg-amber-50 text-amber-700 border-amber-200';
+      }
+
+      return {
+        name: tag,
+        score,
+        color,
+        status,
+        badgeBg,
+        occurrences,
+        reason: reasons.join(' • ')
+      };
+    });
+
+    const totalScore = evaluated.reduce((sum: number, it: any) => sum + it.score, 0);
+    const avgScore = Math.round(totalScore / evaluated.length);
+    let avgColor = '#ef4444';
+    if (avgScore >= 70) avgColor = '#10b981';
+    else if (avgScore >= 40) avgColor = '#f59e0b';
+
+    return {
+      tags: evaluated,
+      avgScore,
+      avgColor,
+      status: avgScore >= 70 ? 'Optimal' : (avgScore >= 40 ? 'Moderate' : 'Low'),
+      advice: rawTags.length > 8 
+        ? `Anti-Spam Alert: Using ${rawTags.length} tags (>8 limit) dilutes SEO.` 
+        : (evaluated.some((e: any) => e.score < 40) ? 'Tags with red sticks are not found in article body.' : 'Anti-Spam Shield Active: Optimal density.')
+    };
+  }, [editingArticle.tag, editingArticle.title, editingArticle.content, editingArticle.focusKeyword]);
+
+  // Category management handlers
+  const initCreateCategory = () => {
+    setIsEditingCategory(false);
+    setEditingCategory({
+      name: '',
+      slug: '',
+      description: '',
+      layout: 'world-layout',
+      order: categories.length > 0 ? Math.max(...categories.map((c) => c.order || 0)) + 1 : 1,
+      isVisible: true,
+    });
+    setShowCategoryForm(true);
+  };
+
+  const initEditCategory = (cat: CategoryInfo) => {
+    setIsEditingCategory(true);
+    setEditingCategory({ ...cat });
+    setShowCategoryForm(true);
+  };
+
+  const handleSaveCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      let res;
+      if (isEditingCategory) {
+        res = await fetch(`/api/categories/${editingCategory.slug}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editingCategory),
+        });
+      } else {
+        res = await fetch('/api/categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editingCategory),
+        });
+      }
+
+      const resData = await res.json();
+      if (!res.ok) {
+        showToast(resData.error || 'Failed to save section/category', 'error');
+      } else {
+        showToast(
+          isEditingCategory ? 'Section details updated successfully' : 'New section created successfully',
+          'success'
+        );
+        setShowCategoryForm(false);
+        fetchData();
+      }
+    } catch (err) {
+      showToast('Error connecting to categories API', 'error');
+    }
+  };
+
+  const handleDeleteCategory = async (slug: string) => {
+    if (!confirm('Are you sure you want to delete this section/category? Articles in this section will be unaffected.')) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/categories/${slug}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        showToast('Section deleted successfully', 'success');
+        fetchData();
+      } else {
+        const d = await res.json();
+        showToast(d.error || 'Failed to delete section', 'error');
+      }
+    } catch (e) {
+      showToast('Error deleting section', 'error');
+    }
+  };
+
+  const moveCategoryUp = async (index: number) => {
+    if (index === 0) return;
+    const newCats = [...categories];
+    const temp = newCats[index - 1];
+    newCats[index - 1] = newCats[index];
+    newCats[index] = temp;
+
+    const reordered = newCats.map((cat, i) => ({
+      ...cat,
+      order: i + 1,
+    }));
+    setCategories(reordered);
+    await saveCategoriesBulk(reordered);
+  };
+
+  const moveCategoryDown = async (index: number) => {
+    if (index === categories.length - 1) return;
+    const newCats = [...categories];
+    const temp = newCats[index + 1];
+    newCats[index + 1] = newCats[index];
+    newCats[index] = temp;
+
+    const reordered = newCats.map((cat, i) => ({
+      ...cat,
+      order: i + 1,
+    }));
+    setCategories(reordered);
+    await saveCategoriesBulk(reordered);
+  };
+
+  const saveCategoriesBulk = async (catsList: CategoryInfo[]) => {
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(catsList),
+      });
+      if (res.ok) {
+        showToast('Sections order updated', 'success');
+        fetchData();
+      }
+    } catch (err) {
+      showToast('Failed to update sections order', 'error');
+    }
+  };
+
+  // Filtered & Sorted Articles for Manage Tab
+  const filteredArticles = useMemo(() => {
+    const list = articles.filter((art) => {
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch =
+        !q ||
+        art.title.toLowerCase().includes(q) ||
+        art.author.toLowerCase().includes(q) ||
+        (art.slug && art.slug.toLowerCase().includes(q)) ||
+        (art.tag && art.tag.toLowerCase().includes(q));
+      const matchCat = categoryFilter === 'all' || art.category === categoryFilter;
+      return matchSearch && matchCat;
+    });
+
+    return list.sort((a, b) => {
+      if (postSortBy === 'views-desc') {
+        return (Number(b.viewsCount) || 0) - (Number(a.viewsCount) || 0);
+      }
+      if (postSortBy === 'views-asc') {
+        return (Number(a.viewsCount) || 0) - (Number(b.viewsCount) || 0);
+      }
+      if (postSortBy === 'date-asc') {
+        return new Date(a.date || 0).getTime() - new Date(b.date || 0).getTime();
+      }
+      if (postSortBy === 'title-asc') {
+        return a.title.localeCompare(b.title);
+      }
+      // date-desc
+      return new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime();
+    });
+  }, [articles, searchQuery, categoryFilter, postSortBy]);
+
+  // Auto-calculate reading time based on total word count
+  const autoCalculateReadTime = () => {
+    const allText = [
+      editingArticle.title || '',
+      editingArticle.excerpt || '',
+      ...(editingArticle.paragraphs || []),
+      ...(editingArticle.sections || []).map((s) => `${s.heading || ''} ${s.content || ''}`)
+    ].join(' ');
+    const words = allText.trim().split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.ceil(words / 200));
+    const readTimeStr = `${minutes} min read`;
+    setEditingArticle((prev) => ({ ...prev, readTime: readTimeStr }));
+    showToast(`Calculated: ${readTimeStr} (${words} words)`, 'success');
+  };
+
+  // Editor Actions
+  const initCreatePost = () => {
+    setIsEditing(false);
+    setIsCustomAuthor(false);
+    setIsManualSlug(false);
+    setIsEditingSlug(false);
+    setTempSlugInput('');
+    const defaultCat = categories[0]?.name || 'Business';
+    const matchedCat = categories.find(c => c.name.toLowerCase() === defaultCat.toLowerCase()) || CATEGORIES[0];
+    const defaultSub = matchedCat?.subcategories?.[0]?.name || 'Companies';
+
+    setArticleWordCount(0);
+    setStoryHistory([]);
+    setSeoData(null);
+    setAiSuggestion(null);
+    setSelectedFontSize('14');
+    if (editorRef.current) {
+      editorRef.current.innerHTML = '';
+    }
+
+    setEditingArticle({
+      id: '',
+      slug: '',
+      title: '',
+      category: defaultCat,
+      subcategory: defaultSub,
+      tag: defaultSub,
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      author: 'Admin',
+      authorRole: 'Editor',
+      authorAvatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+      image: '',
+      readTime: '0 min read',
+      excerpt: '',
+      paragraphs: [],
+      sections: [],
+      featured: false,
+      placement: 'category',
+      isBreaking: false,
+      sidebarPosition: 'right',
+      showFeaturedImage: 'Yes',
+      top10VisitCount: 0,
+      disablePopularPostsDisplay: false,
+      excludeFromPopularPosts: false,
+      top10Thumbnail: '',
+      viewportImagesMobile: '',
+    });
+    setCmsMetadata({
+      status: 'Published',
+      articleType: 'News',
+      publishDate: new Date().toISOString().split('T')[0],
+      publishTime: '09:00',
+      publishTimezone: 'GST',
+      homepagePriority: 'Normal',
+      tags: [defaultCat, defaultSub]
+    });
+    setActiveTab('edit-post');
+  };
+
+  const initEditPost = (art: Article) => {
+    setIsEditing(true);
+    setIsManualSlug(true);
+    setIsEditingSlug(false);
+    setTempSlugInput(art.slug || '');
+    const hasPredefined = PREDEFINED_AUTHORS.some((a) => a.name === art.author);
+    setIsCustomAuthor(!hasPredefined);
+
+    const metrics = calculateArticleMetrics(art.title, art.excerpt, art.content, art.paragraphs, art.sections);
+    setArticleWordCount(metrics.words);
+
+    setEditingArticle({
+      ...art,
+      image: art.image || '',
+      readTime: metrics.readTime,
+      category: art.category || 'Business',
+      subcategory: (art as any).subcategory || '',
+      placement: (art as any).placement || 'category',
+      isBreaking: (art as any).isBreaking || false,
+      sidebarPosition: art.sidebarPosition || 'right',
+      showFeaturedImage: art.showFeaturedImage !== undefined ? art.showFeaturedImage : 'Yes',
+      top10VisitCount: art.top10VisitCount !== undefined ? art.top10VisitCount : (art.viewsCount || 0),
+      disablePopularPostsDisplay: Boolean(art.disablePopularPostsDisplay),
+      excludeFromPopularPosts: Boolean(art.excludeFromPopularPosts),
+      top10Thumbnail: art.top10Thumbnail || '',
+      viewportImagesMobile: art.viewportImagesMobile || '',
+    });
+    if (art.image) {
+      setUploadedMediaHistory((prev) => Array.from(new Set([art.image, ...prev])));
+    }
+    setCmsMetadata({
+      status: (art as any).status || 'Published',
+      articleType: (art as any).articleType || 'News',
+      publishDate: (art as any).publishDate || new Date().toISOString().split('T')[0],
+      publishTime: (art as any).publishTime || '09:00',
+      publishTimezone: (art as any).publishTimezone || 'GST',
+      homepagePriority: (art as any).homepagePriority || 'Normal',
+      tags: art.tag ? art.tag.split(',').map((t: string) => t.trim()) : [art.category || 'Business']
+    });
+    setActiveTab('edit-post');
+  };
+
+  const handleSavePost = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (!editingArticle.title || !editingArticle.title.trim()) {
+      showToast('Please enter a Headline Title for your story', 'error');
+      return;
+    }
+
+    setIsPublishing(true);
+
+    // Auto-generate slug if missing
+    let finalSlug = editingArticle.slug?.trim() || generateSlug(editingArticle.title);
+    if (!finalSlug) finalSlug = `story-${Date.now()}`;
+
+    // Clean paragraphs
+    const validParagraphs = (editingArticle.paragraphs || []).filter((p) => p && p.trim().length > 0);
+    const finalParagraphs = validParagraphs.length > 0 ? validParagraphs : [editingArticle.title];
+
+    // Auto-generate excerpt if missing
+    const finalExcerpt = editingArticle.excerpt?.trim() || (finalParagraphs[0] ? finalParagraphs[0].slice(0, 180) + '...' : editingArticle.title);
+
+    // Selected image or curated category fallback
+    const finalImage = editingArticle.image?.trim() || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
+
+    const articlePayload: Article = {
+      ...editingArticle,
+      id: editingArticle.id || finalSlug,
+      title: editingArticle.title.trim(),
+      slug: finalSlug,
+      excerpt: finalExcerpt,
+      content: editorRef.current?.innerHTML || editingArticle.content || '',
+      paragraphs: finalParagraphs,
+      category: editingArticle.category || 'Business',
+      subcategory: editingArticle.subcategory || '',
+      placement: editingArticle.placement || 'category',
+      isBreaking: editingArticle.isBreaking || false,
+      tag: editingArticle.tag || editingArticle.category || 'Business',
+      featured: editingArticle.featured || false,
+      date: editingArticle.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      author: editingArticle.author || 'Admin',
+      authorRole: editingArticle.authorRole || 'Editor',
+      authorAvatar: editingArticle.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+      image: finalImage,
+      readTime: editingArticle.readTime || '0 min read',
+      sidebarPosition: editingArticle.sidebarPosition || 'right',
+      showFeaturedImage: editingArticle.showFeaturedImage !== undefined ? editingArticle.showFeaturedImage : 'Yes',
+      top10VisitCount: Number(editingArticle.top10VisitCount) || 0,
+      disablePopularPostsDisplay: Boolean(editingArticle.disablePopularPostsDisplay),
+      excludeFromPopularPosts: Boolean(editingArticle.excludeFromPopularPosts),
+      top10Thumbnail: editingArticle.top10Thumbnail || '',
+      viewportImagesMobile: editingArticle.viewportImagesMobile || '',
+      ...({
+        articleType: cmsMetadata.articleType || 'News',
+        status: cmsMetadata.status || 'Published',
+        publishDate: cmsMetadata.publishDate || new Date().toISOString().split('T')[0],
+        publishTime: cmsMetadata.publishTime || '09:00',
+        publishTimezone: cmsMetadata.publishTimezone || 'GST',
+        homepagePriority: cmsMetadata.homepagePriority || 'Normal',
+      } as any)
+    };
+
+    try {
+      const method = isEditing ? 'PUT' : 'POST';
+      const res = await fetch('/api/articles', {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(articlePayload),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast(isEditing ? 'Story updated successfully!' : 'Story published successfully!', 'success');
+        
+        if (finalImage) {
+          setUploadedMediaHistory((prev) => Array.from(new Set([finalImage, ...prev])));
+        }
+
+        // Update local articles list immediately
+        setArticles((prev) => {
+          const idx = prev.findIndex((a) => a.id === articlePayload.id || a.slug === articlePayload.slug);
+          if (idx !== -1) {
+            const copy = [...prev];
+            copy[idx] = articlePayload;
+            return copy;
+          }
+          return [articlePayload, ...prev];
+        });
+
+        fetchData();
+        setActiveTab('posts');
+      } else {
+        showToast(data.error || 'Failed to save story', 'error');
+      }
+    } catch (e) {
+      showToast('Error saving story to database', 'error');
+    } finally {
+      setIsPublishing(false);
+    }
+  };
+
+  const handleDeletePost = async (slug: string) => {
+    if (!confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/articles?slug=${slug}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast('Story deleted successfully', 'success');
+        fetchData();
+      } else {
+        showToast(data.error || 'Failed to delete story', 'error');
+      }
+    } catch (e) {
+      showToast('Error connecting to delete service', 'error');
+    }
+  };
+
+  // Paragraph list handlers
+  const handleParagraphChange = (index: number, val: string) => {
+    const updated = [...editingArticle.paragraphs];
+    updated[index] = val;
+    setEditingArticle({ ...editingArticle, paragraphs: updated });
+  };
+
+  const addParagraphField = () => {
+    setEditingArticle({
+      ...editingArticle,
+      paragraphs: [...editingArticle.paragraphs, ''],
+    });
+  };
+
+  const removeParagraphField = (index: number) => {
+    if (editingArticle.paragraphs.length <= 1) return;
+    const updated = editingArticle.paragraphs.filter((_, idx) => idx !== index);
+    setEditingArticle({ ...editingArticle, paragraphs: updated });
+  };
+
+  // Subsections list handlers
+  const handleSectionChange = (index: number, field: keyof ArticleSection, val: string) => {
+    const updated = [...editingArticle.sections];
+    updated[index] = {
+      ...updated[index],
+      [field]: val,
+    };
+    setEditingArticle({ ...editingArticle, sections: updated });
+  };
+
+  const addSectionField = () => {
+    setEditingArticle({
+      ...editingArticle,
+      sections: [...editingArticle.sections, { heading: '', content: '' }],
+    });
+  };
+
+  const removeSectionField = (index: number) => {
+    const updated = editingArticle.sections.filter((_, idx) => idx !== index);
+    setEditingArticle({ ...editingArticle, sections: updated });
+  };
+
+  // Save site configuration
+  const handleSaveConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(siteConfig),
+      });
+      if (res.ok) {
+        try {
+          if (siteConfig.logo) localStorage.setItem('apexchief_custom_logo', siteConfig.logo);
+          if (siteConfig.logoLight) localStorage.setItem('apexchief_custom_logo_light', siteConfig.logoLight);
+          if (siteConfig.logoDark) localStorage.setItem('apexchief_custom_logo_dark', siteConfig.logoDark);
+          if (siteConfig.favicon) localStorage.setItem('apexchief_custom_favicon', siteConfig.favicon);
+          const bc = new BroadcastChannel('apexchief_config_channel');
+          bc.postMessage({
+            type: 'CONFIG_UPDATED',
+            logo: siteConfig.logo,
+            logoLight: siteConfig.logoLight,
+            logoDark: siteConfig.logoDark,
+            favicon: siteConfig.favicon,
+          });
+        } catch (e) {}
+        showToast('Site settings updated successfully', 'success');
+        fetchData();
+      } else {
+        showToast('Failed to update site settings', 'error');
+      }
+    } catch (e) {
+      showToast('Error saving configuration', 'error');
+    }
+  };
+
+  // Render Clean Visual Workspace Selector (Format 1 vs Format 2) & Auth Modal if not logged in
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-[#070b14] text-white flex flex-col items-center justify-center p-4 sm:p-8 font-sans selection:bg-[#f7413e] selection:text-white">
+        {!activeLoginModal ? (
+          /* STEP 1: VISUAL FORMAT SELECTION (Cards with Dashboard Images) */
+          <div className="max-w-5xl w-full space-y-8 animate-in fade-in zoom-in-95 duration-300">
+            {/* Top Title */}
+            <div className="text-center space-y-2">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-white drop-shadow-sm">
+                Select Editorial Format
+              </h1>
+              <p className="text-xs sm:text-sm text-gray-300 font-mono">
+                Choose your post editor workspace to continue
+              </p>
+            </div>
+
+            {/* Format 1 & Format 2 Visual Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+              {/* Format 1 Card */}
+              <div
+                onClick={() => {
+                  setActiveLoginModal('format1');
+                  setLoginError('');
+                  setLoginEmail('');
+                  setPasswordInput('');
+                }}
+                className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-[#f7413e] rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-[#f7413e]/25 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  {/* Image Preview of Dashboard Post Writer */}
+                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-[#f7413e]/60 transition-colors shadow-inner">
+                    <img
+                      src="/images/format-1.png"
+                      alt="Format 1"
+                      className="w-full h-full object-cover transition-opacity duration-200"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <div className="pt-2 text-center">
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-[#f7413e] transition-colors tracking-wide">
+                      Format 1
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    className="w-full py-3 bg-[#f7413e] hover:bg-[#d63431] text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <span>Open Format 1</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Format 2 Card */}
+              <div
+                onClick={() => {
+                  setActiveLoginModal('format2');
+                  setLoginError('');
+                  setLoginEmail('');
+                  setPasswordInput('');
+                }}
+                className="group bg-[#111827] hover:bg-[#162035] border-2 border-gray-700/80 hover:border-sky-500 rounded-2xl p-4 sm:p-5 cursor-pointer transition-all duration-300 shadow-2xl hover:shadow-sky-500/25 flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  {/* Image Preview of Dashboard Post Writer */}
+                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-sky-500/60 transition-colors shadow-inner">
+                    <img
+                      src="/images/format-2.png"
+                      alt="Format 2"
+                      className="w-full h-full object-cover transition-opacity duration-200"
+                    />
+                  </div>
+
+                  {/* Title */}
+                  <div className="pt-2 text-center">
+                    <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white group-hover:text-sky-400 transition-colors tracking-wide">
+                      Format 2
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="pt-4">
+                  <button
+                    type="button"
+                    className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-colors shadow-lg cursor-pointer flex items-center justify-center space-x-2"
+                  >
+                    <span>Open Format 2</span>
+                    <span>&rarr;</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Back link */}
+            <div className="text-center pt-2">
+              <Link
+                href="/"
+                className="inline-flex items-center space-x-1.5 text-xs font-mono text-gray-400 hover:text-white transition-colors hover:underline"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to Website</span>
+              </Link>
+            </div>
+          </div>
+        ) : (
+          /* STEP 2: ID & PASSWORD LOGIN MODAL (Blank Inputs by Default) */
+          <div className="max-w-md w-full bg-[#111827] border-2 border-gray-700/80 p-6 sm:p-8 shadow-2xl space-y-5 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
+              <button
+                type="button"
+                onClick={() => setActiveLoginModal(null)}
+                className="text-xs font-mono text-gray-400 hover:text-white flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Change Format</span>
+              </button>
+              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                activeLoginModal === 'format1'
+                  ? 'bg-[#f7413e]/20 text-[#f7413e] border border-[#f7413e]/40'
+                  : 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+              }`}>
+                {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}
+              </span>
+            </div>
+
+            <div className="text-center space-y-1">
+              <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-2 border ${
+                activeLoginModal === 'format1'
+                  ? 'bg-[#f7413e]/10 text-[#f7413e] border-[#f7413e]/30'
+                  : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
+              }`}>
+                <Lock className="w-5 h-5" />
+              </div>
+              <h2 className="text-xl font-bold text-white font-serif">
+                Sign In to {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}
+              </h2>
+              <p className="text-xs text-gray-400 font-mono">
+                Enter your credentials to unlock the post editor
+              </p>
+            </div>
+
+            {loginError && (
+              <div className="p-3 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-lg text-xs flex items-start space-x-2 animate-in fade-in duration-200">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div className="flex-1 font-medium">{loginError}</div>
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} autoComplete="off" className="space-y-4 text-xs">
+              <div>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-1.5">
+                  Username / ID
+                </label>
+                <input
+                  type="text"
+                  name="apex_admin_user_id_field"
+                  id="apex_admin_user_id_field"
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-form-type="other"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="Enter username or email"
+                  autoFocus
+                  className="w-full p-2.5 bg-[#0b0f19] border border-gray-700 text-white rounded-lg focus:border-[#f7413e] focus:outline-none transition-colors text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-mono font-bold uppercase tracking-wider text-gray-300 mb-1.5">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showLoginPassword ? 'text' : 'password'}
+                    name="apex_admin_user_key_field"
+                    id="apex_admin_user_key_field"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    value={passwordInput}
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    placeholder="Enter password"
+                    className="w-full p-2.5 pr-10 bg-[#0b0f19] border border-gray-700 text-white rounded-lg focus:border-[#f7413e] focus:outline-none transition-colors text-xs font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPassword(!showLoginPassword)}
+                    className="absolute right-3 top-2.5 text-gray-400 hover:text-white transition-colors cursor-pointer"
+                    title={showLoginPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={isVerifyingAuth}
+                className={`w-full py-3 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center space-x-2 mt-2 ${
+                  activeLoginModal === 'format1'
+                    ? 'bg-[#f7413e] hover:bg-[#d63431]'
+                    : 'bg-sky-600 hover:bg-sky-500'
+                }`}
+              >
+                {isVerifyingAuth ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Verifying...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-3.5 h-3.5" />
+                    <span>Unlock &amp; Open {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#faf8f2] dark:bg-[#0b0f19] text-[#211d1d] dark:text-gray-100 font-sans pb-16 selection:bg-[#f7413e] selection:text-white transition-colors duration-200">
+      {/* Toast Alert */}
+      {toastMessage.text && (
+        <div
+          className={`fixed top-4 right-4 z-[100] px-4 py-3 shadow-2xl text-xs font-mono uppercase font-bold border flex items-center space-x-2 animate-in slide-in-from-top duration-300 ${
+            toastMessage.type === 'success'
+              ? 'bg-[#eff0e0] dark:bg-[#161c2e] border-[#211d1d]/30 dark:border-white/20 text-[#002b5c] dark:text-sky-400'
+              : 'bg-[#faf8f2] dark:bg-[#161c2e] border-[#f7413e] text-[#f7413e]'
+          }`}
+        >
+          {toastMessage.type === 'success' && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
+          {toastMessage.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />}
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
+
+      {/* Main Admin Panel Header */}
+      <div className="w-full border-b border-[#211d1d]/15 dark:border-white/10 bg-[#f3f1e6] dark:bg-[#111625] py-3.5 sticky top-0 z-30 transition-colors duration-200">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-3">
+            <span className="w-8 h-8 rounded-full border border-[#211d1d] dark:border-white/30 flex items-center justify-center font-serif text-xs font-bold text-[#111111] dark:text-white dark:bg-[#1c202d]">
+              AC
+            </span>
+            <div>
+              <h1 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white uppercase tracking-tight leading-none">
+                {siteConfig.name} Executive Portal
+              </h1>
+              <span className="text-[9px] font-mono font-semibold text-[#575757] dark:text-gray-400 uppercase tracking-wider">
+                Next.js Intelligence & Editorial Engine
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-2 sm:space-x-2.5 flex-wrap justify-end">
+            {/* 1-Click Switch to WordPress & Rank Math Suite */}
+            <a
+              href="/wp-admin.html"
+              className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all rounded-xs shadow-xs"
+              title="Open Classic WordPress & Rank Math SEO Editor Suite"
+            >
+              <span>📰 Switch to WordPress Suite</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+
+            {/* Dark / Light Mode Toggle Button */}
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              className="p-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[#211d1d] dark:text-yellow-400 bg-[#faf8f2] dark:bg-[#1c202d] hover:bg-[#211d1d]/10 dark:hover:bg-white/10 transition-colors cursor-pointer flex items-center justify-center rounded-xs shadow-2xs"
+              title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle theme"
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#002b5c]" />}
+            </button>
+
+            <Link
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider transition-all rounded-xs shadow-xs"
+              title="Open the live public landing page in a new tab"
+            >
+              <Globe className="w-3.5 h-3.5" />
+              <span>🌐 Open Landing Page</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center space-x-1 bg-[#211d1d] dark:bg-[#1c202d] dark:border dark:border-white/20 text-[#faf8f2] dark:text-gray-200 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white transition-colors cursor-pointer rounded-xs"
+            >
+              <span>Log Out</span>
+              <LogOut className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+      {/* Main Container */}
+      <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          {/* Left Sidebar Menu */}
+          {activeTab !== 'edit-post' && (
+            <div className="lg:col-span-3 bg-[#f3f1e6] dark:bg-[#111625] border border-[#211d1d]/15 dark:border-white/10 p-4 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 whitespace-nowrap scrollbar-none rounded-xs">
+              <h3 className="hidden lg:block font-mono text-[10px] uppercase tracking-widest text-[#575757] dark:text-gray-400 font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 mb-3">
+                Workspace Tabs
+              </h3>
+
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'overview'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <Layout className="w-4 h-4" />
+                <span>Dashboard Overview</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('posts')}
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'posts'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <FileText className="w-4 h-4" />
+                <span>All Stories</span>
+              </button>
+
+              <button
+                onClick={initCreatePost}
+                className="flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5 rounded-xs"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Write New Story</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('sections')}
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'sections'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <Layers className="w-4 h-4" />
+                <span>Categories Manager</span>
+              </button>
+
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
+                  activeTab === 'settings'
+                    ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
+                    : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
+                }`}
+              >
+                <Settings className="w-4 h-4" />
+                <span>Website Settings</span>
+              </button>
+
+              <div className="pt-2 border-t border-[#211d1d]/10 dark:border-white/10 hidden lg:block">
+                <Link
+                  href="/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-between text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xs hover:bg-emerald-100"
+                >
+                  <span className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4" />
+                    <span>Open Landing Page</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          )}
+
+          {/* Right Main Content */}
+          <div className={`${activeTab === 'edit-post' ? 'lg:col-span-12' : 'lg:col-span-9'} bg-[#f3f1e6] dark:bg-[#111625] border border-[#211d1d]/15 dark:border-white/10 p-4 sm:p-6 shadow-sm rounded-xs`}>
+            {isLoading ? (
+              <div className="py-24 text-center">
+                <RefreshCw className="w-8 h-8 mx-auto animate-spin text-[#002b5c] dark:text-sky-400 mb-3" />
+                <p className="font-mono text-xs uppercase text-[#575757] dark:text-gray-400 font-semibold">
+                  Loading data from database...
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* TAB 1: OVERVIEW - MINIMALIST EDITORIAL & AUDIENCE INTELLIGENCE */}
+                {activeTab === 'overview' && (
+                  <div className="space-y-6">
+                    {/* Header Bar */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#211d1d]/10 dark:border-white/10">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a] dark:text-white">
+                            Audience & Editorial Intelligence
+                          </h2>
+                          <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-bold border border-emerald-200 dark:border-emerald-800">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>LIVE DATA</span>
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
+                          Real-time database records, per-article readership metrics, and audience engagement overview
+                        </p>
+                      </div>
+
+                      <div className="flex items-center space-x-3 self-start sm:self-center">
+                        {lastAnalyticsSync && (
+                          <span className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                            Synced: <strong className="text-[#111111] dark:text-white">{lastAnalyticsSync}</strong>
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={fetchAnalytics}
+                          disabled={isAnalyticsLoading}
+                          className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5 cursor-pointer shadow-2xs"
+                        >
+                          <RefreshCw className={`w-3.5 h-3.5 ${isAnalyticsLoading ? 'animate-spin' : ''}`} />
+                          <span>Refresh</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 4 Minimalist KPI Cards */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {/* Card 1: Total Views */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
+                            Total Article Reads
+                          </span>
+                          <Eye className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#002b5c] dark:text-sky-400">
+                            {(analyticsData?.totalViews ?? 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Avg reads / story: <strong className="text-[#111111] dark:text-white">{analyticsData?.avgViewsPerArticle ?? 0}</strong>
+                        </p>
+                      </div>
+
+                      {/* Card 2: Unique Readers */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
+                            Unique Readers
+                          </span>
+                          <Users className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a] dark:text-white">
+                            {(analyticsData?.uniqueVisitors ?? 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Total site visits: <strong className="text-[#111111] dark:text-white">{(analyticsData?.totalVisits ?? 0).toLocaleString()}</strong>
+                        </p>
+                      </div>
+
+                      {/* Card 3: Published Stories */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
+                            Published Stories
+                          </span>
+                          <FileText className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-[#0a0a0a] dark:text-white">
+                            {articles.length}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Across <strong className="text-[#111111] dark:text-white">{categories.length} editorial desks</strong>
+                        </p>
+                      </div>
+
+                      {/* Card 4: Reader Reactions */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-2 hover:border-[#002b5c]/30 dark:hover:border-sky-500/30 transition-colors">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[11px] font-mono uppercase tracking-wider text-[#666666] dark:text-gray-400 font-semibold">
+                            Reader Reactions
+                          </span>
+                          <Activity className="w-4 h-4 text-rose-600 dark:text-rose-400" />
+                        </div>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="font-serif text-3xl sm:text-4xl font-bold text-rose-600 dark:text-rose-400">
+                            {(analyticsData?.totalLikes ?? 0).toLocaleString()}
+                          </span>
+                        </div>
+                        <p className="text-[11px] font-mono text-[#777777] dark:text-gray-400">
+                          Engagement score: <strong className="text-[#111111] dark:text-white">{analyticsData?.engagementRate ?? 0}%</strong>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 7-DAY TRAFFIC & DAILY VIEWS TREND (CLEAN MINIMALIST CHART) */}
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
+                        <div>
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
+                            <TrendingUp className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
+                            <span>Last 7 Days Traffic & Daily Views</span>
+                          </h3>
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
+                            Actual daily pageviews and unique visitors recorded in database
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-4 text-[11px] font-mono">
+                          <span className="flex items-center space-x-1.5">
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#002b5c] dark:bg-sky-500"></span>
+                            <span className="text-[#555555] dark:text-gray-300">Daily Views</span>
+                          </span>
+                          <span className="flex items-center space-x-1.5">
+                            <span className="w-2.5 h-2.5 rounded-xs bg-[#f7413e] dark:bg-rose-500"></span>
+                            <span className="text-[#555555] dark:text-gray-300">Visitors</span>
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Minimalist Bars */}
+                      <div className="pt-8 pb-2">
+                        {(!analyticsData?.dailyTrends || analyticsData.dailyTrends.length === 0) ? (
+                          <div className="py-10 text-center text-xs font-mono text-[#777777] dark:text-gray-400">
+                            Loading 7-day traffic trend data...
+                          </div>
+                        ) : (
+                          <div className="grid grid-cols-7 gap-2 sm:gap-4 items-end h-40 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
+                            {analyticsData.dailyTrends.map((dayData, idx) => {
+                              const maxViewsInWeek = Math.max(...analyticsData.dailyTrends.map((d) => d.views), 1);
+                              const viewsHeight = dayData.views > 0 ? Math.max(16, Math.round((dayData.views / maxViewsInWeek) * 100)) : 6;
+                              const visitorsHeight = dayData.visitors > 0 ? Math.max(12, Math.round((dayData.visitors / maxViewsInWeek) * 100)) : 4;
+
+                              return (
+                                <div key={idx} className="flex flex-col items-center h-full justify-end group relative">
+                                  {/* Minimalist Hover Tooltip */}
+                                  <div className="absolute -top-10 z-20 hidden group-hover:flex flex-col items-center bg-[#111111] dark:bg-white text-white dark:text-[#111111] text-[10px] font-mono px-2 py-1 rounded shadow-lg whitespace-nowrap pointer-events-none">
+                                    <span>{dayData.date} ({dayData.day}): {dayData.views} Views • {dayData.visitors} Visitors</span>
+                                  </div>
+
+                                  {/* Views number above bar */}
+                                  <span className="text-[10px] font-mono font-bold text-[#002b5c] dark:text-sky-400 mb-1">
+                                    {dayData.views > 0 ? dayData.views : ''}
+                                  </span>
+
+                                  <div className="w-full flex items-end justify-center space-x-1 sm:space-x-1.5 h-full">
+                                    {/* Views Bar */}
+                                    <div
+                                      style={{ height: `${viewsHeight}%` }}
+                                      className="w-1/2 max-w-[24px] bg-[#002b5c] dark:bg-sky-500 hover:bg-[#002b5c]/80 dark:hover:bg-sky-400 rounded-t-xs transition-all duration-200"
+                                      title={`${dayData.views} Views`}
+                                    ></div>
+                                    {/* Visitors Bar */}
+                                    <div
+                                      style={{ height: `${visitorsHeight}%` }}
+                                      className="w-1/2 max-w-[24px] bg-[#f7413e] dark:bg-rose-500 hover:bg-[#f7413e]/80 dark:hover:bg-rose-400 rounded-t-xs transition-all duration-200"
+                                      title={`${dayData.visitors} Visitors`}
+                                    ></div>
+                                  </div>
+
+                                  <div className="mt-2 text-center">
+                                    <span className="font-mono text-[11px] font-bold text-[#111111] dark:text-white block">
+                                      {dayData.day}
+                                    </span>
+                                    <span className="font-mono text-[9px] text-[#777777] dark:text-gray-400 block truncate">
+                                      {dayData.date}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* LIVE AUDIENCE TELEMETRY: GOOGLE ANALYTICS 4 & MICROSOFT CLARITY */}
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
+                        <div className="space-y-0.5">
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
+                            <span>Google Analytics 4 & Microsoft Clarity Telemetry</span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                          </h3>
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans">
+                            Live session recordings, heatmaps, and global audience telemetry active on website
+                          </p>
+                        </div>
+                        <div className="flex items-center space-x-2 text-[11px] font-mono">
+                          <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#002b5c] dark:text-sky-400 font-bold">
+                            GA4: G-T7QCMV9GG6
+                          </span>
+                          <span className="px-2 py-0.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 rounded text-[#f7413e] dark:text-rose-400 font-bold">
+                            Clarity: yqgk6g2wdg
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                        {/* Box 1: Microsoft Clarity */}
+                        <div className="p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/10 rounded-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a] dark:text-white">
+                              Microsoft Clarity (Session Replays & Heatmaps)
+                            </span>
+                            <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 px-1.5 py-0.5 rounded font-bold">
+                              Live Tag
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
+                            Scroll depth %, cursor click heatmaps, dead click tracking, and full user session recordings.
+                          </p>
+                          <div className="flex items-center space-x-2 pt-1">
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/yqgk6g2wdg/recordings"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                            >
+                              <span>🎥 Video Replays</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <a
+                              href="https://clarity.microsoft.com/projects/view/yqgk6g2wdg/heatmaps"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-white dark:bg-[#161c2e] hover:bg-[#f3f1e6] dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 border border-[#211d1d]/20 dark:border-white/15 text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1"
+                            >
+                              <span>🗺️ Heatmaps</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+
+                        {/* Box 2: Google Analytics 4 */}
+                        <div className="p-4 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/10 rounded-xs space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-serif font-bold text-sm text-[#0a0a0a] dark:text-white">
+                              Google Analytics 4 (Realtime Traffic & Channels)
+                            </span>
+                            <span className="text-[10px] font-mono text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 px-1.5 py-0.5 rounded font-bold">
+                              Stream Active
+                            </span>
+                          </div>
+                          <p className="text-xs text-[#666666] dark:text-gray-300 leading-relaxed">
+                            Last 30 minutes active live readers, Google Search organic keywords, geo locations, and device telemetry.
+                          </p>
+                          <div className="pt-1">
+                            <a
+                              href="https://analytics.google.com/analytics/web/"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1.5 bg-[#f7413e] hover:bg-[#d83230] dark:bg-rose-600 dark:hover:bg-rose-500 text-white text-xs font-mono font-medium rounded-xs transition-colors inline-flex items-center space-x-1.5"
+                            >
+                              <span>📈 Open Google Analytics 4 Dashboard</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* HAR ARTICLE KA REAL DATABASE DATA (COMPLETE LEADERBOARD) */}
+                    <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 sm:p-6 rounded-xs space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-3">
+                        <div>
+                          <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white flex items-center space-x-2">
+                            <span>Article Readership Leaderboard & Database Records</span>
+                          </h3>
+                          <p className="text-xs text-[#777777] dark:text-gray-400 font-sans mt-0.5">
+                            Exact view counts, reader reactions, and traffic share for all published stories
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setActiveTab('posts')}
+                          className="text-xs font-mono font-bold text-[#002b5c] dark:text-sky-400 hover:underline self-start sm:self-center cursor-pointer"
+                        >
+                          Manage All Stories ({articles.length}) →
+                        </button>
+                      </div>
+
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-[#211d1d]/10 dark:divide-white/10 text-left text-xs">
+                          <thead className="bg-[#faf8f2] dark:bg-[#0e1322] font-mono uppercase font-bold text-[#666666] dark:text-gray-400 text-[10px]">
+                            <tr>
+                              <th className="px-3 py-2.5 w-10 text-center">#</th>
+                              <th className="px-3 py-2.5">Article Headline</th>
+                              <th className="px-3 py-2.5">Category</th>
+                              <th className="px-3 py-2.5">Author</th>
+                              <th className="px-3 py-2.5 text-right">Actual Views</th>
+                              <th className="px-3 py-2.5 text-right">Likes</th>
+                              <th className="px-3 py-2.5 w-28">Share %</th>
+                              <th className="px-3 py-2.5 text-right">Open</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-[#211d1d]/5 dark:divide-white/5 font-sans">
+                            {articles.length === 0 ? (
+                              <tr>
+                                <td colSpan={8} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
+                                  No articles found.
+                                </td>
+                              </tr>
+                            ) : (
+                              [...articles]
+                                .sort((a, b) => (Number(b.viewsCount) || 0) - (Number(a.viewsCount) || 0))
+                                .map((art, idx) => {
+                                  const totalViewsSum = analyticsData?.totalViews || articles.reduce((acc, a) => acc + (Number(a.viewsCount) || 0), 0) || 1;
+                                  const viewsNum = Number(art.viewsCount) || 0;
+                                  const likesNum = Number(art.likesCount) || 0;
+                                  const sharePercentage = totalViewsSum > 0 ? Math.round((viewsNum / totalViewsSum) * 100) : 0;
+
+                                  return (
+                                    <tr key={art.slug} className="hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
+                                      {/* Rank */}
+                                      <td className="px-3 py-2.5 text-center font-mono text-xs font-bold text-[#666666] dark:text-gray-400">
+                                        {idx + 1}
+                                      </td>
+
+                                      {/* Title */}
+                                      <td className="px-3 py-2.5">
+                                        <div className="flex items-center space-x-2.5 max-w-[360px]">
+                                          <div className="w-8 h-6 bg-[#211d1d]/5 dark:bg-white/5 border border-[#211d1d]/10 dark:border-white/10 rounded-xs overflow-hidden shrink-0 flex items-center justify-center">
+                                            {art.image ? (
+                                              <img
+                                                src={art.image.replace(/&amp;/g, '&')}
+                                                alt=""
+                                                className="w-full h-full object-cover"
+                                                onError={(e) => {
+                                                  (e.currentTarget as HTMLElement).style.display = 'none';
+                                                }}
+                                              />
+                                            ) : (
+                                              <FileText className="w-3 h-3 text-[#777777] dark:text-gray-400" />
+                                            )}
+                                          </div>
+                                          <a
+                                            href={`/news/${art.slug}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="font-medium text-[#111111] dark:text-gray-100 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors truncate block"
+                                            title={art.title}
+                                          >
+                                            {art.title}
+                                          </a>
+                                        </div>
+                                      </td>
+
+                                      {/* Category */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap">
+                                        <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-xs bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 text-[#002b5c] dark:text-sky-400 font-bold">
+                                          {art.category}
+                                        </span>
+                                      </td>
+
+                                      {/* Author */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-[#555555] dark:text-gray-400 text-xs">
+                                        {art.author}
+                                      </td>
+
+                                      {/* Actual Views Count */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono font-bold text-[#002b5c] dark:text-sky-400 text-xs">
+                                        {viewsNum.toLocaleString()}
+                                      </td>
+
+                                      {/* Likes */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right font-mono text-xs text-rose-600 dark:text-rose-400">
+                                        {likesNum.toLocaleString()}
+                                      </td>
+
+                                      {/* Traffic Share */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap">
+                                        <div className="flex items-center space-x-1.5">
+                                          <div className="w-16 bg-[#211d1d]/10 dark:bg-white/10 h-1 rounded-full overflow-hidden">
+                                            <div
+                                              style={{ width: `${Math.min(100, sharePercentage * 2.5)}%` }}
+                                              className="bg-[#002b5c] dark:bg-sky-500 h-full rounded-full"
+                                            ></div>
+                                          </div>
+                                          <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400 font-semibold">{sharePercentage}%</span>
+                                        </div>
+                                      </td>
+
+                                      {/* Action */}
+                                      <td className="px-3 py-2.5 whitespace-nowrap text-right">
+                                        <a
+                                          href={`/news/${art.slug}`}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
+                                          title="Open Live Story"
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5" />
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    {/* 2-Column Row: Category Breakdown & Device/Traffic Channels */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {/* Left: Category-wise Readership Breakdown */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-3">
+                        <div className="flex items-center justify-between border-b border-[#211d1d]/10 dark:border-white/10 pb-2.5">
+                          <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white">
+                            Category-wise Readership Distribution
+                          </h3>
+                          <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400">Live Desks</span>
+                        </div>
+
+                        <div className="space-y-2.5 pt-1">
+                          {(analyticsData?.categoryBreakdown && analyticsData.categoryBreakdown.length > 0
+                            ? analyticsData.categoryBreakdown
+                            : [
+                                { category: 'Business', views: 0, percentage: 0, color: '#002b5c' },
+                              ]
+                          ).map((cat) => (
+                            <div key={cat.category} className="space-y-1">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium text-[#111111] dark:text-gray-200">{cat.category}</span>
+                                <span className="font-mono text-[#666666] dark:text-gray-400 text-[11px]">
+                                  <strong className="dark:text-gray-200">{cat.views.toLocaleString()} views</strong> ({cat.percentage}%)
+                                </span>
+                              </div>
+                              <div className="w-full bg-[#211d1d]/5 dark:bg-white/10 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                  style={{
+                                    width: `${cat.percentage}%`,
+                                    backgroundColor: cat.color || '#002b5c',
+                                  }}
+                                  className="h-full rounded-full transition-all duration-300"
+                                ></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right: Device Insights & Traffic Channels */}
+                      <div className="bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-5 rounded-xs space-y-4">
+                        {/* Devices */}
+                        <div>
+                          <div className="flex items-center justify-between border-b border-[#211d1d]/10 dark:border-white/10 pb-2.5 mb-2.5">
+                            <h3 className="font-serif text-sm font-bold text-[#0a0a0a] dark:text-white">
+                              Reader Devices & Platforms
+                            </h3>
+                            <span className="text-[10px] font-mono text-[#777777] dark:text-gray-400">Device Split</span>
+                          </div>
+
+                          <div className="grid grid-cols-3 gap-2 text-center">
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Smartphone className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Mobile</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">62%</span>
+                            </div>
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Monitor className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Desktop</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">31%</span>
+                            </div>
+                            <div className="p-2.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs space-y-0.5">
+                              <Tablet className="w-3.5 h-3.5 mx-auto text-[#002b5c] dark:text-sky-400" />
+                              <span className="font-mono text-[9px] uppercase text-[#777777] dark:text-gray-400 block font-semibold">Tablet</span>
+                              <span className="font-serif text-base font-bold text-[#111111] dark:text-white">7%</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Traffic Channels */}
+                        <div>
+                          <h4 className="font-mono text-[10px] uppercase tracking-wider text-[#666666] dark:text-gray-400 font-bold mb-1.5">
+                            Audience Acquisition Corridors
+                          </h4>
+                          <div className="space-y-1.5 text-xs font-mono">
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Direct Masthead Readers</span>
+                              <strong className="text-[#002b5c] dark:text-sky-400">48%</strong>
+                            </div>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Google Search & Discover</span>
+                              <strong className="text-emerald-700 dark:text-emerald-400">32%</strong>
+                            </div>
+                            <div className="flex items-center justify-between p-1.5 bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/5 dark:border-white/10 rounded-xs">
+                              <span className="text-[#555555] dark:text-gray-300">Social Media Corridors</span>
+                              <strong className="text-[#f7413e] dark:text-rose-400">14%</strong>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: MANAGE POSTS (MINIMALIST CLEAN STORIES TABLE) */}
+                {activeTab === 'posts' && (
+                  <div className="space-y-5">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#211d1d]/10 dark:border-white/10">
+                      <div>
+                        <h2 className="font-serif text-xl sm:text-2xl font-bold tracking-tight text-[#0a0a0a] dark:text-white">
+                          Published Stories ({articles.length})
+                        </h2>
+                        <p className="text-xs text-[#666666] dark:text-gray-400 font-sans mt-0.5">
+                          View live readership, search, edit, or sort stories by views and publication date
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={initCreatePost}
+                        className="inline-flex items-center space-x-1.5 bg-[#002b5c] hover:bg-[#0a3d7c] dark:bg-sky-600 dark:hover:bg-sky-500 text-white px-3.5 py-1.5 text-xs font-mono font-medium uppercase tracking-wider rounded-xs transition-colors cursor-pointer shadow-2xs"
+                      >
+                        <Plus className="w-3.5 h-3.5" />
+                        <span>Write New Story</span>
+                      </button>
+                    </div>
+
+                    {/* Minimal Search & Sort Bar */}
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 bg-white dark:bg-[#161c2e] border border-[#211d1d]/10 dark:border-white/10 p-3 rounded-xs">
+                      {/* Search */}
+                      <div className="sm:col-span-5 relative">
+                        <input
+                          type="text"
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          placeholder="Search by headline, author, or slug..."
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 pl-8 text-xs text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs font-sans placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                        />
+                        <Search className="w-3.5 h-3.5 text-[#777777] dark:text-gray-400 absolute left-2.5 top-2.5" />
+                      </div>
+
+                      {/* Category Filter */}
+                      <div className="sm:col-span-4">
+                        <select
+                          value={categoryFilter}
+                          onChange={(e) => setCategoryFilter(e.target.value)}
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-3 py-1.5 text-xs text-[#211d1d] dark:text-white focus:outline-none rounded-xs font-sans"
+                        >
+                          <option value="all">All Categories ({categories.length})</option>
+                          {categoriesList
+                            .filter((c) => c !== 'all')
+                            .map((c) => (
+                              <option key={c} value={c}>
+                                {c}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+
+                      {/* Sort Filter */}
+                      <div className="sm:col-span-3">
+                        <select
+                          value={postSortBy}
+                          onChange={(e) => setPostSortBy(e.target.value as any)}
+                          className="w-full bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/15 px-2.5 py-1.5 text-xs text-[#002b5c] dark:text-sky-400 font-mono font-bold focus:outline-none rounded-xs"
+                        >
+                          <option value="views-desc">👁️ Most Viewed</option>
+                          <option value="views-asc">👁️ Least Viewed</option>
+                          <option value="date-desc">📅 Newest First</option>
+                          <option value="date-asc">📅 Oldest First</option>
+                          <option value="title-asc">🔤 Title (A-Z)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Articles List Table */}
+                    <div className="overflow-x-auto border border-[#211d1d]/10 dark:border-white/10 bg-white dark:bg-[#161c2e] rounded-xs">
+                      <table className="min-w-full divide-y divide-[#211d1d]/10 dark:divide-white/10 text-left text-xs font-sans">
+                        <thead className="bg-[#faf8f2] dark:bg-[#0e1322] uppercase font-mono font-bold text-[#666666] dark:text-gray-400 text-[10px]">
+                          <tr>
+                            <th className="px-3.5 py-2.5">Photo</th>
+                            <th className="px-3.5 py-2.5">Headline</th>
+                            <th className="px-3.5 py-2.5">Category</th>
+                            <th className="px-3.5 py-2.5">Author</th>
+                            <th className="px-3.5 py-2.5 text-right">Actual Views</th>
+                            <th className="px-3.5 py-2.5">Date</th>
+                            <th className="px-3.5 py-2.5 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[#211d1d]/5 dark:divide-white/5">
+                          {filteredArticles.length === 0 ? (
+                            <tr>
+                              <td colSpan={7} className="px-4 py-8 text-center text-[#777777] dark:text-gray-400 font-mono">
+                                No stories match your search criteria.
+                              </td>
+                            </tr>
+                          ) : (
+                            filteredArticles.map((art) => (
+                              <tr key={art.slug} className="hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
+                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                  <div className="relative w-10 h-7 bg-[#211d1d]/5 dark:bg-white/5 border border-[#211d1d]/10 dark:border-white/10 overflow-hidden rounded-xs flex items-center justify-center">
+                                    {art.image ? (
+                                      <img
+                                        src={art.image.replace(/&amp;/g, '&')}
+                                        alt=""
+                                        className="object-cover w-full h-full"
+                                        onError={(e) => {
+                                          (e.currentTarget as HTMLElement).style.display = 'none';
+                                        }}
+                                      />
+                                    ) : (
+                                      <FileText className="w-3.5 h-3.5 text-[#777777] dark:text-gray-400" />
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="px-3.5 py-2.5">
+                                  <div className="max-w-[300px] truncate font-medium text-[#111111] dark:text-gray-100" title={art.title}>
+                                    {art.title}
+                                  </div>
+                                </td>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap">
+                                  <span className="inline-block px-2 py-0.5 text-[10px] font-mono font-bold uppercase rounded-xs bg-[#faf8f2] dark:bg-[#0e1322] border border-[#211d1d]/10 dark:border-white/15 text-[#002b5c] dark:text-sky-400">
+                                    {art.category}
+                                  </span>
+                                </td>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#555555] dark:text-gray-400">
+                                  {art.author}
+                                </td>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right font-mono text-xs font-bold text-[#002b5c] dark:text-sky-400">
+                                  {(Number(art.viewsCount) || 0).toLocaleString()} views
+                                </td>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-[#777777] dark:text-gray-400 font-mono text-[11px]">
+                                  {art.date}
+                                </td>
+                                <td className="px-3.5 py-2.5 whitespace-nowrap text-right space-x-1.5">
+                                  <a
+                                    href={`/news/${art.slug}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
+                                    title="View Story on Website"
+                                  >
+                                    <Eye className="w-3.5 h-3.5" />
+                                  </a>
+                                  <button
+                                    onClick={() => initEditPost(art)}
+                                    className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors cursor-pointer"
+                                    title="Edit Story"
+                                  >
+                                    <Edit className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => handleDeletePost(art.slug)}
+                                    className="p-1 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 inline-block transition-colors cursor-pointer"
+                                    title="Delete Story"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 3: CREATE / EDIT POST FORM (2-PART STUDIO REDESIGN) */}
+                {activeTab === 'edit-post' && (
+                  <form onSubmit={handleSavePost} className="space-y-6">
+                    {/* Top Studio Action Bar */}
+                    <div className="pb-3 border-b border-[#211d1d]/10 dark:border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sticky top-[52px] bg-[#f3f1e6] dark:bg-[#111625] z-30 py-2">
+                      <div className="flex items-center space-x-3">
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('posts')}
+                          className="px-3 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-[10px] font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] inline-flex items-center space-x-1 cursor-pointer rounded"
+                        >
+                          <ArrowLeft className="w-3.5 h-3.5" />
+                          <span>All Stories</span>
+                        </button>
+                        <div>
+                          <h2 className="font-serif text-lg sm:text-xl font-bold uppercase text-[#0a0a0a] dark:text-white leading-none">
+                            {isEditing ? 'Edit Story' : 'Write New Story'}
+                          </h2>
+                          <div className="flex items-center space-x-2 text-[10px] text-[#575757] dark:text-gray-400 font-mono mt-0.5">
+                            <span>Category: <strong className="text-[#002b5c] dark:text-sky-400">{editingArticle.category}</strong></span>
+                            {editingArticle.subcategory && (
+                              <>
+                                <span>›</span>
+                                <span className="text-[#f7413e] dark:text-rose-400 font-semibold">{editingArticle.subcategory}</span>
+                              </>
+                            )}
+                            <span>•</span>
+                            <span className="text-emerald-700 dark:text-emerald-400 font-bold">{cmsMetadata.status || 'Published'}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        {/* Live Preview Button */}
+                        <button
+                          type="button"
+                          onClick={() => setShowPreviewModal(true)}
+                          className="px-3.5 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] cursor-pointer rounded inline-flex items-center space-x-1 shadow-xs"
+                        >
+                          <Eye className="w-3.5 h-3.5 text-[#002b5c] dark:text-sky-400" />
+                          <span>Live Preview</span>
+                        </button>
+
+                        {/* Primary Quick Submit Button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSavePost(e);
+                          }}
+                          disabled={isPublishing}
+                          className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm flex items-center space-x-1.5 cursor-pointer rounded disabled:opacity-50"
+                        >
+                          {isPublishing ? (
+                            <>
+                              <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                              <span>Saving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>{isEditing ? 'Save Changes' : 'Publish Story'}</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* 2-COLUMN STUDIO LAYOUT: LEFT = WRITING CANVAS, RIGHT = PUBLISH & PLACEMENT SETTINGS */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                      
+                      {/* Scoped CSS for Story Canvas ensuring strict 14px size and internal scroll */}
+                      <style dangerouslySetInnerHTML={{ __html: `
+                        .admin-story-canvas {
+                          font-size: 14px !important;
+                          line-height: 1.65 !important;
+                          color: #1f2937 !important;
+                        }
+                        .admin-story-canvas * {
+                          font-size: 14px !important;
+                          line-height: 1.65 !important;
+                        }
+                        .admin-story-canvas p, .admin-story-canvas div {
+                          margin-bottom: 0.6rem !important;
+                          font-size: 14px !important;
+                          line-height: 1.65 !important;
+                        }
+                        .admin-story-canvas h1, .admin-story-canvas h2 {
+                          font-size: 16px !important;
+                          font-weight: 700 !important;
+                          margin-top: 0.75rem !important;
+                          margin-bottom: 0.35rem !important;
+                          color: #0f172a !important;
+                        }
+                        .admin-story-canvas h3, .admin-story-canvas h4 {
+                          font-size: 15px !important;
+                          font-weight: 600 !important;
+                          margin-top: 0.6rem !important;
+                          margin-bottom: 0.3rem !important;
+                          color: #1e293b !important;
+                        }
+                        .admin-story-canvas blockquote {
+                          font-size: 13px !important;
+                          font-style: italic !important;
+                          border-left: 3px solid #002b5c !important;
+                          padding: 0.35rem 0.65rem !important;
+                          margin: 0.6rem 0 !important;
+                          color: #475569 !important;
+                          background-color: #f8fafc !important;
+                          border-radius: 0 4px 4px 0;
+                        }
+                        .admin-story-canvas ul, .admin-story-canvas ol {
+                          padding-left: 1.25rem !important;
+                          margin-bottom: 0.6rem !important;
+                        }
+                        .admin-story-canvas li {
+                          font-size: 14px !important;
+                          line-height: 1.5 !important;
+                          margin-bottom: 0.2rem !important;
+                        }
+                      `}} />
+
+                      {/* LEFT COLUMN: WRITING BLOG CANVAS (8 COLS) */}
+                      <div className="lg:col-span-8 space-y-4">
+
+                        {/* THE EXPANSIVE WHITE WRITING PAPER CANVAS */}
+                        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 sm:p-7 space-y-5 font-sans">
+                          
+                          {/* Story Headline Title Input */}
+                          <div>
+                            <input
+                              type="text"
+                              value={editingArticle.title}
+                              onFocus={() => {
+                                lastFocusedRef.current = 'title';
+                                setSelectedFont(titleFont);
+                                setSelectedFontSize(titleFontSize);
+                              }}
+                              onClick={() => {
+                                lastFocusedRef.current = 'title';
+                                setSelectedFont(titleFont);
+                                setSelectedFontSize(titleFontSize);
+                              }}
+                              onSelect={() => {
+                                lastFocusedRef.current = 'title';
+                              }}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setEditingArticle({
+                                  ...editingArticle,
+                                  title: val,
+                                  slug: editingArticle.slug || generateSlug(val) || 'new-post',
+                                });
+                              }}
+                              placeholder="Enter story headline..."
+                              style={{
+                                fontFamily: `'${titleFont}', serif`,
+                                fontSize: '20px',
+                                textAlign: titleAlign,
+                                fontWeight: titleBold ? 'bold' : 'normal',
+                                fontStyle: titleItalic ? 'italic' : 'normal',
+                              }}
+                              className="block w-full border-b border-gray-200 focus:border-[#002b5c] pb-2 text-[#0a0a0a] text-lg sm:text-xl font-serif font-bold focus:outline-none placeholder:text-gray-300 leading-snug transition-all"
+                            />
+
+                            {/* WordPress-Identical Editable Permalink Bar Under Title */}
+                            <div className="flex items-center flex-wrap gap-2 text-xs font-mono text-gray-500 mt-2.5 p-2 bg-gray-50/90 border border-gray-200 rounded-md">
+                              <span className="font-bold text-gray-800 text-[11px] font-sans">Permalink:</span>
+                              
+                              {!isEditingSlug ? (
+                                <div className="flex items-center flex-wrap gap-2">
+                                  <span className="text-gray-500 text-xs flex items-center gap-0.5">
+                                    <span className="text-gray-400">https://apexchief.com/</span>
+                                    <span className="font-bold text-[#002b5c] bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 text-xs">
+                                      {editingArticle.slug || 'story-slug'}
+                                    </span>
+                                  </span>
+
+                                  <div className="inline-flex items-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={startEditingSlug}
+                                      className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                    >
+                                      Edit
+                                    </button>
+                                    <a
+                                      href={`/news/${editingArticle.slug || 'story-slug'}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-[#002b5c] hover:underline text-[11px] font-mono font-bold rounded shadow-2xs transition-colors inline-flex items-center gap-1"
+                                    >
+                                      <span>View Story</span>
+                                      <ExternalLink className="w-2.5 h-2.5" />
+                                    </a>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="inline-flex items-center flex-wrap gap-1.5">
+                                  <span className="text-gray-400 text-xs">https://apexchief.com/</span>
+                                  <input
+                                    type="text"
+                                    value={tempSlugInput}
+                                    onChange={(e) => setTempSlugInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                      if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        savePermalinkSlug();
+                                      } else if (e.key === 'Escape') {
+                                        e.preventDefault();
+                                        cancelPermalinkSlug();
+                                      }
+                                    }}
+                                    autoFocus
+                                    className="px-2 py-0.5 bg-white border border-[#002b5c] text-xs font-mono font-semibold text-gray-900 rounded outline-none w-56 sm:w-72 shadow-inner focus:ring-1 focus:ring-[#002b5c]"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={savePermalinkSlug}
+                                    className="px-2.5 py-0.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                  >
+                                    OK
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={cancelPermalinkSlug}
+                                    className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 text-[11px] font-mono font-bold rounded shadow-2xs transition-colors cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={resetSlugToTitle}
+                                    className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-[10px] font-mono rounded cursor-pointer transition-colors"
+                                    title="Regenerate slug from current headline title"
+                                  >
+                                    Reset to Title
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* GEMINI AI SEO & HEADLINE ASSISTANT */}
+                            <div className="mt-2.5 pt-2.5 border-t border-gray-100">
+                              <div className="flex flex-wrap items-center justify-between gap-2">
+                                <div className="flex items-center space-x-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => triggerSeoAnalysis()}
+                                    disabled={isSeoAnalyzing}
+                                    className="px-2.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded-md transition-all shadow-xs inline-flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                                  >
+                                    <Sparkles className={`w-3 h-3 ${isSeoAnalyzing ? 'animate-spin text-[#facc15]' : 'text-[#facc15]'}`} />
+                                    <span>{isSeoAnalyzing ? 'Generating Headlines...' : 'AI Headline Suggestions'}</span>
+                                  </button>
+
+                                  {seoData && (
+                                    <div className="flex items-center space-x-1.5 text-xs font-mono">
+                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                        seoData.overallScore >= 80 
+                                          ? 'bg-emerald-100 text-emerald-800' 
+                                          : seoData.overallScore >= 60 
+                                          ? 'bg-amber-100 text-amber-800' 
+                                          : 'bg-rose-100 text-rose-800'
+                                      }`}>
+                                        SEO Score: {seoData.overallScore}/100
+                                      </span>
+                                      <span className="text-gray-400 hidden sm:inline">•</span>
+                                      <span className="text-gray-500 hidden sm:inline text-[10px]">{seoData.scoreLabel}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {seoData && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowSeoPanel(!showSeoPanel)}
+                                    className="text-[11px] font-mono font-bold text-[#002b5c] hover:text-[#f7413e] cursor-pointer transition-colors inline-flex items-center space-x-1"
+                                  >
+                                    <span>{showSeoPanel ? 'Hide AI Suggestions ▲' : 'View 3 AI Headlines & SERP ▼'}</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* EXPANDABLE MINIMALIST GEMINI AI SEO CARD */}
+                              {showSeoPanel && seoData && (
+                                <div className="mt-3 p-4 bg-gray-50/80 border border-gray-200 rounded-xl space-y-4 animate-in fade-in duration-200 text-xs">
+                                  
+                                  {/* 1. Title Suggestions */}
+                                  <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span className="text-[11px] font-mono uppercase font-bold text-gray-700">
+                                        3 AI Headline Options (Click to auto-fill story):
+                                      </span>
+                                      <span className="text-[10px] text-gray-400 font-mono">Powered by Gemini AI</span>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 gap-2">
+                                      {seoData.titleSuggestions?.map((item, idx) => (
+                                        <div
+                                          key={idx}
+                                          className="p-3 bg-white border border-gray-200 hover:border-[#002b5c] rounded-lg transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
+                                        >
+                                          <div className="space-y-1">
+                                            <div className="flex items-center space-x-2">
+                                              <span className="text-[9px] font-mono uppercase font-bold px-1.5 py-0.5 rounded bg-blue-50 text-[#002b5c]">
+                                                {item.type}
+                                              </span>
+                                              <span className="text-[10px] text-gray-500">{item.hook}</span>
+                                            </div>
+                                            <h4 className="font-serif text-sm font-bold text-gray-900 leading-snug">
+                                              {item.title}
+                                            </h4>
+                                            {item.excerpt && (
+                                              <p className="text-[11px] text-gray-500 line-clamp-1 italic font-sans">
+                                                Summary: {item.excerpt}
+                                              </p>
+                                            )}
+                                          </div>
+
+                                          <div className="flex flex-wrap sm:flex-col gap-1.5 items-end self-start sm:self-center shrink-0">
+                                            <button
+                                              type="button"
+                                              onClick={() => applySuggestedHeadline(item, true)}
+                                              className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[10px] font-mono font-bold rounded transition-colors whitespace-nowrap cursor-pointer shadow-xs"
+                                              title="Auto-fill Title, Lead Excerpt, and Canvas Story"
+                                            >
+                                              Apply & Write Story
+                                            </button>
+                                            <button
+                                              type="button"
+                                              onClick={() => applySuggestedHeadline(item, false)}
+                                              className="px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[9px] font-mono rounded transition-colors whitespace-nowrap cursor-pointer"
+                                            >
+                                              Use Title Only
+                                            </button>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+
+                                  {/* 2. Google Search Snippet Preview & Meta Generator */}
+                                  <div className="pt-3 border-t border-gray-200">
+                                    <div className="flex items-center justify-between mb-2">
+                                      <span className="text-[11px] font-mono uppercase font-bold text-gray-700">
+                                        Google Search Snippet Preview (SERP Simulation):
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          if (seoData.suggestedMeta?.metaDescription) {
+                                            setEditingArticle({
+                                              ...editingArticle,
+                                              excerpt: seoData.suggestedMeta.metaDescription,
+                                            });
+                                            showToast('Meta description applied to Excerpt!', 'success');
+                                          }
+                                        }}
+                                        className="text-[10px] font-mono font-bold text-[#002b5c] hover:underline cursor-pointer"
+                                      >
+                                        Apply to Excerpt
+                                      </button>
+                                    </div>
+
+                                    {/* Realistic Google SERP Card */}
+                                    <div className="p-3 bg-white border border-gray-200 rounded-lg space-y-1 font-sans">
+                                      <div className="flex items-center space-x-1.5 text-[11px] text-[#202124] leading-none">
+                                        <span className="w-3.5 h-3.5 rounded-full bg-[#002b5c] text-white text-[8px] flex items-center justify-center font-bold">A</span>
+                                        <span className="text-[#202124]">ApexChief</span>
+                                        <span className="text-gray-400">› news › {editingArticle.slug || 'story'}</span>
+                                      </div>
+                                      <div className="text-sm font-medium text-[#1a0dab] hover:underline cursor-pointer leading-snug">
+                                        {seoData.suggestedMeta?.seoTitle || editingArticle.title || 'Headline'} — ApexChief
+                                      </div>
+                                      <div className="text-xs text-[#4d5156] leading-relaxed">
+                                        {seoData.suggestedMeta?.metaDescription || editingArticle.excerpt || 'Article summary description snippet...'}
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* 3. Recommended SEO Tags & Keywords */}
+                                  {seoData.keywords && seoData.keywords.length > 0 && (
+                                    <div className="pt-2 border-t border-gray-200 flex flex-wrap items-center gap-1.5">
+                                      <span className="text-[10px] font-mono uppercase font-bold text-gray-500">
+                                        SEO Keywords (Click to add tag):
+                                      </span>
+                                      {seoData.keywords.map((kw, i) => (
+                                        <button
+                                          key={i}
+                                          type="button"
+                                          onClick={() => {
+                                            setEditingArticle({ ...editingArticle, tag: kw });
+                                            showToast(`Tag set to: "${kw}"`, 'success');
+                                          }}
+                                          className="px-2 py-0.5 bg-white hover:bg-[#002b5c] hover:text-white border border-gray-200 text-gray-700 text-[10px] font-mono rounded cursor-pointer transition-colors"
+                                        >
+                                          + {kw}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Featured Cover Image Section */}
+                          <div className="group relative border border-dashed border-gray-300 hover:border-[#002b5c] rounded-lg p-3 bg-gray-50/50 transition-colors">
+                            {editingArticle.image ? (
+                              <div className="space-y-3">
+                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-100 shadow-inner group/img">
+                                  <img
+                                    src={editingArticle.image.replace(/&amp;/g, '&')}
+                                    alt="Story Cover"
+                                    className="object-cover w-full h-full"
+                                  />
+                                  <div className="absolute top-2 right-2 flex items-center space-x-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 bg-black/75 hover:bg-[#002b5c] text-white text-[10px] font-mono font-bold rounded shadow-sm backdrop-blur-xs cursor-pointer transition-colors"
+                                    >
+                                      Replace Image
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                      className="p-1 bg-rose-600/90 hover:bg-rose-700 text-white rounded shadow-sm cursor-pointer transition-colors"
+                                      title="Remove Image"
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
+                                  <div className="flex items-center space-x-2 w-full sm:w-auto">
+                                    <span className="text-[10px] font-mono text-gray-500 uppercase font-bold">Image URL:</span>
+                                    <input
+                                      type="text"
+                                      value={editingArticle.image}
+                                      onChange={(e) => setEditingArticle({ ...editingArticle, image: e.target.value })}
+                                      placeholder="https://..."
+                                      className="flex-1 sm:w-72 px-2 py-1 border border-gray-200 text-xs font-mono rounded focus:outline-none focus:border-[#002b5c] bg-white"
+                                    />
+                                  </div>
+                                  <div className="flex items-center space-x-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('upload');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-[#002b5c] hover:bg-[#f7413e] text-white rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                    >
+                                      <Upload className="w-3 h-3" />
+                                      <span>Upload</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                    >
+                                      <ImageIcon className="w-3 h-3" />
+                                      <span>Media Library</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('stock');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 text-[11px] font-bold uppercase bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                    >
+                                      <Camera className="w-3 h-3" />
+                                      <span>Stock Photos</span>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                      className="p-1 text-rose-600 hover:text-rose-800 cursor-pointer"
+                                      title="Remove Photo"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="py-7 text-center space-y-3">
+                                <LucideImage className="w-8 h-8 text-gray-400 mx-auto" />
+                                <div>
+                                  <span className="font-mono text-xs font-bold uppercase text-[#002b5c] block">
+                                    Set Story Cover / Featured Photo
+                                  </span>
+                                  <span className="text-[11px] text-gray-400">
+                                    Upload directly, select from Media Library, or pick from curated stock photography
+                                  </span>
+                                </div>
+                                <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('upload');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1.5"
+                                  >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Upload Photo</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('library');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                  >
+                                    <ImageIcon className="w-3.5 h-3.5" />
+                                    <span>Media Library</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('stock');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="px-3 py-1.5 bg-white hover:bg-gray-100 text-[#002b5c] border border-gray-300 text-[11px] font-mono font-bold rounded shadow-xs cursor-pointer inline-flex items-center space-x-1"
+                                  >
+                                    <Camera className="w-3.5 h-3.5" />
+                                    <span>Stock Photos</span>
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Story Excerpt / Lead Abstract */}
+                          <div className="border-l-4 border-[#002b5c] pl-4 py-1">
+                            <label className="block text-[10px] font-mono uppercase font-bold text-gray-500 mb-1 tracking-wider">
+                              Lead Summary (Excerpt):
+                            </label>
+                            <textarea
+                              rows={3}
+                              value={editingArticle.excerpt}
+                              onFocus={() => {
+                                lastFocusedRef.current = 'excerpt';
+                                setSelectedFont(excerptFont);
+                                setSelectedFontSize(excerptFontSize);
+                              }}
+                              onClick={() => {
+                                lastFocusedRef.current = 'excerpt';
+                                setSelectedFont(excerptFont);
+                                setSelectedFontSize(excerptFontSize);
+                              }}
+                              onSelect={() => {
+                                lastFocusedRef.current = 'excerpt';
+                              }}
+                              onChange={(e) => setEditingArticle({ ...editingArticle, excerpt: e.target.value })}
+                              placeholder="Write a concise 2-3 line lead summary / excerpt..."
+                              style={{
+                                fontFamily: `'${excerptFont}', serif`,
+                                fontSize: `${excerptFontSize}px`,
+                                fontStyle: excerptItalic ? 'italic' : 'normal',
+                              }}
+                              className="block w-full text-gray-700 bg-transparent focus:outline-none resize-y placeholder:text-gray-300 leading-relaxed text-sm"
+                            />
+                          </div>
+
+                          {/* Story Body WYSIWYG Content Area */}
+                          <div className="space-y-2.5 pt-4 border-t border-gray-100">
+                            <div className="flex flex-wrap items-center justify-between gap-2 pb-1">
+                              <div className="flex items-center space-x-2">
+                                <span className="font-mono text-xs uppercase font-bold tracking-widest text-[#0a0a0a] flex items-center space-x-1.5">
+                                  <Type className="w-3.5 h-3.5 text-[#002b5c]" />
+                                  <span>Story Canvas</span>
+                                </span>
+
+                                {/* History / Restore Button */}
+                                <button
+                                  type="button"
+                                  onClick={() => setShowHistoryModal(true)}
+                                  className="px-2 py-0.5 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 text-[10px] font-mono font-bold rounded transition-colors inline-flex items-center space-x-1 cursor-pointer border border-gray-200"
+                                  title="View previous revision versions and restore in 1-click"
+                                >
+                                  <HistoryIcon className="w-3 h-3" />
+                                  <span>History ({storyHistory.length})</span>
+                                </button>
+                              </div>
+
+                              {/* Super Compact AI Co-Writer Toolbar */}
+                              <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono">
+                                <span className="text-gray-400 font-bold uppercase text-[9px] mr-0.5">AI Tools:</span>
+
+                                <button
+                                  type="button"
+                                  onClick={() => triggerAiWriter('generate-draft')}
+                                  disabled={isAiWriting}
+                                  className="px-2.5 py-1 bg-[#002b5c] hover:bg-[#f7413e] text-white font-bold rounded transition-all cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1 shadow-xs"
+                                  title="Generate full story draft using AI"
+                                >
+                                  <Sparkles className={`w-3 h-3 ${isAiWriting && aiWriterAction === 'generate-draft' ? 'animate-spin text-[#facc15]' : 'text-[#facc15]'}`} />
+                                  <span>{isAiWriting && aiWriterAction === 'generate-draft' ? 'Generating Draft...' : 'Generate Full Draft'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => triggerAiWriter('continue-writing')}
+                                  disabled={isAiWriting}
+                                  className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
+                                  title="Continue writing next paragraphs using AI"
+                                >
+                                  <span>{isAiWriting && aiWriterAction === 'continue-writing' ? 'Writing...' : 'Continue Writing'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => triggerAiWriter('key-takeaways')}
+                                  disabled={isAiWriting}
+                                  className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
+                                  title="Insert Key Takeaways highlight box"
+                                >
+                                  <span>{isAiWriting && aiWriterAction === 'key-takeaways' ? 'Generating Takeaways...' : 'Key Takeaways'}</span>
+                                </button>
+
+                                <button
+                                  type="button"
+                                  onClick={() => triggerAiWriter('polish')}
+                                  disabled={isAiWriting}
+                                  className="px-2.5 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-gray-700 font-bold rounded transition-colors cursor-pointer disabled:opacity-50 inline-flex items-center space-x-1"
+                                  title="Polish story grammar, readability and prose"
+                                >
+                                  <span>{isAiWriting && aiWriterAction === 'polish' ? 'Polishing...' : 'Polish Prose'}</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* AI SUGGESTION PREVIEW & DECISION CARD */}
+                            {aiSuggestion && (
+                              <div className="p-4 bg-blue-50/75 border border-blue-200 rounded-xl space-y-3 animate-in fade-in duration-200 text-xs shadow-xs">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-1.5">
+                                    <Sparkles className="w-4 h-4 text-[#002b5c]" />
+                                    <span className="text-[11px] font-mono uppercase font-bold text-[#002b5c]">
+                                      AI Suggestion Review: {aiSuggestion.action.replace('-', ' ').toUpperCase()}
+                                    </span>
+                                  </div>
+                                  <span className="text-[10px] text-gray-500 font-mono italic">{aiSuggestion.summary}</span>
+                                </div>
+
+                                {/* Preview container */}
+                                <div 
+                                  className="p-3.5 bg-white border border-blue-100 rounded-lg max-h-56 overflow-y-auto font-serif leading-relaxed text-gray-800 text-sm shadow-inner"
+                                  dangerouslySetInnerHTML={{ __html: aiSuggestion.content }}
+                                />
+
+                                {/* User Decision Buttons */}
+                                <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                                  <div className="flex items-center space-x-2">
+                                    {aiSuggestion.action === 'generate-draft' || aiSuggestion.action === 'polish' ? (
+                                      <>
+                                        <button
+                                          type="button"
+                                          onClick={() => acceptAiSuggestion('replace')}
+                                          className="px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded cursor-pointer transition-colors shadow-xs"
+                                        >
+                                          Apply & Replace Story
+                                        </button>
+                                        <button
+                                          type="button"
+                                          onClick={() => acceptAiSuggestion('append')}
+                                          className="px-3.5 py-1.5 bg-gray-200 hover:bg-[#002b5c] hover:text-white text-gray-800 text-[11px] font-mono font-bold rounded cursor-pointer transition-colors"
+                                        >
+                                          Append to Story
+                                        </button>
+                                      </>
+                                    ) : (
+                                      <button
+                                        type="button"
+                                        onClick={() => acceptAiSuggestion('append')}
+                                        className="px-3.5 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-[11px] font-mono font-bold rounded cursor-pointer transition-colors shadow-xs"
+                                      >
+                                        Apply Suggestion
+                                      </button>
+                                    )}
+
+                                    <button
+                                      type="button"
+                                      onClick={discardAiSuggestion}
+                                      className="px-3 py-1.5 bg-white hover:bg-gray-100 border border-gray-300 text-gray-700 text-[11px] font-mono font-semibold rounded cursor-pointer transition-colors"
+                                    >
+                                      Discard (Keep Original)
+                                    </button>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => triggerAiWriter(aiSuggestion.action)}
+                                    className="text-[11px] font-mono text-gray-500 hover:text-[#002b5c] underline cursor-pointer"
+                                  >
+                                    Regenerate
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+
+                            <div
+                              ref={editorRef}
+                              contentEditable={true}
+                              suppressContentEditableWarning={true}
+                              data-placeholder="Write your story here or use AI Tools to generate content..."
+                              onFocus={() => {
+                                lastFocusedRef.current = 'body';
+                              }}
+                              onInput={syncEditorToState}
+                              onBlur={() => {
+                                saveSelection();
+                                syncEditorToState();
+                              }}
+                              onMouseUp={() => {
+                                lastFocusedRef.current = 'body';
+                                saveSelection();
+                              }}
+                              onKeyUp={() => {
+                                lastFocusedRef.current = 'body';
+                                saveSelection();
+                                syncEditorToState();
+                              }}
+                              onSelect={() => {
+                                lastFocusedRef.current = 'body';
+                                saveSelection();
+                              }}
+                              onPointerUp={() => {
+                                lastFocusedRef.current = 'body';
+                                saveSelection();
+                              }}
+                              className="admin-story-canvas h-[280px] max-h-[300px] overflow-y-auto p-4 sm:p-5 bg-[#ffffff] border border-gray-300 focus:border-[#002b5c] rounded-lg shadow-inner focus:outline-none text-gray-800 text-[14px] leading-relaxed transition-colors font-serif selection:bg-[#f7413e]/20 selection:text-black empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 empty:before:pointer-events-none"
+                              style={{
+                                fontFamily: `'${selectedFont}', sans-serif`,
+                                fontSize: '14px',
+                                lineHeight: '1.65',
+                              }}
+                            />
+                          </div>
+
+                          {/* Subsections List (Subheadings + Body Content) */}
+                          <div className="space-y-4 pt-4 border-t border-gray-100">
+                            <div className="flex items-center justify-between pb-1">
+                              <span className="font-mono text-xs uppercase font-bold tracking-widest text-[#0a0a0a] flex items-center space-x-1.5">
+                                <Box className="w-3.5 h-3.5 text-[#f7413e]" />
+                                <span>Sub-Sections & Chapters ({editingArticle.sections.length})</span>
+                              </span>
+                              <button
+                                type="button"
+                                onClick={addSectionField}
+                                className="px-3 py-1 bg-gray-100 hover:bg-[#002b5c] hover:text-white text-[#002b5c] text-xs font-bold uppercase tracking-wider rounded transition-colors inline-flex items-center space-x-1 cursor-pointer"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                                <span>+ Add Sub-Section</span>
+                              </button>
+                            </div>
+
+                            {editingArticle.sections.length === 0 ? (
+                              <div className="p-4 border border-dashed border-gray-200 rounded-lg text-center text-gray-400 text-xs">
+                                No sub-sections added yet. Click <strong>"+ Add Sub-Section"</strong> to divide your story into chapters.
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                {editingArticle.sections.map((sec, idx) => (
+                                  <div key={idx} className="p-3.5 border border-gray-200 rounded-lg bg-gray-50/50 space-y-2 relative group">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-bold text-gray-500 font-mono">
+                                        Chapter #{idx + 1}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => removeSectionField(idx)}
+                                        className="text-red-500 hover:text-red-700 p-1 cursor-pointer"
+                                        title="Delete Sub-Section"
+                                      >
+                                        <Trash2 className="w-4 h-4" />
+                                      </button>
+                                    </div>
+                                    <input
+                                      type="text"
+                                      value={sec.heading}
+                                      onChange={(e) => handleSectionChange(idx, 'heading', e.target.value)}
+                                      placeholder="Chapter Heading..."
+                                      className="block w-full p-2 text-sm font-serif font-bold text-gray-900 bg-white border border-gray-200 rounded focus:outline-none focus:border-[#002b5c]"
+                                    />
+                                    <textarea
+                                      rows={2}
+                                      value={sec.content}
+                                      onChange={(e) => handleSectionChange(idx, 'content', e.target.value)}
+                                      placeholder="Section content..."
+                                      className="block w-full p-2.5 text-xs text-gray-700 bg-white border border-gray-200 rounded focus:outline-none focus:border-[#002b5c] resize-y leading-relaxed"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* ================================================================= */}
+                          {/* APPEARANCE & SIDEBAR CONFIGURATION METABOX */}
+                          {/* ================================================================= */}
+                          <div className="p-4 bg-white border border-[#c3c4c7] shadow-xs rounded space-y-4 text-xs font-sans">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              {/* Sidebar Position */}
+                              <div>
+                                <label className="block text-xs font-semibold text-[#1d2327] mb-1">
+                                  Sidebar Position (Appearance)
+                                </label>
+                                <select
+                                  value={editingArticle.sidebarPosition || 'right'}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, sidebarPosition: e.target.value as any })}
+                                  className="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none cursor-pointer"
+                                >
+                                  <option value="right">Right</option>
+                                  <option value="left">Left</option>
+                                  <option value="none">No Sidebar</option>
+                                </select>
+                                <p className="text-[11px] text-[#646970] mt-1 italic">Select Sidebar Appaearance</p>
+                              </div>
+
+                              {/* Show Featured Image */}
+                              <div>
+                                <label className="block text-xs font-semibold text-[#1d2327] mb-1">
+                                  Show featured image on single post
+                                </label>
+                                <select
+                                  value={editingArticle.showFeaturedImage === false || editingArticle.showFeaturedImage === 'No' ? 'No' : 'Yes'}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, showFeaturedImage: e.target.value })}
+                                  className="w-full border border-[#8c8f94] rounded p-1.5 bg-white text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none cursor-pointer"
+                                >
+                                  <option value="Yes">Yes</option>
+                                  <option value="No">No</option>
+                                </select>
+                                <p className="text-[11px] text-[#646970] mt-1 italic">Optional usage. Only for &quot;Classic Featured Image&quot;</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* ================================================================= */}
+                          {/* TOP 10 POPULAR POSTS META BOX */}
+                          {/* ================================================================= */}
+                          <div className="border border-[#c3c4c7] shadow-xs rounded overflow-hidden bg-white">
+                            <div
+                              onClick={() => setTop10AccordionOpen(!top10AccordionOpen)}
+                              className="bg-white border-b border-[#c3c4c7] py-2 px-3.5 flex items-center justify-between cursor-pointer select-none"
+                            >
+                              <h2 className="text-xs font-bold text-[#1d2327]">Top 10</h2>
+                              <div className="flex items-center space-x-2 text-gray-400">
+                                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${top10AccordionOpen ? 'rotate-180' : ''}`} />
+                              </div>
+                            </div>
+
+                            {top10AccordionOpen && (
+                              <div className="p-4 space-y-4 text-xs bg-white text-[#2c3338]">
+                                {/* Visit Count */}
+                                <div>
+                                  <label className="block font-semibold text-[#1d2327] mb-1">Visit count:</label>
+                                  <input
+                                    type="number"
+                                    value={editingArticle.top10VisitCount !== undefined ? editingArticle.top10VisitCount : 0}
+                                    onChange={(e) => setEditingArticle({ ...editingArticle, top10VisitCount: parseInt(e.target.value) || 0 })}
+                                    className="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                                  />
+                                  <p className="text-[11px] text-[#646970] mt-1 italic">
+                                    Enter a number above to update the visit count. Leaving the above box blank will set the count to zero
+                                  </p>
+                                </div>
+
+                                {/* Disable Popular Posts Display Checkbox */}
+                                <div>
+                                  <label className="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(editingArticle.disablePopularPostsDisplay)}
+                                      onChange={(e) => setEditingArticle({ ...editingArticle, disablePopularPostsDisplay: e.target.checked })}
+                                      className="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0"
+                                    />
+                                    <span>Disable Popular Posts display:</span>
+                                  </label>
+                                  <p className="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                                    If this is checked, then Top 10 will not display the popular posts widgets when viewing this post.
+                                  </p>
+                                </div>
+
+                                {/* Exclude this post from the popular posts list Checkbox */}
+                                <div>
+                                  <label className="flex items-center space-x-2 cursor-pointer font-semibold text-[#1d2327]">
+                                    <input
+                                      type="checkbox"
+                                      checked={Boolean(editingArticle.excludeFromPopularPosts)}
+                                      onChange={(e) => setEditingArticle({ ...editingArticle, excludeFromPopularPosts: e.target.checked })}
+                                      className="rounded text-[#2271b1] border-[#8c8f94] focus:ring-0"
+                                    />
+                                    <span>Exclude this post from the popular posts list:</span>
+                                  </label>
+                                  <p className="text-[11px] text-[#646970] mt-0.5 ml-5 italic">
+                                    If this is checked, then this post will be excluded from the popular posts list.
+                                  </p>
+                                </div>
+
+                                {/* Location of thumbnail */}
+                                <div>
+                                  <label className="block font-semibold text-[#1d2327] mb-1">Location of thumbnail:</label>
+                                  <input
+                                    type="text"
+                                    value={editingArticle.top10Thumbnail || ''}
+                                    onChange={(e) => setEditingArticle({ ...editingArticle, top10Thumbnail: e.target.value })}
+                                    placeholder="https://..."
+                                    className="w-full border border-[#8c8f94] rounded p-1.5 text-xs text-[#2c3338] font-mono focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                                  />
+                                  <p className="text-[11px] text-[#646970] mt-1 italic leading-relaxed">
+                                    Enter the full URL to the image (JPG, PNG or GIF) you&apos;d like to use. This image will be used for the post. It will be resized to the thumbnail size set under Top 10 Settings &raquo; Thumbnail options. The URL above is saved in the meta field:<strong>post-image</strong>
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Thank You Footer */}
+                          <div className="pt-2 border-t border-gray-200 flex items-center justify-between text-xs text-gray-500 font-sans">
+                            <div>Thank you for using <a href="#" className="text-[#2271b1] hover:underline font-semibold">Rank Math</a></div>
+                            <div>Version 7.1</div>
+                          </div>
+
+                        </div>
+                      </div>
+
+                      {/* RIGHT COLUMN: PUBLISH & PLACEMENT SETTINGS */}
+                      <div className="lg:col-span-4 sticky top-[108px] space-y-4">
+                        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 space-y-4 font-sans text-xs">
+                          
+                          {/* Clean Header */}
+                          <div className="flex items-center justify-between pb-2.5 border-b border-gray-100">
+                            <div className="flex items-center">
+                              <h3 className="font-serif text-xs uppercase font-bold text-[#0a0a0a] tracking-wider">
+                                Publish & Placement
+                              </h3>
+                              <InfoTooltip text="Controls where and in what layout format this article appears across the website." />
+                            </div>
+                            <span className="inline-block px-2 py-0.5 text-[9px] font-mono font-bold uppercase rounded bg-[#002b5c]/10 text-[#002b5c]">
+                              {cmsMetadata.status || 'Published'}
+                            </span>
+                          </div>
+
+                          {/* 1. Breaking News Ticker Toggle */}
+                          <div 
+                            onClick={() => setEditingArticle({ ...editingArticle, isBreaking: !editingArticle.isBreaking })}
+                            className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center justify-between select-none ${
+                              editingArticle.isBreaking
+                                ? 'bg-rose-50 border-[#f7413e] text-[#f7413e] ring-1 ring-[#f7413e]'
+                                : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
+                            }`}
+                          >
+                            <div>
+                              <div className="text-xs font-bold leading-none flex items-center space-x-1.5">
+                                <span>Breaking News Ticker</span>
+                                <InfoTooltip text="When enabled, this article is featured in the top breaking news marquee ticker." />
+                                {editingArticle.isBreaking && (
+                                  <span className="text-[9px] font-mono uppercase bg-[#f7413e] text-white px-1.5 py-0.5 rounded font-bold">
+                                    Active
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[10px] text-gray-500 mt-1">
+                                Featured in top scrolling breaking ticker
+                              </div>
+                            </div>
+                            <div className={`w-9 h-5 rounded-full transition-colors relative p-0.5 ${editingArticle.isBreaking ? 'bg-[#f7413e]' : 'bg-gray-300'}`}>
+                              <div className={`w-4 h-4 rounded-full bg-white transition-transform ${editingArticle.isBreaking ? 'translate-x-4' : 'translate-x-0'}`} />
+                            </div>
+                          </div>
+
+                          {/* 2. Dedicated Featured Image Meta Box */}
+                          <div className="p-3.5 bg-gray-50 border border-gray-200 rounded-lg space-y-2.5">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-1.5">
+                                <LucideImage className="w-3.5 h-3.5 text-[#002b5c]" />
+                                <span className="font-mono text-[10px] uppercase font-bold text-gray-700 tracking-wider">
+                                  Featured Image
+                                </span>
+                                <InfoTooltip text="The primary cover photo for cards, hero spotlight, and article headers." />
+                              </div>
+                              {editingArticle.image && (
+                                <span className="text-[9px] font-mono font-bold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded">
+                                  Active
+                                </span>
+                              )}
+                            </div>
+
+                            {editingArticle.image ? (
+                              <div className="space-y-2">
+                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 border border-gray-300 shadow-2xs group">
+                                  <img
+                                    src={editingArticle.image.replace(/&amp;/g, '&')}
+                                    alt="Featured Preview"
+                                    className="object-cover w-full h-full"
+                                  />
+                                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setFeaturedImageTab('library');
+                                        setShowFeaturedImageModal(true);
+                                      }}
+                                      className="px-2.5 py-1 bg-white hover:bg-gray-100 text-gray-900 text-[10px] font-mono font-bold rounded shadow-sm transition-colors cursor-pointer"
+                                    >
+                                      Replace
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                      className="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white text-[10px] font-mono font-bold rounded shadow-sm transition-colors cursor-pointer"
+                                    >
+                                      Remove
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center justify-between text-[10px] font-mono pt-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setFeaturedImageTab('library');
+                                      setShowFeaturedImageModal(true);
+                                    }}
+                                    className="text-[#002b5c] hover:underline font-bold cursor-pointer"
+                                  >
+                                    Change / Media Library
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingArticle({ ...editingArticle, image: '' })}
+                                    className="text-rose-600 hover:underline cursor-pointer"
+                                  >
+                                    Remove image
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() => {
+                                  setFeaturedImageTab('upload');
+                                  setShowFeaturedImageModal(true);
+                                }}
+                                className="border-2 border-dashed border-gray-300 hover:border-[#002b5c] hover:bg-white rounded-md p-3.5 text-center cursor-pointer transition-all space-y-1 group"
+                              >
+                                <LucideImage className="w-5 h-5 text-gray-400 group-hover:text-[#002b5c] mx-auto transition-colors" />
+                                <div className="text-[11px] font-bold text-[#002b5c] group-hover:underline">
+                                  + Set featured image
+                                </div>
+                                <p className="text-[9px] text-gray-400">
+                                  Upload, Media Library, or Stock Photos
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* 3. Homepage Placement Dropdown */}
+                          <div>
+                            <div className="flex items-center mb-1">
+                              <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
+                                Homepage Placement:
+                              </label>
+                              <InfoTooltip text="Select placement zone: Top 3 Spotlight, Top 10 Ranked, Executive Interviews, Latest News Grid, Best This Month carousel, or standard Category feed." />
+                            </div>
+                            <div className="relative">
+                              <select
+                                value={editingArticle.placement || 'category'}
+                                onChange={(e) => setEditingArticle({ ...editingArticle, placement: e.target.value as any })}
+                                className="w-full p-2.5 pr-8 bg-gray-50 border border-gray-200 rounded-md text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#002b5c] focus:bg-white appearance-none cursor-pointer"
+                              >
+                                <option value="category">Category Feed (Standard)</option>
+                                <option value="top3">Top 3 Spotlight Cards (Header)</option>
+                                <option value="top10">Top 10 Ranked Articles (Hero Left)</option>
+                                <option value="interview">Executive Interviews (Hero Right)</option>
+                                <option value="latest-news">Latest News Grid Section</option>
+                                <option value="best-month">Best This Month (Carousel)</option>
+                              </select>
+                              <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-3 pointer-events-none" />
+                            </div>
+                          </div>
+
+                          {/* 3. Category & Sub-Category (Inline 2-Column) */}
+                          <div className="grid grid-cols-2 gap-2.5">
+                            <div>
+                              <div className="flex items-center mb-1">
+                                <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
+                                  Category:
+                                </label>
+                                <InfoTooltip text="Primary editorial desk / category." />
+                              </div>
+                              <div className="relative">
+                                <select
+                                  value={editingArticle.category}
+                                  onChange={(e) => {
+                                    const newCat = e.target.value;
+                                    const catObj = categories.find((c) => c.name.toLowerCase() === newCat.toLowerCase() || c.slug.toLowerCase() === newCat.toLowerCase());
+                                    const firstSub = catObj?.subcategories?.[0]?.name || '';
+                                    setEditingArticle({
+                                      ...editingArticle,
+                                      category: newCat,
+                                      subcategory: firstSub,
+                                      tag: editingArticle.tag || newCat,
+                                    });
+                                  }}
+                                  className="w-full p-2 pr-7 bg-gray-50 border border-gray-200 rounded-md text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#002b5c] focus:bg-white appearance-none cursor-pointer"
+                                >
+                                  {categories.map((c) => (
+                                    <option key={c.slug} value={c.name}>
+                                      {c.name}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2 top-2.5 pointer-events-none" />
+                              </div>
+                            </div>
+
+                            <div>
+                              <div className="flex items-center mb-1">
+                                <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
+                                  Sub-Category:
+                                </label>
+                                <InfoTooltip text="Sub-topic within the chosen category." />
+                              </div>
+                              <div className="relative">
+                                <select
+                                  value={editingArticle.subcategory || ''}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, subcategory: e.target.value })}
+                                  className="w-full p-2 pr-7 bg-gray-50 border border-gray-200 rounded-md text-xs font-semibold text-gray-900 focus:outline-none focus:border-[#002b5c] focus:bg-white appearance-none cursor-pointer"
+                                >
+                                  {(() => {
+                                    const currentCatObj = categories.find(
+                                      (c) => c.name.toLowerCase() === editingArticle.category.toLowerCase() || c.slug.toLowerCase() === editingArticle.category.toLowerCase()
+                                    );
+                                    const subcats = currentCatObj?.subcategories || [];
+                                    if (subcats.length === 0) return <option value="">General</option>;
+                                    return (
+                                      <>
+                                        <option value="">All / General</option>
+                                        {subcats.map((sub: any) => (
+                                          <option key={sub.slug} value={sub.name}>
+                                            {sub.name}
+                                          </option>
+                                        ))}
+                                      </>
+                                    );
+                                  })()}
+                                </select>
+                                <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2 top-2.5 pointer-events-none" />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 4. Card Tag */}
+                          <div>
+                            <div className="flex items-center mb-1">
+                              <label className="block text-[10px] font-mono font-bold uppercase text-gray-600 tracking-wider">
+                                Card Tag:
+                              </label>
+                              <InfoTooltip text="Custom badge displayed above the card image (e.g., Exclusive, Analysis, AI Report)." />
+                            </div>
+                            <div className="flex items-center space-x-1.5">
+                              <input
+                                type="text"
+                                value={editingArticle.tag}
+                                onChange={(e) => setEditingArticle({ ...editingArticle, tag: e.target.value })}
+                                placeholder="e.g. Exclusive, AI Report..."
+                                className="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono text-gray-900 focus:outline-none focus:border-[#002b5c] focus:bg-white"
+                              />
+                              <select
+                                onChange={(e) => {
+                                  if (e.target.value) setEditingArticle({ ...editingArticle, tag: e.target.value });
+                                }}
+                                className="p-2 bg-gray-100 border border-gray-200 rounded-md text-xs text-gray-700 font-mono focus:outline-none cursor-pointer"
+                                title="Preset tags"
+                              >
+                                <option value="">Presets</option>
+                                <option value="Exclusive">Exclusive</option>
+                                <option value="Analysis">Analysis</option>
+                                <option value="AI Report">AI Report</option>
+                                <option value="Deep Dive">Deep Dive</option>
+                                <option value="Special Report">Special Report</option>
+                                <option value="Opinion">Opinion</option>
+                                <option value="Interview">Interview</option>
+                                <option value="Investigation">Investigation</option>
+                                <option value="Markets">Markets</option>
+                                <option value="Industry">Industry</option>
+                                <option value="Market Watch">Market Watch</option>
+                                <option value="Trending">Trending</option>
+                                <option value="Spotlight">Spotlight</option>
+                                <option value="Policy">Policy</option>
+                              </select>
+                            </div>
+
+                            {/* Tag Efficiency Segmented Stick Indicator */}
+                            <div className="mt-2 p-2.5 bg-gray-50/80 border border-gray-200 rounded-md space-y-1.5">
+                              <div className="flex items-center justify-between text-[11px]">
+                                <div className="flex items-center space-x-1.5 font-semibold text-gray-700">
+                                  <Zap className="w-3 h-3 text-amber-500" />
+                                  <span>Tag Efficiency:</span>
+                                  <span style={{ color: tagEfficiencyData.avgColor }} className="font-bold font-mono">
+                                    {tagEfficiencyData.tags.length > 0 ? `${tagEfficiencyData.avgScore}% (${tagEfficiencyData.status})` : '0%'}
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">
+                                  {tagEfficiencyData.tags.length} {tagEfficiencyData.tags.length === 1 ? 'Stick' : 'Sticks'} ({tagEfficiencyData.tags.length} {tagEfficiencyData.tags.length === 1 ? 'Tag' : 'Tags'})
+                                </span>
+                              </div>
+
+                              {/* Segmented Sticks (1 stick per tag) */}
+                              <div className="flex items-center gap-1 w-full min-h-[8px] rounded bg-gray-200 p-0.5">
+                                {tagEfficiencyData.tags.length === 0 ? (
+                                  <div className="w-full text-center text-[10px] text-gray-400 font-mono py-0.5">No tags assigned</div>
+                                ) : (
+                                  tagEfficiencyData.tags.map((item: any, idx: number) => (
+                                    <div
+                                      key={idx}
+                                      className="flex-1 h-2 rounded-xs transition-all duration-300 relative group cursor-pointer"
+                                      style={{ backgroundColor: item.color }}
+                                      title={`Stick ${idx + 1}: '${item.name}' • Efficiency: ${item.score}% (${item.status}) • ${item.reason}`}
+                                    />
+                                  ))
+                                )}
+                              </div>
+
+                              {/* Individual Tag Badges with Efficiency Dots */}
+                              {tagEfficiencyData.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 pt-1">
+                                  {tagEfficiencyData.tags.map((item: any, idx: number) => (
+                                    <span
+                                      key={idx}
+                                      className={`inline-flex items-center text-[10px] font-medium px-2 py-0.5 rounded border ${item.badgeBg}`}
+                                      title={item.reason}
+                                    >
+                                      <span
+                                        className="w-1.5 h-1.5 rounded-full mr-1 shrink-0"
+                                        style={{ backgroundColor: item.color }}
+                                      />
+                                      <span>{item.name}</span>
+                                      <span className="ml-1 font-mono font-bold" style={{ color: item.color }}>
+                                        {item.score}%
+                                      </span>
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              <div className="text-[10px] text-gray-500 leading-tight">
+                                {tagEfficiencyData.advice}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* 5. Date & Time + Read Time */}
+                          <div className="space-y-3 pt-2 border-t border-gray-100">
+                            
+                            {/* Date & Time Pickers */}
+                            <div className="grid grid-cols-2 gap-2.5">
+                              <div>
+                                <div className="flex items-center mb-1">
+                                  <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
+                                    Publish Date:
+                                  </label>
+                                  <InfoTooltip text="Select the publication date." />
+                                </div>
+                                <input
+                                  type="date"
+                                  value={(() => {
+                                    if (!editingArticle.date) return new Date().toISOString().split('T')[0];
+                                    const d = new Date(editingArticle.date);
+                                    if (!isNaN(d.getTime())) {
+                                      return d.toISOString().split('T')[0];
+                                    }
+                                    return new Date().toISOString().split('T')[0];
+                                  })()}
+                                  onChange={(e) => {
+                                    const val = e.target.value;
+                                    if (val) {
+                                      const [y, m, d] = val.split('-');
+                                      const dateObj = new Date(parseInt(y), parseInt(m) - 1, parseInt(d));
+                                      const formatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                      setEditingArticle({ ...editingArticle, date: formatted });
+                                      setCmsMetadata({ ...cmsMetadata, publishDate: val });
+                                    }
+                                  }}
+                                  className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono text-gray-900 focus:outline-none focus:border-[#002b5c] cursor-pointer"
+                                />
+                              </div>
+
+                              <div>
+                                <div className="flex items-center mb-1">
+                                  <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
+                                    Publish Time:
+                                  </label>
+                                  <InfoTooltip text="Select the publication time." />
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <input
+                                    type="time"
+                                    value={cmsMetadata.publishTime || '09:00'}
+                                    onChange={(e) => setCmsMetadata({ ...cmsMetadata, publishTime: e.target.value })}
+                                    className="flex-1 p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono text-gray-900 focus:outline-none focus:border-[#002b5c] cursor-pointer"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      const now = new Date();
+                                      const timeStr = now.toTimeString().slice(0, 5);
+                                      const dateStr = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                                      setCmsMetadata({ ...cmsMetadata, publishTime: timeStr, publishDate: now.toISOString().split('T')[0] });
+                                      setEditingArticle({ ...editingArticle, date: dateStr });
+                                      showToast('Date & Time set to Current Time', 'success');
+                                    }}
+                                    className="px-2 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-mono font-bold rounded cursor-pointer transition-colors"
+                                    title="Set current time"
+                                  >
+                                    Now
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Read Time & Word Count (2-Column Side-by-Side Grid) */}
+                            <div className="grid grid-cols-2 gap-2.5">
+                              <div>
+                                <div className="flex items-center mb-1">
+                                  <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
+                                    Word Count:
+                                  </label>
+                                  <InfoTooltip text="Total word count across headline, lead excerpt, body canvas, and chapters." />
+                                </div>
+                                <div className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono font-bold text-gray-900 flex items-center justify-between">
+                                  <span>{articleWordCount} words</span>
+                                  <span className="text-[9px] font-sans font-normal text-gray-400 uppercase">Live</span>
+                                </div>
+                              </div>
+
+                              <div>
+                                <div className="flex items-center mb-1">
+                                  <label className="block text-[10px] font-mono uppercase font-bold text-gray-600 tracking-wider">
+                                    Read Time:
+                                  </label>
+                                  <InfoTooltip text="Estimated read time calculated automatically at 200 words per minute." />
+                                </div>
+                                <input
+                                  type="text"
+                                  value={editingArticle.readTime || '0 min read'}
+                                  onChange={(e) => setEditingArticle({ ...editingArticle, readTime: e.target.value })}
+                                  placeholder="0 min read"
+                                  className="w-full p-2 bg-gray-50 border border-gray-200 rounded-md text-xs font-mono font-bold text-gray-900 focus:outline-none focus:border-[#002b5c]"
+                                />
+                              </div>
+                            </div>
+
+                          </div>
+
+                        </div>
+
+                        {/* 2. REAL-TIME NEWS SEO HEALTH ANALYZER CARD */}
+                        <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 space-y-3 font-sans text-xs">
+                          {/* Header with Title & Percentage Badge */}
+                          <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+                            <div className="flex items-center space-x-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-[#002b5c]" />
+                              <h3 className="font-serif text-xs uppercase font-bold text-[#0a0a0a] tracking-wider">
+                                Live SEO Health
+                              </h3>
+                              <InfoTooltip text="Measures real-time SEO health score based on Google Search Central and editorial best practices." />
+                            </div>
+
+                            {/* Percentage Badge */}
+                            <div className={`px-2 py-0.5 rounded font-mono text-xs font-black border flex items-center space-x-1 ${liveSeoReport.color}`}>
+                              <span>{liveSeoReport.score}%</span>
+                              <span className="text-[9px] uppercase font-bold tracking-tight">({liveSeoReport.label})</span>
+                            </div>
+                          </div>
+
+                          {/* Visual Dynamic Progress Bar */}
+                          <div className="space-y-1">
+                            <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                              <div
+                                className={`h-full transition-all duration-500 rounded-full ${
+                                  liveSeoReport.score >= 85
+                                    ? 'bg-emerald-500'
+                                    : liveSeoReport.score >= 70
+                                    ? 'bg-sky-500'
+                                    : liveSeoReport.score >= 45
+                                    ? 'bg-amber-500'
+                                    : 'bg-rose-500'
+                                }`}
+                                style={{ width: `${Math.max(4, liveSeoReport.score)}%` }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* 4 Category Pill Scores */}
+                          <div className="grid grid-cols-4 gap-1 text-[10px] font-mono text-center pt-0.5">
+                            <div className="p-1.5 bg-gray-50 border border-gray-100 rounded">
+                              <span className="text-gray-400 block text-[9px]">Title</span>
+                              <span className="font-bold text-gray-800">{liveSeoReport.titleScore}/25</span>
+                            </div>
+                            <div className="p-1.5 bg-gray-50 border border-gray-100 rounded">
+                              <span className="text-gray-400 block text-[9px]">Meta</span>
+                              <span className="font-bold text-gray-800">{liveSeoReport.metaScore}/20</span>
+                            </div>
+                            <div className="p-1.5 bg-gray-50 border border-gray-100 rounded">
+                              <span className="text-gray-400 block text-[9px]">Body</span>
+                              <span className="font-bold text-gray-800">{liveSeoReport.contentScore}/30</span>
+                            </div>
+                            <div className="p-1.5 bg-gray-50 border border-gray-100 rounded">
+                              <span className="text-gray-400 block text-[9px]">Media</span>
+                              <span className="font-bold text-gray-800">{liveSeoReport.mediaScore + liveSeoReport.slugScore}/25</span>
+                            </div>
+                          </div>
+
+                          {/* Top Fixes or Success Message */}
+                          {liveSeoReport.criticalFixes.length > 0 ? (
+                            <div className="space-y-1 pt-1">
+                              <span className="text-[10px] font-mono font-bold text-amber-800 uppercase block">
+                                Priority Fixes:
+                              </span>
+                              <div className="space-y-1">
+                                {liveSeoReport.criticalFixes.map((fix, idx) => (
+                                  <div key={idx} className="text-[11px] text-gray-600 flex items-start space-x-1.5 leading-tight">
+                                    <span className="text-amber-500 shrink-0 font-bold">•</span>
+                                    <span>{fix}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="p-2 bg-emerald-50 text-emerald-800 rounded text-[11px] font-medium flex items-center space-x-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              <span>Story passes all core Google News SEO benchmarks!</span>
+                            </div>
+                          )}
+
+                          {/* Expandable 10-Point Checklist Toggle */}
+                          <div className="pt-1">
+                            <button
+                              type="button"
+                              onClick={() => setShowSeoChecklist(!showSeoChecklist)}
+                              className="w-full py-1 text-[10px] font-mono font-bold text-[#002b5c] hover:underline flex items-center justify-between cursor-pointer"
+                            >
+                              <span>{showSeoChecklist ? 'Hide Checklist ▲' : 'View Full 10-Point Audit ▼'}</span>
+                              <span className="text-gray-400 font-normal">{liveSeoReport.items.filter((i) => i.passed).length}/{liveSeoReport.items.length} Passed</span>
+                            </button>
+
+                            {showSeoChecklist && (
+                              <div className="mt-2 space-y-1.5 max-h-56 overflow-y-auto pr-1 pt-1 border-t border-gray-100 animate-in fade-in duration-150">
+                                {liveSeoReport.items.map((item) => (
+                                  <div
+                                    key={item.id}
+                                    className={`p-2 rounded border flex items-start justify-between gap-1.5 ${
+                                      item.passed ? 'bg-emerald-50/50 border-emerald-100 text-gray-800' : 'bg-rose-50/50 border-rose-100 text-gray-700'
+                                    }`}
+                                  >
+                                    <div className="space-y-0.5">
+                                      <div className="flex items-center space-x-1.5 font-bold text-[10px]">
+                                        <span className={item.passed ? 'text-emerald-600' : 'text-rose-600'}>
+                                          {item.passed ? '✓' : '✕'}
+                                        </span>
+                                        <span>{item.label}</span>
+                                      </div>
+                                      <p className="text-[10px] text-gray-500 leading-tight">{item.message}</p>
+                                    </div>
+                                    <span className="font-mono text-[9px] font-bold text-gray-600 shrink-0">
+                                      {item.score}/{item.maxScore}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* 3. VIEWPORT IMAGES - MOBILE METABOX */}
+                        <div className="bg-white border border-[#c3c4c7] shadow-xs rounded p-4 space-y-2 font-sans text-xs">
+                          <label className="block text-xs font-semibold text-[#1d2327]">
+                            Viewport Images - Mobile
+                          </label>
+                          <textarea
+                            rows={4}
+                            value={editingArticle.viewportImagesMobile || ''}
+                            onChange={(e) => setEditingArticle({ ...editingArticle, viewportImagesMobile: e.target.value })}
+                            placeholder=""
+                            className="w-full border border-[#8c8f94] rounded p-2 text-xs text-[#2c3338] font-mono focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none resize-y"
+                          />
+                          <div className="text-right pt-1">
+                            <a href="#" className="text-xs text-[#2271b1] hover:underline">
+                              Learn More
+                            </a>
+                          </div>
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    {/* REVISION HISTORY & RESTORE MODAL */}
+                    {showHistoryModal && (
+                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6 space-y-4 border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
+                          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                            <div className="flex items-center space-x-2">
+                              <HistoryIcon className="w-5 h-5 text-[#002b5c]" />
+                              <div>
+                                <h3 className="font-serif text-base font-bold text-gray-900">Story Version History & Restore</h3>
+                                <p className="text-[11px] text-gray-500 font-mono">Snapshots of major edits are recorded here. Restore any previous revision in 1-click.</p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowHistoryModal(false)}
+                              className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 cursor-pointer"
+                            >
+                              ✕
+                            </button>
+                          </div>
+
+                          <div className="max-h-[380px] overflow-y-auto space-y-2.5 pr-1">
+                            {storyHistory.length === 0 ? (
+                              <div className="py-12 text-center text-gray-400 font-mono text-xs">
+                                No previous revision snapshots recorded yet. Versions are created automatically as you write or apply AI suggestions.
+                              </div>
+                            ) : (
+                              storyHistory.map((ver, idx) => (
+                                <div
+                                  key={ver.id || `hist-${idx}`}
+                                  className="p-3.5 bg-gray-50 hover:bg-white border border-gray-200 hover:border-[#002b5c] rounded-lg transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+                                >
+                                  <div className="space-y-1 min-w-0 flex-1">
+                                    <div className="flex items-center space-x-2 text-xs font-mono">
+                                      <span className="font-bold text-[#002b5c]">{ver.timestamp}</span>
+                                      <span className="px-2 py-0.5 rounded text-[10px] bg-gray-200 text-gray-800 font-bold">{ver.label}</span>
+                                      <span className="text-gray-400 text-[10px]">{ver.wordCount} words</span>
+                                    </div>
+                                    <h4 className="font-serif text-sm font-bold text-gray-900 truncate">
+                                      {ver.title || 'Untitled Draft'}
+                                    </h4>
+                                    {ver.excerpt && (
+                                      <p className="text-[11px] text-gray-500 line-clamp-1 italic font-sans">
+                                        {ver.excerpt}
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    onClick={() => restoreVersion(ver)}
+                                    className="px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded cursor-pointer transition-colors whitespace-nowrap shadow-xs self-start sm:self-center"
+                                  >
+                                    Restore This Version
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </div>
+
+                          <div className="pt-3 border-t border-gray-100 flex items-center justify-between">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                recordHistorySnapshot('Manual Backup');
+                                showToast('Manual backup snapshot saved to history!', 'success');
+                              }}
+                              className="text-xs font-mono text-[#002b5c] hover:underline cursor-pointer font-bold"
+                            >
+                              + Save Manual Backup Snapshot
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowHistoryModal(false)}
+                              className="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-mono font-bold rounded cursor-pointer"
+                            >
+                              Close
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* COMPREHENSIVE MEDIA & FEATURED IMAGE MANAGER MODAL */}
+                    {showFeaturedImageModal && (
+                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
+                          
+                          {/* Modal Header */}
+                          <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
+                            <div className="flex items-center space-x-2">
+                              <LucideImage className="w-5 h-5 text-[#002b5c]" />
+                              <div>
+                                <h3 className="font-serif text-base font-bold text-gray-900 leading-tight">
+                                  Featured Image & Media Manager
+                                </h3>
+                                <p className="text-[10px] text-gray-500 font-mono">
+                                  Upload from device, browse media library, or select from curated stock photography
+                                </p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowFeaturedImageModal(false)}
+                              className="p-1 text-gray-400 hover:text-gray-700 rounded-full hover:bg-gray-100 cursor-pointer transition-colors"
+                            >
+                              <X className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          {/* 4 Tab Navigation Bar */}
+                          <div className="flex items-center border-b border-gray-200 px-5 bg-white text-xs font-mono font-bold">
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('upload')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'upload'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload Files</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('library')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'library'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <ImageIcon className="w-3.5 h-3.5" />
+                              <span>Media Library ({Array.from(new Set([...uploadedMediaHistory, ...articles.map(a => a.image).filter(Boolean)])).length})</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('stock')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'stock'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <Camera className="w-3.5 h-3.5" />
+                              <span>Stock Photos ({CURATED_STOCK_PHOTOS.length})</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setFeaturedImageTab('url')}
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
+                                featuredImageTab === 'url'
+                                  ? 'border-[#002b5c] text-[#002b5c] font-black'
+                                  : 'border-transparent text-gray-500 hover:text-gray-800'
+                              }`}
+                            >
+                              <LinkIcon className="w-3.5 h-3.5" />
+                              <span>Web Image URL</span>
+                            </button>
+                          </div>
+
+                          {/* Modal Body / Tab Content */}
+                          <div className="p-5 flex-1 overflow-y-auto min-h-[340px]">
+                            
+                            {/* TAB 1: UPLOAD FILES */}
+                            {featuredImageTab === 'upload' && (
+                              <div className="space-y-4">
+                                <input
+                                  type="file"
+                                  ref={mediaModalFileInputRef}
+                                  onChange={handleImageFileUpload}
+                                  accept="image/*"
+                                  className="hidden"
+                                />
+
+                                <div
+                                  onDragOver={(e) => {
+                                    e.preventDefault();
+                                    setUploadDragActive(true);
+                                  }}
+                                  onDragLeave={() => setUploadDragActive(false)}
+                                  onDrop={(e) => {
+                                    e.preventDefault();
+                                    setUploadDragActive(false);
+                                    if (e.dataTransfer.files?.[0]) {
+                                      handleImageFileUpload(e.dataTransfer.files[0]);
+                                    }
+                                  }}
+                                  onClick={() => mediaModalFileInputRef.current?.click()}
+                                  className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all space-y-3 ${
+                                    uploadDragActive
+                                      ? 'border-[#002b5c] bg-blue-50/50 scale-[0.99]'
+                                      : 'border-gray-300 hover:border-[#002b5c] hover:bg-gray-50/80 bg-gray-50/30'
+                                  }`}
+                                >
+                                  <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto text-[#002b5c]">
+                                    {isUploadingImage ? (
+                                      <Loader2 className="w-7 h-7 animate-spin" />
+                                    ) : (
+                                      <Upload className="w-7 h-7" />
+                                    )}
+                                  </div>
+
+                                  <div className="space-y-1">
+                                    <h4 className="font-serif text-sm sm:text-base font-bold text-gray-900">
+                                      {isUploadingImage ? 'Uploading & Processing Image...' : 'Drop files here or click to browse'}
+                                    </h4>
+                                    <p className="text-xs text-gray-500 font-sans">
+                                      Supports high-res JPG, PNG, WebP, SVG, and AVIF formats
+                                    </p>
+                                  </div>
+
+                                  <button
+                                    type="button"
+                                    disabled={isUploadingImage}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      mediaModalFileInputRef.current?.click();
+                                    }}
+                                    className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded-lg shadow-sm transition-colors cursor-pointer inline-flex items-center space-x-1.5 disabled:opacity-50"
+                                  >
+                                    <Upload className="w-3.5 h-3.5" />
+                                    <span>Select Files from Device</span>
+                                  </button>
+
+                                  <div className="text-[10px] text-gray-400 font-mono pt-2">
+                                    Maximum upload file size: 25 MB • Auto-optimized client-side
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* TAB 2: MEDIA LIBRARY */}
+                            {featuredImageTab === 'library' && (
+                              <div className="space-y-3">
+                                {(() => {
+                                  const libraryList = Array.from(
+                                    new Set([
+                                      ...uploadedMediaHistory,
+                                      ...articles.map((a) => a.image).filter(Boolean),
+                                    ])
+                                  );
+
+                                  if (libraryList.length === 0) {
+                                    return (
+                                      <div className="py-16 text-center space-y-2">
+                                        <ImageIcon className="w-10 h-10 text-gray-300 mx-auto" />
+                                        <p className="text-xs text-gray-500 font-mono">
+                                          Media Library is currently empty. Upload photos or select from Stock Photos.
+                                        </p>
+                                        <button
+                                          type="button"
+                                          onClick={() => setFeaturedImageTab('upload')}
+                                          className="text-xs font-bold text-[#002b5c] hover:underline font-mono"
+                                        >
+                                          Go to Upload Files →
+                                        </button>
+                                      </div>
+                                    );
+                                  }
+
+                                  return (
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[380px] overflow-y-auto pr-1">
+                                      {libraryList.map((imgUrl, idx) => {
+                                        const isSelected = editingArticle.image === imgUrl;
+                                        return (
+                                          <div
+                                            key={idx}
+                                            onClick={() => handleSelectMediaImage(imgUrl)}
+                                            className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                                              isSelected
+                                                ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
+                                                : 'border-gray-200 hover:border-gray-400 hover:shadow-sm'
+                                            }`}
+                                          >
+                                            <div className="aspect-[16/10] bg-gray-100 relative">
+                                              <img
+                                                src={imgUrl.replace(/&amp;/g, '&')}
+                                                alt=""
+                                                className="object-cover w-full h-full transition-opacity duration-200"
+                                              />
+                                              {isSelected && (
+                                                <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
+                                                  <Check className="w-3 h-3 stroke-[3]" />
+                                                </div>
+                                              )}
+                                            </div>
+                                            <div className="p-1.5 bg-white text-[10px] font-mono text-gray-600 truncate border-t border-gray-100 flex items-center justify-between">
+                                              <span className="truncate">Media #{idx + 1}</span>
+                                              {isSelected && (
+                                                <span className="text-[#002b5c] font-bold text-[9px]">Active</span>
+                                              )}
+                                            </div>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  );
+                                })()}
+                              </div>
+                            )}
+
+                            {/* TAB 3: CURATED STOCK PHOTOS */}
+                            {featuredImageTab === 'stock' && (
+                              <div className="space-y-3">
+                                {/* Search & Category Filter Chips */}
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-1">
+                                  {/* Filter chips */}
+                                  <div className="flex flex-wrap items-center gap-1">
+                                    {['All', 'AI & Tech', 'Business', 'Markets', 'Energy', 'Science'].map((cat) => (
+                                      <button
+                                        key={cat}
+                                        type="button"
+                                        onClick={() => setStockCategoryFilter(cat)}
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-colors cursor-pointer ${
+                                          stockCategoryFilter === cat
+                                            ? 'bg-[#002b5c] text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                                        }`}
+                                      >
+                                        {cat}
+                                      </button>
+                                    ))}
+                                  </div>
+
+                                  {/* Search box */}
+                                  <div className="relative w-full sm:w-48">
+                                    <input
+                                      type="text"
+                                      value={stockSearchQuery}
+                                      onChange={(e) => setStockSearchQuery(e.target.value)}
+                                      placeholder="Search stock photos..."
+                                      className="w-full pl-7 pr-2.5 py-1 text-xs font-mono border border-gray-200 rounded-md focus:outline-none focus:border-[#002b5c]"
+                                    />
+                                    <Search className="w-3.5 h-3.5 text-gray-400 absolute left-2 top-2 pointer-events-none" />
+                                  </div>
+                                </div>
+
+                                {/* Stock Photos Grid */}
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[340px] overflow-y-auto pr-1">
+                                  {CURATED_STOCK_PHOTOS.filter((photo) => {
+                                    const matchCat = stockCategoryFilter === 'All' || photo.category === stockCategoryFilter;
+                                    const matchSearch = !stockSearchQuery || photo.label.toLowerCase().includes(stockSearchQuery.toLowerCase());
+                                    return matchCat && matchSearch;
+                                  }).map((photo, i) => {
+                                    const isSelected = editingArticle.image === photo.url;
+                                    return (
+                                      <div
+                                        key={i}
+                                        onClick={() => handleSelectMediaImage(photo.url, photo.label)}
+                                        className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
+                                          isSelected
+                                            ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
+                                            : 'border-gray-200 hover:border-[#002b5c] hover:shadow-md'
+                                        }`}
+                                      >
+                                        <div className="aspect-[4/3] bg-gray-100 relative">
+                                          <img
+                                            src={photo.url}
+                                            alt={photo.label}
+                                            className="object-cover w-full h-full transition-opacity duration-200"
+                                          />
+                                          {isSelected && (
+                                            <div className="absolute top-1.5 right-1.5 bg-[#002b5c] text-white rounded-full p-1 shadow-sm">
+                                              <Check className="w-3 h-3 stroke-[3]" />
+                                            </div>
+                                          )}
+                                        </div>
+                                        <div className="p-2 bg-white">
+                                          <span className="text-[10px] font-bold text-gray-900 block truncate">
+                                            {photo.label}
+                                          </span>
+                                          <span className="text-[9px] font-mono text-gray-400 block">
+                                            {photo.category}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* TAB 4: WEB IMAGE URL */}
+                            {featuredImageTab === 'url' && (
+                              <div className="space-y-4 max-w-xl mx-auto py-2">
+                                <div className="space-y-1.5">
+                                  <label className="block text-xs font-bold text-gray-700 font-mono">
+                                    Direct Image URL:
+                                  </label>
+                                  <div className="flex items-center space-x-2">
+                                    <input
+                                      type="text"
+                                      value={customImageUrlInput}
+                                      onChange={(e) => {
+                                        setCustomImageUrlInput(e.target.value);
+                                        setTestedImageUrl(null);
+                                      }}
+                                      onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                          e.preventDefault();
+                                          if (customImageUrlInput.trim()) {
+                                            setTestedImageUrl(customImageUrlInput.trim());
+                                          }
+                                        }
+                                      }}
+                                      placeholder="https://images.unsplash.com/... or https://..."
+                                      className="flex-1 p-2 text-xs font-mono border border-gray-300 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        if (customImageUrlInput.trim()) {
+                                          setTestedImageUrl(customImageUrlInput.trim());
+                                        }
+                                      }}
+                                      className="px-3.5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-mono font-bold rounded-lg transition-colors cursor-pointer"
+                                    >
+                                      Preview
+                                    </button>
+                                  </div>
+                                </div>
+
+                                {testedImageUrl ? (
+                                  <div className="space-y-3 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-in fade-in duration-150">
+                                    <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 shadow-inner">
+                                      <img
+                                        src={testedImageUrl}
+                                        alt="Preview"
+                                        className="object-cover w-full h-full"
+                                        onError={() => {
+                                          showToast('Could not load image from the provided URL. Please check the link.', 'error');
+                                          setTestedImageUrl(null);
+                                        }}
+                                      />
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[11px] font-mono text-gray-500 truncate">
+                                        {testedImageUrl}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        onClick={() => handleSelectMediaImage(testedImageUrl, 'Custom URL Image')}
+                                        className="px-4 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] text-white text-xs font-mono font-bold rounded shadow-xs cursor-pointer transition-colors"
+                                      >
+                                        Set as Featured Image
+                                      </button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="p-8 border border-dashed border-gray-200 rounded-lg text-center text-xs text-gray-400 font-mono">
+                                    Enter an image URL above and click Preview to test and apply it.
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                          </div>
+
+                          {/* Modal Footer */}
+                          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
+                            <div className="text-[11px] font-mono text-gray-500">
+                              {editingArticle.image ? (
+                                <span className="flex items-center space-x-1 text-emerald-700 font-bold">
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Featured image is currently configured</span>
+                                </span>
+                              ) : (
+                                <span>No featured image selected</span>
+                              )}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {editingArticle.image && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setEditingArticle({ ...editingArticle, image: '' });
+                                    showToast('Featured image cleared', 'info');
+                                  }}
+                                  className="px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded font-mono font-bold cursor-pointer"
+                                >
+                                  Remove Image
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setShowFeaturedImageModal(false)}
+                                className="px-4 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-mono font-bold rounded cursor-pointer transition-colors"
+                              >
+                                Close
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    )}
+
+                    {/* ATTACH ASSETS MODAL */}
+                    {showAssetModal && (
+                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-200">
+                          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                            <div className="flex items-center space-x-2">
+                              <Paperclip className="w-5 h-5 text-[#002b5c]" />
+                              <h3 className="font-serif text-lg font-bold text-gray-900">
+                                Attach Media & Downloadable Assets
+                              </h3>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowAssetModal(false)}
+                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
+                            >
+                              &times;
+                            </button>
+                          </div>
+
+                          <div className="space-y-3 text-xs">
+                            <div>
+                              <label className="block font-bold text-gray-700 mb-1">
+                                Asset Title / Resource Name:
+                              </label>
+                              <input
+                                type="text"
+                                id="asset-title-input"
+                                placeholder="e.g. Q3 Financial Briefing Report (PDF)"
+                                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-bold text-gray-700 mb-1">
+                                Download URL / Cloud Link:
+                              </label>
+                              <input
+                                type="text"
+                                id="asset-url-input"
+                                placeholder="https://..."
+                                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-gray-100 flex justify-end space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => setShowAssetModal(false)}
+                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50 cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const titleEl = document.getElementById('asset-title-input') as HTMLInputElement;
+                                const urlEl = document.getElementById('asset-url-input') as HTMLInputElement;
+                                if (titleEl?.value) {
+                                  setEditingArticle({
+                                    ...editingArticle,
+                                    sections: [
+                                      ...editingArticle.sections,
+                                      { heading: `Downloadable Asset: ${titleEl.value}`, content: `Resource file available for download at: ${urlEl?.value || '#'}` }
+                                    ]
+                                  });
+                                  setShowAssetModal(false);
+                                  showToast('Asset attached to story successfully', 'success');
+                                }
+                              }}
+                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e] cursor-pointer"
+                            >
+                              Attach Asset
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* CUSTOM BUTTON / CTA MODAL */}
+                    {showCustomButtonModal && (
+                      <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+                        <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-200">
+                          <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                            <h3 className="font-serif text-lg font-bold text-gray-900">
+                              Add Custom Call-to-Action (CTA) Button
+                            </h3>
+                            <button
+                              type="button"
+                              onClick={() => setShowCustomButtonModal(false)}
+                              className="text-gray-400 hover:text-gray-700 text-lg font-bold cursor-pointer"
+                            >
+                              &times;
+                            </button>
+                          </div>
+
+                          <div className="space-y-3 text-xs">
+                            <div>
+                              <label className="block font-bold text-gray-700 mb-1">
+                                Button Label Text:
+                              </label>
+                              <input
+                                type="text"
+                                value={customBtnText}
+                                onChange={(e) => setCustomBtnText(e.target.value)}
+                                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-bold text-gray-700 mb-1">
+                                Target Destination URL:
+                              </label>
+                              <input
+                                type="text"
+                                value={customBtnUrl}
+                                onChange={(e) => setCustomBtnUrl(e.target.value)}
+                                className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#002b5c]"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-gray-100 flex justify-end space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => setShowCustomButtonModal(false)}
+                              className="px-4 py-2 border border-gray-200 text-xs font-bold rounded-lg hover:bg-gray-50 cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditingArticle({
+                                  ...editingArticle,
+                                  sections: [
+                                    ...editingArticle.sections,
+                                    { heading: `Action Callout: ${customBtnText}`, content: `Visit external link: ${customBtnUrl}` }
+                                  ]
+                                });
+                                setShowCustomButtonModal(false);
+                                showToast('CTA Callout inserted successfully', 'success');
+                              }}
+                              className="px-4 py-2 bg-[#002b5c] text-white text-xs font-bold rounded-lg hover:bg-[#f7413e] cursor-pointer"
+                            >
+                              Insert Button
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* FULL-SCREEN LIVE STORY PREVIEW MODAL */}
+                    {showPreviewModal && (
+                      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-8">
+                        {/* Modal Floating Navigation Bar */}
+                        <div className="sticky top-2 z-60 bg-[#1f1f1f] text-white px-5 py-3 rounded-full shadow-2xl border border-white/20 flex items-center justify-between gap-4 max-w-4xl w-full mb-6">
+                          <div className="flex items-center space-x-2">
+                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-xs font-bold font-mono uppercase tracking-wider text-emerald-400">
+                              Live Story Preview (Draft Mode)
+                            </span>
+                            <span className="text-gray-500 text-xs">•</span>
+                            <span className="text-xs text-gray-300 font-sans hidden sm:inline">
+                              {editingArticle.category} {editingArticle.subcategory ? `› ${editingArticle.subcategory}` : ''}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center space-x-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                window.open(`/news/${editingArticle.slug || 'preview'}`, '_blank');
+                              }}
+                              className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors flex items-center space-x-1 cursor-pointer"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              <span>Open Live URL</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setShowPreviewModal(false)}
+                              className="px-3 py-1 bg-[#f7413e] hover:bg-[#d9302c] text-white text-[11px] font-bold rounded-full transition-colors cursor-pointer"
+                            >
+                              ✕ Close Preview
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Rendered Live Article Document */}
+                        <div className="bg-[#faf8f2] text-[#211d1d] rounded-2xl shadow-2xl max-w-4xl w-full p-6 sm:p-12 space-y-6 border border-[#211d1d]/10 mb-12">
+                          
+                          {/* Breadcrumb, Category Badge, Read Time & Published Date */}
+                          <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="bg-[#002b5c] text-white px-2.5 py-1 rounded">
+                                {editingArticle.category || 'Business'}
+                              </span>
+                              {editingArticle.subcategory && (
+                                <>
+                                  <span className="text-gray-400">›</span>
+                                  <span className="text-[#f7413e] bg-gray-100 px-2.5 py-1 rounded">
+                                    {editingArticle.subcategory}
+                                  </span>
+                                </>
+                              )}
+                              <span className="text-gray-400">•</span>
+                              <span className="text-gray-500 font-mono text-[11px]">
+                                {editingArticle.readTime || '4 min read'}
+                              </span>
+                              <span className="text-gray-400">•</span>
+                              <span className="text-gray-500 font-mono text-[11px]">
+                                {editingArticle.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              </span>
+                            </div>
+                            <span className="text-emerald-700 font-bold text-[11px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                              {cmsMetadata.status || 'Published'}
+                            </span>
+                          </div>
+
+                          {/* Article Title */}
+                          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0a0a0a] leading-tight">
+                            {editingArticle.title || 'Untitled Story Headline'}
+                          </h1>
+
+                          {/* Excerpt Lead */}
+                          {editingArticle.excerpt && (
+                            <p className="font-serif italic text-lg sm:text-xl text-gray-700 leading-relaxed border-l-4 border-[#002b5c] pl-4">
+                              {editingArticle.excerpt}
+                            </p>
+                          )}
+
+                          {/* Cover Image */}
+                          {editingArticle.image && (
+                            <div className="space-y-2">
+                              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
+                                <img
+                                  src={editingArticle.image.replace(/&amp;/g, '&')}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                              <p className="text-center text-xs text-gray-500 font-mono italic">
+                                Story Cover Photo — ApexChief Editorial
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Article Body Content (Rich WYSIWYG Rendering) */}
+                          {editingArticle.content ? (
+                            <div
+                              dangerouslySetInnerHTML={{ __html: editingArticle.content }}
+                              className="article-rich-content text-base sm:text-lg leading-relaxed text-gray-900 font-serif space-y-4"
+                            />
+                          ) : (
+                            <div className="space-y-6 text-base sm:text-lg leading-relaxed text-gray-900 font-serif">
+                              {(editingArticle.paragraphs && editingArticle.paragraphs.length > 0
+                                ? editingArticle.paragraphs
+                                : ['(No content written yet)']).map((para, i) => (
+                                <p key={i} className="first-letter:text-3xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-none">
+                                  {para}
+                                </p>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Subsections & Chapters */}
+                          {editingArticle.sections && editingArticle.sections.length > 0 && (
+                            <div className="space-y-8 pt-6 border-t border-[#211d1d]/10">
+                              {editingArticle.sections.map((sec, i) => (
+                                <div key={i} className="space-y-3">
+                                  <h3 className="font-serif text-2xl font-bold text-[#002b5c] border-b border-[#002b5c]/20 pb-1.5">
+                                    {sec.heading}
+                                  </h3>
+                                  <p className="font-serif text-base sm:text-lg leading-relaxed text-gray-800">
+                                    {sec.content}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Tags Footer */}
+                          {cmsMetadata.tags && cmsMetadata.tags.length > 0 && (
+                            <div className="pt-6 border-t border-[#211d1d]/10 flex flex-wrap items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-gray-500 uppercase">Tags:</span>
+                              {cmsMetadata.tags.map((tg: string) => (
+                                <span key={tg} className="px-2.5 py-1 bg-white border border-gray-200 text-xs font-bold text-gray-700 rounded-full font-mono">
+                                  #{tg}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                        </div>
+                      </div>
+                    )}
+
+                  </form>
+                )}
+
+                {/* TAB 4: SECTIONS & CATEGORIES MANAGER */}
+                {activeTab === 'sections' && (
+                  <div className="space-y-6">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div>
+                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
+                          Homepage Sections & Categories Manager
+                        </h2>
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
+                          Create, edit, reorder, and redesign the layout presentation of your editorial sections
+                        </p>
+                      </div>
+
+                      <button
+                        onClick={initCreateCategory}
+                        className="inline-flex items-center space-x-1.5 px-4 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
+                      >
+                        <Plus className="w-4 h-4" />
+                        <span>+ Add New Section</span>
+                      </button>
+                    </div>
+
+                    {showCategoryForm ? (
+                      <form onSubmit={handleSaveCategory} className="bg-[#faf8f2] dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 space-y-6 rounded-xs">
+                        <h3 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10">
+                          {isEditingCategory ? 'Update Section Configuration' : 'Configure New Section'}
+                        </h3>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-12 gap-6">
+                          <div className="sm:col-span-6">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                              Section Display Name
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              value={editingCategory.name}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (isEditingCategory) {
+                                  setEditingCategory({ ...editingCategory, name: val });
+                                } else {
+                                  setEditingCategory({
+                                    ...editingCategory,
+                                    name: val,
+                                    slug: generateSlug(val),
+                                  });
+                                }
+                              }}
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-6">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                              Section Slug (URL Identifier)
+                            </label>
+                            <input
+                              type="text"
+                              required
+                              disabled={isEditingCategory}
+                              value={editingCategory.slug}
+                              onChange={(e) => setEditingCategory({ ...editingCategory, slug: generateSlug(e.target.value) })}
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/15 bg-[#eff0e0]/50 dark:bg-white/5 text-sm text-[#575757] dark:text-gray-400 focus:outline-none disabled:cursor-not-allowed font-mono rounded-xs"
+                            />
+                          </div>
+
+                          <div className="sm:col-span-8">
+                            <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                              Layout Presentation Style
+                            </label>
+                            <select
+                              value={editingCategory.layout}
+                              onChange={(e) => setEditingCategory({ ...editingCategory, layout: e.target.value })}
+                              className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-white dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none rounded-xs"
+                            >
+                              {LAYOUT_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex justify-end space-x-2">
+                          <button
+                            type="button"
+                            onClick={() => setShowCategoryForm(false)}
+                            className="px-4 py-2 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors cursor-pointer rounded-xs"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="px-5 py-2 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
+                          >
+                            {isEditingCategory ? 'Update Section' : 'Create Section'}
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="border border-[#211d1d]/15 dark:border-white/10 bg-white dark:bg-[#161c2e] divide-y divide-[#211d1d]/15 dark:divide-white/10 rounded-xs">
+                        {categories.map((cat, idx) => (
+                          <div key={cat.slug} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-[#faf8f2] dark:hover:bg-white/5 transition-colors">
+                            <div className="flex items-center space-x-4">
+                              <div className="flex flex-col space-y-1">
+                                <button
+                                  type="button"
+                                  onClick={() => moveCategoryUp(idx)}
+                                  disabled={idx === 0}
+                                  className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
+                                  title="Move Up"
+                                >
+                                  <ArrowUp className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => moveCategoryDown(idx)}
+                                  disabled={idx === categories.length - 1}
+                                  className="p-1 hover:bg-[#eff0e0] dark:hover:bg-white/10 border border-[#211d1d]/20 dark:border-white/20 disabled:opacity-30 text-[#0a0a0a] dark:text-white cursor-pointer rounded-xs"
+                                  title="Move Down"
+                                >
+                                  <ArrowDown className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white">
+                                    {cat.name}
+                                  </span>
+                                  <span className="font-mono text-[10px] uppercase bg-[#eff0e0] dark:bg-[#0e1322] border border-transparent dark:border-white/10 px-2 py-0.5 rounded text-[#575757] dark:text-gray-300">
+                                    /{cat.slug}
+                                  </span>
+                                </div>
+                                <div className="flex items-center space-x-2 text-xs text-[#575757] dark:text-gray-400 mt-1">
+                                  <span>Layout: <strong className="text-[#002b5c] dark:text-sky-400">{getLayoutLabel(cat.layout || 'world-layout')}</strong></span>
+                                  {cat.subcategories && (
+                                    <span>• {cat.subcategories.length} subcategories</span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center space-x-2 self-end sm:self-center">
+                              <button
+                                type="button"
+                                onClick={() => initEditCategory(cat)}
+                                className="px-3 py-1.5 border border-[#211d1d]/25 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 transition-colors cursor-pointer rounded-xs"
+                              >
+                                Edit Layout
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCategory(cat.slug)}
+                                className="p-1.5 border border-[#211d1d]/25 dark:border-white/20 text-[#f7413e] dark:text-rose-400 hover:bg-[#f7413e]/10 transition-colors cursor-pointer rounded-xs"
+                                title="Delete Section"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB 5: SITE SETTINGS & SECURITY */}
+                {activeTab === 'settings' && (
+                  <div className="space-y-8">
+                    {/* Part 1: Global Identity Settings */}
+                    <form onSubmit={handleSaveConfig} className="space-y-6">
+                      <div>
+                        <h2 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
+                          Website Global Settings
+                        </h2>
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
+                          Update publication title, brand logo, tagline, edition metadata and header configuration
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 rounded-xs">
+                        <h4 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 sm:col-span-2">
+                          Website Identity & Branding
+                        </h4>
+                        
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Website Brand Title (e.g. ApexChief)
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={siteConfig.name}
+                            onChange={(e) => setSiteConfig({ ...siteConfig, name: e.target.value })}
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Short Name / Abbreviation
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={siteConfig.shortName}
+                            onChange={(e) => setSiteConfig({ ...siteConfig, shortName: e.target.value })}
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+
+                        {/* BRAND LOGO (DUAL LIGHT & DARK MODE) UPLOAD & PREVIEW SECTION */}
+                        <div className="sm:col-span-2 space-y-4">
+                          <div className="flex items-center space-x-1.5 mb-1">
+                            <LucideImage className="w-4 h-4 text-[#002b5c] dark:text-sky-400" />
+                            <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                              Website Brand Logos (Light &amp; Dark Mode)
+                            </span>
+                            <InfoTooltip text="Upload transparent PNG, SVG, or WebP logos. Light Mode Logo displays on white backgrounds. Dark Mode Logo displays on black backgrounds. Both logos maintain identical sizing." />
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* CARD 1: LIGHT MODE LOGO */}
+                            <div className="p-4 bg-white dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-3 shadow-2xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-amber-500"></span>
+                                  <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                                    Light Mode Logo
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">Dark text / For white header</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                ref={logoFileInputRef}
+                                onChange={(e) => handleLogoUpload(e, 'light')}
+                                accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                                className="hidden"
+                              />
+
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  type="button"
+                                  disabled={isUploadingLogo}
+                                  onClick={() => logoFileInputRef.current?.click()}
+                                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
+                                >
+                                  {isUploadingLogo ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <span>Uploading...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload className="w-3.5 h-3.5" />
+                                      <span>{siteConfig.logoLight || siteConfig.logo ? 'Change Light Logo' : 'Upload Light Logo'}</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                {(siteConfig.logoLight || siteConfig.logo) && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSiteConfig({ ...siteConfig, logoLight: '', logo: '' })}
+                                    className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
+                                    title="Reset Light Logo"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                    <span>Reset</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Light Preview Container */}
+                              <div className="p-3 bg-[#ffffff] border border-dashed border-gray-300 rounded flex items-center justify-center min-h-[70px]">
+                                <img
+                                  src={siteConfig.logoLight || siteConfig.logo || '/images/apexchief-logo-light.png'}
+                                  alt="Light Mode Logo Preview"
+                                  className="max-h-12 max-w-[200px] object-contain"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
+                                  Direct Light Logo URL:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={siteConfig.logoLight || siteConfig.logo || ''}
+                                  onChange={(e) => setSiteConfig({ ...siteConfig, logoLight: e.target.value, logo: e.target.value })}
+                                  placeholder="https://ik.imagekit.io/.../apexchief-logo-light.png"
+                                  className="block w-full px-2.5 py-1 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#161c2e] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                                />
+                              </div>
+                            </div>
+
+                            {/* CARD 2: DARK MODE LOGO */}
+                            <div className="p-4 bg-white dark:bg-[#0e1322] border border-[#211d1d]/15 dark:border-white/10 rounded-xs space-y-3 shadow-2xs">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-1.5">
+                                  <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
+                                  <span className="font-mono text-xs uppercase font-bold text-[#0a0a0a] dark:text-white">
+                                    Dark Mode Logo
+                                  </span>
+                                </div>
+                                <span className="text-[10px] font-mono text-gray-500">White text / For dark header</span>
+                              </div>
+
+                              <input
+                                type="file"
+                                ref={logoDarkFileInputRef}
+                                onChange={(e) => handleLogoUpload(e, 'dark')}
+                                accept="image/png,image/svg+xml,image/webp,image/jpeg"
+                                className="hidden"
+                              />
+
+                              <div className="flex items-center space-x-2">
+                                <button
+                                  type="button"
+                                  disabled={isUploadingLogoDark}
+                                  onClick={() => logoDarkFileInputRef.current?.click()}
+                                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs shadow-xs"
+                                >
+                                  {isUploadingLogoDark ? (
+                                    <>
+                                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                      <span>Uploading...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Upload className="w-3.5 h-3.5" />
+                                      <span>{siteConfig.logoDark ? 'Change Dark Logo' : 'Upload Dark Logo'}</span>
+                                    </>
+                                  )}
+                                </button>
+
+                                {siteConfig.logoDark && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setSiteConfig({ ...siteConfig, logoDark: '' })}
+                                    className="inline-flex items-center space-x-1 px-2.5 py-1.5 border border-rose-300 dark:border-rose-800 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer rounded-xs"
+                                    title="Reset Dark Logo"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                    <span>Reset</span>
+                                  </button>
+                                )}
+                              </div>
+
+                              {/* Dark Preview Container (Pure Black Background) */}
+                              <div className="p-3 bg-[#121212] border border-dashed border-gray-700 rounded flex items-center justify-center min-h-[70px]">
+                                <img
+                                  src={siteConfig.logoDark || '/images/apexchief-logo-dark.png'}
+                                  alt="Dark Mode Logo Preview"
+                                  className="max-h-12 max-w-[200px] object-contain"
+                                />
+                              </div>
+
+                              <div>
+                                <label className="block text-[10px] font-mono text-[#575757] dark:text-gray-400 uppercase tracking-wider mb-1">
+                                  Direct Dark Logo URL:
+                                </label>
+                                <input
+                                  type="text"
+                                  value={siteConfig.logoDark || ''}
+                                  onChange={(e) => setSiteConfig({ ...siteConfig, logoDark: e.target.value })}
+                                  placeholder="https://ik.imagekit.io/.../apexchief-logo-dark.png"
+                                  className="block w-full px-2.5 py-1 border border-[#211d1d]/20 dark:border-white/15 bg-white dark:bg-[#161c2e] text-xs font-mono text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Tagline Headline Text
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={siteConfig.tagline}
+                            onChange={(e) => setSiteConfig({ ...siteConfig, tagline: e.target.value })}
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Current Date Masthead Text
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={siteConfig.currentDate}
+                            onChange={(e) => setSiteConfig({ ...siteConfig, currentDate: e.target.value })}
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Publication Edition Metadata
+                          </label>
+                          <input
+                            type="text"
+                            required
+                            value={siteConfig.edition}
+                            onChange={(e) => setSiteConfig({ ...siteConfig, edition: e.target.value })}
+                            className="block w-full px-3 py-2 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="pt-2 flex justify-end">
+                        <button
+                          type="submit"
+                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer rounded-xs"
+                        >
+                          Save Global Settings
+                        </button>
+                      </div>
+                    </form>
+
+                    {/* Part 2: Database-Connected Admin Password & Security */}
+                    <form onSubmit={handlePasswordChange} className="space-y-6 pt-6 border-t-2 border-[#211d1d]/20 dark:border-white/10">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <ShieldCheck className="w-5 h-5 text-[#002b5c] dark:text-sky-400" />
+                          <h3 className="font-serif text-2xl font-bold uppercase text-[#0a0a0a] dark:text-white">
+                            Admin Password & Security Settings
+                          </h3>
+                        </div>
+                        <p className="text-xs text-[#575757] dark:text-gray-400 font-semibold mt-1">
+                          Update admin login password. Securely saved and synchronized with Supabase database.
+                        </p>
+                      </div>
+
+                      {passwordChangeError && (
+                        <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-800 text-rose-800 dark:text-rose-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
+                          <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+                          <div className="flex-1 font-medium">{passwordChangeError}</div>
+                        </div>
+                      )}
+
+                      {passwordChangeSuccess && (
+                        <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 rounded-xs text-xs flex items-start space-x-2.5 animate-in fade-in duration-200">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                          <div className="flex-1 font-medium">{passwordChangeSuccess}</div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-white dark:bg-[#161c2e] border border-[#211d1d]/15 dark:border-white/10 p-6 rounded-xs">
+                        <div className="sm:col-span-2">
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Current Admin Password
+                          </label>
+                          <div className="relative max-w-md">
+                            <input
+                              type={showCurrentPass ? 'text' : 'password'}
+                              required
+                              name="currentAdminPassword"
+                              id="currentAdminPassword"
+                              autoComplete="current-password"
+                              value={currentPasswordInput}
+                              onChange={(e) => setCurrentPasswordInput(e.target.value)}
+                              placeholder="••••••••••••"
+                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCurrentPass(!showCurrentPass)}
+                              className="absolute right-3 top-2.5 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
+                              title={showCurrentPass ? 'Hide' : 'Show'}
+                            >
+                              {showCurrentPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            New Admin Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showNewPass ? 'text' : 'password'}
+                              required
+                              name="newAdminPassword"
+                              id="newAdminPassword"
+                              autoComplete="new-password"
+                              value={newPasswordInput}
+                              onChange={(e) => setNewPasswordInput(e.target.value)}
+                              placeholder="••••••••••••"
+                              className="block w-full px-3 py-2.5 pr-10 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowNewPass(!showNewPass)}
+                              className="absolute right-3 top-2.5 text-[#575757] dark:text-gray-400 hover:text-[#002b5c] dark:hover:text-white transition-colors cursor-pointer"
+                              title={showNewPass ? 'Hide' : 'Show'}
+                            >
+                              {showNewPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
+                            Confirm New Password
+                          </label>
+                          <input
+                            type="password"
+                            required
+                            name="confirmAdminPassword"
+                            id="confirmAdminPassword"
+                            autoComplete="new-password"
+                            value={confirmPasswordInput}
+                            onChange={(e) => setConfirmPasswordInput(e.target.value)}
+                            placeholder="••••••••••••"
+                            className="block w-full px-3 py-2.5 border border-[#211d1d]/25 dark:border-white/20 bg-[#faf8f2] dark:bg-[#0e1322] text-sm text-[#211d1d] dark:text-white focus:outline-none focus:border-[#002b5c] dark:focus:border-sky-400 rounded-xs"
+                          />
+                        </div>
+
+                        {/* Password Strength Checklist */}
+                        <div className="sm:col-span-2 pt-2 border-t border-[#211d1d]/10 dark:border-white/10">
+                          <span className="text-[11px] font-mono uppercase font-bold text-[#575757] dark:text-gray-400 block mb-2">
+                            Security Checklist:
+                          </span>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs font-mono">
+                            <div className={`flex items-center space-x-1.5 ${newPasswordInput.length >= 6 ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${newPasswordInput.length >= 6 ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                              <span>Min. 6 Characters</span>
+                            </div>
+                            <div className={`flex items-center space-x-1.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${/\d/.test(newPasswordInput) ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                              <span>Number (0-9)</span>
+                            </div>
+                            <div className={`flex items-center space-x-1.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-400 dark:text-gray-500'}`}>
+                              <Check className={`w-3.5 h-3.5 ${/[@$!%*?&#]/.test(newPasswordInput) ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600'}`} />
+                              <span>Special Symbol (@, $, #, !)</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-2 flex justify-end">
+                        <button
+                          type="submit"
+                          disabled={isChangingPassword}
+                          className="px-6 py-2.5 bg-[#002b5c] hover:bg-[#f7413e] dark:bg-sky-600 dark:hover:bg-sky-500 disabled:opacity-50 text-[#faf8f2] text-xs font-bold uppercase tracking-wider transition-colors shadow-sm cursor-pointer flex items-center space-x-2 rounded-xs"
+                        >
+                          {isChangingPassword ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Updating Database...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Key className="w-3.5 h-3.5" />
+                              <span>Save Admin Password to Database</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
