@@ -175,11 +175,12 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         },
         publisher: {
           '@type': 'Organization',
+          '@id': `${baseUrl}/#organization`,
           name: siteConfig.name,
-          url: baseUrl,
+          url: `${baseUrl}/`,
           logo: {
             '@type': 'ImageObject',
-            url: `${baseUrl}/favicon.png`,
+            url: `${baseUrl}/images/apexchief-logo-light.png`,
           },
         },
       },

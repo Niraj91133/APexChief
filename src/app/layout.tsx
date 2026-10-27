@@ -124,44 +124,38 @@ export const metadata: Metadata = {
   },
 };
 
-const jsonLd = {
+const organizationSchema = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'WebSite',
-      '@id': 'https://www.apexchief.com/#website',
-      url: 'https://www.apexchief.com',
-      name: 'ApexChief',
-      headline: 'ApexChief | Business, Technology & Global News',
-      description:
-        'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
-      publisher: {
-        '@id': 'https://www.apexchief.com/#organization',
-      },
-      potentialAction: [
-        {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: 'https://www.apexchief.com/news?search={search_term_string}',
-          },
-          'query-input': 'required name=search_term_string',
-        },
-      ],
-    },
-    {
-      '@type': 'NewsMediaOrganization',
-      '@id': 'https://www.apexchief.com/#organization',
-      name: 'ApexChief',
-      url: 'https://www.apexchief.com',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://www.apexchief.com/favicon.png',
-      },
-      description:
-        'ApexChief is a digital media platform covering business, leadership, technology, startups, innovation, and emerging industry trends. We share insightful stories, expert perspectives, executive interviews, and inspiring success stories from leaders and entrepreneurs shaping the future.',
-    },
+  '@type': 'Organization',
+  '@id': 'https://www.apexchief.com/#organization',
+  name: 'ApexChief',
+  url: 'https://www.apexchief.com/',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://www.apexchief.com/images/apexchief-logo-light.png',
+  },
+  description:
+    'ApexChief delivers executive interviews, startup innovations, emerging tech breakthroughs, and market intelligence for modern leaders and entrepreneurs.',
+  sameAs: [
+    'https://x.com/apexchief01',
+    'https://linkedin.com/company/apexchief',
+    'https://facebook.com/ApexChief',
+    'https://www.instagram.com/apex.chief',
   ],
+};
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': 'https://www.apexchief.com/#website',
+  url: 'https://www.apexchief.com/',
+  name: 'ApexChief',
+  description:
+    'Global Business, Technology & Leadership News. ApexChief delivers executive interviews, startup innovations, emerging tech breakthroughs, and market intelligence for modern leaders and entrepreneurs.',
+  publisher: {
+    '@id': 'https://www.apexchief.com/#organization',
+  },
+  inLanguage: 'en',
 };
 
 export default function RootLayout({
@@ -174,7 +168,11 @@ export default function RootLayout({
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
       <body
