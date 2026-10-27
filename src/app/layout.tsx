@@ -167,6 +167,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${baskerville.variable} ${inter.variable} ${oswald.variable} ${bebas.variable}`}>
       <head>
         <meta name="google-site-verification" content="t9na2oTjNEA-Mnwuiyo_dsyflp-do8ND3iAhF4KAMVY" />
+        <meta name="google-site-verification" content="google-site-verification=t9na2oTjNEA-Mnwuiyo_dsyflp-do8ND3iAhF4KAMVY" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
