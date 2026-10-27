@@ -36,7 +36,12 @@ const nextConfig = {
         destination: '/category',
         permanent: true,
       },
-      // 301 Redirections for deleted blog posts
+      // 301 Redirections for deleted / updated blog posts
+      {
+        source: '/news/how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams',
+        destination: '/news/how-to-start-a-business-in-dubai-mainland-vs-free-zone',
+        permanent: true,
+      },
       {
         source: '/news/ai-business-trends-2026-the-growth-playbook',
         destination: '/',

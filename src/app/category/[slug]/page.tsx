@@ -3,6 +3,8 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CATEGORIES, getCategorySlug } from '@/data/categories';
 import { getCategorySeo } from '@/data/categorySeo';
+import { getArticles } from '@/data/db';
+import { getArticlesFromDB } from '@/lib/supabaseService';
 import NewsClient from '@/app/news/NewsClient';
 
 interface CategoryPageProps {
@@ -87,6 +89,14 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
     ? `${baseUrl}/category/${catSlug}?sub=${encodeURIComponent(sub)}`
     : `${baseUrl}/category/${catSlug}`;
 
+  const dbArticles = await getArticlesFromDB();
+  const allArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
+  const normCat = catSlug.replace(/[-\s]/g, '').toLowerCase();
+  const categoryArticles = allArticles.filter((a) => {
+    const artCat = (a.category || '').replace(/[-\s]/g, '').toLowerCase();
+    return artCat === normCat;
+  });
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -102,6 +112,18 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           name: 'ApexChief',
           url: baseUrl,
         },
+      },
+      {
+        '@type': 'ItemList',
+        '@id': `${pageUrl}#itemlist`,
+        name: `${catName} Articles`,
+        numberOfItems: categoryArticles.length,
+        itemListElement: categoryArticles.slice(0, 10).map((art, idx) => ({
+          '@type': 'ListItem',
+          position: idx + 1,
+          name: art.title,
+          url: `${baseUrl}/news/${art.slug}`,
+        })),
       },
       {
         '@type': 'BreadcrumbList',
