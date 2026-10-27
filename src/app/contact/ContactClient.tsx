@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   MessageSquare,
 } from 'lucide-react';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export default function ContactClient() {
   const [formData, setFormData] = useState({
@@ -48,16 +49,17 @@ export default function ContactClient() {
   return (
     <div className="w-full">
       {/* Top Breadcrumb */}
-      <div className="py-4 border-b border-[#211d1d]/15 text-xs font-mono uppercase text-[#575757] flex items-center justify-between mb-8">
-        <Link
-          href="/"
-          className="hover:text-[#211d1d] flex items-center space-x-1.5 transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Front Page</span>
-        </Link>
-        <span className="text-[#f7413e] font-semibold">Editorial Desk</span>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Contact Editorial Desk', href: '/contact' },
+        ]}
+        showBackLink
+        backHref="/"
+        backLabel="Front Page"
+        rightBadge="Editorial Desk"
+        includeJsonLd={false}
+      />
 
       {/* Hero Masthead */}
       <div className="max-w-3xl mb-12">

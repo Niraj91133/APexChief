@@ -228,24 +228,24 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           <div className="flex items-center space-x-2 flex-wrap">
             <Link
               href="/"
-              className="hover:text-[#211d1d] dark:hover:text-[#ffffff] transition-colors"
+              className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
             >
               Home
             </Link>
             <span>/</span>
             <Link
-              href="/news"
-              className="hover:text-[#211d1d] dark:hover:text-[#ffffff] transition-colors"
-            >
-              Stories
-            </Link>
-            <span>/</span>
-            <Link
               href={`/category/${getCategorySlug(article.category)}`}
-              className="text-[#f7413e] font-bold hover:underline"
+              className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
             >
               {article.category}
             </Link>
+            <span>/</span>
+            <span
+              className="font-bold text-[#0a0a0a] dark:text-white truncate max-w-[200px] sm:max-w-[340px]"
+              title={article.title}
+            >
+              {article.title}
+            </span>
           </div>
           <div className="flex items-center space-x-2">
             <span className="hidden sm:inline">Published:</span>

@@ -2,9 +2,10 @@ import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Shield, Lock, Eye, FileText, Globe, Mail } from 'lucide-react';
 import { Metadata } from 'next';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | ApexChief',
+  title: 'Privacy Policy',
   description: 'Learn how ApexChief collects, protects, and handles your personal information with uncompromising journalistic standards and privacy security.',
   alternates: {
     canonical: 'https://www.apexchief.com/privacy',
@@ -29,16 +30,16 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="w-full max-w-4xl mx-auto py-4">
       {/* Top Breadcrumb */}
-      <div className="py-4 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-[#a3a3a3] flex items-center justify-between mb-8">
-        <Link
-          href="/"
-          className="hover:text-[#211d1d] dark:hover:text-white flex items-center space-x-1.5 transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Front Page</span>
-        </Link>
-        <span className="text-[#f7413e] font-semibold">Editorial Governance</span>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Privacy Policy', href: '/privacy' },
+        ]}
+        showBackLink
+        backHref="/"
+        backLabel="Front Page"
+        rightBadge="Editorial Governance"
+      />
 
       {/* Header */}
       <div className="mb-10 pb-8 border-b border-[#211d1d]/15 dark:border-white/15">

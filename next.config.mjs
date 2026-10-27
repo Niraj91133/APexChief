@@ -118,6 +118,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/news/interview-marcus-graham-on-the-100-year-horizon-of-deep-tech-capital',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/news/navigating-cross-border-compensation-in-global-remote-engineering',
         destination: '/',
         permanent: true,
@@ -129,6 +134,71 @@ const nextConfig = {
       },
       {
         source: '/news/interview-maya-lin-on-the-renaissance-of-sustainable-urban-design',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/why-indias-job-crisis-is-defying-its-economic-boom',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/top-10-autonomous-logistics-networks-operating-in-high-velocity-hubs',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/fallacy-of-pure-efficiency-strategic-resilience',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/boardroom-blindspot-geopolitical-cloud-opinion',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/computer-vision-autonomous-checkouts-urban-retail',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/biophilic-hideaways-regenerative-wellness-resorts',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/top-10-cross-border-b2b-liquidity-networks-disseminating-trade-capital',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/multimodal-ai-agents-corporate-hierarchy-opinion',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/dtc-pivot-heritage-luxury-brands-retail',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/top-10-frontier-innovations-2026',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/next-gen-quantum-processors-enter-commercial-production',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/the-anatomy-of-a-winning-seed-pitch-deck-in-the-modern-vc-climate',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/news/the-death-of-the-influencer-and-the-triumph-of-micro-community-evangelism',
         destination: '/',
         permanent: true,
       },

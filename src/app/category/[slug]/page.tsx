@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CATEGORIES, getCategorySlug } from '@/data/categories';
+import { getCategorySeo } from '@/data/categorySeo';
 import NewsClient from '@/app/news/NewsClient';
 
 interface CategoryPageProps {
@@ -33,38 +34,34 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
 
   if (!catObj && rawSlug) {
     return {
-      title: 'Category Not Found | ApexChief',
+      title: 'Category Not Found',
       description: 'The requested category could not be found.',
     };
   }
 
-  const catName = catObj?.name || (rawSlug ? rawSlug.charAt(0).toUpperCase() + rawSlug.slice(1) : 'News');
+  const seo = getCategorySeo(catSlug);
   const canonicalUrl = sub
     ? `${baseUrl}/category/${catSlug}?sub=${encodeURIComponent(sub)}`
     : `${baseUrl}/category/${catSlug}`;
 
-  const title = `${catName} Archive & Executive Stories | ApexChief`;
-  const description =
-    catObj?.description ||
-    `Explore latest ${catName} reporting, industry investigations, CEO perspectives, and executive intelligence on ApexChief.`;
-
   return {
-    title,
-    description,
+    title: seo.metaTitle,
+    description: seo.metaDescription,
+    keywords: seo.keywords,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title,
-      description,
+      title: `${seo.metaTitle} | ApexChief`,
+      description: seo.metaDescription,
       url: canonicalUrl,
       siteName: 'ApexChief',
       type: 'website',
     },
     twitter: {
       card: 'summary',
-      title,
-      description,
+      title: `${seo.metaTitle} | ApexChief`,
+      description: seo.metaDescription,
     },
   };
 }
@@ -85,13 +82,10 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   }
 
   const catName = catObj?.name || (rawSlug ? rawSlug.charAt(0).toUpperCase() + rawSlug.slice(1) : 'News');
+  const seo = getCategorySeo(catSlug);
   const pageUrl = sub
     ? `${baseUrl}/category/${catSlug}?sub=${encodeURIComponent(sub)}`
     : `${baseUrl}/category/${catSlug}`;
-  const pageTitle = `${catName} Archive & Executive Stories | ApexChief`;
-  const pageDescription =
-    catObj?.description ||
-    `Explore latest ${catName} reporting, industry investigations, CEO perspectives, and executive intelligence on ApexChief.`;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -100,8 +94,8 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         '@type': 'CollectionPage',
         '@id': `${pageUrl}#collection`,
         url: pageUrl,
-        name: pageTitle,
-        description: pageDescription,
+        name: seo.h1,
+        description: seo.metaDescription,
         isPartOf: {
           '@type': 'WebSite',
           '@id': `${baseUrl}/#website`,
@@ -122,7 +116,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           {
             '@type': 'ListItem',
             position: 2,
-            name: 'Category Archive',
+            name: 'Categories',
             item: `${baseUrl}/category`,
           },
           {
@@ -142,20 +136,35 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <Suspense
-        fallback={
-          <div className="py-16 text-center">
-            <div className="font-serif text-lg font-bold text-[#0a0a0a] dark:text-white">
-              Loading ApexChief {catName} Category...
-            </div>
-            <p className="text-xs font-mono text-gray-500 mt-2">
-              Fetching editorial intelligence &amp; dispatches...
-            </p>
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-4">
+        {/* Category SEO Masthead with H1 Header & Content */}
+        <header className="mb-6 pb-6 border-b border-[#211d1d]/15 dark:border-white/15">
+          <div className="inline-flex items-center space-x-2 bg-[#0a0a0a] dark:bg-white text-[#fefdf3] dark:text-black text-[10px] font-oswald uppercase px-2.5 py-1 tracking-widest font-bold mb-3">
+            <span>ApexChief {catName} Dossier</span>
           </div>
-        }
-      >
-        <NewsClient defaultCategory={catSlug} />
-      </Suspense>
+          <h1 className="font-serif text-3xl sm:text-5xl font-bold text-[#0a0a0a] dark:text-white tracking-tight mb-3">
+            {seo.h1}
+          </h1>
+          <p className="font-sans text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed max-w-4xl">
+            {seo.introContent}
+          </p>
+        </header>
+
+        <Suspense
+          fallback={
+            <div className="py-16 text-center">
+              <div className="font-serif text-lg font-bold text-[#0a0a0a] dark:text-white">
+                Loading ApexChief {catName} Category...
+              </div>
+              <p className="text-xs font-mono text-gray-500 mt-2">
+                Fetching editorial intelligence &amp; dispatches...
+              </p>
+            </div>
+          }
+        >
+          <NewsClient defaultCategory={catSlug} />
+        </Suspense>
+      </div>
     </>
   );
 }

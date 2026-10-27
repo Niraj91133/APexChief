@@ -16,9 +16,10 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import WriteForUsForm from './WriteForUsForm';
+import Breadcrumbs from '@/components/Breadcrumbs';
 
 export const metadata: Metadata = {
-  title: 'Write For Us | Editorial Submission Guidelines | ApexChief',
+  title: 'Write For Us | Editorial Submission Guidelines',
   description:
     'Contribute thought leadership, executive perspectives, founder retrospectives, and industry analyses to ApexChief. Review our contributor guidelines and submit your editorial pitch.',
   alternates: {
@@ -87,16 +88,17 @@ export default function WriteForUsPage() {
       />
 
       {/* Top Breadcrumb */}
-      <div className="py-4 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-gray-400 flex items-center justify-between mb-8">
-        <Link
-          href="/"
-          className="hover:text-black dark:hover:text-white flex items-center space-x-1.5 transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Front Page</span>
-        </Link>
-        <span className="text-[#f7413e] font-semibold">Contributor Network</span>
-      </div>
+      <Breadcrumbs
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Write For Us', href: '/write-for-us' },
+        ]}
+        showBackLink
+        backHref="/"
+        backLabel="Front Page"
+        rightBadge="Contributor Network"
+        includeJsonLd={false}
+      />
 
       {/* Hero Header */}
       <div className="mb-12 text-left">

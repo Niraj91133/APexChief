@@ -4,14 +4,14 @@
 
 ## Core Editorial Pillars
 
-- [Technology & AI](https://www.apexchief.com/news?category=technology): Enterprise artificial intelligence, quantum computing, autonomous agents, and cybersecurity grids.
-- [Leadership & Governance](https://www.apexchief.com/news?category=leadership): C-suite decision frameworks, corporate strategy, board governance, and executive interviews.
-- [Global Business & Markets](https://www.apexchief.com/news?category=business): Macroeconomic trends, private markets, capital deployment, and corporate finance.
-- [Startups & Venture Capital](https://www.apexchief.com/news?category=startups): Bootstrapped scaleups, unicorn growth, seed-stage investing, and founder case studies.
-- [Executive Interviews](https://www.apexchief.com/news?category=interview): Exclusive long-form dialogues with founders, CEOs, and industry visionaries.
-- [Top Ranked Articles](https://www.apexchief.com/news?category=top-list): Curated power indexes, top 10 frameworks, and market leaderboards.
-- [Opinion & Columns](https://www.apexchief.com/news?category=opinion): Critical thought leadership and expert market critiques.
-- [Commercial Real Estate](https://www.apexchief.com/news?category=real-estate): PropTech innovations, mass-timber architecture, and sustainable commercial developments.
+- [Technology & AI](https://www.apexchief.com/category/technology): Enterprise artificial intelligence, quantum computing, autonomous agents, and cybersecurity grids.
+- [Leadership & Governance](https://www.apexchief.com/category/leadership): C-suite decision frameworks, corporate strategy, board governance, and executive interviews.
+- [Global Business & Markets](https://www.apexchief.com/category/business): Macroeconomic trends, private markets, capital deployment, and corporate finance.
+- [Startups & Venture Capital](https://www.apexchief.com/category/startups): Bootstrapped scaleups, unicorn growth, seed-stage investing, and founder case studies.
+- [Executive Interviews](https://www.apexchief.com/category/interview): Exclusive long-form dialogues with founders, CEOs, and industry visionaries.
+- [Top Ranked Articles](https://www.apexchief.com/category/top-list): Curated power indexes, top 10 frameworks, and market leaderboards.
+- [Opinion & Columns](https://www.apexchief.com/category/opinion): Critical thought leadership and expert market critiques.
+- [Commercial Real Estate](https://www.apexchief.com/category/real-estate): PropTech innovations, mass-timber architecture, and sustainable commercial developments.
 
 ## Key Pages & Information
 

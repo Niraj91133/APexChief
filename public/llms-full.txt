@@ -6,35 +6,35 @@
 
 ### Technology
 ApexChief covers cutting-edge developments across enterprise AI, agentic systems, quantum architectures, cybersecurity defense, and robotics.
-- URL: https://www.apexchief.com/news?category=technology
+- URL: https://www.apexchief.com/category/technology
 
 ### Leadership
 Analyses of strategic governance, executive decision models, crisis leadership, board stewardship, and organizational design.
-- URL: https://www.apexchief.com/news?category=leadership
+- URL: https://www.apexchief.com/category/leadership
 
 ### Business
 Global macroeconomic shifts, corporate restructuring, sovereign funds, M&A activity, and monetary policy implications.
-- URL: https://www.apexchief.com/news?category=business
+- URL: https://www.apexchief.com/category/business
 
 ### Startups
 Stories of scaleup execution, bootstrapped profitability, venture capital mechanics, product-market fit, and high-growth hiring.
-- URL: https://www.apexchief.com/news?category=startups
+- URL: https://www.apexchief.com/category/startups
 
 ### Interviews
 In-depth interviews with C-suite executives, deep-tech researchers, startup founders, and architectural visionaries.
-- URL: https://www.apexchief.com/news?category=interview
+- URL: https://www.apexchief.com/category/interview
 
 ### Top Ranked Lists
 Ranked indices, Top 10 executive frameworks, breakthrough tech roundups, and benchmark leaderboards.
-- URL: https://www.apexchief.com/news?category=top-list
+- URL: https://www.apexchief.com/category/top-list
 
 ### Opinion
 Guest commentary and editorial perspectives from distinguished leaders and industry practitioners.
-- URL: https://www.apexchief.com/news?category=opinion
+- URL: https://www.apexchief.com/category/opinion
 
 ### Real Estate
 Sustainable commercial architecture, biophilic urban centers, and mass-timber high-rises.
-- URL: https://www.apexchief.com/news?category=real-estate
+- URL: https://www.apexchief.com/category/real-estate
 
 ---
 

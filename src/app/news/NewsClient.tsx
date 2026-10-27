@@ -257,14 +257,14 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
   return (
     <div className="w-full pt-1">
       {/* Sleek Minimal 1-Line Breadcrumb / Label Header */}
-      <div className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5 px-0.5 overflow-hidden">
+      <nav aria-label="Breadcrumb" className="flex items-center justify-between text-[11px] font-mono uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2.5 px-0.5 overflow-hidden">
         <div className="flex items-center space-x-1.5 flex-wrap overflow-hidden no-scrollbar">
           <Link href="/" className="hover:text-black dark:hover:text-white transition-colors">
             Home
           </Link>
           <span>/</span>
-          <Link href="/news" className="text-[#f7413e] font-semibold hover:underline">
-            Editorial Archive
+          <Link href="/category" className="text-[#f7413e] font-semibold hover:underline">
+            Categories
           </Link>
           {activeCategory !== 'all' && currentCategoryObj && (
             <>
@@ -282,7 +282,7 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
         <div className="shrink-0 text-gray-400 dark:text-gray-500 font-mono text-[11px] hidden sm:block">
           {filteredArticles.length} Stories
         </div>
-      </div>
+      </nav>
 
       {/* Ultra Clean & Simple 1-Line Filter Control Bar */}
       <div className="bg-gray-50 dark:bg-[#181818] border border-gray-200 dark:border-white/10 rounded-md p-2 sm:p-2.5 mb-5 shadow-xs">

@@ -27,7 +27,7 @@ export async function generateMetadata({ searchParams }: NewsPageProps): Promise
       ? `${baseUrl}/news?category=${slug}&sub=${encodeURIComponent(sub)}`
       : `${baseUrl}/news?category=${slug}`;
 
-    const title = `${catName} Archive & Executive Stories | ApexChief`;
+    const title = `${catName} Archive & Executive Stories`;
     const description = catObj?.description || `Explore latest ${catName} reporting, industry investigations, CEO perspectives, and executive intelligence on ApexChief.`;
 
     return {
@@ -52,7 +52,7 @@ export async function generateMetadata({ searchParams }: NewsPageProps): Promise
   }
 
   const archiveUrl = `${baseUrl}/news`;
-  const defaultTitle = 'News Archive & Editorial Intelligence | ApexChief';
+  const defaultTitle = 'News Archive & Editorial Intelligence';
   const defaultDescription = 'Explore all investigative journalism, market analysis, technology breakthroughs, exclusive interviews, and executive leadership stories on ApexChief.';
 
   return {

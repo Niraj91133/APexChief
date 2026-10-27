@@ -92,6 +92,11 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
                   Opinion
                 </Link>
               </li>
+              <li>
+                <Link href="/category" className="text-[#f7413e] hover:underline font-medium transition-colors">
+                  All Categories →
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -123,6 +128,11 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
               <li>
                 <Link href="/contact" className="hover:text-white transition-colors">
                   Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/sitemap.xml" className="hover:text-white transition-colors">
+                  Sitemap
                 </Link>
               </li>
             </ul>

@@ -109,7 +109,7 @@ export const metadata: Metadata = {
     images: ['https://www.apexchief.com/images/apexchief-logo-light.png'],
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || '',
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 't9na2oTjNEA-Mnwuiyo_dsyflp-do8ND3iAhF4KAMVY',
   },
   robots: {
     index: true,
@@ -166,6 +166,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${playfair.variable} ${baskerville.variable} ${inter.variable} ${oswald.variable} ${bebas.variable}`}>
       <head>
+        <meta name="google-site-verification" content="t9na2oTjNEA-Mnwuiyo_dsyflp-do8ND3iAhF4KAMVY" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}

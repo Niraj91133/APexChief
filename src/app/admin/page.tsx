@@ -142,7 +142,7 @@ const CURATED_STOCK_PHOTOS = [
   { label: 'Tokyo Financial District', category: 'Markets', url: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1200' },
   // 4. Clean Energy & Sustainability
   { label: 'Clean Energy Infrastructure', category: 'Energy', url: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200' },
-  { label: 'Solar Farm Array', category: 'Energy', url: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1200' },
+  { label: 'Solar Farm Array', category: 'Energy', url: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1200' },
   { label: 'Wind Turbine Horizons', category: 'Energy', url: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=1200' },
   // 5. Science & Space
   { label: 'Lunar Exploration & Space', category: 'Science', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200' },

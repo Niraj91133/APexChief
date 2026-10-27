@@ -505,7 +505,7 @@ const articles = [
     author: 'Editorial Desk',
     authorRole: 'Cultural Biographer',
     authorAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300',
-    image: 'https://images.unsplash.com/photo-1500462859233-a792f9bed7c7?w=1200',
+    image: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=1200',
     readTime: '6 min read',
     excerpt: 'A comprehensive retrospective examining how Maya Lin redefined public memorial art and landscape sculpture through radical minimalism, spatial serenity, and ecological reverence.',
     paragraphs: [
@@ -687,7 +687,7 @@ const articles = [
     author: 'Editorial Desk',
     authorRole: 'Energy Systems Engineer & Columnist',
     authorAvatar: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300',
-    image: 'https://images.unsplash.com/photo-1509391365360-2e959784a276?w=1200',
+    image: 'https://images.unsplash.com/photo-1548337138-e87d889cc369?w=1200',
     readTime: '6 min read',
     excerpt: 'Pilot manufacturing lines for silicon-anode solid-state cells achieve 500 Wh/kg milestones, paving the way for 800-mile electric vehicles and regional electric aviation.',
     paragraphs: [

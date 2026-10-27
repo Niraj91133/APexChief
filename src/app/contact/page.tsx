@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import ContactClient from './ContactClient';
 
 export const metadata: Metadata = {
-  title: 'Contact Editorial Desk | ApexChief',
+  title: 'Contact Editorial Desk',
   description: 'Connect with ApexChief editors, submit executive pitch decks, investigative tips, press releases, or reach our global business newsroom bureaus in New York and London.',
   alternates: {
     canonical: 'https://www.apexchief.com/contact',
