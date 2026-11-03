@@ -1924,7 +1924,7 @@ export default function AdminDashboard() {
       setLoginError('');
       localStorage.setItem('admin_logged_in', 'true');
       localStorage.setItem('apexchief_auth_session', JSON.stringify({
-        email: loginEmail.trim() || 'admin@apexchief.com',
+        email: loginEmail.trim() || 'sales@apexchief.com',
         timestamp: Date.now(),
         workspace: targetFormat
       }));

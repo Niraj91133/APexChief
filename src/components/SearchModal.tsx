@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Search, X, ArrowRight, Tag, Calendar, User } from 'lucide-react';
 import { ARTICLES } from '@/data/articles';
 import { Article } from '@/types';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 export default function SearchModal() {
   const pathname = usePathname();
@@ -77,9 +78,9 @@ export default function SearchModal() {
     setSelectedIndex(0);
   }, [query]);
 
-  const handleNavigate = (slug: string) => {
+  const handleNavigate = (article: Article) => {
     setIsOpen(false);
-    router.push(`/news/${slug}`);
+    router.push(getBlogUrl(article));
   };
 
   if (!isOpen) return null;
@@ -133,7 +134,7 @@ export default function SearchModal() {
                 {results.map((article) => (
                   <button
                     key={article.slug}
-                    onClick={() => handleNavigate(article.slug)}
+                    onClick={() => handleNavigate(article)}
                     className="w-full text-left p-3 rounded-md hover:bg-[#eff0e0] dark:hover:bg-[#242424] transition-colors group flex items-start justify-between cursor-pointer"
                   >
                     <div className="pr-4 flex-1">

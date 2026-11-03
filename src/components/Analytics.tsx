@@ -18,9 +18,11 @@ export default function Analytics() {
       localStorage.setItem(visitorKey, Date.now().toString());
     }
 
-    // Ping site analytics tracker for daily visits / pageviews
-    // For specific articles, ArticleViewTracker will also pass the slug
-    if (!pathname.startsWith('/news/')) {
+    // Ping site analytics tracker for general daily visits / pageviews
+    // For specific articles, ArticleViewTracker will pass the slug
+    const segments = pathname.split('/').filter(Boolean);
+    const isArticlePage = (segments.length === 2 && segments[0] !== 'category' && segments[0] !== 'admin') || pathname.startsWith('/news/');
+    if (!isArticlePage) {
       fetch('/api/analytics/track', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

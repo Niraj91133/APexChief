@@ -191,7 +191,7 @@ export default function WriteForUsForm() {
         </button>
 
         <p className="text-[10px] text-gray-500 dark:text-gray-400 text-center font-sans">
-          You can also email your draft directly to <span className="font-mono text-black dark:text-white font-medium">apexchiefofficial@gmail.com</span>
+          You can also email your draft directly to <span className="font-mono text-black dark:text-white font-medium">sales@apexchief.com</span>
         </p>
       </form>
     </div>

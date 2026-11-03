@@ -6,22 +6,24 @@ import { CATEGORY_SEO_DATA } from '@/data/categorySeo';
 const seo = CATEGORY_SEO_DATA.all;
 
 export const metadata: Metadata = {
-  title: seo.metaTitle,
+  title: {
+    absolute: seo.metaTitle,
+  },
   description: seo.metaDescription,
   keywords: seo.keywords,
   alternates: {
     canonical: 'https://www.apexchief.com/category',
   },
   openGraph: {
-    title: `${seo.metaTitle} | ApexChief`,
+    title: seo.metaTitle,
     description: seo.metaDescription,
     url: 'https://www.apexchief.com/category',
     siteName: 'ApexChief',
     type: 'website',
   },
   twitter: {
-    card: 'summary',
-    title: `${seo.metaTitle} | ApexChief`,
+    card: 'summary_large_image',
+    title: seo.metaTitle,
     description: seo.metaDescription,
   },
 };

@@ -8,6 +8,7 @@ import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
 import { CATEGORIES } from '@/data/categories';
 import { Category, Article, SiteConfig } from '@/types';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 function HeaderNav({
   categories,
@@ -421,7 +422,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
           <div className="animate-marquee whitespace-nowrap flex items-center space-x-12 text-xs font-sans font-medium text-white/90">
             {breakingArticles.map((art) => (
               <span key={art.slug} className="inline-flex items-center">
-                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
+                <Link href={getBlogUrl(art)} className="hover:text-[#f7413e] hover:underline transition-colors">
                   {art.title}
                 </Link>
                 <span className="ml-2.5 text-[#fbbf24] font-semibold text-[10px] uppercase font-mono">[{art.tag || art.category}]</span>
@@ -430,7 +431,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
             {/* Duplicate for seamless infinite loop */}
             {breakingArticles.map((art) => (
               <span key={`${art.slug}-dup`} className="inline-flex items-center">
-                <Link href={`/news/${art.slug}`} className="hover:text-[#f7413e] hover:underline transition-colors">
+                <Link href={getBlogUrl(art)} className="hover:text-[#f7413e] hover:underline transition-colors">
                   {art.title}
                 </Link>
                 <span className="ml-2.5 text-[#fbbf24] font-semibold text-[10px] uppercase font-mono">[{art.tag || art.category}]</span>

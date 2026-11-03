@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '@/types';
 import ArticleCard from '@/components/ArticleCard';
+import { getBlogUrl } from '@/lib/blogUrl';
 import { ArrowUpRight, TrendingUp, Flame } from 'lucide-react';
 
 interface HeroSectionProps {
@@ -64,7 +65,7 @@ export default function HeroSection({
                   </span>
                   <div className="flex-1">
                     <Link
-                      href={`/news/${article.slug}`}
+                      href={getBlogUrl(article)}
                       className="font-serif font-bold text-xs sm:text-sm text-[#0a0a0a] hover:text-[#f7413e] transition-colors line-clamp-2 leading-snug"
                     >
                       {article.title}

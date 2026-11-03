@@ -1,5 +1,5 @@
 import React from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next';
@@ -21,6 +21,7 @@ import {
 import ShareButtons from './ShareButtons';
 import ArticleViewTracker from '@/components/ArticleViewTracker';
 import { linkifyText, linkifyHtml } from '@/lib/linkify';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,7 +57,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  const articleUrl = `${baseUrl}/news/${article.slug}`;
+  const catSlug = getCategorySlug(article.category);
+  const articleUrl = `${baseUrl}/${catSlug}/${article.slug}`;
   const keywords = [
     article.tag,
     article.category,
@@ -67,7 +69,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   ].filter(Boolean) as string[];
 
   return {
-    title: article.title,
+    title: {
+      absolute: `${article.title} | ${siteConfig.name}`,
+    },
     description: article.excerpt,
     keywords: keywords,
     authors: [{ name: article.author }],
@@ -128,6 +132,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     notFound();
   }
 
+  const catSlug = getCategorySlug(article.category);
+
+  // 301 Permanent Redirect to canonical /category/blog-title path if category is not news
+  if (catSlug !== 'news') {
+    permanentRedirect(`/${catSlug}/${article.slug}`);
+  }
+
   const allArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
   const relatedArticles = allArticles
     .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts && (a.category.toLowerCase() === article.category.toLowerCase() || true))
@@ -142,6 +153,15 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const shouldShowFeaturedImage = article.showFeaturedImage !== false && article.showFeaturedImage !== 'No' && article.showFeaturedImage !== 'no';
   const sidebarPos = article.sidebarPosition || 'none'; // 'right' | 'left' | 'none'
   const shouldShowPopularPosts = !article.disablePopularPostsDisplay;
+
+  const isoDate = (() => {
+    try {
+      const parsed = Date.parse(article.date);
+      return !isNaN(parsed) ? new Date(parsed).toISOString() : '2026-09-02T08:00:00.000Z';
+    } catch {
+      return '2026-09-02T08:00:00.000Z';
+    }
+  })();
 
   // Structured Data Schema for Google Search Rich Results (NewsArticle & BreadcrumbList)
   const jsonLd = {
@@ -158,29 +178,34 @@ export default async function ArticleDetailPage({ params }: PageProps) {
         },
         headline: article.title,
         description: article.excerpt,
-        image: [article.image],
-        datePublished: article.date,
-        dateModified: article.date,
+        image: [
+          article.image?.startsWith('http') ? article.image : `${baseUrl}${article.image || '/images/apexchief-logo-light.png'}`
+        ],
+        datePublished: isoDate,
+        dateModified: isoDate,
         mainEntityOfPage: {
           '@type': 'WebPage',
           '@id': articleUrl,
         },
         articleSection: article.category,
         keywords: [article.tag, article.category, siteConfig.name].filter(Boolean).join(', '),
-        author: {
-          '@type': 'Person',
-          name: article.author,
-          jobTitle: article.authorRole,
-          image: article.authorAvatar,
-        },
+        author: [
+          {
+            '@type': 'Person',
+            name: article.author || 'ApexChief Editorial Team',
+            jobTitle: article.authorRole || 'Editor',
+            image: article.authorAvatar,
+            url: `${baseUrl}/write-for-us`,
+          },
+        ],
         publisher: {
           '@type': 'Organization',
-          '@id': `${baseUrl}/#organization`,
-          name: siteConfig.name,
-          url: `${baseUrl}/`,
+          '@id': 'https://www.apexchief.com/#organization',
+          name: 'ApexChief',
+          url: 'https://www.apexchief.com/',
           logo: {
             '@type': 'ImageObject',
-            url: `${baseUrl}/images/apexchief-logo-light.png`,
+            url: 'https://www.apexchief.com/images/apexchief-logo-light.png',
           },
         },
       },
@@ -335,13 +360,13 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             {article.content ? (
               <div
                 dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
-                className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-serif"
+                className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-sans"
               />
             ) : (
               <>
                 {/* Lead Paragraph with Drop Cap */}
                 {article.paragraphs[0] && (
-                  <p className="drop-cap font-serif text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
+                  <p className="drop-cap font-sans text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
                     {linkifyText(article.paragraphs[0])}
                   </p>
                 )}
@@ -350,10 +375,10 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                 {article.sections && article.sections.length > 0 ? (
                   article.sections.map((sec, idx) => (
                     <section key={idx} className="my-8">
-                      <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
+                      <h2 className="font-sans text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
                         {linkifyText(sec.heading)}
                       </h2>
-                      <p className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
+                      <p className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
                         {linkifyText(sec.content)}
                       </p>
                     </section>
@@ -362,7 +387,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   article.paragraphs.slice(1).map((p, idx) => (
                     <p
                       key={idx}
-                      className="font-serif text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
+                      className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
                     >
                       {linkifyText(p)}
                     </p>
@@ -374,7 +399,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             {/* Editorial Pull Quote */}
             <div className="my-10 p-6 sm:p-8 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
               <Quote className="w-8 h-8 text-[#f7413e]/20 absolute top-4 right-4" />
-              <blockquote className="font-serif italic text-lg sm:text-xl text-[#0a0a0a] dark:text-[#ffffff] leading-relaxed mb-3">
+              <blockquote className="font-sans italic text-lg sm:text-xl text-[#0a0a0a] dark:text-[#ffffff] leading-relaxed mb-3">
                 &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
               </blockquote>
               <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">

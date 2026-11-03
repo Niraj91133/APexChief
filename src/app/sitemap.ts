@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getArticles, getCategories } from '@/data/db';
 import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
@@ -56,9 +57,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // 2. Individual Article / Blog Post Pages (Only active, non-deleted articles)
+  // 2. Individual Article / Blog Post Pages (Canonical [category]/[slug] format)
   const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
-    url: `${baseUrl}/news/${article.slug}`,
+    url: `${baseUrl}${getBlogUrl(article)}`,
     lastModified: new Date(article.date || Date.now()),
     changeFrequency: 'weekly',
     priority: 0.8,

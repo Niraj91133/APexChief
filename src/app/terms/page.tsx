@@ -90,7 +90,7 @@ export default function TermsOfServicePage() {
               <strong>Excerpt Limits:</strong> Non-commercial publications may quote up to 100 words of text. Systematic full-article scraping, automated republishing, or bulk reproduction without explicit written licensing is strictly prohibited.
             </li>
             <li>
-              <strong>Syndication Licensing:</strong> For commercial syndication, enterprise reprints, or translation rights, please contact <a href="mailto:apexchiefofficial@gmail.com" className="text-[#f7413e] underline">apexchiefofficial@gmail.com</a>.
+              <strong>Syndication Licensing:</strong> For commercial syndication, enterprise reprints, or translation rights, please contact <a href="mailto:sales@apexchief.com" className="text-[#f7413e] underline">sales@apexchief.com</a>.
             </li>
           </ul>
         </section>
@@ -131,7 +131,7 @@ export default function TermsOfServicePage() {
             For intellectual property queries, syndication requests, or formal legal correspondence:
           </p>
           <p className="font-mono text-xs text-[#0a0a0a] dark:text-white font-semibold">
-            Email: <a href="mailto:apexchiefofficial@gmail.com" className="text-[#f7413e] underline">apexchiefofficial@gmail.com</a>
+            Email: <a href="mailto:sales@apexchief.com" className="text-[#f7413e] underline">sales@apexchief.com</a>
             <br />
             ApexChief Media Group • Legal &amp; Corporate Affairs Division
           </p>

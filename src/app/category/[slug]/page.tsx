@@ -5,6 +5,7 @@ import { CATEGORIES, getCategorySlug } from '@/data/categories';
 import { getCategorySeo } from '@/data/categorySeo';
 import { getArticles } from '@/data/db';
 import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getBlogUrl } from '@/lib/blogUrl';
 import NewsClient from '@/app/news/NewsClient';
 
 interface CategoryPageProps {
@@ -47,22 +48,24 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
     : `${baseUrl}/category/${catSlug}`;
 
   return {
-    title: seo.metaTitle,
+    title: {
+      absolute: seo.metaTitle,
+    },
     description: seo.metaDescription,
     keywords: seo.keywords,
     alternates: {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: `${seo.metaTitle} | ApexChief`,
+      title: seo.metaTitle,
       description: seo.metaDescription,
       url: canonicalUrl,
       siteName: 'ApexChief',
       type: 'website',
     },
     twitter: {
-      card: 'summary',
-      title: `${seo.metaTitle} | ApexChief`,
+      card: 'summary_large_image',
+      title: seo.metaTitle,
       description: seo.metaDescription,
     },
   };
@@ -122,7 +125,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
           '@type': 'ListItem',
           position: idx + 1,
           name: art.title,
-          url: `${baseUrl}/news/${art.slug}`,
+          url: `${baseUrl}${getBlogUrl(art)}`,
         })),
       },
       {

@@ -151,7 +151,7 @@ export default function PrivacyPolicyPage() {
             For inquiries regarding our privacy practices, data deletion requests, or editorial transparency, reach our Data Governance Officer at:
           </p>
           <p className="font-mono text-xs text-[#0a0a0a] dark:text-white font-semibold">
-            Email: <a href="mailto:apexchiefofficial@gmail.com" className="text-[#f7413e] underline">apexchiefofficial@gmail.com</a>
+            Email: <a href="mailto:sales@apexchief.com" className="text-[#f7413e] underline">sales@apexchief.com</a>
             <br />
             Address: ApexChief Media Group, 100 Financial Center Blvd, New York, NY 10005
           </p>

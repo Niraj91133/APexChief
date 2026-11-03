@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Article } from '@/types';
 import { Clock, ArrowUpRight } from 'lucide-react';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 interface ArticleCardProps {
   article: Article;
@@ -17,11 +18,13 @@ export default function ArticleCard({
   showExcerpt = true,
   priority = false,
 }: ArticleCardProps) {
+  const articleUrl = getBlogUrl(article);
+
   // Hero Variant (Lead Cover Story)
   if (variant === 'hero') {
     return (
       <article className="group relative flex flex-col h-full bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 hover:border-black dark:hover:border-white/30 transition-all p-5 sm:p-7">
-        <Link href={`/news/${article.slug}`} className="block overflow-hidden relative aspect-[16/10] mb-5 bg-gray-100 dark:bg-[#222222]">
+        <Link href={articleUrl} className="block overflow-hidden relative aspect-[16/10] mb-5 bg-gray-100 dark:bg-[#222222]">
           <Image
             src={article.image}
             alt={article.title}
@@ -46,7 +49,7 @@ export default function ArticleCard({
           </span>
         </div>
 
-        <Link href={`/news/${article.slug}`} className="block">
+        <Link href={articleUrl} className="block">
           <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-black dark:text-white leading-tight group-hover:text-[#f7413e] transition-colors mb-3">
             {article.title}
           </h2>
@@ -60,7 +63,7 @@ export default function ArticleCard({
 
         <div className="mt-auto pt-4 border-t border-gray-200 dark:border-white/10 flex items-center justify-between">
           <Link
-            href={`/news/${article.slug}`}
+            href={articleUrl}
             className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-xs font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
           >
             <span>Read More</span>
@@ -78,7 +81,7 @@ export default function ArticleCard({
   if (variant === 'horizontal') {
     return (
       <article className="group flex flex-col sm:flex-row gap-4 p-4 border-b border-gray-200 dark:border-white/15 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-        <Link href={`/news/${article.slug}`} className="relative w-full sm:w-48 sm:h-36 aspect-[16/10] sm:aspect-auto flex-shrink-0 bg-gray-100 dark:bg-[#222222] overflow-hidden">
+        <Link href={articleUrl} className="relative w-full sm:w-48 sm:h-36 aspect-[16/10] sm:aspect-auto flex-shrink-0 bg-gray-100 dark:bg-[#222222] overflow-hidden">
           <Image
             src={article.image}
             alt={article.title}
@@ -96,7 +99,7 @@ export default function ArticleCard({
               <span>{article.date}</span>
             </div>
 
-            <Link href={`/news/${article.slug}`}>
+            <Link href={articleUrl}>
               <h3 className="font-serif text-lg font-bold text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
                 {article.title}
               </h3>
@@ -112,7 +115,7 @@ export default function ArticleCard({
           <div className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
             <span className="font-mono text-[11px]">{article.readTime}</span>
             <Link
-              href={`/news/${article.slug}`}
+              href={articleUrl}
               className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
             >
               <span>Read More</span>
@@ -133,7 +136,7 @@ export default function ArticleCard({
           <span>•</span>
           <span>{article.date}</span>
         </div>
-        <Link href={`/news/${article.slug}`}>
+        <Link href={articleUrl}>
           <h4 className="font-serif font-bold text-sm sm:text-base text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
             {article.title}
           </h4>
@@ -155,7 +158,7 @@ export default function ArticleCard({
           <span>•</span>
           <span>{article.date}</span>
         </div>
-        <Link href={`/news/${article.slug}`}>
+        <Link href={articleUrl}>
           <h4 className="font-serif font-bold text-sm text-black dark:text-white group-hover:text-[#f7413e] transition-colors line-clamp-2 leading-snug">
             {article.title}
           </h4>
@@ -168,7 +171,7 @@ export default function ArticleCard({
   if (variant === 'featured') {
     return (
       <article className="group flex flex-col h-full bg-white dark:bg-[#1c1c1c] border border-gray-200 dark:border-white/15 p-5 rounded-none hover:shadow-md transition-all">
-        <Link href={`/news/${article.slug}`} className="block relative aspect-[16/10] mb-4 overflow-hidden bg-gray-100 dark:bg-[#222222]">
+        <Link href={articleUrl} className="block relative aspect-[16/10] mb-4 overflow-hidden bg-gray-100 dark:bg-[#222222]">
           <Image
             src={article.image}
             alt={article.title}
@@ -187,7 +190,7 @@ export default function ArticleCard({
           <span>{article.date}</span>
         </div>
 
-        <Link href={`/news/${article.slug}`}>
+        <Link href={articleUrl}>
           <h3 className="font-serif text-lg sm:text-xl font-bold text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-2">
             {article.title}
           </h3>
@@ -202,7 +205,7 @@ export default function ArticleCard({
         <div className="mt-auto pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between text-xs">
           <span className="font-mono text-gray-600 dark:text-gray-400">{article.readTime}</span>
           <Link
-            href={`/news/${article.slug}`}
+            href={articleUrl}
             className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
           >
             <span>Read More</span>
@@ -216,7 +219,7 @@ export default function ArticleCard({
   // Standard Grid Card Variant (Default)
   return (
     <article className="group flex flex-col h-full bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-4 hover:border-black dark:hover:border-white/30 hover:shadow-sm transition-all">
-      <Link href={`/news/${article.slug}`} className="block relative aspect-[16/10] mb-3.5 overflow-hidden bg-gray-100 dark:bg-[#222222]">
+      <Link href={articleUrl} className="block relative aspect-[16/10] mb-3.5 overflow-hidden bg-gray-100 dark:bg-[#222222]">
         <Image
           src={article.image}
           alt={article.title}
@@ -235,7 +238,7 @@ export default function ArticleCard({
         <span>{article.date}</span>
       </div>
 
-      <Link href={`/news/${article.slug}`}>
+      <Link href={articleUrl}>
         <h3 className="font-serif text-base sm:text-lg font-bold text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-2 line-clamp-2">
           {article.title}
         </h3>
@@ -250,7 +253,7 @@ export default function ArticleCard({
       <div className="mt-auto pt-3 border-t border-gray-200 dark:border-white/10 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
         <span className="font-mono text-[11px]">{article.readTime}</span>
         <Link
-          href={`/news/${article.slug}`}
+          href={articleUrl}
           className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs"
         >
           <span>Read More</span>

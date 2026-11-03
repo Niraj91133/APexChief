@@ -43,7 +43,7 @@ const jsonLd = {
         '@id': 'https://www.apexchief.com/#organization',
         name: 'ApexChief',
         url: 'https://www.apexchief.com',
-        email: 'apexchiefofficial@gmail.com',
+        email: 'sales@apexchief.com',
         telephone: '+916206539717',
         address: [
           {

@@ -1,4 +1,6 @@
-import { redirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
+import { getArticleBySlug } from '@/data/db';
+import { getCategorySlug } from '@/data/categories';
 
 interface PageProps {
   params: Promise<{
@@ -8,5 +10,7 @@ interface PageProps {
 
 export default async function BlogSlugPage({ params }: PageProps) {
   const { slug } = await params;
-  redirect(`/news/${slug}`);
+  const article = getArticleBySlug(slug);
+  const catSlug = article?.category ? getCategorySlug(article.category) : 'news';
+  permanentRedirect(`/${catSlug}/${slug}`);
 }

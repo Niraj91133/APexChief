@@ -40,11 +40,11 @@ export default function Footer({ initialConfig }: { initialConfig?: SiteConfig }
             <div className="pt-2 space-y-2 text-sm text-neutral-400">
               <div>
                 <a
-                  href={`mailto:${site.contact?.email || 'apexchiefofficial@gmail.com'}`}
+                  href={`mailto:${site.contact?.email || 'sales@apexchief.com'}`}
                   className="inline-flex items-center gap-2 hover:text-white transition-colors"
                 >
                   <Mail className="w-4 h-4 text-[#f7413e] shrink-0" />
-                  <span>{site.contact?.email || 'apexchiefofficial@gmail.com'}</span>
+                  <span>{site.contact?.email || 'sales@apexchief.com'}</span>
                 </a>
               </div>
               {site.contact?.phone && (

@@ -3539,7 +3539,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
                 </div>
                 <div>
                   <label class="block font-bold text-gray-700 text-xs mb-1">Administration Email Address</label>
-                  <input type="email" id="setting-admin-email" value="admin@apexchief.com" class="w-full border border-gray-300 rounded p-2 text-xs font-mono focus:border-blue-500 outline-none">
+                  <input type="email" id="setting-admin-email" value="sales@apexchief.com" class="w-full border border-gray-300 rounded p-2 text-xs font-mono focus:border-blue-500 outline-none">
                   <span class="text-[11px] text-gray-400">Used for system alerts, critical SEO notices, and account recovery.</span>
                 </div>
               </div>
@@ -5023,7 +5023,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           <!-- Public Portal Footer -->
           <footer class="pt-6 border-t border-gray-200 text-center space-y-2 text-xs text-gray-500">
             <p id="reader-footer-copyright">&copy; 2026 ApexChief Global Editorial Media Group. All rights reserved.</p>
-            <p id="reader-footer-contact" class="text-[11px] text-gray-400">Editorial Desk: admin@apexchief.com &bull; +91 6206539717</p>
+            <p id="reader-footer-contact" class="text-[11px] text-gray-400">Editorial Desk: sales@apexchief.com &bull; +91 6206539717</p>
           </footer>
 
         </div>
@@ -11538,7 +11538,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     const DEFAULT_SETTINGS = {
       siteTitle: 'ApexChief',
       tagline: 'Editorial & Rank Math SEO Suite',
-      adminEmail: 'admin@apexchief.com',
+      adminEmail: 'sales@apexchief.com',
       adminName: 'ApexChief Admin',
       logoType: 'badge', // 'badge' or 'image'
       logoUrl: '',
@@ -11982,7 +11982,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       if (tagInput) tagInput.value = siteSettings.tagline || '';
 
       const emailInput = document.getElementById('setting-admin-email');
-      if (emailInput) emailInput.value = siteSettings.adminEmail || 'admin@apexchief.com';
+      if (emailInput) emailInput.value = siteSettings.adminEmail || 'sales@apexchief.com';
 
       const logoUrlInput = document.getElementById('setting-logo-url');
       if (logoUrlInput) logoUrlInput.value = siteSettings.logoUrl || '';
@@ -12385,7 +12385,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
 
       siteSettings.siteTitle = document.getElementById('setting-site-title')?.value.trim() || 'ApexChief';
       siteSettings.tagline = document.getElementById('setting-site-tagline')?.value.trim() || '';
-      siteSettings.adminEmail = document.getElementById('setting-admin-email')?.value.trim() || 'admin@apexchief.com';
+      siteSettings.adminEmail = document.getElementById('setting-admin-email')?.value.trim() || 'sales@apexchief.com';
       siteSettings.logoType = document.getElementById('logo-type-image')?.checked ? 'image' : 'badge';
       siteSettings.logoUrl = document.getElementById('setting-logo-url')?.value.trim() || '';
       siteSettings.faviconUrl = document.getElementById('setting-favicon-url')?.value.trim() || '';
@@ -12594,7 +12594,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
     }
 
     function autoFillDemoCredentials() {
-      document.getElementById('login-username').value = 'admin@apexchief.com';
+      document.getElementById('login-username').value = 'sales@apexchief.com';
       document.getElementById('login-password').value = 'apexchief2026';
       showToast('Credentials Filled', 'Ready to sign in.');
     }
@@ -12622,11 +12622,11 @@ let siteSettings = { ...DEFAULT_SETTINGS };
       const customPassMatch = storedHash && (btoa(pass) === storedHash);
 
       const isValidPassword = defaultPassMatch || customPassMatch;
-      const isValidUser = (user.toLowerCase() === 'admin@apexchief.com' || user.toLowerCase() === 'admin' || user.toLowerCase() === 'apexchief');
+      const isValidUser = (user.toLowerCase() === 'sales@apexchief.com' || user.toLowerCase() === 'admin' || user.toLowerCase() === 'apexchief');
 
       if (!isValidPassword || !isValidUser) {
         if (errAlert && errText) {
-          errText.innerText = 'Invalid username or password. (Hint: admin@apexchief.com / apexchief2026)';
+          errText.innerText = 'Invalid username or password. (Hint: sales@apexchief.com / apexchief2026)';
           errAlert.classList.remove('hidden');
         }
         return;

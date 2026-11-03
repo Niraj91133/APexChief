@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ARTICLES } from '@/data/articles';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 export default function BreakingTicker() {
   const tickerArticles = ARTICLES.slice(0, 10);
@@ -26,7 +27,7 @@ export default function BreakingTicker() {
           {tickerArticles.concat(tickerArticles).map((article, idx) => (
             <div key={`${article.slug}-${idx}`} className="inline-flex items-center">
               <Link
-                href={`/news/${article.slug}`}
+                href={getBlogUrl(article)}
                 className="text-xs font-medium text-[#211d1d] hover:text-[#f7413e] transition-colors mx-4 hover:underline underline-offset-2 flex items-center space-x-2"
               >
                 <span className="font-mono text-[10px] bg-[#211d1d]/10 text-[#211d1d] px-1.5 py-0.5 rounded font-semibold uppercase">

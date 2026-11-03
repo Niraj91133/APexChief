@@ -1,4 +1,5 @@
+// Real Supabase and Local Article Inventory
 import { Article } from '@/types';
-import rawArticles from './articles.json';
+import articlesData from './articles.json';
 
-export const ARTICLES: Article[] = rawArticles as Article[];
+export const ARTICLES: Article[] = articlesData as Article[];

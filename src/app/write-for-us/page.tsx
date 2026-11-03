@@ -281,7 +281,7 @@ export default function WriteForUsPage() {
           </div>
           <div className="p-4 bg-gray-50 dark:bg-white/[0.02] border border-gray-200 dark:border-white/10 rounded">
             <h4 className="font-bold text-sm text-black dark:text-white mb-1.5">Where should I send PR pitches or press releases?</h4>
-            <p className="leading-relaxed">For breaking press releases or company announcements, please email our newsroom desk directly at <a href="mailto:apexchiefofficial@gmail.com" className="text-[#f7413e] underline">apexchiefofficial@gmail.com</a>.</p>
+            <p className="leading-relaxed">For breaking press releases or company announcements, please email our newsroom desk directly at <a href="mailto:sales@apexchief.com" className="text-[#f7413e] underline">sales@apexchief.com</a>.</p>
           </div>
         </div>
       </div>
