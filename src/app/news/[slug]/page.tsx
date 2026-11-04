@@ -59,20 +59,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const catSlug = getCategorySlug(article.category);
   const articleUrl = `${baseUrl}/${catSlug}/${article.slug}`;
-  const keywords = [
-    article.tag,
-    article.category,
-    'editorial story',
-    'journalism',
-    siteConfig.name,
-    'news analysis',
-  ].filter(Boolean) as string[];
+  const keywords = article.keywords
+    ? article.keywords.split(',').map((k) => k.trim())
+    : [
+        article.tag,
+        article.category,
+        'editorial story',
+        'journalism',
+        siteConfig.name,
+        'news analysis',
+      ].filter(Boolean) as string[];
+
+  const resolvedMetaTitle = article.metaTitle
+    ? (article.metaTitle.toLowerCase().includes(siteConfig.name.toLowerCase())
+        ? article.metaTitle
+        : `${article.metaTitle} | ${siteConfig.name}`)
+    : `${article.title} | ${siteConfig.name}`;
+  const resolvedMetaDesc = article.metaDescription || article.excerpt;
 
   return {
     title: {
-      absolute: `${article.title} | ${siteConfig.name}`,
+      absolute: resolvedMetaTitle,
     },
-    description: article.excerpt,
+    description: resolvedMetaDesc,
     keywords: keywords,
     authors: [{ name: article.author }],
     creator: article.author,
@@ -92,8 +101,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: article.title,
-      description: article.excerpt,
+      title: resolvedMetaTitle,
+      description: resolvedMetaDesc,
       url: articleUrl,
       siteName: siteConfig.name,
       type: 'article',
@@ -113,8 +122,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
-      description: article.excerpt,
+      title: resolvedMetaTitle,
+      description: resolvedMetaDesc,
       images: [article.image],
       creator: siteConfig.socialLinks?.twitter || '@apexchief01',
     },

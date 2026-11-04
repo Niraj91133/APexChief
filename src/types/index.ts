@@ -29,6 +29,12 @@ export interface Article {
   viewsCount?: number;
   likesCount?: number;
   focusKeyword?: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  keywords?: string;
+  targetedKeywords?: string;
+  primaryKeyword?: string;
+  secondaryKeywords?: string;
   status?: string;
   articleType?: string;
   publishDate?: string;
