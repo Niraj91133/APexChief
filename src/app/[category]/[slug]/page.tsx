@@ -187,8 +187,8 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
           name: siteConfig.name,
           url: baseUrl,
         },
-        headline: article.title,
-        description: article.excerpt,
+        headline: article.metaTitle || article.title,
+        description: article.metaDescription || article.excerpt,
         image: [
           article.image?.startsWith('http') ? article.image : `${baseUrl}${article.image || '/images/apexchief-logo-light.png'}`
         ],
@@ -199,7 +199,13 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
           '@id': articleUrl,
         },
         articleSection: article.category,
-        keywords: [article.tag, article.category, siteConfig.name].filter(Boolean).join(', '),
+        keywords: [
+          ...(article.keywords || []),
+          ...(article.targetedKeywords || []),
+          article.tag,
+          article.category,
+          siteConfig.name,
+        ].filter(Boolean).filter((v, i, a) => a.indexOf(v) === i).join(', '),
         author: [
           {
             '@type': 'Person',
