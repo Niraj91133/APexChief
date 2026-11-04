@@ -14,7 +14,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200",
     "readTime": "5 min read",
-    "excerpt": "It is nine in the evening, the guests are due in an hour, and the saffron has run out. A decade ago, that would have meant a frantic drive and a parking hunt. Today it means a few taps and a rider at the door in about the time it takes to brew a pot of karak.",
+    "excerpt": "From Talabat Mart to Careem Quik and noon Minutes, see how quick commerce is changing grocery delivery in the UAE.",
     "paragraphs": [
       "It is nine in the evening, the guests are due in an hour, and the saffron has run out. A decade ago, that would have meant a frantic drive and a parking hunt. Today it means a few taps and a rider at the door in about the time it takes to brew a pot of karak.",
       "This is quick commerce, and in the UAE it has moved swiftly from novelty to habit. Here is how the market is changing the way the country shops for groceries and everyday essentials.",
@@ -107,7 +107,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=1200",
     "readTime": "5 min read",
-    "excerpt": "There is a particular kind of silence you find only in the desert at dawn. The dunes are still cool, an oryx grazes in the distance, and the only sound is the wind. For the discerning traveller, that stillness has become the ultimate luxury, and the UAE&#39;s finest eco-resorts have built their entire identity around protecting it.",
+    "excerpt": "Discover the UAE's best eco-luxury resorts, from Al Maha to Sir Bani Yas, and learn how to spot genuinely sustainable stays.",
     "paragraphs": [
       "There is a particular kind of silence you find only in the desert at dawn. The dunes are still cool, an oryx grazes in the distance, and the only sound is the wind. For the discerning traveller, that stillness has become the ultimate luxury, and the UAE&#39;s finest eco-resorts have built their entire identity around protecting it.",
       "Here are five retreats where thoughtful design, wildlife and generous hospitality meet, along with advice on how to tell a genuinely green resort from one that merely says it is.",
@@ -189,7 +189,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200",
     "readTime": "4 min read",
-    "excerpt": "When winter settles over Dubai and the air finally turns gentle, the city begins to glitter. Lights go up along the waterfront, malls fill with families, and shoppers from across the world arrive with one question in mind: what will this year&#39;s Dubai Shopping Festival bring?",
+    "excerpt": "The Dubai Shopping Festival runs 4 December 2026 to 17 January 2027. See how luxury and retail brands prepare for the season.",
     "paragraphs": [
       "When winter settles over Dubai and the air finally turns gentle, the city begins to glitter. Lights go up along the waterfront, malls fill with families, and shoppers from across the world arrive with one question in mind: what will this year&#39;s Dubai Shopping Festival bring?",
       "For residents, it is a season of treats. For brands, it is one of the most important commercial moments of the year. Here is how the festival works, and how the smartest retailers get ready for it.",
@@ -275,7 +275,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=1200",
     "readTime": "4 min read",
-    "excerpt": "Multilateral currency agreements ensure cross-border settlement stability as major economies establish bilateral trade credit frameworks.",
+    "excerpt": "Explore how multilateral currency agreements and liquidity swap lines ensure cross-border settlement stability as major central banks coordinate globally.",
     "paragraphs": [
       "Multilateral currency agreements ensure cross-border settlement stability as major economies establish bilateral trade credit frameworks."
     ],
@@ -303,7 +303,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
     "readTime": "5 min read",
-    "excerpt": "Stand at the edge of the Al Dhafra solar plant at midday and the scale of the ambition becomes plain. Rows of panels run to the horizon, turning the same sunshine that defines the Emirates into electricity for hundreds of thousands of homes. It is a fitting image for a country that built its modern prosperity on energy, and is now determined to lead the next chapter of it.",
+    "excerpt": "Explore the UAE's path to net zero by 2050, from Al Dhafra solar and Barakah nuclear to Masdar, hydrogen and storage.",
     "paragraphs": [
       "Stand at the edge of the Al Dhafra solar plant at midday and the scale of the ambition becomes plain. Rows of panels run to the horizon, turning the same sunshine that defines the Emirates into electricity for hundreds of thousands of homes. It is a fitting image for a country that built its modern prosperity on energy, and is now determined to lead the next chapter of it.",
       "Here is a clear look at where the UAE&#39;s clean energy journey stands, and where it is headed.",
@@ -405,7 +405,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
     "readTime": "5 min read",
-    "excerpt": "Before the towers, before the malls, before the first dhow of the modern age pulled into Dubai&#39;s deep-water harbour, there was a simple idea: build a port so good that the world would come to it. Jebel Ali, opened in the 1970s, has been proving that idea ever since.",
+    "excerpt": "Explore how Jebel Ali Port, Jafza, Etihad Rail and the Dubai Logistics Corridor are shaping the future of trade in the UAE.",
     "paragraphs": [
       "Before the towers, before the malls, before the first dhow of the modern age pulled into Dubai&#39;s deep-water harbour, there was a simple idea: build a port so good that the world would come to it. Jebel Ali, opened in the 1970s, has been proving that idea ever since.",
       "Today it is the largest port in the Middle East and the anchor of one of the region&#39;s most important free zones. Here is how this remarkable trade hub works, and where it is headed.",
@@ -500,7 +500,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200",
     "readTime": "5 min read",
-    "excerpt": "Every great transformation needs a patron. For the UAE&#39;s energy transition, one of the most important patrons is not a ministry or a company, but the bond market. Behind every solar park and every net-zero pledge stands a quieter question: who will pay, and how?",
+    "excerpt": "How green bonds and green sukuk are funding the UAE's net-zero goals, with examples from Masdar, TAQA, DP World and more.",
     "paragraphs": [
       "Every great transformation needs a patron. For the UAE&#39;s energy transition, one of the most important patrons is not a ministry or a company, but the bond market. Behind every solar park and every net-zero pledge stands a quieter question: who will pay, and how?",
       "Increasingly, the answer is found in green bonds and green sukuk, instruments that let investors fund projects with a clear environmental purpose. This is how the market works in the Emirates, and why it matters.",
@@ -592,7 +592,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200",
     "readTime": "4 min read",
-    "excerpt": "Explore how the UAE is building global leadership in artificial intelligence and financial technology through policy, talent, and smart regulation. Read now!",
+    "excerpt": "Explore how the UAE is building global leadership in artificial intelligence and financial technology through policy, talent, and smart regulation.Read Now!",
     "paragraphs": [
       "A little over a decade ago, the idea of a Gulf nation competing with Silicon Valley or Singapore for technology leadership would have sounded ambitious. Today, the United Arab Emirates is doing exactly that. By pairing bold policy, deep capital, and a welcoming regulatory environment, the UAE has positioned itself as one of the most closely watched hubs for artificial intelligence and financial technology.",
       "The UAE was among the first countries to appoint a dedicated minister for artificial intelligence, and it has since published national AI strategies that weave the technology into transport, healthcare, education, and public services. Rather than treating AI as a niche sector, policymakers frame it as core national infrastructure, much like roads, ports, and power grids. That clarity of purpose gives investors and founders confidence that the direction will hold.",
@@ -668,7 +668,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=1200",
     "readTime": "4 min read",
-    "excerpt": "Learn why sovereign wealth funds are pivoting toward deep tech and semiconductor fabrication, and what it means for the Gulf and global markets. Read now!",
+    "excerpt": "Learn why sovereign wealth funds are pivoting toward deep tech and semiconductor fabrication, and what it means for the Gulf and global markets. Read Now!",
     "paragraphs": [
       "For decades, sovereign wealth funds were known as patient owners of real estate, listed equities, and infrastructure. That image is changing fast. Across the Gulf and beyond, state-backed investors are moving capital into deep technology, with a particular focus on semiconductor manufacturing. The reason is simple: chips have become the foundation of the modern economy, and nations want a stake in how they are designed and built.",
       "What Is Deep Tech?",
@@ -735,7 +735,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200",
     "readTime": "4 min read",
-    "excerpt": "It is one of the most frequently asked questions at every majlis, brokerage and dinner table across the Emirates: Dubai or Abu Dhabi? Both emirates offer sunshine, security and a world-class lifestyle. Both welcome overseas buyers. Yet they are different in temperament, in pace and in the way their property markets behave.",
+    "excerpt": "Compare Dubai and Abu Dhabi property on prices, yields, fees, ownership rules and Golden Visa eligibility before you buy.",
     "paragraphs": [
       "It is one of the most frequently asked questions at every majlis, brokerage and dinner table across the Emirates: Dubai or Abu Dhabi? Both emirates offer sunshine, security and a world-class lifestyle. Both welcome overseas buyers. Yet they are different in temperament, in pace and in the way their property markets behave.",
       "This guide sets out the facts side by side, so you can weigh them against your own goals. It is information, not advice.",
@@ -837,7 +837,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=1200",
     "readTime": "4 min read",
-    "excerpt": "If your business is in finance, fintech, or investing, you have probably heard of two names: DIFC in Dubai and ADGM in Abu Dhabi. Both are special financial centres inside the UAE. They look alike on the surface, but they are not the same. Here is a simple way to compare them.",
+    "excerpt": "DIFC or ADGM? Compare location, laws, costs, and fit for fintech, funds, and family offices in plain English.",
     "paragraphs": [
       "If your business is in finance, fintech, or investing, you have probably heard of two names: DIFC in Dubai and ADGM in Abu Dhabi. Both are special financial centres inside the UAE. They look alike on the surface, but they are not the same. Here is a simple way to compare them.",
       "DIFC&nbsp;(Dubai International Financial Centre) is in Dubai and opened in 2004. ADGM&nbsp;(Abu Dhabi Global Market) is on Al Maryah Island in Abu Dhabi and started operating in 2015.",
@@ -934,7 +934,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300",
     "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200",
     "readTime": "4 min read",
-    "excerpt": "More wealthy families are choosing Dubai and Abu Dhabi as their new base. Many of them set up a &quot;family office&quot; here to manage their money, investments, and plans for the next generation. If you have wondered what a family office is and why the UAE is so popular, this guide is for you.",
+    "excerpt": "Learn what a family office is, why wealthy families are choosing Dubai and Abu Dhabi, and how to set one up.",
     "paragraphs": [
       "More wealthy families are choosing Dubai and Abu Dhabi as their new base. Many of them set up a &quot;family office&quot; here to manage their money, investments, and plans for the next generation. If you have wondered what a family office is and why the UAE is so popular, this guide is for you.",
       "A family office is a private team or company that looks after a family&#39;s wealth. It can handle investments, property, taxes, legal matters, and even charity and education plans. Think of it as a personal financial headquarters for a family.",
@@ -1015,7 +1015,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200",
     "readTime": "4 min read",
-    "excerpt": "The UAE wants to be one of the world&#39;s leaders in artificial intelligence, and it has had a plan for it for years. If you have heard about the &quot;UAE National AI Strategy&quot; but are not sure what it really means, this guide is for you. We will keep it simple.",
+    "excerpt": "A simple guide to the UAE National AI Strategy: its goals, main projects, key companies, and what it means for you.",
     "paragraphs": [
       "The UAE wants to be one of the world&#39;s leaders in artificial intelligence, and it has had a plan for it for years. If you have heard about the &quot;UAE National AI Strategy&quot; but are not sure what it really means, this guide is for you. We will keep it simple.",
       "The UAE launched its national AI strategy in 2017. The big goal is to become a world leader in AI by 2031. It was also the year the country named a dedicated minister for artificial intelligence, one of the first in the world.",
@@ -1098,7 +1098,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300",
     "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200",
     "readTime": "4 min read",
-    "excerpt": "In the Emirates, so much runs on trust. Residents trust their banks, their government apps and their payment rails to work seamlessly, every hour of the day. That trust is a quiet national asset, and protecting it has become one of the most serious business questions of our time.",
+    "excerpt": "Understand the main cyber threats facing UAE businesses and the rules that apply, from data protection law to sector standards.",
     "paragraphs": [
       "In the Emirates, so much runs on trust. Residents trust their banks, their government apps and their payment rails to work seamlessly, every hour of the day. That trust is a quiet national asset, and protecting it has become one of the most serious business questions of our time.",
       "Whether you run a family trading house in Deira, a fintech in DIFC or a clinic in Abu Dhabi, cybersecurity is no longer a task for the IT desk alone. It is a matter of reputation, continuity and, increasingly, the law.",
@@ -1171,7 +1171,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=1200",
     "readTime": "5 min read",
-    "excerpt": "Thinking of starting a business in Dubai? You are in good company. Founders from all over the world come here for the easy access to customers, the strong infrastructure, and the friendly business rules. But before you do anything else, you need to answer one big question: should you set up on the mainland or in a free zone?",
+    "excerpt": "Mainland or free zone? Learn the real difference, the steps to start, and the costs to expect when starting a business in Dubai.",
     "paragraphs": [
       "Thinking of starting a business in Dubai? You are in good company. Founders from all over the world come here for the easy access to customers, the strong infrastructure, and the friendly business rules. But before you do anything else, you need to answer one big question: should you set up on the mainland or in a free zone?",
       "This guide explains the difference, so you can pick the right path and avoid costly mistakes.",
@@ -1353,7 +1353,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300",
     "image": "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200",
     "readTime": "4 min read",
-    "excerpt": "If you run a company in the UAE, you may have heard the word &quot;Emiratisation&quot;. It simply means hiring more UAE nationals in the private sector. For some companies it is a legal duty, with deadlines and fines. This guide explains the basics in plain words, so you know what to do and when.",
+    "excerpt": "A simple guide to UAE Emiratisation rules: who must follow them, the targets and deadlines, fines, and what employers should do.",
     "paragraphs": [
       "If you run a company in the UAE, you may have heard the word &quot;Emiratisation&quot;. It simply means hiring more UAE nationals in the private sector. For some companies it is a legal duty, with deadlines and fines. This guide explains the basics in plain words, so you know what to do and when.",
       "Emiratisation is a national policy to increase the number of Emiratis working in private companies. The Ministry of Human Resources and Emiratisation (MoHRE) runs it and sets the targets.",
@@ -1442,7 +1442,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200",
     "readTime": "5 min read",
-    "excerpt": "On a February morning in 2021, a small spacecraft slipped into orbit around Mars, and an entire region held its breath. When the Hope Probe confirmed its arrival, the United Arab Emirates became one of only a handful of nations to have reached the Red Planet. It was a moment of quiet, unshakeable national pride, and it was only the beginning.",
+    "excerpt": "From the Hope Probe at Mars to Rashid Rover 2 and the MBR Explorer, explore the UAE's space programme and its next missions.",
     "paragraphs": [
       "On a February morning in 2021, a small spacecraft slipped into orbit around Mars, and an entire region held its breath. When the Hope Probe confirmed its arrival, the United Arab Emirates became one of only a handful of nations to have reached the Red Planet. It was a moment of quiet, unshakeable national pride, and it was only the beginning.",
       "Here is the story of the UAE&#39;s space programme so far, and the missions that will carry it into the next decade.",
@@ -1531,7 +1531,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1200",
     "readTime": "5 min read",
-    "excerpt": "For generations, the question we asked of medicine was simple: what is wrong, and how do we fix it? Increasingly, the UAE is asking a more ambitious one: how do we stay well for longer? That shift, from treating illness to protecting health, sits at the heart of a growing field known as longevity medicine.",
+    "excerpt": "Learn what longevity medicine is, how Abu Dhabi licenses Healthy Longevity Medicine Centres, and what to ask before choosing a clinic.",
     "paragraphs": [
       "For generations, the question we asked of medicine was simple: what is wrong, and how do we fix it? Increasingly, the UAE is asking a more ambitious one: how do we stay well for longer? That shift, from treating illness to protecting health, sits at the heart of a growing field known as longevity medicine.",
       "Abu Dhabi, in particular, has moved to give the field formal structure. Here is what longevity medicine is, what is on offer in the two emirates, and how to approach it with a clear head.",
@@ -1620,7 +1620,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=1200",
     "readTime": "4 min read",
-    "excerpt": "See how Dubai and Abu Dhabi are pioneering sustainable urban mobility, from autonomous vehicles to eVTOL aerial taxis and vertiports. Read now!",
+    "excerpt": "See how Dubai and Abu Dhabi are pioneering sustainable urban mobility, from autonomous vehicles to eVTOL aerial taxis and vertiports.",
     "paragraphs": [
       "Picture a short hop from an airport to a waterfront hotel, not in a car stuck in traffic, but in a quiet electric aircraft gliding above the skyline. For Dubai and Abu Dhabi, that vision is moving from science fiction toward planning documents, pilot programmes, and purpose-built infrastructure. Both emirates are racing to reinvent how people move around their cities, with sustainability and innovation at the centre of the plan.",
       "Fast-growing cities face familiar pressures: congestion, air pollution, rising emissions, and the cost of building ever more roads. The UAE has set ambitious climate and diversification goals, so transport, one of the largest sources of urban emissions, is a natural priority. Cleaner, smarter mobility promises shorter commutes, better air quality, and a more liveable city for residents and visitors alike.",
@@ -1685,7 +1685,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300",
     "image": "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=1200",
     "readTime": "5 min read",
-    "excerpt": "There is a quiet pleasure in arriving at a private terminal. No queues, no crowded concourse, only a courteous welcome, a short walk across the tarmac and a cabin that is entirely yours. In a country where time is treated as the most valuable currency, it is little wonder that private aviation has found such a natural home in the Emirates.",
+    "excerpt": "How much does a private jet charter cost in the UAE? See price ranges, airports, savings tips and how booking works.",
     "paragraphs": [
       "There is a quiet pleasure in arriving at a private terminal. No queues, no crowded concourse, only a courteous welcome, a short walk across the tarmac and a cabin that is entirely yours. In a country where time is treated as the most valuable currency, it is little wonder that private aviation has found such a natural home in the Emirates.",
       "If you have wondered what chartering a jet in the UAE really involves, and what it costs, here is a clear and candid guide.",
@@ -1779,7 +1779,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300",
     "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1200",
     "readTime": "4 min read",
-    "excerpt": "When people talk about AI in the Gulf, the same few names come up again and again. If you want to know who is building what, this simple guide will help. It is not a ranking. It is a friendly starting point for anyone curious about the UAE&#39;s AI scene.",
+    "excerpt": "Meet the main AI companies and institutions in the UAE, from G42 and Falcon to MBZUAI, in a simple guide. Read now!",
     "paragraphs": [
       "When people talk about AI in the Gulf, the same few names come up again and again. If you want to know who is building what, this simple guide will help. It is not a ranking. It is a friendly starting point for anyone curious about the UAE&#39;s AI scene.",
       "The UAE has made AI a national priority. It has a long-term plan, big investment, and strong support for research.",
@@ -1881,7 +1881,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1497440001374-f26997328c1b?w=1200",
     "readTime": "6 min read",
-    "excerpt": "Electrified thermal storage, green hydrogen kilns, and carbon capture loops transform steel, cement, and chemical manufacturing into low-carbon assets.",
+    "excerpt": "Explore the top 10 industrial decarbonization systems securing multi-billion clean capital across heavy industry, thermal storage, and green hydrogen.",
     "paragraphs": [
       "Electrified thermal storage, green hydrogen kilns, and carbon capture loops transform steel, cement, and chemical manufacturing into low-carbon assets."
     ],
@@ -1909,7 +1909,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300",
     "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=1200",
     "readTime": "5 min read",
-    "excerpt": "Zero-trust micro-segmentation and continuous cryptographic identity proofs guard mission-critical enterprise applications against autonomous intrusion agents.",
+    "excerpt": "Discover the top 10 cybersecurity mesh architectures defending modern enterprise cloud grids with zero-trust and decentralized cryptographic identity proofs.",
     "paragraphs": [
       "Zero-trust micro-segmentation and continuous cryptographic identity proofs guard mission-critical enterprise applications against autonomous intrusion agents."
     ],
@@ -1937,7 +1937,7 @@ export const ARTICLES: Article[] = [
     "authorAvatar": "https://images.unsplash.com/photo-1556155092-490a1ba16284?w=300",
     "image": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200",
     "readTime": "6 min read",
-    "excerpt": "Walk into any office tower in Dubai or Abu Dhabi and you will hear a small symphony: Arabic, English, Hindi, Urdu, Tagalog, French, Russian, and more, often within a single meeting. Colleagues break their fast together in Ramadan, celebrate Diwali, Christmas and Eid in the same year, and share a pot of karak at the end of a long week.",
+    "excerpt": "A practical guide to leading diverse teams in the UAE, from communication and feedback to Ramadan hours and Emiratisation.",
     "paragraphs": [
       "Walk into any office tower in Dubai or Abu Dhabi and you will hear a small symphony: Arabic, English, Hindi, Urdu, Tagalog, French, Russian, and more, often within a single meeting. Colleagues break their fast together in Ramadan, celebrate Diwali, Christmas and Eid in the same year, and share a pot of karak at the end of a long week.",
       "This is the UAE&#39;s quiet advantage, and its greatest leadership test. Expatriates make up close to nine in ten of the country&#39;s residents, and Dubai alone is home to people from more than 200 nationalities. Leading such a team well is not a soft skill. It is a competitive edge.",
