@@ -70,11 +70,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         'news analysis',
       ].filter(Boolean) as string[];
 
-  const resolvedMetaTitle = article.metaTitle
-    ? (article.metaTitle.toLowerCase().includes(siteConfig.name.toLowerCase())
-        ? article.metaTitle
-        : `${article.metaTitle} | ${siteConfig.name}`)
-    : `${article.title} | ${siteConfig.name}`;
+  const resolvedMetaTitle = article.metaTitle || `${article.title} | ${siteConfig.name}`;
   const resolvedMetaDesc = article.metaDescription || article.excerpt;
 
   return {
