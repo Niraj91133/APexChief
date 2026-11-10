@@ -803,11 +803,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/hospitality/ultra-luxury-eco-resorts-sustainable-hospitality',
-        destination: '/hospitality/best-eco-luxury-resorts-uae',
-        permanent: true,
-      },
-      {
         source: '/news/omnichannel-luxury-retail-spatial-computing',
         destination: '/retail/dubai-shopping-festival-luxury-retail-strategy',
         permanent: true,
