@@ -43,8 +43,18 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category, slug } = await params;
+  const localArticle = getArticleBySlug(slug);
   const dbArticles = await getArticlesFromDB();
-  const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
+  const dbArticle = dbArticles?.find((a) => a.slug === slug || a.id === slug);
+  const article = dbArticle
+    ? {
+        ...dbArticle,
+        metaTitle: localArticle?.metaTitle || dbArticle.metaTitle,
+        metaDescription: localArticle?.metaDescription || dbArticle.metaDescription,
+        keywords: localArticle?.keywords || dbArticle.keywords,
+        primaryKeyword: localArticle?.primaryKeyword || dbArticle.primaryKeyword,
+      }
+    : localArticle;
   const siteConfig = getSiteConfig();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 

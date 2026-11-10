@@ -1,9 +1,11 @@
 import { supabaseAdmin, supabase } from './supabase';
 import { Article, CategoryInfo } from '@/types';
 import { siteConfig } from '@/data/siteConfig';
+import { ARTICLES } from '@/data/articles';
 
 // Helper to convert Supabase row to Article interface
 export function mapRowToArticle(row: any): Article {
+  const localArt = ARTICLES.find((a) => a.slug === row.slug || a.id === row.slug || a.id === row.id);
   return {
     id: row.id || row.slug,
     slug: row.slug,
@@ -32,10 +34,11 @@ export function mapRowToArticle(row: any): Article {
     publishTime: row.publish_time || undefined,
     publishTimezone: row.publish_timezone || undefined,
     homepagePriority: row.homepage_priority || 'Normal',
-    metaTitle: row.meta_title || undefined,
-    metaDescription: row.meta_description || undefined,
-    keywords: row.keywords || undefined,
-    primaryKeyword: row.primary_keyword || undefined,
+    metaTitle: row.meta_title || localArt?.metaTitle || undefined,
+    metaDescription: row.meta_description || localArt?.metaDescription || row.excerpt || undefined,
+    keywords: row.keywords || localArt?.keywords || undefined,
+    primaryKeyword: row.primary_keyword || localArt?.primaryKeyword || undefined,
+    targetedKeywords: (localArt as any)?.targetedKeywords || undefined,
     paragraphs: Array.isArray(row.paragraphs) ? row.paragraphs : [],
     sections: Array.isArray(row.sections) ? row.sections : [],
   } as Article;
