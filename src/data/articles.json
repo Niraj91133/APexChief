@@ -814,7 +814,7 @@
     "status": "Published",
     "metaTitle": "Dubai vs Abu Dhabi Property: Where Should You Invest?",
     "metaDescription": "Compare Dubai and Abu Dhabi property on prices, yields, fees, ownership rules and Golden Visa eligibility before you buy.",
-    "targetedKeywords": "dubai vs abu dhabi property, buy property dubai, invest abu dhabi real estate, rental yields UAE, Golden Visa property, Dubai freehold, Abu Dhabi investment zones",
+    "targetedKeywords": "dubai vs abu dhabi property, buy property Dubai, invest Abu Dhabi real estate, rental yields UAE, Golden Visa property, Dubai freehold, Abu Dhabi investment zones",
     "primaryKeyword": "dubai vs abu dhabi property",
     "secondaryKeywords": "buy property dubai, invest abu dhabi real estate, rental yields UAE, Golden Visa property, Dubai freehold, Abu Dhabi investment zones",
     "keywords": "dubai vs abu dhabi property, buy property Dubai, invest Abu Dhabi real estate, rental yields UAE, Golden Visa property, Dubai freehold, Abu Dhabi investment zones",
@@ -911,7 +911,7 @@
     "status": "Published",
     "metaTitle": "DIFC vs ADGM: Which Financial Centre Is Right for You?",
     "metaDescription": "DIFC or ADGM? Compare location, laws, costs, and fit for fintech, funds, and family offices in plain English.",
-    "targetedKeywords": "difc vs adgm, DIFC free zone, ADGM Abu Dhabi, UAE financial centre, DIFC licence cost, ADGM licence cost, set up company DIFC, Dubai financial centre",
+    "targetedKeywords": "difc vs adgm, DIFC company setup, ADGM company setup, financial free zone UAE, DFSA, FSRA, fintech licence UAE, common law UAE",
     "primaryKeyword": "difc vs adgm",
     "secondaryKeywords": "DIFC free zone, ADGM Abu Dhabi, UAE financial centre, DIFC licence cost, ADGM licence cost, set up company DIFC, Dubai financial centre",
     "keywords": "difc vs adgm, DIFC company setup, ADGM company setup, financial free zone UAE, DFSA, FSRA, fintech licence UAE, common law UAE",
@@ -992,7 +992,7 @@
     "status": "Published",
     "metaTitle": "Family Offices in Dubai and Abu Dhabi: Why Wealth Is Moving",
     "metaDescription": "Learn what a family office is, why wealthy families are choosing Dubai and Abu Dhabi, and how to set one up.",
-    "targetedKeywords": "family office dubai, family office abu dhabi, single family office UAE, wealth management Dubai, DIFC family office, ADGM family office, rich families moving to dubai",
+    "targetedKeywords": "family office dubai, family office Abu Dhabi, single family office UAE, wealth management UAE, DIFC family office, ADGM foundation, UAE Golden Visa",
     "primaryKeyword": "family office dubai",
     "secondaryKeywords": "family office abu dhabi, single family office UAE, wealth management Dubai, DIFC family office, ADGM family office, rich families moving to dubai",
     "keywords": "family office dubai, family office Abu Dhabi, single family office UAE, wealth management UAE, DIFC family office, ADGM foundation, UAE Golden Visa",
@@ -1148,7 +1148,7 @@
     "status": "Published",
     "metaTitle": "Cybersecurity in the UAE: Threats and Rules for Businesses",
     "metaDescription": "Understand the main cyber threats facing UAE businesses and the rules that apply, from data protection law to sector standards.",
-    "targetedKeywords": "cybersecurity uae, UAE cyber law, UAE Cybersecurity Council, cyber threats Dubai, data protection UAE, business cybersecurity UAE",
+    "targetedKeywords": "cybersecurity uae, UAE PDPL, UAE Cyber Security Council, ransomware UAE, data protection UAE, cyber threats Dubai, business cybersecurity Dubai",
     "primaryKeyword": "cybersecurity uae",
     "secondaryKeywords": "UAE cyber law, UAE Cybersecurity Council, cyber threats Dubai, data protection UAE, business cybersecurity UAE",
     "keywords": "cybersecurity uae, UAE PDPL, UAE Cyber Security Council, ransomware UAE, data protection UAE, cyber threats Dubai, business cybersecurity Dubai",
@@ -1419,7 +1419,7 @@
     "status": "Published",
     "metaTitle": "Emiratisation Rules for Private Companies in the UAE (2026)",
     "metaDescription": "A simple guide to UAE Emiratisation rules: who must follow them, the targets and deadlines, fines, and what employers should do.",
-    "targetedKeywords": "emiratisation rules uae, Emiratisation private sector, MoHRE Emiratisation fines, Nafis programme, Emiratisation targets 2026, hire Emiratis, UAE labour law Emiratisation",
+    "targetedKeywords": "emiratisation private sector, Emiratisation targets 2026, MoHRE Emiratisation, Emiratisation fines, Nafis platform, hiring Emiratis, UAE labour rules",
     "primaryKeyword": "emiratisation rules uae",
     "secondaryKeywords": "Emiratisation private sector, MoHRE Emiratisation fines, Nafis programme, Emiratisation targets 2026, hire Emiratis, UAE labour law Emiratisation",
     "keywords": "emiratisation private sector, Emiratisation targets 2026, MoHRE Emiratisation, Emiratisation fines, Nafis platform, hiring Emiratis, UAE labour rules",
@@ -2055,6 +2055,7 @@
     "isBreaking": false,
     "featured": true,
     "trending": true,
-    "status": "Published"
+    "status": "Published",
+    "targetedKeywords": "ultra luxury eco resorts, sustainable hospitality, eco resorts Gulf, sustainable luxury travel, green resorts UAE, eco-friendly luxury hotels"
   }
 ]
