@@ -9,7 +9,7 @@ export interface CategorySeoData {
 
 export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
   'all': {
-    slug: 'all',
+    slug: "all",
     metaTitle: "UAE Articles & Latest Blogs | ApexChief",
     metaDescription: "Explore business, technology, leadership and industry articles covering emerging trends, expert insights and developments in the UAE and global markets. Read now!",
     h1: "Explore Articles and Latest Blogs!",
@@ -17,15 +17,15 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "uae articles, blog websites, latest articles, best blogging platform",
   },
   'interview': {
-    slug: 'interview',
+    slug: "interview",
     metaTitle: "Business Leader & CEO Interviews | ApexChief",
     metaDescription: "Read interviews with business leaders, founders and entrepreneurs. Discover their experiences, leadership lessons and insights into the UAE and global markets.",
     h1: "Business Leader, CEO and Founder Interviews",
-    introContent: "Explore exclusive conversations with visionary business leaders, CEOs, and pioneering founders across the UAE and global markets. Discover firsthand accounts of scaling companies, navigating market transformations, and mastering strategic leadership.",
+    introContent: "Explore interviews with business leaders, CEOs, founders and entrepreneurs sharing their experiences, challenges and achievements. Read insightful interview articles featuring leadership lessons, business strategies and perspectives from professionals shaping industries in the UAE and worldwide.",
     keywords: "business leaders interviews, ceo interviews, founder interviews, interview articles",
   },
   'top-list': {
-    slug: 'top-list',
+    slug: "top-list",
     metaTitle: "Top Startups & Startup Companies | ApexChief",
     metaDescription: "Explore top startups, emerging startup companies and curated top list articles. Discover innovative businesses, industry leaders and companies to watch in the UAE and beyond.",
     h1: "Top Startups and Companies to Know",
@@ -33,7 +33,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "top startups, startup companies, topList articles",
   },
   'leadership': {
-    slug: 'leadership',
+    slug: "leadership",
     metaTitle: "Leadership Insights & Strategies | ApexChief",
     metaDescription: "Explore leadership insights, practical leadership strategies and informative leadership articles covering management, decision-making, team development and business growth.",
     h1: "Leadership Insights and Strategies",
@@ -41,7 +41,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "leadership insights, leadership strategies, leadership articles",
   },
   'technology': {
-    slug: 'technology',
+    slug: "technology",
     metaTitle: "Technology Trends & Digital Transformation UAE | ApexChief",
     metaDescription: "Explore technology trends, business technology and digital transformation in the UAE. Discover emerging innovations, tech trends and developments shaping modern industries.",
     h1: "Technology Trends and Business Innovation",
@@ -49,7 +49,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "technology trends, business technology, digital transformation uae, tech trends",
   },
   'business': {
-    slug: 'business',
+    slug: "business",
     metaTitle: "Business Articles, News & Trends in the UAE | ApexChief",
     metaDescription: "Explore business articles, UAE business news and the latest business trends. Discover company developments, market insights, business strategies and industry opportunities.",
     h1: "Business Articles, News and Trends",
@@ -57,7 +57,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "business articles, business news uae, business trends",
   },
   'news': {
-    slug: 'news',
+    slug: "news",
     metaTitle: "UAE Business News & Economic Updates | ApexChief",
     metaDescription: "Stay updated with UAE business news, the latest UAE news, economic developments and industry news. Explore important stories shaping businesses and markets.",
     h1: "UAE Business News and Industry Updates",
@@ -65,7 +65,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "uae business news, latest uae news, economic news uae, industry news",
   },
   'real-estate': {
-    slug: 'real-estate',
+    slug: "real-estate",
     metaTitle: "UAE Real Estate Market & Dubai Property News | ApexChief",
     metaDescription: "Explore the UAE real estate market, Dubai property market trends and Dubai real estate news. Discover property developments, market insights and industry updates.",
     h1: "UAE Real Estate Market and Dubai Property Trends",
@@ -73,7 +73,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "uae real estate market, dubai property market, dubai real estate news",
   },
   'health': {
-    slug: 'health',
+    slug: "health",
     metaTitle: "Healthcare Industry Trends & Health Insights | ApexChief",
     metaDescription: "Explore healthcare industry trends, current healthcare developments and health and wellness blogs. Discover health-related insights, medical innovation and emerging healthcare topics.",
     h1: "Healthcare Industry Trends and Health Insights",
@@ -81,7 +81,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "healthcare industry trends, current healthcare trends, health and wellness blogs, health related blogs",
   },
   'retail': {
-    slug: 'retail',
+    slug: "retail",
     metaTitle: "UAE Retail Market, E-commerce & Industry Trends | ApexChief",
     metaDescription: "Discover retail industry trends, e-commerce in the UAE and developments in the UAE retail market. Explore consumer behaviour, retail technology and changing shopping trends.",
     h1: "Retail Industry Trends and E-commerce",
@@ -89,7 +89,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "retail industry trends, e commerce uae, uae retail market",
   },
   'hospitality': {
-    slug: 'hospitality',
+    slug: "hospitality",
     metaTitle: "UAE Hospitality Industry & Trends | ApexChief",
     metaDescription: "Explore hospitality industry trends and the UAE hospitality industry. Discover insights into hotels, tourism, guest experiences and developments shaping hospitality businesses.",
     h1: "Hospitality Industry and Emerging Trends",
@@ -97,7 +97,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "hospitality industry trends, uae hospitality industry",
   },
   'lifestyle': {
-    slug: 'lifestyle',
+    slug: "lifestyle",
     metaTitle: "Modern Living, Lifestyle & Design | ApexChief",
     metaDescription: "Explore modern living, lifestyle and design ideas covering contemporary spaces, everyday experiences, emerging lifestyle trends and inspiration for life in the UAE and beyond.",
     h1: "Modern Living, Lifestyle and Design",
@@ -105,7 +105,7 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "modern living, lifestyle and design",
   },
   'startups': {
-    slug: 'startups',
+    slug: "startups",
     metaTitle: "Startups in UAE & Dubai Startup Ecosystem | ApexChief",
     metaDescription: "Explore startups in the UAE, the UAE startup ecosystem and business startups in Dubai. Discover entrepreneurship, startup growth, funding developments and innovation.",
     h1: "Startups in the UAE and Dubai's Startup Ecosystem",
@@ -113,21 +113,19 @@ export const CATEGORY_SEO_DATA: Record<string, CategorySeoData> = {
     keywords: "startups in uae, uae startup ecosystem, business startup in dubai",
   },
   'opinion': {
-    slug: 'opinion',
+    slug: "opinion",
     metaTitle: "Business Opinions, Insights & Industry Perspectives | ApexChief",
     metaDescription: "Explore business opinions and insights, expert commentary and industry perspectives on leadership, technology, markets and the developments shaping modern businesses.",
     h1: "Business Opinions, Insights and Industry Perspectives",
     introContent: "Explore business opinions and insights from different industry perspectives. Read commentary on leadership, technology, business developments and emerging market trends to understand the ideas, viewpoints and discussions shaping modern industries in the UAE and worldwide.",
     keywords: "industry perspectives, business opinions and insights",
   },
-  category: {
-    slug: 'category',
+  'category': {
+    slug: "category",
     metaTitle: "UAE Articles & Latest Blogs | ApexChief",
-    metaDescription:
-      "Explore business, technology, leadership and industry articles covering emerging trends, expert insights and developments in the UAE and global markets. Read now!",
+    metaDescription: "Explore business, technology, leadership and industry articles covering emerging trends, expert insights and developments in the UAE and global markets. Read now!",
     h1: "Explore Articles and Latest Blogs!",
-    introContent:
-      "Discover informative UAE articles and the latest blogs covering business, technology, leadership, real estate and more. Explore diverse topics, industry developments and expert perspectives to stay updated on emerging trends across the UAE and beyond.",
+    introContent: "Discover informative UAE articles and the latest blogs covering business, technology, leadership, real estate and more. Explore diverse topics, industry developments and expert perspectives to stay updated on emerging trends across the UAE and beyond.",
     keywords: "uae articles, blog websites, latest articles, best blogging platform",
   },
 };
