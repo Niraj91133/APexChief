@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ChevronRight, Home } from 'lucide-react';
+import { ArrowLeft, Home } from 'lucide-react';
 
 export interface BreadcrumbItem {
   label: string;

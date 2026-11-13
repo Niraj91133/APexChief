@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ArticleHeroImageProps {
   src: string;
@@ -11,10 +11,8 @@ interface ArticleHeroImageProps {
 const DEFAULT_FALLBACK = '/images/apexchief-logo-light.png';
 
 /**
- * ArticleHeroImage dynamically sizes the container aspect ratio to match the uploaded
- * photo's natural dimensions so the entire image renders uncropped with zero empty space.
- * Standard landscape uploads (e.g. 1200x800, 16:9, 4:3) span 100% of the blog column width;
- * tall portraits/squares clamp cleanly to maxHeight 520px while hugging the image tightly.
+ * ArticleHeroImage renders every blog cover photo in a uniform 16:9 full-width frame
+ * matching the standard 1200x675 editorial hero size across all blog posts.
  */
 export default function ArticleHeroImage({
   src,
@@ -24,42 +22,24 @@ export default function ArticleHeroImage({
   const safeSrc = src && src.trim() ? src.replace(/&amp;/g, '&') : DEFAULT_FALLBACK;
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [hasError, setHasError] = useState(false);
-  const [naturalSize, setNaturalSize] = useState<{ w: number; h: number } | null>(null);
+  const [isPortrait, setIsPortrait] = useState(false);
 
   useEffect(() => {
     setHasError(false);
-    setNaturalSize(null);
+    setIsPortrait(false);
     const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > 0) {
-      setNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+    if (img && img.complete && img.naturalWidth > 0 && img.naturalHeight > img.naturalWidth) {
+      setIsPortrait(true);
     }
   }, [safeSrc]);
 
   const displaySrc = hasError ? DEFAULT_FALLBACK : safeSrc;
-  const ratio =
-    naturalSize && naturalSize.w > 0 && naturalSize.h > 0
-      ? naturalSize.w / naturalSize.h
-      : 1.5; // Default 3:2 (matches 1200x800 cleanly before hydration)
-
-  const isPortraitOrSquare = ratio < 1.25;
-  const maxHeightPx = 520;
-
-  const boxStyle: React.CSSProperties = isPortraitOrSquare
-    ? {
-        width: '100%',
-        maxWidth: `${Math.round(maxHeightPx * ratio)}px`,
-        aspectRatio: `${naturalSize ? `${naturalSize.w} / ${naturalSize.h}` : '1 / 1'}`,
-        maxHeight: `${maxHeightPx}px`,
-      }
-    : {
-        width: '100%',
-        aspectRatio: `${naturalSize ? `${naturalSize.w} / ${naturalSize.h}` : '3 / 2'}`,
-      };
+  const focusClass = isPortrait ? 'object-[center_20%]' : 'object-center';
 
   return (
     <figure className="w-full my-5">
       <div
-        style={boxStyle}
+        style={{ width: '100%', aspectRatio: '16 / 9' }}
         className="relative overflow-hidden rounded-lg border border-[#211d1d]/15 dark:border-white/15 shadow-sm"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -71,13 +51,13 @@ export default function ArticleHeroImage({
           onLoad={(e) => {
             const img = e.currentTarget;
             if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-              setNaturalSize({ w: img.naturalWidth, h: img.naturalHeight });
+              setIsPortrait(img.naturalHeight > img.naturalWidth);
             }
           }}
           onError={() => {
             if (!hasError) setHasError(true);
           }}
-          className="block w-full h-full object-cover"
+          className={`block w-full h-full object-cover ${focusClass}`}
         />
       </div>
       {caption && (

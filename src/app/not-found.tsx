@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Newspaper, ArrowLeft, Search } from 'lucide-react';
+import { Newspaper, ArrowLeft } from 'lucide-react';
 
 export default function NotFound() {
   const [categories, setCategories] = useState<any[]>([]);

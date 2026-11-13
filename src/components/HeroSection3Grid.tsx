@@ -180,10 +180,6 @@ export default function HeroSection3Grid({
 
   const safeSliderIndex = activeInterviews.length > 0 ? sliderIndex % activeInterviews.length : 0;
   const activeInterview = activeInterviews[safeSliderIndex] || activeInterviews[0];
-  const nextInterview =
-    activeInterviews.length > 1
-      ? activeInterviews[(safeSliderIndex + 1) % activeInterviews.length]
-      : null;
 
   const activeQuoteMeta = activeInterview ? interviewQuotes[activeInterview.slug] : undefined;
 

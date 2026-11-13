@@ -1,6 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
-import { ArrowLeft, Scale, BookOpen, AlertCircle, FileCheck, ShieldCheck, Mail } from 'lucide-react';
+import { Scale, Mail } from 'lucide-react';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/Breadcrumbs';
 

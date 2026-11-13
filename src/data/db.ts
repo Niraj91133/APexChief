@@ -166,13 +166,6 @@ export function getArticleBySlug(slug: string): Article | undefined {
   return articles.find((a) => a.slug === slug || a.id === slug);
 }
 
-export function getRelatedArticles(currentSlug: string, category: string, limit = 4): Article[] {
-  const articles = getArticles();
-  return articles
-    .filter((a) => a.slug !== currentSlug)
-    .slice(0, limit);
-}
-
 export function getCategories(): CategoryInfo[] {
   try {
     initDB();

@@ -1,17 +1,12 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Link from 'next/link';
 import {
   PenTool,
-  ArrowLeft,
-  CheckCircle2,
-  Send,
   BookOpen,
   Sparkles,
   Users,
   ShieldCheck,
   TrendingUp,
-  Mail,
   Award,
   HelpCircle,
 } from 'lucide-react';

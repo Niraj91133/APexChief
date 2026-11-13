@@ -59,23 +59,25 @@ export async function PUT(request: Request) {
 
     if (newConfig.favicon || newConfig.faviconUrl) {
       newConfig.favicon = newConfig.favicon || newConfig.faviconUrl;
-      try {
-        const fs = await import('fs');
-        const path = await import('path');
-        const raw = newConfig.favicon.replace(/^data:image\/[a-z]+;base64,/, '');
-        const buf = Buffer.from(raw, 'base64');
-        const targets = [
-          'public/favicon.ico',
-          'public/icon.png',
-          'public/apple-icon.png',
-          'public/favicon.png',
-        ];
-        targets.forEach((t) => {
-          try {
-            fs.writeFileSync(path.join(process.cwd(), t), buf);
-          } catch (err) {}
-        });
-      } catch (err) {}
+      if (typeof newConfig.favicon === 'string' && newConfig.favicon.startsWith('data:image/')) {
+        try {
+          const fs = await import('fs');
+          const path = await import('path');
+          const raw = newConfig.favicon.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, '');
+          const buf = Buffer.from(raw, 'base64');
+          const targets = [
+            'public/favicon.ico',
+            'public/icon.png',
+            'public/apple-icon.png',
+            'public/favicon.png',
+          ];
+          targets.forEach((t) => {
+            try {
+              fs.writeFileSync(path.join(process.cwd(), t), buf);
+            } catch (err) {}
+          });
+        } catch (err) {}
+      }
     }
 
     // 1. Save to Supabase

@@ -1,16 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
+  let reqTitle = '';
+  let reqExcerpt = '';
   try {
     const body = await req.json();
     const {
       title = '',
       excerpt = '',
       content = '',
-      focusKeyword = '',
-      metaDescription = '',
       category = 'Business',
     } = body;
+    reqTitle = title;
+    reqExcerpt = excerpt;
 
     const apiKey = process.env.GEMINI_API_KEY;
 
@@ -239,7 +241,6 @@ Respond ONLY with a valid, parseable JSON object matching this schema:
     });
   } catch (error: any) {
     console.error('SEO Analysis API Route Error:', error);
-    const body = await req.json().catch(() => ({}));
     const fallback = {
       overallScore: 78,
       scoreLabel: 'Good',
@@ -248,15 +249,15 @@ Respond ONLY with a valid, parseable JSON object matching this schema:
       titleSuggestions: [
         {
           type: 'High CTR',
-          title: body.title ? `${body.title}: Strategic Overview 2026` : 'Modern Industry Strategic Overview',
+          title: reqTitle ? `${reqTitle}: Strategic Overview 2026` : 'Modern Industry Strategic Overview',
           hook: 'Clear, high-engagement headline',
           excerpt: 'A comprehensive editorial analysis on key industry developments and strategic foresight.',
           draftHtml: '<p>A deep dive into current industry developments, strategic frameworks, and market fundamentals.</p>',
         },
       ],
       suggestedMeta: {
-        seoTitle: body.title || 'ApexChief Editorial Story',
-        metaDescription: body.excerpt || 'Read the full in-depth story on ApexChief.',
+        seoTitle: reqTitle || 'ApexChief Editorial Story',
+        metaDescription: reqExcerpt || 'Read the full in-depth story on ApexChief.',
       },
       keywords: ['Analysis', 'Strategy', 'Report'],
       checklist: [],

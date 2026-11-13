@@ -78,7 +78,7 @@ export async function generateMetadata({ searchParams }: NewsPageProps): Promise
   };
 }
 
-import { redirect, permanentRedirect } from 'next/navigation';
+import { permanentRedirect } from 'next/navigation';
 
 export default async function NewsPage({ searchParams }: NewsPageProps) {
   const params = await searchParams;

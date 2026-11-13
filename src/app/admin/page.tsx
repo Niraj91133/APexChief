@@ -9,18 +9,12 @@ import {
   Trash2,
   Edit,
   Eye,
-  BookOpen,
-  User,
   ImageIcon,
-  Calendar,
-  CalendarDays,
-  List,
   FileText,
   Check,
   CheckCircle2,
   LogOut,
   Lock,
-  ChevronRight,
   ChevronDown,
   RefreshCw,
   Search,
@@ -28,47 +22,22 @@ import {
   ArrowUp,
   ArrowDown,
   Layout,
-  Star,
   Zap,
-  Tag as TagIcon,
-  Clock,
   Sparkles,
   AlertCircle,
-  Copy,
   ArrowLeft,
   ExternalLink,
-  Bookmark,
   Globe,
-  Bold,
-  Italic,
-  Underline,
-  Strikethrough,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  AlignJustify,
   Link as LinkIcon,
-  Quote,
-  Code,
   Image as LucideImage,
   Type,
-  Grid,
-  Video,
-  Code2,
-  Sliders,
   Paperclip,
-  Share2,
   Box,
-  Compass,
-  Palette,
   Camera,
   History as HistoryIcon,
-  RotateCcw,
   Upload,
   Loader2,
   X,
-  BarChart2,
-  BarChart3,
   TrendingUp,
   Users,
   Activity,
@@ -78,52 +47,14 @@ import {
   Smartphone,
   Monitor,
   Tablet,
-  Globe2,
   Sun,
   Moon
 } from 'lucide-react';
-import { Article, ArticleSection, CategoryInfo, SubCategory } from '@/types';
+import { Article, ArticleSection, CategoryInfo } from '@/types';
 import { CATEGORIES } from '@/data/categories';
 import { AnalyticsData } from '@/lib/supabaseService';
 import { getBlogUrl } from '@/lib/blogUrl';
 import { buildSafeHtmlExcerpt, renderRichInline } from '@/lib/linkify';
-
-// Default password for verification
-const DEFAULT_ADMIN_PASSWORD = 'Apexchief2026@';
-
-interface AuthorProfile {
-  name: string;
-  role: string;
-  avatar: string;
-}
-
-const PREDEFINED_AUTHORS: AuthorProfile[] = [
-  {
-    name: 'Admin',
-    role: 'Chief Editor',
-    avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
-  },
-  {
-    name: 'Sarah Khan',
-    role: 'News Editor',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300',
-  },
-  {
-    name: 'Marcus Webb',
-    role: 'Finance Writer',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300',
-  },
-  {
-    name: 'Theodore Vance',
-    role: 'Special Correspondent',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300',
-  },
-  {
-    name: 'Elena Rostova',
-    role: 'Senior Reporter',
-    avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300',
-  }
-];
 
 const CURATED_STOCK_PHOTOS = [
   // 1. Tech & AI
@@ -151,128 +82,6 @@ const CURATED_STOCK_PHOTOS = [
   { label: 'Lunar Exploration & Space', category: 'Science', url: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1200' },
   { label: 'Biotech Genome Research', category: 'Science', url: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200' },
   { label: 'Neuroscience & Brain Health', category: 'Science', url: 'https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1200' },
-];
-
-const GOOGLE_FONTS_COLLECTION = [
-  // 1. MODERN SANS-SERIF (35 FONTS)
-  { name: 'Inter', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Roboto', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Open Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Lato', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Montserrat', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Poppins', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Raleway', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Nunito', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Ubuntu', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Rubik', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Work Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'DM Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Plus Jakarta Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Outfit', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Manrope', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Urbanist', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Barlow', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Quicksand', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Cabin', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Karla', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Fira Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'PT Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Source Sans 3', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Mulish', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Space Grotesk', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Syne', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Epilogue', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Geist', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Instrument Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Figtree', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Red Hat Display', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Albert Sans', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Lexend', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Schibsted Grotesk', category: 'Sans-Serif (Clean & Modern)' },
-  { name: 'Kanit', category: 'Sans-Serif (Clean & Modern)' },
-
-  // 2. LUXURY & EDITORIAL SERIF (35 FONTS)
-  { name: 'Playfair Display', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Merriweather', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Lora', category: 'Serif (Editorial & Luxury)' },
-  { name: 'PT Serif', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Cinzel', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Cormorant Garamond', category: 'Serif (Editorial & Luxury)' },
-  { name: 'EB Garamond', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Libre Baskerville', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Bodoni Moda', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Prata', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Fraunces', category: 'Serif (Editorial & Luxury)' },
-  { name: 'DM Serif Display', category: 'Serif (Editorial & Luxury)' },
-  { name: 'DM Serif Text', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Newsreader', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Spectral', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Cardo', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Vollkorn', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Castoro', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Frank Ruhl Libre', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Faustina', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Literata', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Bona Nova', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Marcellus', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Old Standard TT', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Arapey', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Gloock', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Italiana', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Rozha One', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Baskervville', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Noto Serif', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Coustard', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Bellefair', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Abhaya Libre', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Zilla Slab', category: 'Serif (Editorial & Luxury)' },
-  { name: 'Cinzel Decorative', category: 'Serif (Editorial & Luxury)' },
-
-  // 3. EXPRESSIVE DISPLAY & HEADLINES (20 FONTS)
-  { name: 'Bebas Neue', category: 'Display & Headlines' },
-  { name: 'Abril Fatface', category: 'Display & Headlines' },
-  { name: 'Righteous', category: 'Display & Headlines' },
-  { name: 'Staatliches', category: 'Display & Headlines' },
-  { name: 'Anton', category: 'Display & Headlines' },
-  { name: 'Bungee', category: 'Display & Headlines' },
-  { name: 'Shrikhand', category: 'Display & Headlines' },
-  { name: 'Alfa Slab One', category: 'Display & Headlines' },
-  { name: 'Bricolage Grotesque', category: 'Display & Headlines' },
-  { name: 'Cabinet Grotesk', category: 'Display & Headlines' },
-  { name: 'Clash Display', category: 'Display & Headlines' },
-  { name: 'Unbounded', category: 'Display & Headlines' },
-  { name: 'Chakra Petch', category: 'Display & Headlines' },
-  { name: 'Audiowide', category: 'Display & Headlines' },
-  { name: 'Russo One', category: 'Display & Headlines' },
-  { name: 'Monoton', category: 'Display & Headlines' },
-  { name: 'Faster One', category: 'Display & Headlines' },
-  { name: 'Federo', category: 'Display & Headlines' },
-  { name: 'Lilita One', category: 'Display & Headlines' },
-  { name: 'Black Han Sans', category: 'Display & Headlines' },
-
-  // 4. TECH & MONOSPACE (10 FONTS)
-  { name: 'JetBrains Mono', category: 'Monospace & Tech' },
-  { name: 'Fira Code', category: 'Monospace & Tech' },
-  { name: 'Source Code Pro', category: 'Monospace & Tech' },
-  { name: 'Roboto Mono', category: 'Monospace & Tech' },
-  { name: 'Inconsolata', category: 'Monospace & Tech' },
-  { name: 'Space Mono', category: 'Monospace & Tech' },
-  { name: 'Courier Prime', category: 'Monospace & Tech' },
-  { name: 'IBM Plex Mono', category: 'Monospace & Tech' },
-  { name: 'Ubuntu Mono', category: 'Monospace & Tech' },
-  { name: 'Share Tech Mono', category: 'Monospace & Tech' },
-
-  // 5. HANDWRITING & SIGNATURE (10 FONTS)
-  { name: 'Dancing Script', category: 'Handwriting & Signature' },
-  { name: 'Pacifico', category: 'Handwriting & Signature' },
-  { name: 'Caveat', category: 'Handwriting & Signature' },
-  { name: 'Great Vibes', category: 'Handwriting & Signature' },
-  { name: 'Satisfy', category: 'Handwriting & Signature' },
-  { name: 'Sacramento', category: 'Handwriting & Signature' },
-  { name: 'Alex Brush', category: 'Handwriting & Signature' },
-  { name: 'Permanent Marker', category: 'Handwriting & Signature' },
-  { name: 'Shadows Into Light', category: 'Handwriting & Signature' },
-  { name: 'Indie Flower', category: 'Handwriting & Signature' }
 ];
 
 // Interactive Editorial Info Tooltip Component
@@ -693,7 +502,6 @@ interface StoryVersion {
 
 export default function AdminDashboard() {
   // Authentication & Dual-Engine Workspace Gateway State
-  const [selectedWorkspace, setSelectedWorkspace] = useState<'wordpress' | 'nextjs'>('wordpress');
   const [activeLoginModal, setActiveLoginModal] = useState<'format1' | 'format2' | null>(null);
   const [loginEmail, setLoginEmail] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -783,7 +591,6 @@ export default function AdminDashboard() {
 
   // Post Editor State
   const [isEditing, setIsEditing] = useState(false);
-  const [isCustomAuthor, setIsCustomAuthor] = useState(false);
   const [articleWordCount, setArticleWordCount] = useState<number>(0);
   const [storyHistory, setStoryHistory] = useState<StoryVersion[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -816,34 +623,20 @@ export default function AdminDashboard() {
     viewportImagesMobile: '',
   });
 
-  // Rich Formatting & Multi-Target Typography State (110+ Google Fonts)
-  const [selectedFont, setSelectedFont] = useState<string>('Playfair Display');
-  const [selectedFontSize, setSelectedFontSize] = useState<string>('14');
-  const [selectedBlockType, setSelectedBlockType] = useState<string>('paragraph');
-  const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>('left');
-  const [isBold, setIsBold] = useState(false);
-  const [isItalic, setIsItalic] = useState(false);
-  const [isUnderline, setIsUnderline] = useState(false);
+  // Default editorial typography configuration
+  const selectedFont = 'Playfair Display';
+  const titleFont = 'Playfair Display';
+  const titleAlign: 'left' | 'center' | 'right' = 'left';
+  const titleBold = true;
+  const titleItalic = false;
+  const excerptFont = 'Playfair Display';
+  const excerptFontSize = '16';
+  const excerptItalic = true;
 
-  // Title-specific typography state
-  const [titleFont, setTitleFont] = useState<string>('Playfair Display');
-  const [titleFontSize, setTitleFontSize] = useState<string>('40');
-  const [titleAlign, setTitleAlign] = useState<'left' | 'center' | 'right'>('left');
-  const [titleBold, setTitleBold] = useState<boolean>(true);
-  const [titleItalic, setTitleItalic] = useState<boolean>(false);
-
-  // Excerpt-specific typography state
-  const [excerptFont, setExcerptFont] = useState<string>('Playfair Display');
-  const [excerptFontSize, setExcerptFontSize] = useState<string>('16');
-  const [excerptItalic, setExcerptItalic] = useState<boolean>(true);
-
-  // Focus Tracker: 'title' | 'excerpt' | 'body'
-  const lastFocusedRef = useRef<'title' | 'excerpt' | 'body'>('title');
   const editorRef = useRef<HTMLDivElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
   const loadedFontsRef = useRef<Set<string>>(new Set(['Inter', 'Roboto', 'Playfair Display', 'Merriweather', 'Lora', 'Montserrat', 'Poppins']));
 
-  const [showStockModal, setShowStockModal] = useState(false);
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [showCustomButtonModal, setShowCustomButtonModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
@@ -863,7 +656,6 @@ export default function AdminDashboard() {
   const [stockCategoryFilter, setStockCategoryFilter] = useState('All');
   const [customImageUrlInput, setCustomImageUrlInput] = useState('');
   const [testedImageUrl, setTestedImageUrl] = useState<string | null>(null);
-  const [isTestingUrl, setIsTestingUrl] = useState(false);
   const mediaModalFileInputRef = useRef<HTMLInputElement>(null);
   const [uploadDragActive, setUploadDragActive] = useState(false);
   const [uploadedMediaHistory, setUploadedMediaHistory] = useState<string[]>([]);
@@ -943,7 +735,6 @@ export default function AdminDashboard() {
     content: string;
     summary: string;
   } | null>(null);
-  const [aiWriterPrompt, setAiWriterPrompt] = useState<string>('');
 
   // Record a complete history snapshot for instant restore
   const recordHistorySnapshot = (label: string, customContent?: string, customTitle?: string, customExcerpt?: string) => {
@@ -1013,7 +804,7 @@ export default function AdminDashboard() {
           title: currentTitle,
           category: editingArticle.category || 'Business',
           existingContent: currentHtml,
-          customPrompt: customInstruction || aiWriterPrompt,
+          customPrompt: customInstruction || '',
         }),
       });
       const data = await res.json();
@@ -1509,23 +1300,6 @@ export default function AdminDashboard() {
     }
   };
 
-  // Get active or restored range
-  const getTargetRange = (): Range | null => {
-    if (typeof window === 'undefined') return null;
-    const sel = window.getSelection();
-    if (sel && sel.rangeCount > 0 && editorRef.current?.contains(sel.getRangeAt(0).commonAncestorContainer)) {
-      return sel.getRangeAt(0);
-    }
-    if (savedRangeRef.current && editorRef.current?.contains(savedRangeRef.current.commonAncestorContainer)) {
-      if (sel) {
-        sel.removeAllRanges();
-        sel.addRange(savedRangeRef.current);
-      }
-      return savedRangeRef.current;
-    }
-    return null;
-  };
-
   // Dynamically load Google Font stylesheet
   const loadGoogleFont = (fontName: string) => {
     if (!fontName || typeof document === 'undefined') return;
@@ -1609,154 +1383,6 @@ export default function AdminDashboard() {
       return () => clearTimeout(timer);
     }
   }, [editingArticle.title, activeTab]);
-
-  // Apply Font to Title, Excerpt, or Selected Body Canvas
-  const handleFontChange = (fontName: string) => {
-    loadGoogleFont(fontName);
-    setSelectedFont(fontName);
-
-    if (lastFocusedRef.current === 'title') {
-      setTitleFont(fontName);
-      showToast(`Title font changed to ${fontName}`, 'success');
-    } else if (lastFocusedRef.current === 'excerpt') {
-      setExcerptFont(fontName);
-      showToast(`Excerpt font changed to ${fontName}`, 'success');
-    } else {
-      // Body Canvas formatting
-      const range = getTargetRange();
-      const sel = typeof window !== 'undefined' ? window.getSelection() : null;
-
-      if (range && !range.collapsed) {
-        const span = document.createElement('span');
-        span.style.fontFamily = `'${fontName}', sans-serif`;
-        try {
-          const fragment = range.extractContents();
-          span.appendChild(fragment);
-          range.insertNode(span);
-
-          const newRange = document.createRange();
-          newRange.selectNodeContents(span);
-          sel?.removeAllRanges();
-          sel?.addRange(newRange);
-          savedRangeRef.current = newRange.cloneRange();
-        } catch (err) {
-          document.execCommand('fontName', false, fontName);
-        }
-      } else {
-        if (editorRef.current) {
-          editorRef.current.style.fontFamily = `'${fontName}', sans-serif`;
-        }
-      }
-      syncEditorToState();
-      showToast(`Body font changed to ${fontName}`, 'success');
-    }
-  };
-
-  // Apply Font Size to Title, Excerpt, or Selected Body Canvas
-  const handleFontSizeChange = (sizePx: string) => {
-    setSelectedFontSize(sizePx);
-
-    if (lastFocusedRef.current === 'title') {
-      setTitleFontSize(sizePx);
-    } else if (lastFocusedRef.current === 'excerpt') {
-      setExcerptFontSize(sizePx);
-    } else {
-      const range = getTargetRange();
-      const sel = typeof window !== 'undefined' ? window.getSelection() : null;
-
-      if (range && !range.collapsed) {
-        const span = document.createElement('span');
-        span.style.fontSize = `${sizePx}px`;
-        try {
-          const fragment = range.extractContents();
-          span.appendChild(fragment);
-          range.insertNode(span);
-
-          const newRange = document.createRange();
-          newRange.selectNodeContents(span);
-          sel?.removeAllRanges();
-          sel?.addRange(newRange);
-          savedRangeRef.current = newRange.cloneRange();
-        } catch (err) {
-          document.execCommand('fontSize', false, '4');
-        }
-      } else {
-        if (editorRef.current) {
-          editorRef.current.style.fontSize = `${sizePx}px`;
-        }
-      }
-      syncEditorToState();
-    }
-  };
-
-  // Apply Block formatting (Paragraph, H1, H2, Quote, Code)
-  const handleBlockChange = (blockType: string) => {
-    setSelectedBlockType(blockType);
-    getTargetRange();
-
-    if (blockType === 'h1') {
-      document.execCommand('formatBlock', false, '<h2>');
-    } else if (blockType === 'h2') {
-      document.execCommand('formatBlock', false, '<h3>');
-    } else if (blockType === 'quote') {
-      document.execCommand('formatBlock', false, '<blockquote>');
-    } else if (blockType === 'code') {
-      document.execCommand('formatBlock', false, '<pre>');
-    } else {
-      document.execCommand('formatBlock', false, '<p>');
-    }
-    syncEditorToState();
-  };
-
-  // Handle Bold toggle
-  const handleBoldToggle = () => {
-    if (lastFocusedRef.current === 'title') {
-      setTitleBold(!titleBold);
-    } else {
-      getTargetRange();
-      document.execCommand('bold', false, undefined);
-      saveSelection();
-      setIsBold(!isBold);
-      syncEditorToState();
-    }
-  };
-
-  // Handle Italic toggle
-  const handleItalicToggle = () => {
-    if (lastFocusedRef.current === 'title') {
-      setTitleItalic(!titleItalic);
-    } else if (lastFocusedRef.current === 'excerpt') {
-      setExcerptItalic(!excerptItalic);
-    } else {
-      getTargetRange();
-      document.execCommand('italic', false, undefined);
-      saveSelection();
-      setIsItalic(!isItalic);
-      syncEditorToState();
-    }
-  };
-
-  // Handle Alignment change
-  const handleAlignChange = (align: 'left' | 'center' | 'right' | 'justify') => {
-    setTextAlign(align);
-    if (lastFocusedRef.current === 'title') {
-      setTitleAlign(align === 'justify' ? 'left' : align);
-    } else {
-      getTargetRange();
-      const cmd = align === 'left' ? 'justifyLeft' : align === 'center' ? 'justifyCenter' : align === 'right' ? 'justifyRight' : 'justifyFull';
-      document.execCommand(cmd, false, undefined);
-      saveSelection();
-      syncEditorToState();
-    }
-  };
-
-  // Execute standard formatting commands on selection
-  const execCmd = (cmd: string, val: string = '') => {
-    getTargetRange();
-    document.execCommand(cmd, false, val);
-    saveSelection();
-    syncEditorToState();
-  };
 
   // Custom publishing state
   const [cmsMetadata, setCmsMetadata] = useState<any>({
@@ -2042,44 +1668,6 @@ export default function AdminDashboard() {
       .trim();
   };
 
-  // Dynamic Category & Subcategory matching (Synchronized with Landing Page)
-  const currentCategoryObj = useMemo(() => {
-    const catName = (editingArticle.category || '').toLowerCase().trim();
-    return (
-      categories.find(
-        (c) => c.name.toLowerCase() === catName || c.slug.toLowerCase() === catName
-      ) ||
-      CATEGORIES.find(
-        (c) => c.name.toLowerCase() === catName || c.slug.toLowerCase() === catName
-      ) ||
-      CATEGORIES[0]
-    );
-  }, [categories, editingArticle.category]);
-
-  const availableSubcategories = useMemo(() => {
-    return currentCategoryObj?.subcategories || [];
-  }, [currentCategoryObj]);
-
-  // Smart 1-click suggested tags based on active category & subcategory
-  const suggestedTags = useMemo(() => {
-    const presets: Record<string, string[]> = {
-      Business: ['Companies', 'Strategy', 'Economy', 'Industry', 'Earnings', 'Enterprise', 'Global Trade'],
-      Markets: ['Finance', 'Capital', 'Investment', 'Real Estate', 'Stocks & Bonds', 'Private Credit', 'REITs'],
-      Technology: ['AI', 'Innovation', 'Cybersecurity', 'Digital', 'Machine Learning', 'Quantum', 'Semiconductors'],
-      Startups: ['Founders', 'Funding', 'Venture Capital', 'Entrepreneurship', 'Bootstrapping', 'SaaS Growth'],
-      Leadership: ['CEOs', 'Executives', 'Interviews', 'Profiles', 'Lists & Rankings', 'Boardroom', 'Strategy'],
-      Marketing: ['Branding', 'Advertising', 'Growth', 'Consumer', 'Storytelling', 'Campaigns', 'Retention'],
-      Career: ['Jobs', 'Skills', 'Workplace', 'Leadership Careers', 'Tech Hiring', 'Executive Mobility'],
-      Future: ['Emerging Trends', 'Sustainability', 'HealthTech', 'New Economy', 'BioTech', 'Clean Energy']
-    };
-    const currentCatName = currentCategoryObj?.name || 'Business';
-    const tags = presets[currentCatName] || ['Editorial', 'Analysis'];
-    if (editingArticle.subcategory && !tags.includes(editingArticle.subcategory)) {
-      return [editingArticle.subcategory, ...tags];
-    }
-    return tags;
-  }, [currentCategoryObj, editingArticle.subcategory]);
-
   // Categories helper list from database
   const categoriesList = useMemo(() => {
     const cats = categories.map((c) => c.name);
@@ -2346,25 +1934,9 @@ export default function AdminDashboard() {
     });
   }, [articles, searchQuery, categoryFilter, postSortBy]);
 
-  // Auto-calculate reading time based on total word count
-  const autoCalculateReadTime = () => {
-    const allText = [
-      editingArticle.title || '',
-      editingArticle.excerpt || '',
-      ...(editingArticle.paragraphs || []),
-      ...(editingArticle.sections || []).map((s) => `${s.heading || ''} ${s.content || ''}`)
-    ].join(' ');
-    const words = allText.trim().split(/\s+/).filter(Boolean).length;
-    const minutes = Math.max(1, Math.ceil(words / 200));
-    const readTimeStr = `${minutes} min read`;
-    setEditingArticle((prev) => ({ ...prev, readTime: readTimeStr }));
-    showToast(`Calculated: ${readTimeStr} (${words} words)`, 'success');
-  };
-
   // Editor Actions
   const initCreatePost = () => {
     setIsEditing(false);
-    setIsCustomAuthor(false);
     setIsManualSlug(false);
     setIsEditingSlug(false);
     setTempSlugInput('');
@@ -2376,7 +1948,6 @@ export default function AdminDashboard() {
     setStoryHistory([]);
     setSeoData(null);
     setAiSuggestion(null);
-    setSelectedFontSize('14');
     if (editorRef.current) {
       editorRef.current.innerHTML = '';
     }
@@ -2425,8 +1996,6 @@ export default function AdminDashboard() {
     setIsManualSlug(true);
     setIsEditingSlug(false);
     setTempSlugInput(art.slug || '');
-    const hasPredefined = PREDEFINED_AUTHORS.some((a) => a.name === art.author);
-    setIsCustomAuthor(!hasPredefined);
 
     const metrics = calculateArticleMetrics(art.title, art.excerpt, art.content, art.paragraphs, art.sections);
     setArticleWordCount(metrics.words);
@@ -2597,26 +2166,6 @@ export default function AdminDashboard() {
     } finally {
       setIsDeletingPost(false);
     }
-  };
-
-  // Paragraph list handlers
-  const handleParagraphChange = (index: number, val: string) => {
-    const updated = [...editingArticle.paragraphs];
-    updated[index] = val;
-    setEditingArticle({ ...editingArticle, paragraphs: updated });
-  };
-
-  const addParagraphField = () => {
-    setEditingArticle({
-      ...editingArticle,
-      paragraphs: [...editingArticle.paragraphs, ''],
-    });
-  };
-
-  const removeParagraphField = (index: number) => {
-    if (editingArticle.paragraphs.length <= 1) return;
-    const updated = editingArticle.paragraphs.filter((_, idx) => idx !== index);
-    setEditingArticle({ ...editingArticle, paragraphs: updated });
   };
 
   // Subsections list handlers
@@ -3893,19 +3442,6 @@ export default function AdminDashboard() {
                             <input
                               type="text"
                               value={editingArticle.title}
-                              onFocus={() => {
-                                lastFocusedRef.current = 'title';
-                                setSelectedFont(titleFont);
-                                setSelectedFontSize(titleFontSize);
-                              }}
-                              onClick={() => {
-                                lastFocusedRef.current = 'title';
-                                setSelectedFont(titleFont);
-                                setSelectedFontSize(titleFontSize);
-                              }}
-                              onSelect={() => {
-                                lastFocusedRef.current = 'title';
-                              }}
                               onChange={(e) => {
                                 const val = e.target.value;
                                 setEditingArticle((prev) => ({
@@ -4323,19 +3859,6 @@ export default function AdminDashboard() {
                             <textarea
                               rows={3}
                               value={editingArticle.excerpt}
-                              onFocus={() => {
-                                lastFocusedRef.current = 'excerpt';
-                                setSelectedFont(excerptFont);
-                                setSelectedFontSize(excerptFontSize);
-                              }}
-                              onClick={() => {
-                                lastFocusedRef.current = 'excerpt';
-                                setSelectedFont(excerptFont);
-                                setSelectedFontSize(excerptFontSize);
-                              }}
-                              onSelect={() => {
-                                lastFocusedRef.current = 'excerpt';
-                              }}
                               onChange={(e) => setEditingArticle({ ...editingArticle, excerpt: e.target.value })}
                               placeholder="Write a concise 2-3 line lead summary / excerpt..."
                               style={{
@@ -4489,29 +4012,22 @@ export default function AdminDashboard() {
                               contentEditable={true}
                               suppressContentEditableWarning={true}
                               data-placeholder="Write your story here or use AI Tools to generate content..."
-                              onFocus={() => {
-                                lastFocusedRef.current = 'body';
-                              }}
                               onInput={syncEditorToState}
                               onBlur={() => {
                                 saveSelection();
                                 syncEditorToState();
                               }}
                               onMouseUp={() => {
-                                lastFocusedRef.current = 'body';
                                 saveSelection();
                               }}
                               onKeyUp={() => {
-                                lastFocusedRef.current = 'body';
                                 saveSelection();
                                 syncEditorToState();
                               }}
                               onSelect={() => {
-                                lastFocusedRef.current = 'body';
                                 saveSelection();
                               }}
                               onPointerUp={() => {
-                                lastFocusedRef.current = 'body';
                                 saveSelection();
                               }}
                               className="admin-story-canvas h-[280px] max-h-[300px] overflow-y-auto p-4 sm:p-5 bg-[#ffffff] border border-gray-300 focus:border-[#002b5c] rounded-lg shadow-inner focus:outline-none text-gray-800 text-[14px] leading-relaxed transition-colors font-serif selection:bg-[#f7413e]/20 selection:text-black empty:before:content-[attr(data-placeholder)] empty:before:text-gray-300 empty:before:pointer-events-none"

@@ -3,20 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { Search, X, ArrowRight, Tag, Calendar, User } from 'lucide-react';
+import { Search, X, ArrowRight } from 'lucide-react';
 import { ARTICLES } from '@/data/articles';
 import { Article } from '@/types';
 import { getBlogUrl } from '@/lib/blogUrl';
 
 export default function SearchModal() {
   const pathname = usePathname();
-  if (pathname && pathname.startsWith('/admin')) {
-    return null;
-  }
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Article[]>([]);
-  const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
@@ -75,7 +71,6 @@ export default function SearchModal() {
     });
 
     setResults(filtered);
-    setSelectedIndex(0);
   }, [query]);
 
   const handleNavigate = (article: Article) => {
@@ -83,7 +78,7 @@ export default function SearchModal() {
     router.push(getBlogUrl(article));
   };
 
-  if (!isOpen) return null;
+  if ((pathname && pathname.startsWith('/admin')) || !isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-[#0a0a0a]/70 backdrop-blur-sm animate-in fade-in duration-150">

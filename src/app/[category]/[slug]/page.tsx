@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { getArticles, getArticleBySlug, getSiteConfig } from '@/data/db';
 import { getCachedArticleBySlug, getCachedArticleSummaries } from '@/lib/supabaseService';
-import { getCategorySlug, CATEGORIES } from '@/data/categories';
+import { getCategorySlug } from '@/data/categories';
 import ArticleHeroImage from '@/components/ArticleHeroImage';
 import BlogSplitSidebar from '@/components/BlogSplitSidebar';
 import ArticleCard from '@/components/ArticleCard';
@@ -41,7 +41,7 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { category, slug } = await params;
+  const { slug } = await params;
   const localArticle = getArticleBySlug(slug);
   const dbArticle = await getCachedArticleBySlug(slug).catch(() => null);
   const article = dbArticle

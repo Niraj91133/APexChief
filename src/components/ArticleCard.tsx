@@ -1,6 +1,5 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import AmbientImage from '@/components/AmbientImage';
 import { Article } from '@/types';
 import { Clock, ArrowUpRight } from 'lucide-react';

@@ -1,6 +1,5 @@
 import React from 'react';
-import Link from 'next/link';
-import { ArrowLeft, Shield, Lock, Eye, FileText, Globe, Mail } from 'lucide-react';
+import { Shield, Mail } from 'lucide-react';
 import { Metadata } from 'next';
 import Breadcrumbs from '@/components/Breadcrumbs';
 

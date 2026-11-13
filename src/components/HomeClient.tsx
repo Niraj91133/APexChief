@@ -14,7 +14,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ArrowRight,
-  ArrowUpRight,
   Mail,
   CheckCircle2,
 } from 'lucide-react';
@@ -59,7 +58,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
           setArticles(data);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [initialArticles]);
 
   const getArt = (slug: string): Article => {
@@ -105,8 +104,6 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
   // Dynamic Placements with fallback
   const top3Assigned = articles.filter((a) => a.placement === 'top3');
   const hero1 = top3Assigned[0] || getArt('enterprise-ai-reshapes-global-supply-chain-logistics');
-  const hero2 = top3Assigned[1] || getArt('the-rise-of-fractional-executives-in-modern-workforce');
-  const hero3 = top3Assigned[2] || getArt('how-bootstrapped-b2b-saas-startups-are-reaching-10m-arr-with-lean-teams');
 
   // Latest News dynamic assignments: strictly pull placement === 'latest-news' OR category === 'News'
   const explicitLatest = articles.filter(
@@ -189,7 +186,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
           setCategories(data);
         }
       })
-      .catch(() => {});
+      .catch(() => { });
   }, [initialCategories]);
 
   return (
@@ -566,7 +563,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
     const normArtSub = (art.subcategory || '').toLowerCase().trim().replace(/[-\s]/g, '');
     const normCatSlug = (cat.slug || '').toLowerCase().trim().replace(/[-\s]/g, '');
     const normCatName = (cat.name || '').toLowerCase().trim().replace(/[-\s]/g, '');
-    
+
     return (
       normArtCat === normCatSlug ||
       normArtCat === normCatName ||
@@ -583,8 +580,6 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   if (categoryArticles.length === 0) {
     return null;
   }
-
-  const layout = cat.layout || 'world-layout';
 
   // Section Header with red direct link to archive
   const renderHeader = () => (
@@ -670,11 +665,10 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   >
                     {/* Big Rank Number Badge */}
                     <div
-                      className={`w-9 h-9 sm:w-10 sm:h-10 ${
-                        isLeadColumn
-                          ? 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
-                          : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
-                      } group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 ${isLeadColumn
+                        ? 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
+                        : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
+                        } group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0`}
                     >
                       {rankLabel}
                     </div>
@@ -759,7 +753,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   <span>•</span>
                   <span>{leadOpinion.tag || 'Executive Essay'}</span>
                 </div>
-                
+
                 <div className="flex flex-col sm:flex-row items-start gap-4 mb-3">
                   <Link
                     href={getBlogUrl(leadOpinion)}
@@ -866,11 +860,10 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
       {renderHeader()}
       <HorizontalSlideTrack
         ariaLabel={`${cat.name} stories`}
-        className={`grid grid-flow-col ${
-          categoryArticles.length === 1
-            ? 'auto-cols-[100%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
-            : 'auto-cols-[88%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
-        } gap-6 items-stretch`}
+        className={`grid grid-flow-col ${categoryArticles.length === 1
+          ? 'auto-cols-[100%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
+          : 'auto-cols-[88%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
+          } gap-6 items-stretch`}
       >
         {categoryArticles.map((art) => (
           <div key={art.slug} className="snap-start h-full">

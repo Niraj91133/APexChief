@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import {
   verifyAdminPasswordInDB,
   saveAdminPasswordInDB,
-  getAdminPasswordFromDB,
 } from '@/lib/supabaseService';
 
 export const dynamic = 'force-dynamic';

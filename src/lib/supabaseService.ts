@@ -1,5 +1,5 @@
 import { cache } from 'react';
-import { supabaseAdmin, supabase } from './supabase';
+import { supabaseAdmin } from './supabase';
 import { Article, CategoryInfo } from '@/types';
 import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
@@ -707,11 +707,6 @@ export async function deleteArticleRecordsFromDB(
     console.error('Supabase deleteArticle exception:', err);
     return { deleted: false, affected: [] };
   }
-}
-
-export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
-  const { deleted } = await deleteArticleRecordsFromDB(idOrSlug, idOrSlug);
-  return deleted;
 }
 
 // --- CATEGORIES OPERATIONS ---

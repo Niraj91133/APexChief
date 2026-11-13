@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Send, CheckCircle2, MessageSquare, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle2, MessageSquare } from 'lucide-react';
 
 export default function WriteForUsForm() {
   const [formData, setFormData] = useState({

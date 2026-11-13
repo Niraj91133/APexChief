@@ -9804,7 +9804,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
                 Edit
               </button>
               <a 
-                href="/article/${p.slug}" 
+                href="/news/${encodeURIComponent(String(p.slug || p.id || ''))}" 
                 target="_blank"
                 class="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded font-semibold text-[11px] transition-colors inline-block"
               >
@@ -10196,7 +10196,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
       if (showImg && typeof currentFeaturedImage === 'string' && currentFeaturedImage) {
         const safeImg = currentFeaturedImage.replace(/"/g, '&quot;');
-        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalWidth&&this.naturalHeight){const r=this.naturalWidth/this.naturalHeight; const box=this.parentElement; box.style.aspectRatio=this.naturalWidth+' / '+this.naturalHeight; if(r<1.25){box.style.maxWidth=Math.round(520*r)+'px'; box.style.maxHeight='520px';}}" class="block w-full h-full object-cover" /></div></div>`;
+        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm" style="aspect-ratio:16/9;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
       }
       previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
         contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'

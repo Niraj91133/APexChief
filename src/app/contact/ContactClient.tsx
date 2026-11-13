@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
 import { siteConfig } from '@/data/siteConfig';
 import {
   Mail,
@@ -9,7 +8,6 @@ import {
   MapPin,
   Send,
   CheckCircle2,
-  ArrowLeft,
   MessageSquare,
 } from 'lucide-react';
 import Breadcrumbs from '@/components/Breadcrumbs';
