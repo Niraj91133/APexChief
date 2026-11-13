@@ -255,18 +255,20 @@ async function fetchArticleSummariesFresh(): Promise<Article[]> {
         }
       }
 
-      return summaryRes.data.map((row: any) => {
-        const cachedImg = _rawImageCache.get(normalizeSlugKey(row.slug))?.url;
-        const externalImg = imageMap.get(row.slug);
-        const resolvedImageUrl =
-          externalImg ||
-          (cachedImg && !cachedImg.startsWith('data:image/') ? cachedImg : undefined) ||
-          (row.slug ? `/api/article-image/${encodeURIComponent(row.slug)}` : undefined);
-        return mapRowToSummaryArticle({
-          ...row,
-          image_url: resolvedImageUrl,
+      return summaryRes.data
+        .filter((row: any) => !['trash', 'draft'].includes(String(row.status || 'Published').trim().toLowerCase()))
+        .map((row: any) => {
+          const cachedImg = _rawImageCache.get(normalizeSlugKey(row.slug))?.url;
+          const externalImg = imageMap.get(row.slug);
+          const resolvedImageUrl =
+            externalImg ||
+            (cachedImg && !cachedImg.startsWith('data:image/') ? cachedImg : undefined) ||
+            (row.slug ? `/api/article-image/${encodeURIComponent(row.slug)}` : undefined);
+          return mapRowToSummaryArticle({
+            ...row,
+            image_url: resolvedImageUrl,
+          });
         });
-      });
     }
     if (summaryRes.error) {
       console.error('Supabase fetchArticleSummaries error:', String(summaryRes.error.message || '').slice(0, 300));
@@ -462,22 +464,53 @@ export async function getArticleRawImageFromDB(slug: string): Promise<string | n
 
 export async function getArticlesFromDB(): Promise<Article[] | null> {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('articles')
-      .select('*')
-      .order('created_at', { ascending: false });
+    const [articlesRes, imageRes] = await Promise.all([
+      supabaseAdmin
+        .from('articles')
+        .select(DETAIL_COLUMNS)
+        .order('created_at', { ascending: false }),
+      supabaseAdmin
+        .from('articles')
+        .select('slug, image_url')
+        .not('image_url', 'like', 'data:%'),
+    ]);
 
-    if (error) {
-      console.error('Supabase getArticles error:', error.message);
+    if (articlesRes.error) {
+      console.error('Supabase getArticles error:', String(articlesRes.error.message || '').slice(0, 300));
       return null;
     }
 
-    if (data && data.length > 0) {
-      return data.map(mapRowToArticle);
+    if (articlesRes.data && articlesRes.data.length > 0) {
+      const imageMap = new Map<string, string>();
+      if (!imageRes.error && Array.isArray(imageRes.data)) {
+        for (const item of imageRes.data) {
+          if (item?.slug && item?.image_url) {
+            imageMap.set(item.slug, item.image_url);
+          }
+        }
+      }
+
+      return articlesRes.data.map((row: any) => {
+        const cachedImg = _rawImageCache.get(normalizeSlugKey(row.slug))?.url;
+        const externalImg = imageMap.get(row.slug);
+        const resolvedImageUrl =
+          externalImg ||
+          (cachedImg && !cachedImg.startsWith('data:image/') ? cachedImg : undefined) ||
+          (row.slug ? `/api/article-image/${encodeURIComponent(row.slug)}` : undefined);
+        const mapped = mapRowToArticle({
+          ...row,
+          image_url: resolvedImageUrl,
+        });
+        return {
+          ...mapped,
+          image: sanitizeImageForTransfer(mapped.image, mapped.slug),
+          authorAvatar: sanitizeImageForTransfer(mapped.authorAvatar, ''),
+        };
+      });
     }
     return [];
   } catch (err) {
-    console.error('Supabase getArticles exception:', err);
+    console.error('Supabase getArticles exception:', err instanceof Error ? err.message : String(err).slice(0, 300));
     return null;
   }
 }
@@ -485,6 +518,33 @@ export async function getArticlesFromDB(): Promise<Article[] | null> {
 export async function upsertArticleInDB(article: Article): Promise<boolean> {
   try {
     const row = mapArticleToRow(article);
+    const slugKey = normalizeSlugKey(row.slug);
+    if (typeof row.image_url === 'string' && row.image_url.startsWith('/api/article-image/')) {
+      const cachedRaw = slugKey ? _rawImageCache.get(slugKey)?.url : undefined;
+      if (cachedRaw && !cachedRaw.startsWith('/api/article-image/')) {
+        row.image_url = cachedRaw;
+      } else {
+        const { data: existingRow } = await supabaseAdmin
+          .from('articles')
+          .select('id')
+          .eq('slug', row.slug)
+          .maybeSingle();
+        if (existingRow?.id) {
+          delete row.image_url;
+          const { error: updErr } = await supabaseAdmin
+            .from('articles')
+            .update(row)
+            .eq('id', existingRow.id);
+          if (updErr) {
+            console.error('Supabase updateArticle error:', updErr.message);
+            return false;
+          }
+          invalidateArticlesCache(row.slug);
+          return true;
+        }
+      }
+    }
+
     const { error } = await supabaseAdmin
       .from('articles')
       .upsert(row, { onConflict: 'slug' });
@@ -501,27 +561,157 @@ export async function upsertArticleInDB(article: Article): Promise<boolean> {
   }
 }
 
-export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
-  try {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
-    let query = supabaseAdmin.from('articles').delete();
-    if (isUuid) {
-      query = query.or(`slug.eq.${idOrSlug},id.eq.${idOrSlug}`);
-    } else {
-      query = query.eq('slug', idOrSlug);
-    }
-    const { error } = await query;
+export async function updateArticleStatusInDB(
+  slug?: string | null,
+  id?: string | null,
+  status = 'Published'
+): Promise<{ updated: boolean; affected: Array<{ slug: string; category: string }> }> {
+  const cleanSlug = normalizeSlugKey(slug || '');
+  const cleanId = normalizeSlugKey(id || '');
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanId);
+  if (!cleanSlug && !cleanId) return { updated: false, affected: [] };
 
-    if (error) {
-      console.error('Supabase deleteArticle error:', error.message);
-      return false;
+  try {
+    const matches: Array<{ id: string; slug: string; category: string }> = [];
+    if (cleanSlug) {
+      const { data } = await supabaseAdmin
+        .from('articles')
+        .select('id, slug, category')
+        .eq('slug', cleanSlug);
+      if (data && data.length > 0) matches.push(...data);
+      else {
+        const { data: ilikeData } = await supabaseAdmin
+          .from('articles')
+          .select('id, slug, category')
+          .ilike('slug', cleanSlug);
+        if (ilikeData && ilikeData.length > 0) matches.push(...ilikeData);
+      }
     }
-    invalidateArticlesCache(idOrSlug);
-    return true;
+    if (matches.length === 0 && isUuid) {
+      const { data } = await supabaseAdmin
+        .from('articles')
+        .select('id, slug, category')
+        .eq('id', cleanId);
+      if (data && data.length > 0) matches.push(...data);
+    }
+
+    if (matches.length > 0) {
+      const ids = Array.from(new Set(matches.map((m) => m.id).filter(Boolean)));
+      const { error } = await supabaseAdmin
+        .from('articles')
+        .update({ status })
+        .in('id', ids);
+      if (error) {
+        console.error('Supabase updateArticleStatus error:', error.message);
+        return { updated: false, affected: [] };
+      }
+      const affected = matches.map((m) => ({ slug: m.slug, category: m.category || 'Business' }));
+      for (const item of affected) {
+        invalidateArticlesCache(item.slug);
+      }
+      _summariesCache = null;
+      return { updated: true, affected };
+    }
+    return { updated: false, affected: [] };
+  } catch (err) {
+    console.error('Supabase updateArticleStatus exception:', err);
+    return { updated: false, affected: [] };
+  }
+}
+
+export async function deleteArticleRecordsFromDB(
+  slug?: string | null,
+  id?: string | null
+): Promise<{ deleted: boolean; affected: Array<{ slug: string; category: string }> }> {
+  const cleanSlug = normalizeSlugKey(slug || '');
+  const cleanId = normalizeSlugKey(id || '');
+  const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!cleanSlug && !cleanId) return { deleted: false, affected: [] };
+
+  try {
+    const matchedRows = new Map<string, { id: string; slug: string; category: string }>();
+
+    if (cleanSlug) {
+      const { data: exactSlugRows } = await supabaseAdmin
+        .from('articles')
+        .select('id, slug, category')
+        .eq('slug', cleanSlug);
+      if (Array.isArray(exactSlugRows)) {
+        for (const r of exactSlugRows) {
+          if (r?.id) matchedRows.set(r.id, r);
+        }
+      }
+      if (matchedRows.size === 0) {
+        const { data: ilikeSlugRows } = await supabaseAdmin
+          .from('articles')
+          .select('id, slug, category')
+          .ilike('slug', cleanSlug);
+        if (Array.isArray(ilikeSlugRows)) {
+          for (const r of ilikeSlugRows) {
+            if (r?.id) matchedRows.set(r.id, r);
+          }
+        }
+      }
+      if (matchedRows.size === 0 && uuidPattern.test(cleanSlug)) {
+        const { data: bySlugAsUuid } = await supabaseAdmin
+          .from('articles')
+          .select('id, slug, category')
+          .eq('id', cleanSlug);
+        if (Array.isArray(bySlugAsUuid)) {
+          for (const r of bySlugAsUuid) {
+            if (r?.id) matchedRows.set(r.id, r);
+          }
+        }
+      }
+    }
+
+    if (cleanId && uuidPattern.test(cleanId)) {
+      const { data: byIdRows } = await supabaseAdmin
+        .from('articles')
+        .select('id, slug, category')
+        .eq('id', cleanId);
+      if (Array.isArray(byIdRows)) {
+        for (const r of byIdRows) {
+          if (r?.id) matchedRows.set(r.id, r);
+        }
+      }
+    }
+
+    if (matchedRows.size > 0) {
+      const ids = Array.from(matchedRows.keys());
+      const { error } = await supabaseAdmin
+        .from('articles')
+        .delete()
+        .in('id', ids);
+      if (error) {
+        console.error('Supabase deleteArticle error:', error.message);
+        return { deleted: false, affected: [] };
+      }
+      const affected = Array.from(matchedRows.values()).map((r) => ({
+        slug: r.slug,
+        category: r.category || 'Business',
+      }));
+      for (const item of affected) {
+        invalidateArticlesCache(item.slug);
+      }
+      if (cleanSlug) invalidateArticlesCache(cleanSlug);
+      _summariesCache = null;
+      return { deleted: true, affected };
+    }
+
+    // No row matched in DB (already deleted or local-only story)
+    if (cleanSlug) invalidateArticlesCache(cleanSlug);
+    _summariesCache = null;
+    return { deleted: true, affected: [] };
   } catch (err) {
     console.error('Supabase deleteArticle exception:', err);
-    return false;
+    return { deleted: false, affected: [] };
   }
+}
+
+export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
+  const { deleted } = await deleteArticleRecordsFromDB(idOrSlug, idOrSlug);
+  return deleted;
 }
 
 // --- CATEGORIES OPERATIONS ---

@@ -148,9 +148,10 @@ export default function AmbientImage({
             src={displaySrc}
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover scale-115 blur-2xl opacity-55 dark:opacity-45 pointer-events-none select-none"
+            className="ambient-bg absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-80 dark:opacity-60 saturate-110 pointer-events-none select-none"
           />
-          <div className="absolute inset-0 bg-[#f7f6ec]/25 dark:bg-black/35 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/15 dark:bg-black/40 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 pointer-events-none" />
         </>
       )}
 
@@ -170,7 +171,7 @@ export default function AmbientImage({
               }
             }}
             onError={() => setHasError(true)}
-            className={`object-contain ${defaultFocusClass} ${className}`}
+            className={`object-contain ${defaultFocusClass} drop-shadow-[0_12px_30px_rgba(0,0,0,0.3)] ${className}`}
           />
         </div>
       ) : innerStyle ? (

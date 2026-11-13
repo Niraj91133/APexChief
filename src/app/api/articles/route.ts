@@ -9,7 +9,8 @@ import {
   invalidateArticlesCache,
   primeArticleCache,
   upsertArticleInDB,
-  deleteArticleFromDB,
+  deleteArticleRecordsFromDB,
+  updateArticleStatusInDB,
 } from '@/lib/supabaseService';
 
 export const dynamic = 'force-dynamic';
@@ -191,35 +192,113 @@ export async function PUT(request: Request) {
   }
 }
 
+function revalidateArticlePaths(items: Array<{ slug: string; category?: string }>) {
+  try {
+    revalidatePath('/');
+    revalidatePath('/news');
+    revalidatePath('/category');
+    revalidatePath('/admin');
+    revalidatePath('/sitemap.xml');
+    revalidatePath('/', 'layout');
+    for (const item of items) {
+      if (!item?.slug) continue;
+      const catSlug = getCategorySlug(item.category || 'Business');
+      revalidatePath(`/category/${catSlug}`);
+      revalidatePath(`/${catSlug}/${item.slug}`);
+      revalidatePath(`/news/${item.slug}`);
+    }
+  } catch {}
+}
+
+export async function PATCH(request: Request) {
+  try {
+    const body = await request.json().catch(() => ({}));
+    const slug = typeof body?.slug === 'string' ? body.slug.trim() : '';
+    const id = typeof body?.id === 'string' ? body.id.trim() : '';
+    const status = typeof body?.status === 'string' ? body.status.trim() : '';
+
+    if ((!slug && !id) || !status) {
+      return NextResponse.json({ error: 'Missing slug/id or status' }, { status: 400 });
+    }
+
+    const dbRes = await updateArticleStatusInDB(slug, id, status);
+    const affected: Array<{ slug: string; category?: string }> = [...dbRes.affected];
+
+    try {
+      const articles = getArticles();
+      let changed = false;
+      const updated = articles.map((art) => {
+        if ((id && art.id === id) || (slug && art.slug === slug)) {
+          changed = true;
+          affected.push({ slug: art.slug, category: art.category });
+          return { ...art, status };
+        }
+        return art;
+      });
+      if (changed) saveArticles(updated);
+    } catch {}
+
+    invalidateArticlesCache(slug || id);
+    if (!dbRes.updated && affected.length === 0) {
+      return NextResponse.json({ error: 'Story not found in database' }, { status: 404 });
+    }
+
+    revalidateArticlePaths(affected);
+    return NextResponse.json({ message: 'Status updated successfully', status });
+  } catch {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
+  }
+}
+
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-    const slug = searchParams.get('slug');
+    let id = searchParams.get('id')?.trim() || '';
+    let slug = searchParams.get('slug')?.trim() || '';
 
-    const identifier = slug || id;
-    if (!identifier) {
+    if (!id && !slug) {
+      const body = await request.json().catch(() => null);
+      if (body && typeof body === 'object') {
+        id = typeof body.id === 'string' ? body.id.trim() : '';
+        slug = typeof body.slug === 'string' ? body.slug.trim() : '';
+      }
+    }
+
+    if (!id && !slug) {
       return NextResponse.json({ error: 'Missing article identifier (id or slug)' }, { status: 400 });
     }
 
-    // 1. Delete from Supabase
-    await deleteArticleFromDB(identifier);
+    const dbResult = await deleteArticleRecordsFromDB(slug || null, id || null);
+    if (!dbResult.deleted) {
+      return NextResponse.json({ error: 'Failed to delete story from database' }, { status: 500 });
+    }
 
-    // 2. Delete from local JSON backup
+    const affected: Array<{ slug: string; category?: string }> = [...dbResult.affected];
     try {
       const articles = getArticles();
-      const filtered = articles.filter((art) => art.id !== id && art.slug !== slug);
-      saveArticles(filtered);
-    } catch {}
-    invalidateArticlesCache(identifier);
-    try {
-      revalidatePath('/');
-      revalidatePath('/news');
-      revalidatePath('/category');
-      revalidatePath('/', 'layout');
+      const filtered = articles.filter((art) => {
+        const match =
+          (id && (art.id === id || art.slug === id)) ||
+          (slug && (art.slug === slug || art.id === slug));
+        if (match) {
+          affected.push({ slug: art.slug, category: art.category });
+          return false;
+        }
+        return true;
+      });
+      if (filtered.length !== articles.length) {
+        saveArticles(filtered);
+      }
     } catch {}
 
-    return NextResponse.json({ message: 'Article deleted successfully' });
+    if (slug) invalidateArticlesCache(slug);
+    if (id && id !== slug) invalidateArticlesCache(id);
+    if (affected.length === 0 && slug) {
+      affected.push({ slug, category: searchParams.get('category') || 'Business' });
+    }
+    revalidateArticlePaths(affected);
+
+    return NextResponse.json({ message: 'Article deleted successfully', affectedCount: affected.length });
   } catch (e) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }

@@ -3,26 +3,23 @@ import { notFound, permanentRedirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next';
-import { getArticles, getArticleBySlug, getRelatedArticles, getSiteConfig } from '@/data/db';
+import { getArticles, getArticleBySlug, getSiteConfig } from '@/data/db';
 import { getCachedArticleBySlug, getCachedArticleSummaries } from '@/lib/supabaseService';
 import { getCategorySlug } from '@/data/categories';
-import AmbientImage from '@/components/AmbientImage';
+import ArticleHeroImage from '@/components/ArticleHeroImage';
+import BlogSplitSidebar from '@/components/BlogSplitSidebar';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterBanner from '@/components/NewsletterBanner';
 import {
   Clock,
   Calendar,
-  User,
-  ArrowLeft,
   Quote,
-  Share2,
   Tag,
-  BookOpen,
 } from 'lucide-react';
 import ShareButtons from './ShareButtons';
 import ArticleViewTracker from '@/components/ArticleViewTracker';
 import { linkifyHtml, renderRichInline, getCleanPlainExcerpt } from '@/lib/linkify';
-import { getBlogUrl } from '@/lib/blogUrl';
+import { buildBlogSidebarLists } from '@/lib/articleSidebars';
 
 export const revalidate = 60;
 export const dynamicParams = true;
@@ -154,7 +151,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
   const siteConfig = getSiteConfig();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
-  if (!article) {
+  if (!article || ['trash', 'draft'].includes(String(article.status || 'Published').trim().toLowerCase())) {
     notFound();
   }
 
@@ -176,14 +173,11 @@ export default async function ArticleDetailPage({ params }: PageProps) {
     ...eligibleOthers.filter((a) => a.category?.toLowerCase() !== article.category?.toLowerCase()),
   ].slice(0, 3);
 
-  const top10RankedArticles = allArticles
-    .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts)
-    .sort((a, b) => ((b.top10VisitCount || b.viewsCount || 0) - (a.top10VisitCount || a.viewsCount || 0)))
-    .slice(0, 5);
+  const { latestArticles, interviewArticles } = buildBlogSidebarLists(allArticles, article.slug);
 
   const articleUrl = `${baseUrl}/news/${article.slug}`;
   const shouldShowFeaturedImage = article.showFeaturedImage !== false && article.showFeaturedImage !== 'No' && article.showFeaturedImage !== 'no';
-  const sidebarPos = article.sidebarPosition || 'none'; // 'right' | 'left' | 'none'
+  const sidebarPos = article.sidebarPosition || 'right'; // 'right' | 'left'
   const shouldShowPopularPosts = !article.disablePopularPostsDisplay;
 
   const isoDate = (() => {
@@ -298,225 +292,163 @@ export default async function ArticleDetailPage({ params }: PageProps) {
       />
 
       <article className="w-full" itemScope itemType="https://schema.org/NewsArticle">
-        {/* Top Breadcrumb & Navigation */}
-        <nav aria-label="Breadcrumb" className="flex items-center justify-between flex-wrap gap-2 pb-4 mb-6 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-[#a3a3a3] overflow-hidden no-scrollbar">
-          <div className="flex items-center space-x-2 flex-wrap">
-            <Link
-              href="/"
-              className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
-            >
-              Home
-            </Link>
-            <span>/</span>
-            <Link
-              href={`/category/${getCategorySlug(article.category)}`}
-              className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
-            >
-              {article.category}
-            </Link>
-            <span>/</span>
-            <span
-              className="font-bold text-[#0a0a0a] dark:text-white truncate max-w-[200px] sm:max-w-[340px]"
-              title={article.title}
-            >
-              {article.title}
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="hidden sm:inline">Published:</span>
-            <time dateTime={article.date} className="font-semibold text-[#211d1d] dark:text-[#ffffff]">
-              {article.date}
-            </time>
-          </div>
-        </nav>
+        {/* Two-Part Blog Layout: Left Full Blog Column + Right Fixed/Sticky Latest & Interview Panel (stops above bottom Editorial section) */}
+        <div className={`w-full flex flex-col ${sidebarPos === 'left' ? 'lg:flex-row-reverse' : 'lg:flex-row'} gap-8 items-start`}>
+          {/* Left Column: Complete Blog Article */}
+          <div className="w-full lg:flex-1 min-w-0 text-left">
+            {/* Top Breadcrumb & Navigation */}
+            <nav aria-label="Breadcrumb" className="flex items-center justify-between flex-wrap gap-2 pb-4 mb-5 border-b border-[#211d1d]/15 dark:border-white/15 text-xs font-mono uppercase text-[#575757] dark:text-[#a3a3a3] overflow-hidden no-scrollbar">
+              <div className="flex items-center space-x-2 flex-wrap">
+                <Link
+                  href="/"
+                  className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
+                >
+                  Home
+                </Link>
+                <span>/</span>
+                <Link
+                  href={`/category/${getCategorySlug(article.category)}`}
+                  className="hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors"
+                >
+                  {article.category}
+                </Link>
+                <span>/</span>
+                <span
+                  className="font-bold text-[#0a0a0a] dark:text-white truncate max-w-[200px] sm:max-w-[340px]"
+                  title={article.title}
+                >
+                  {article.title}
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="hidden sm:inline">Published:</span>
+                <time dateTime={article.date} className="font-semibold text-[#211d1d] dark:text-[#ffffff]">
+                  {article.date}
+                </time>
+              </div>
+            </nav>
 
-        {/* Article Header & Headline: Left-aligned, full width, compact editorial scale */}
-        <header className="w-full text-left mt-2 mb-5">
-          <h1
-            itemProp="headline"
-            className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-[#ffffff] leading-snug tracking-tight mb-2.5"
-          >
-            {renderRichInline(article.title)}
-          </h1>
+            {/* Article Header & Headline: Left-aligned, compact editorial scale */}
+            <header className="w-full text-left mt-1 mb-5">
+              <h1
+                itemProp="headline"
+                className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-[#ffffff] leading-snug tracking-tight mb-2.5"
+              >
+                {renderRichInline(article.title)}
+              </h1>
 
-          <p
-            itemProp="description"
-            className="font-serif italic text-sm sm:text-[15px] text-[#575757] dark:text-[#c4c4c4] leading-[1.45] w-full text-left mb-3.5"
-          >
-            {renderRichInline(
-              article.excerpt,
-              article.content || (Array.isArray(article.paragraphs) ? article.paragraphs[0] : '')
-            )}
-          </p>
+              <p
+                itemProp="description"
+                className="font-serif italic text-sm sm:text-[15px] text-[#575757] dark:text-[#c4c4c4] leading-[1.45] w-full text-left mb-3.5"
+              >
+                {renderRichInline(
+                  article.excerpt,
+                  article.content || (Array.isArray(article.paragraphs) ? article.paragraphs[0] : '')
+                )}
+              </p>
 
-          {/* Meta Info Bar (Date, Read Time, Tag) */}
-          <div className="py-2.5 border-t border-b border-[#211d1d]/15 dark:border-white/15 flex flex-wrap items-center justify-start gap-4 sm:gap-5 text-[11px] text-[#575757] dark:text-[#a3a3a3] font-mono uppercase">
-            <div className="flex items-center space-x-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#f7413e]" />
-              <time dateTime={article.date} itemProp="datePublished">
-                {article.date}
-              </time>
-            </div>
-
-            <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
-
-            <div className="flex items-center space-x-1.5">
-              <Clock className="w-3.5 h-3.5 text-[#002b5c] dark:text-[#60a5fa]" />
-              <span>{article.readTime}</span>
-            </div>
-
-            {article.tag && (
-              <>
-                <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
-                <div className="flex items-center space-x-1">
-                  <Tag className="w-3 h-3 text-[#575757] dark:text-[#a3a3a3]" />
-                  <span className="text-[#575757] dark:text-[#a3a3a3]">{article.tag}</span>
+              {/* Meta Info Bar (Date, Read Time, Tag) */}
+              <div className="py-2.5 border-t border-b border-[#211d1d]/15 dark:border-white/15 flex flex-wrap items-center justify-start gap-4 sm:gap-5 text-[11px] text-[#575757] dark:text-[#a3a3a3] font-mono uppercase">
+                <div className="flex items-center space-x-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#f7413e]" />
+                  <time dateTime={article.date} itemProp="datePublished">
+                    {article.date}
+                  </time>
                 </div>
-              </>
-            )}
-          </div>
-        </header>
 
-        {/* Hero Featured Image (Controlled by "Show featured image on single post"): Full width 3:2 (1200x800 uncropped) */}
-        {shouldShowFeaturedImage && (
-          <div className="w-full my-5">
-            <div className="relative w-full aspect-[3/2] overflow-hidden rounded-lg border border-[#211d1d]/15 dark:border-white/15 shadow-sm">
-              <AmbientImage
+                <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
+
+                <div className="flex items-center space-x-1.5">
+                  <Clock className="w-3.5 h-3.5 text-[#002b5c] dark:text-[#60a5fa]" />
+                  <span>{article.readTime}</span>
+                </div>
+
+                {article.tag && (
+                  <>
+                    <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
+                    <div className="flex items-center space-x-1">
+                      <Tag className="w-3 h-3 text-[#575757] dark:text-[#a3a3a3]" />
+                      <span className="text-[#575757] dark:text-[#a3a3a3]">{article.tag}</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </header>
+
+            {/* Hero Featured Image: Self-fitting full aspect container with zero empty space & zero cropping */}
+            {shouldShowFeaturedImage && (
+              <ArticleHeroImage
                 src={article.image}
                 alt={article.title}
-                priority
-                sizes="(max-width: 768px) 100vw, 1200px"
+                caption={`Photography & Editorial Archive — ${siteConfig.name} Special Report`}
               />
-            </div>
-            <div className="text-left text-[11px] font-mono text-[#575757] dark:text-[#a3a3a3] mt-1.5 italic">
-              Photography & Editorial Archive — {siteConfig.name} Special Report
-            </div>
-          </div>
-        )}
-
-        {/* Main Content Layout: Full container width left-to-right */}
-        <div className={`w-full my-6 ${
-          sidebarPos === 'right'
-            ? 'flex flex-col lg:flex-row gap-8 items-start'
-            : sidebarPos === 'left'
-            ? 'flex flex-col lg:flex-row-reverse gap-8 items-start'
-            : ''
-        }`}>
-          {/* Article Body Content */}
-          <div className={sidebarPos !== 'none' ? 'w-full lg:w-2/3 text-left' : 'w-full text-left'} itemProp="articleBody">
-            {/* Social Share Bar */}
-            <ShareButtons title={article.title} />
-
-            {/* Rich Body Content (WYSIWYG HTML or Structured Paragraphs) */}
-            {article.content ? (
-              <div
-                dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
-                className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-[#211d1d]/90 dark:text-[#e5e7eb] space-y-3 my-4 font-sans text-left"
-              />
-            ) : (
-              <>
-                {/* Lead Paragraph with Drop Cap */}
-                {Array.isArray(article.paragraphs) && article.paragraphs[0] && (
-                  <p className="drop-cap font-sans text-base sm:text-[17px] text-[#211d1d] dark:text-[#f5f4ef] leading-[1.48] mb-4 text-left">
-                    {renderRichInline(article.paragraphs[0])}
-                  </p>
-                )}
-
-                {/* Subheadings and Content Sections */}
-                {Array.isArray(article.sections) && article.sections.length > 0 ? (
-                  article.sections.map((sec, idx) => (
-                    <section key={idx} className="my-4 text-left">
-                      <h2 className="font-sans text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-5 mb-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-1.5">
-                        {renderRichInline(sec.heading || '')}
-                      </h2>
-                      <p className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48]">
-                        {renderRichInline(sec.content || '')}
-                      </p>
-                    </section>
-                  ))
-                ) : (
-                  (Array.isArray(article.paragraphs) ? article.paragraphs.slice(1) : []).map((p, idx) => (
-                    <p
-                      key={idx}
-                      className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48] my-3 text-left"
-                    >
-                      {renderRichInline(p)}
-                    </p>
-                  ))
-                )}
-              </>
             )}
 
-            {/* Editorial Pull Quote */}
-            <div className="my-6 p-4 sm:p-5 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
-              <Quote className="w-7 h-7 text-[#f7413e]/20 absolute top-3 right-3" />
-              <blockquote className="font-sans italic text-base sm:text-lg text-[#0a0a0a] dark:text-[#ffffff] leading-[1.48] mb-2">
-                &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
-              </blockquote>
-              <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">
-                — {siteConfig.name} Editorial Board
-              </cite>
+            {/* Article Body Content */}
+            <div className="w-full my-5 text-left" itemProp="articleBody">
+              {/* Social Share Bar */}
+              <ShareButtons title={article.title} />
+
+              {/* Rich Body Content (WYSIWYG HTML or Structured Paragraphs) */}
+              {article.content ? (
+                <div
+                  dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
+                  className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-[#211d1d]/90 dark:text-[#e5e7eb] space-y-3 my-4 font-sans text-left"
+                />
+              ) : (
+                <>
+                  {/* Lead Paragraph with Drop Cap */}
+                  {Array.isArray(article.paragraphs) && article.paragraphs[0] && (
+                    <p className="drop-cap font-sans text-base sm:text-[17px] text-[#211d1d] dark:text-[#f5f4ef] leading-[1.48] mb-4 text-left">
+                      {renderRichInline(article.paragraphs[0])}
+                    </p>
+                  )}
+
+                  {/* Subheadings and Content Sections */}
+                  {Array.isArray(article.sections) && article.sections.length > 0 ? (
+                    article.sections.map((sec, idx) => (
+                      <section key={idx} className="my-4 text-left">
+                        <h2 className="font-sans text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-5 mb-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-1.5">
+                          {renderRichInline(sec.heading || '')}
+                        </h2>
+                        <p className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48]">
+                          {renderRichInline(sec.content || '')}
+                        </p>
+                      </section>
+                    ))
+                  ) : (
+                    (Array.isArray(article.paragraphs) ? article.paragraphs.slice(1) : []).map((p, idx) => (
+                      <p
+                        key={idx}
+                        className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48] my-3 text-left"
+                      >
+                        {renderRichInline(p)}
+                      </p>
+                    ))
+                  )}
+                </>
+              )}
+
+              {/* Editorial Pull Quote */}
+              <div className="my-6 p-4 sm:p-5 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
+                <Quote className="w-7 h-7 text-[#f7413e]/20 absolute top-3 right-3" />
+                <blockquote className="font-sans italic text-base sm:text-lg text-[#0a0a0a] dark:text-[#ffffff] leading-[1.48] mb-2">
+                  &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
+                </blockquote>
+                <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">
+                  — {siteConfig.name} Editorial Board
+                </cite>
+              </div>
             </div>
           </div>
 
-          {/* Optional Sidebar (Appearance Position: Right / Left) */}
-          {sidebarPos !== 'none' && (
-            <aside className="w-full lg:w-1/3 space-y-6 shrink-0">
-              {/* Top 10 / Popular Posts Widget */}
-              {shouldShowPopularPosts && top10RankedArticles.length > 0 && (
-                <div className="bg-gray-50 dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-4 rounded-md">
-                  <div className="flex items-center space-x-2 pb-2 mb-3 border-b border-[#f7413e]">
-                    <span className="w-2 h-2 bg-[#f7413e]"></span>
-                    <h3 className="font-oswald text-sm font-bold uppercase tracking-wider text-black dark:text-white">
-                      Popular Top 10 Stories
-                    </h3>
-                  </div>
-                  <div className="space-y-3">
-                    {top10RankedArticles.map((pop, idx) => (
-                      <Link
-                        key={pop.slug}
-                        href={getBlogUrl(pop)}
-                        className="flex items-start space-x-3 group block"
-                      >
-                        <span className="font-oswald text-xs font-bold text-[#f7413e] shrink-0 mt-0.5">
-                          0{idx + 1}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <h4 className="text-xs font-bold font-serif line-clamp-2 text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug">
-                            {pop.title}
-                          </h4>
-                          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono mt-0.5 block">
-                            {pop.category}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Sidebar Newsletter Widget */}
-              <div className="bg-[#0a0a0a] text-white p-5 rounded-md border border-white/10 text-center">
-                <span className="text-[10px] font-mono text-[#f7413e] uppercase font-bold tracking-widest block mb-1">
-                  ApexChief Dispatch
-                </span>
-                <h4 className="font-serif text-lg font-bold mb-2">Executive Briefing</h4>
-                <p className="text-xs text-gray-400 mb-4 font-sans">
-                  Direct intelligence on global markets and technology.
-                </p>
-                <div className="space-y-2">
-                  <input
-                    type="email"
-                    placeholder="Enter executive email..."
-                    className="w-full bg-white/10 border border-white/20 rounded px-3 py-1.5 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-[#f7413e]"
-                  />
-                  <button className="w-full bg-[#f7413e] hover:bg-[#d63431] text-white py-1.5 rounded text-xs font-oswald uppercase tracking-wider font-bold transition-colors">
-                    Subscribe
-                  </button>
-                </div>
-              </div>
-            </aside>
-          )}
+          {/* Right Column: Fixed/Sticky Latest & Interview Tabs Panel (stops cleanly above bottom Editorial section) */}
+          <aside className="w-full lg:w-[340px] xl:w-[360px] shrink-0 lg:sticky lg:top-36">
+            <BlogSplitSidebar
+              latestArticles={latestArticles}
+              interviewArticles={interviewArticles}
+            />
+          </aside>
         </div>
 
         {/* Newsletter Dispatch Component */}

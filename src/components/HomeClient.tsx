@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import AmbientImage from '@/components/AmbientImage';
 import ArticleCard from '@/components/ArticleCard';
+import HorizontalSlideTrack from '@/components/HorizontalSlideTrack';
 import { ARTICLES } from '@/data/articles';
 import { getBlogUrl } from '@/lib/blogUrl';
 import { getCleanPlainExcerpt } from '@/lib/linkify';
@@ -30,6 +31,15 @@ const getPlainExcerpt = (art: Article): string =>
     art.excerpt,
     art.content || (Array.isArray(art.paragraphs) ? art.paragraphs[0] : '')
   ) || art.title;
+
+const chunkArray = <T,>(items: T[], size: number): T[][] => {
+  if (size <= 0) return [items];
+  const chunks: T[][] = [];
+  for (let i = 0; i < items.length; i += size) {
+    chunks.push(items.slice(i, i + size));
+  }
+  return chunks;
+};
 
 export default function HomeClient({ initialArticles, initialCategories }: HomeClientProps = {}) {
   const [articles, setArticles] = useState<Article[]>(
@@ -143,6 +153,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
   const newsRightTop = selectedLatest[1] || articles[1] || articles[0];
   const newsRightBottom = selectedLatest[2] || articles[2] || articles[0];
   const newsRightBottom2 = selectedLatest[3] || articles[3] || articles[0];
+  const extraLatestSlides = chunkArray(selectedLatest.slice(4), 6);
 
   // Best This Month dynamic assignments: strictly placement === 'best-month'
   const bestAssigned = articles.filter((a) => a.placement === 'best-month');
@@ -211,178 +222,194 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
-          {/* Left Column: Balanced Featured Lead Dispatch (6 cols) */}
-          <article className="lg:col-span-6 group flex flex-col justify-between bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3.5 shadow-2xs">
-            <div className="flex-1 flex flex-col">
-              <Link
-                href={getBlogUrl(newsMain)}
-                className="block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] mb-3 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
-              >
-                <AmbientImage
-                  src={newsMain.image}
-                  alt={newsMain.title}
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 560px"
+        <HorizontalSlideTrack
+          ariaLabel="Latest News dispatches"
+          className="grid grid-flow-col auto-cols-[100%] gap-6 items-stretch"
+        >
+          <div className="snap-start grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+            {/* Left Column: Balanced Featured Lead Dispatch (6 cols) */}
+            <article className="lg:col-span-6 group flex flex-col justify-between bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3.5 shadow-2xs">
+              <div className="flex-1 flex flex-col">
+                <Link
+                  href={getBlogUrl(newsMain)}
+                  className="block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] mb-3 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                 >
-                  <div className="absolute top-2 left-2 z-20 flex items-center space-x-1 pointer-events-none">
-                    <span className="bg-[#f7413e] text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
-                      Lead News
-                    </span>
-                    <span className="bg-black/85 text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
-                      {newsMain.tag || newsMain.category}
-                    </span>
-                  </div>
-                  {newsMain.readTime && (
-                    <span className="absolute bottom-2 right-2 z-20 bg-black/80 text-white text-[9.5px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
-                      {newsMain.readTime}
-                    </span>
-                  )}
-                </AmbientImage>
-              </Link>
+                  <AmbientImage
+                    src={newsMain.image}
+                    alt={newsMain.title}
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 560px"
+                  >
+                    <div className="absolute top-2 left-2 z-20 flex items-center space-x-1 pointer-events-none">
+                      <span className="bg-[#f7413e] text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
+                        Lead News
+                      </span>
+                      <span className="bg-black/85 text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
+                        {newsMain.tag || newsMain.category}
+                      </span>
+                    </div>
+                    {newsMain.readTime && (
+                      <span className="absolute bottom-2 right-2 z-20 bg-black/80 text-white text-[9.5px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                        {newsMain.readTime}
+                      </span>
+                    )}
+                  </AmbientImage>
+                </Link>
 
-              <div className="flex items-center space-x-1.5 text-[11px] font-mono text-[#575757] dark:text-gray-400 mb-1.5">
-                <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
-                <span className="font-semibold uppercase tracking-wide">
-                  {newsMain.tag || newsMain.category}
-                </span>
+                <div className="flex items-center space-x-1.5 text-[11px] font-mono text-[#575757] dark:text-gray-400 mb-1.5">
+                  <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
+                  <span className="font-semibold uppercase tracking-wide">
+                    {newsMain.tag || newsMain.category}
+                  </span>
+                </div>
+
+                <Link href={getBlogUrl(newsMain)}>
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
+                    {newsMain.title}
+                  </h3>
+                </Link>
+
+                <p className="font-sans text-xs sm:text-[13px] text-[#575757] dark:text-gray-300 leading-relaxed mb-3 line-clamp-3">
+                  {getPlainExcerpt(newsMain)}
+                </p>
               </div>
 
-              <Link href={getBlogUrl(newsMain)}>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
-                  {newsMain.title}
-                </h3>
-              </Link>
-
-              <p className="font-sans text-xs sm:text-[13px] text-[#575757] dark:text-gray-300 leading-relaxed mb-3 line-clamp-3">
-                {getPlainExcerpt(newsMain)}
-              </p>
-            </div>
-
-            <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10">
-              <span className="text-[11px] font-mono text-[#575757] dark:text-gray-400 truncate">
-                By {newsMain.author} • {newsMain.date}
-              </span>
-              <Link
-                href={getBlogUrl(newsMain)}
-                className="shrink-0 inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10.5px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xs transition-all shadow-2xs"
-              >
-                <span>Read Story</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </article>
-
-          {/* Right Column: Compact Horizontal Feature + Balanced 2-Card Row (6 cols) */}
-          <div className="lg:col-span-6 flex flex-col justify-between gap-4">
-            {/* Top: Horizontal Card */}
-            <article className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col sm:flex-row gap-3.5 items-stretch">
-              <Link
-                href={getBlogUrl(newsRightTop)}
-                className="w-full sm:w-[42%] aspect-[3/2] relative flex-shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
-              >
-                <AmbientImage
-                  src={newsRightTop.image}
-                  alt={newsRightTop.title}
-                  sizes="(max-width: 640px) 100vw, 240px"
+              <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10">
+                <span className="text-[11px] font-mono text-[#575757] dark:text-gray-400 truncate">
+                  By {newsMain.author} • {newsMain.date}
+                </span>
+                <Link
+                  href={getBlogUrl(newsMain)}
+                  className="shrink-0 inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10.5px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xs transition-all shadow-2xs"
                 >
-                  {newsRightTop.readTime && (
-                    <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
-                      {newsRightTop.readTime}
-                    </span>
-                  )}
-                </AmbientImage>
-              </Link>
-
-              <div className="flex-1 min-w-0 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center space-x-1.5 text-[10.5px] font-mono text-[#575757] dark:text-gray-400">
-                    <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
-                    <span className="uppercase font-semibold tracking-wide">
-                      {newsRightTop.tag || newsRightTop.category}
-                    </span>
-                  </div>
-                  <Link href={getBlogUrl(newsRightTop)}>
-                    <h4 className="font-serif text-base sm:text-[17px] font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
-                      {newsRightTop.title}
-                    </h4>
-                  </Link>
-                  <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2">
-                    {getPlainExcerpt(newsRightTop)}
-                  </p>
-                </div>
-
-                <div className="mt-auto pt-2 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
-                  <span className="text-[10.5px] font-mono text-[#575757] dark:text-gray-400 truncate">
-                    {newsRightTop.date}
-                  </span>
-                  <Link
-                    href={getBlogUrl(newsRightTop)}
-                    className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-all shadow-2xs"
-                  >
-                    <span>Read more</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
+                  <span>Read Story</span>
+                  <ArrowRight className="w-3 h-3" />
+                </Link>
               </div>
             </article>
 
-            {/* Bottom Grid: 2 Matched Framed Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
-              {[newsRightBottom, newsRightBottom2].map((art, cardIdx) => (
-                <article
-                  key={`${art.slug}-${cardIdx}`}
-                  className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col justify-between h-full"
+            {/* Right Column: Compact Horizontal Feature + Balanced 2-Card Row (6 cols) */}
+            <div className="lg:col-span-6 flex flex-col justify-between gap-4">
+              {/* Top: Horizontal Card */}
+              <article className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col sm:flex-row gap-3.5 items-stretch">
+                <Link
+                  href={getBlogUrl(newsRightTop)}
+                  className="w-full sm:w-[42%] aspect-[3/2] relative flex-shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                 >
-                  <div className="flex-1 flex flex-col">
-                    <Link
-                      href={getBlogUrl(art)}
-                      className="block overflow-hidden relative aspect-[3/2] mb-2.5 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
-                    >
-                      <AmbientImage
-                        src={art.image}
-                        alt={art.title}
-                        sizes="(max-width: 640px) 100vw, 260px"
-                      >
-                        <span className="absolute top-1.5 left-1.5 z-20 bg-black/80 text-white text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs pointer-events-none">
-                          {art.tag || art.category}
-                        </span>
-                        {art.readTime && (
-                          <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
-                            {art.readTime}
-                          </span>
-                        )}
-                      </AmbientImage>
-                    </Link>
+                  <AmbientImage
+                    src={newsRightTop.image}
+                    alt={newsRightTop.title}
+                    sizes="(max-width: 640px) 100vw, 240px"
+                  >
+                    {newsRightTop.readTime && (
+                      <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                        {newsRightTop.readTime}
+                      </span>
+                    )}
+                  </AmbientImage>
+                </Link>
 
-                    <Link href={getBlogUrl(art)}>
-                      <h4 className="font-serif text-[15px] sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-1.5 line-clamp-2">
-                        {art.title}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center space-x-1.5 text-[10.5px] font-mono text-[#575757] dark:text-gray-400">
+                      <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
+                      <span className="uppercase font-semibold tracking-wide">
+                        {newsRightTop.tag || newsRightTop.category}
+                      </span>
+                    </div>
+                    <Link href={getBlogUrl(newsRightTop)}>
+                      <h4 className="font-serif text-base sm:text-[17px] font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
+                        {newsRightTop.title}
                       </h4>
                     </Link>
-
-                    <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2.5">
-                      {getPlainExcerpt(art)}
+                    <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2">
+                      {getPlainExcerpt(newsRightTop)}
                     </p>
                   </div>
 
                   <div className="mt-auto pt-2 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
                     <span className="text-[10.5px] font-mono text-[#575757] dark:text-gray-400 truncate">
-                      {art.date}
+                      {newsRightTop.date}
                     </span>
                     <Link
-                      href={getBlogUrl(art)}
+                      href={getBlogUrl(newsRightTop)}
                       className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-all shadow-2xs"
                     >
                       <span>Read more</span>
                       <ArrowRight className="w-3 h-3" />
                     </Link>
                   </div>
-                </article>
-              ))}
+                </div>
+              </article>
+
+              {/* Bottom Grid: 2 Matched Framed Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+                {[newsRightBottom, newsRightBottom2].map((art, cardIdx) => (
+                  <article
+                    key={`${art.slug}-${cardIdx}`}
+                    className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col justify-between h-full"
+                  >
+                    <div className="flex-1 flex flex-col">
+                      <Link
+                        href={getBlogUrl(art)}
+                        className="block overflow-hidden relative aspect-[3/2] mb-2.5 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                      >
+                        <AmbientImage
+                          src={art.image}
+                          alt={art.title}
+                          sizes="(max-width: 640px) 100vw, 260px"
+                        >
+                          <span className="absolute top-1.5 left-1.5 z-20 bg-black/80 text-white text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs pointer-events-none">
+                            {art.tag || art.category}
+                          </span>
+                          {art.readTime && (
+                            <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                              {art.readTime}
+                            </span>
+                          )}
+                        </AmbientImage>
+                      </Link>
+
+                      <Link href={getBlogUrl(art)}>
+                        <h4 className="font-serif text-[15px] sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-1.5 line-clamp-2">
+                          {art.title}
+                        </h4>
+                      </Link>
+
+                      <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2.5">
+                        {getPlainExcerpt(art)}
+                      </p>
+                    </div>
+
+                    <div className="mt-auto pt-2 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
+                      <span className="text-[10.5px] font-mono text-[#575757] dark:text-gray-400 truncate">
+                        {art.date}
+                      </span>
+                      <Link
+                        href={getBlogUrl(art)}
+                        className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-all shadow-2xs"
+                      >
+                        <span>Read more</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+
+          {extraLatestSlides.map((slideGroup, slideIdx) => (
+            <div
+              key={`latest-slide-${slideIdx}`}
+              className="snap-start grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch"
+            >
+              {slideGroup.map((art) => (
+                <ArticleCard key={art.slug} article={art} variant="standard" />
+              ))}
+            </div>
+          ))}
+        </HorizontalSlideTrack>
       </section>
 
       {/* DYNAMIC CATEGORY SECTIONS */}
@@ -576,114 +603,119 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   );
 
   // =========================================================================
-  // 0. TOP - LIST: EDITORIAL POWER INDEX (TOP 10 FULL SHOWCASE)
+  // 0. TOP - LIST: EDITORIAL POWER INDEX (3 Left + 3 Right per view, Slidable)
   // =========================================================================
   if (cat.slug === 'top-list' || cat.slug === 'top10' || cat.name?.toLowerCase().includes('top - list')) {
-    const top10Articles = categoryArticles.slice(0, 10);
+    const topListArticles: Article[] = [];
+    const seenSlugs = new Set<string>();
+
+    const normalizeImg = (art: Article): Article => ({
+      ...art,
+      image: art.image ? art.image.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
+      authorAvatar: art.authorAvatar ? art.authorAvatar.replace(/&amp;/g, '&') : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
+    });
+
+    // 1. Primary Top - List category articles first
+    for (const art of categoryArticles) {
+      if (art?.slug && !seenSlugs.has(art.slug)) {
+        seenSlugs.add(art.slug);
+        topListArticles.push(art);
+      }
+    }
+
+    // 2. Supplement with placement === 'top10' articles
+    const top10Placed = [...articles]
+      .filter((a) => a?.placement === 'top10' && !a.excludeFromPopularPosts)
+      .sort((a, b) => (b.top10VisitCount || b.viewsCount || 0) - (a.top10VisitCount || a.viewsCount || 0));
+    for (const art of top10Placed) {
+      if (art?.slug && !seenSlugs.has(art.slug)) {
+        seenSlugs.add(art.slug);
+        topListArticles.push(normalizeImg(art));
+      }
+    }
+
+    // 3. Ensure at least 6 items so Left (01-03) & Right (04-06) columns stay full
+    if (topListArticles.length < 6) {
+      const topRankedFallback = [...articles]
+        .filter((a) => a?.slug && !a.excludeFromPopularPosts && !seenSlugs.has(a.slug))
+        .sort((a, b) => (b.top10VisitCount || b.viewsCount || 0) - (a.top10VisitCount || a.viewsCount || 0));
+      for (const art of topRankedFallback) {
+        if (topListArticles.length >= 6) break;
+        seenSlugs.add(art.slug);
+        topListArticles.push(normalizeImg(art));
+      }
+    }
+
+    // Split strictly into columns of 3 items: 01-03 Left, 04-06 Right, 07-09 / 10-12+ Slidable
+    const topColumns = chunkArray(topListArticles, 3);
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
         {renderHeader()}
-        
-        {/* Top 10 Power Index Grid: 2 Columns of 5 Rows each for extreme readability & compact height */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-start">
-          {/* Column 1: Ranks 01 to 05 */}
-          <div className="space-y-3">
-            {top10Articles.slice(0, 5).map((art, idx) => (
-              <div
-                key={art.slug}
-                className="flex items-center gap-3.5 p-3 bg-white dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group shadow-2xs"
-              >
-                {/* Big Rank Number Badge */}
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#211d1d] dark:bg-white text-white dark:text-black group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0">
-                  0{idx + 1}
-                </div>
 
-                {/* Compact Thumbnail */}
-                <Link
-                  href={getBlogUrl(art)}
-                  className="w-20 sm:w-24 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
-                >
-                  <AmbientImage
-                    src={art.image}
-                    alt={art.title}
-                  />
-                </Link>
-
-                {/* Content Details */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-0.5">
-                    <span className="uppercase text-[#f7413e] font-bold">
-                      {art.tag || art.category}
-                    </span>
-                    <span>•</span>
-                    <span>{art.readTime}</span>
-                    <span className="hidden sm:inline">•</span>
-                    <span className="hidden sm:inline">{art.date}</span>
-                  </div>
-                  <Link href={getBlogUrl(art)}>
-                    <h4 className="font-oswald text-sm sm:text-[15px] font-medium text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-1 mb-1">
-                      {art.title}
-                    </h4>
-                  </Link>
-                  <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
-                    {getPlainExcerpt(art)}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Column 2: Ranks 06 to 10 */}
-          <div className="space-y-3">
-            {top10Articles.slice(5, 10).map((art, idx) => {
-              const actualRank = idx + 6;
-              return (
-                <div
-                  key={art.slug}
-                  className="flex items-center gap-3.5 p-3 bg-white dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group shadow-2xs"
-                >
-                  {/* Big Rank Number Badge */}
-                  <div className="w-9 h-9 sm:w-10 sm:h-10 bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200 group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0">
-                    {actualRank < 10 ? `0${actualRank}` : actualRank}
-                  </div>
-
-                  {/* Compact Thumbnail */}
-                  <Link
-                    href={getBlogUrl(art)}
-                    className="w-20 sm:w-24 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+        <HorizontalSlideTrack
+          ariaLabel={`${cat.name} power index`}
+          className="grid grid-flow-col auto-cols-[100%] lg:auto-cols-[calc((100%-24px)/2)] gap-6 items-start"
+        >
+          {topColumns.map((colItems, colIdx) => (
+            <div key={`toplist-col-${colIdx}`} className="snap-start space-y-3">
+              {colItems.map((art, rowIdx) => {
+                const actualRank = colIdx * 3 + rowIdx + 1;
+                const rankLabel = actualRank < 10 ? `0${actualRank}` : String(actualRank);
+                const isLeadColumn = colIdx === 0;
+                return (
+                  <div
+                    key={art.slug}
+                    className="flex items-center gap-3.5 p-3 bg-white dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group shadow-2xs"
                   >
-                    <AmbientImage
-                      src={art.image}
-                      alt={art.title}
-                    />
-                  </Link>
-
-                  {/* Content Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center space-x-2 text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-0.5">
-                      <span className="uppercase text-[#f7413e] font-bold">
-                        {art.tag || art.category}
-                      </span>
-                      <span>•</span>
-                      <span>{art.readTime}</span>
-                      <span className="hidden sm:inline">•</span>
-                      <span className="hidden sm:inline">{art.date}</span>
+                    {/* Big Rank Number Badge */}
+                    <div
+                      className={`w-9 h-9 sm:w-10 sm:h-10 ${
+                        isLeadColumn
+                          ? 'bg-[#211d1d] dark:bg-white text-white dark:text-black'
+                          : 'bg-[#eff0e0] dark:bg-white/10 text-[#211d1d] dark:text-gray-200'
+                      } group-hover:bg-[#f7413e] group-hover:text-white transition-colors flex items-center justify-center font-oswald text-sm sm:text-base font-bold shrink-0`}
+                    >
+                      {rankLabel}
                     </div>
-                    <Link href={getBlogUrl(art)}>
-                      <h4 className="font-oswald text-sm sm:text-[15px] font-medium text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-1 mb-1">
-                        {art.title}
-                      </h4>
+
+                    {/* Compact Thumbnail */}
+                    <Link
+                      href={getBlogUrl(art)}
+                      className="w-20 sm:w-24 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                    >
+                      <AmbientImage
+                        src={art.image}
+                        alt={art.title}
+                      />
                     </Link>
-                    <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
-                      {getPlainExcerpt(art)}
-                    </p>
+
+                    {/* Content Details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-0.5">
+                        <span className="uppercase text-[#f7413e] font-bold">
+                          {art.tag || art.category}
+                        </span>
+                        <span>•</span>
+                        <span>{art.readTime}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="hidden sm:inline">{art.date}</span>
+                      </div>
+                      <Link href={getBlogUrl(art)}>
+                        <h4 className="font-oswald text-sm sm:text-[15px] font-medium text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-1 mb-1">
+                          {art.title}
+                        </h4>
+                      </Link>
+                      <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
+                        {getPlainExcerpt(art)}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+                );
+              })}
+            </div>
+          ))}
+        </HorizontalSlideTrack>
 
         {/* Top 10 Power Index Strip */}
         <div className="mt-4 p-3 bg-[#faf8f2] dark:bg-[#111318] border border-[#211d1d]/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs font-mono">
@@ -704,124 +736,148 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   }
 
   // =========================================================================
-  // A. OPINION & COMMENTARY CUSTOM COMPACT SECTION
+  // A. OPINION & COMMENTARY CUSTOM COMPACT SECTION (Slidable when > 4)
   // =========================================================================
   if (cat.slug === 'opinion') {
     const leadOpinion = categoryArticles[0];
     const otherOpinions = categoryArticles.slice(1, 4);
+    const extraOpinionSlides = chunkArray(categoryArticles.slice(4), 3);
 
     return (
       <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
         {renderHeader()}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
-          {/* Left Lead Essay (7 Cols): Compact Horizontal Layout */}
-          <div className="lg:col-span-7 flex flex-col justify-between p-5 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 group">
-            <div>
-              <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold mb-2">
-                <span>Featured Column</span>
-                <span>•</span>
-                <span>{leadOpinion.tag || 'Executive Essay'}</span>
+        <HorizontalSlideTrack
+          ariaLabel="Opinion commentary essays"
+          className="grid grid-flow-col auto-cols-[100%] gap-6 items-stretch"
+        >
+          <div className="snap-start grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+            {/* Left Lead Essay (7 Cols): Compact Horizontal Layout */}
+            <div className="lg:col-span-7 flex flex-col justify-between p-5 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 group">
+              <div>
+                <div className="flex items-center space-x-2 text-[10px] font-mono uppercase tracking-widest text-[#f7413e] font-bold mb-2">
+                  <span>Featured Column</span>
+                  <span>•</span>
+                  <span>{leadOpinion.tag || 'Executive Essay'}</span>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row items-start gap-4 mb-3">
+                  <Link
+                    href={getBlogUrl(leadOpinion)}
+                    className="w-full sm:w-52 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                  >
+                    <AmbientImage
+                      src={leadOpinion.image}
+                      alt={leadOpinion.title}
+                    />
+                  </Link>
+                  <div className="flex-1">
+                    <Link href={getBlogUrl(leadOpinion)}>
+                      <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-2">
+                        {leadOpinion.title}
+                      </h3>
+                    </Link>
+                    <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-3">
+                      {getPlainExcerpt(leadOpinion)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Author & Pullquote Card */}
+                <div className="bg-white dark:bg-[#1c2230] border-l-2 border-[#f7413e] p-3 mt-3 text-xs italic font-serif text-[#211d1d] dark:text-gray-200">
+                  “{getPlainExcerpt(leadOpinion).slice(0, 140) ? getPlainExcerpt(leadOpinion).slice(0, 140) + '...' : 'Thought leadership and strategic analysis from leaders shaping global enterprise.'}”
+                </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row items-start gap-4 mb-3">
+
+              <div className="flex items-center justify-between pt-3 mt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-xs">
+                <div className="flex items-center space-x-2">
+                  <Image
+                    src={leadOpinion.authorAvatar}
+                    alt={leadOpinion.author}
+                    width={24}
+                    height={24}
+                    className="rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                  />
+                  <span className="font-medium text-[#0a0a0a] dark:text-white font-serif">{leadOpinion.author}</span>
+                  <span className="text-gray-400">•</span>
+                  <span className="text-[11px] text-gray-500 dark:text-gray-400">{leadOpinion.authorRole || 'Contributor'}</span>
+                </div>
                 <Link
                   href={getBlogUrl(leadOpinion)}
-                  className="w-full sm:w-52 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
                 >
-                  <AmbientImage
-                    src={leadOpinion.image}
-                    alt={leadOpinion.title}
-                  />
+                  <span>Read Essay</span>
+                  <ArrowRight className="w-3 h-3" />
                 </Link>
-                <div className="flex-1">
-                  <Link href={getBlogUrl(leadOpinion)}>
-                    <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-2">
-                      {leadOpinion.title}
-                    </h3>
-                  </Link>
-                  <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-3">
-                    {getPlainExcerpt(leadOpinion)}
-                  </p>
-                </div>
-              </div>
-
-              {/* Author & Pullquote Card */}
-              <div className="bg-white dark:bg-[#1c2230] border-l-2 border-[#f7413e] p-3 mt-3 text-xs italic font-serif text-[#211d1d] dark:text-gray-200">
-                “{getPlainExcerpt(leadOpinion).slice(0, 140) ? getPlainExcerpt(leadOpinion).slice(0, 140) + '...' : 'Thought leadership and strategic analysis from leaders shaping global enterprise.'}”
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-3 mt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-xs">
-              <div className="flex items-center space-x-2">
-                <Image
-                  src={leadOpinion.authorAvatar}
-                  alt={leadOpinion.author}
-                  width={24}
-                  height={24}
-                  className="rounded-full object-cover border border-gray-300 dark:border-gray-600"
-                />
-                <span className="font-medium text-[#0a0a0a] dark:text-white font-serif">{leadOpinion.author}</span>
-                <span className="text-gray-400">•</span>
-                <span className="text-[11px] text-gray-500 dark:text-gray-400">{leadOpinion.authorRole || 'Contributor'}</span>
-              </div>
-              <Link
-                href={getBlogUrl(leadOpinion)}
-                className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
-              >
-                <span>Read Essay</span>
-                <ArrowRight className="w-3 h-3" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Column (5 Cols): Secondary Stacked Columns */}
-          <div className="lg:col-span-5 flex flex-col justify-between space-y-3.5">
-            {otherOpinions.map((art, idx) => (
-              <div
-                key={idx}
-                className="p-3.5 bg-white dark:bg-[#171b26] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-1">
-                    <span className="text-[#f7413e] font-bold uppercase">{art.tag || 'Perspective'}</span>
-                    <span>{art.readTime || '4 min read'}</span>
+            {/* Right Column (5 Cols): Secondary Stacked Columns */}
+            <div className="lg:col-span-5 flex flex-col justify-between space-y-3.5">
+              {otherOpinions.map((art, idx) => (
+                <div
+                  key={idx}
+                  className="p-3.5 bg-white dark:bg-[#171b26] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between text-[10px] font-mono text-[#575757] dark:text-gray-400 mb-1">
+                      <span className="text-[#f7413e] font-bold uppercase">{art.tag || 'Perspective'}</span>
+                      <span>{art.readTime || '4 min read'}</span>
+                    </div>
+                    <Link href={getBlogUrl(art)}>
+                      <h4 className="font-serif text-sm sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
+                        {art.title}
+                      </h4>
+                    </Link>
                   </div>
-                  <Link href={getBlogUrl(art)}>
-                    <h4 className="font-serif text-sm sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
-                      {art.title}
-                    </h4>
-                  </Link>
+                  <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
+                    <span className="font-serif italic text-gray-600 dark:text-gray-400">By {art.author}</span>
+                    <Link href={getBlogUrl(art)} className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded transition-all shadow-xs">
+                      <span>Read</span>
+                      <ArrowRight className="w-2.5 h-2.5" />
+                    </Link>
+                  </div>
                 </div>
-                <div className="flex items-center justify-between pt-2 mt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
-                  <span className="font-serif italic text-gray-600 dark:text-gray-400">By {art.author}</span>
-                  <Link href={getBlogUrl(art)} className="inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded transition-all shadow-xs">
-                    <span>Read</span>
-                    <ArrowRight className="w-2.5 h-2.5" />
-                  </Link>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+
+          {extraOpinionSlides.map((slideGroup, slideIdx) => (
+            <div
+              key={`opinion-slide-${slideIdx}`}
+              className="snap-start grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch"
+            >
+              {slideGroup.map((art) => (
+                <ArticleCard key={art.slug} article={art} variant="standard" />
+              ))}
+            </div>
+          ))}
+        </HorizontalSlideTrack>
       </section>
     );
   }
 
   // =========================================================================
-  // Standardized Category Card Grid (Uniform 3-Column Card Layout)
-  // Ensures ALL category containers have identical dimensions (aspect-[3/2]).
-  // Single-article categories (like Health) take 1 column (~380px) instead of 100% width.
+  // Standardized Category Card Track (Uniform 3-Column Card Width, Slidable R->L)
+  // Renders 3 full columns per viewport without visible sliders or scrollbars;
+  // additional cards slide horizontally right-to-left when overflow occurs.
   // =========================================================================
-  const displayList = categoryArticles.slice(0, 3);
-
   return (
     <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
       {renderHeader()}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {displayList.map((art) => (
-          <ArticleCard key={art.slug} article={art} variant="standard" />
+      <HorizontalSlideTrack
+        ariaLabel={`${cat.name} stories`}
+        className={`grid grid-flow-col ${
+          categoryArticles.length === 1
+            ? 'auto-cols-[100%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
+            : 'auto-cols-[88%] sm:auto-cols-[calc((100%-24px)/2)] lg:auto-cols-[calc((100%-48px)/3)]'
+        } gap-6 items-stretch`}
+      >
+        {categoryArticles.map((art) => (
+          <div key={art.slug} className="snap-start h-full">
+            <ArticleCard article={art} variant="standard" />
+          </div>
         ))}
-      </div>
+      </HorizontalSlideTrack>
     </section>
   );
 }

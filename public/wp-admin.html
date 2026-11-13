@@ -6924,9 +6924,45 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     let isBulkMediaSelectMode = false;
     let selectedMediaIdsForBulk = [];
 
+    function getDeletedPostKeys() {
+      try {
+        const raw = localStorage.getItem('apex_wp_deleted_posts');
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr.map(String) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function markPostKeysDeleted(keys) {
+      try {
+        const current = new Set(getDeletedPostKeys());
+        keys.filter(Boolean).forEach(k => current.add(String(k)));
+        localStorage.setItem('apex_wp_deleted_posts', JSON.stringify(Array.from(current)));
+      } catch (e) {}
+    }
+
+    function unmarkPostKeyDeleted(key) {
+      if (!key) return;
+      try {
+        const filtered = getDeletedPostKeys().filter(k => k !== String(key));
+        localStorage.setItem('apex_wp_deleted_posts', JSON.stringify(filtered));
+      } catch (e) {}
+    }
+
     function saveState() {
       try {
-        localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(posts));
+        const safePosts = posts.map(p => {
+          const slugVal = p.slug || p.id || '';
+          const safeImg = (typeof p.featuredImage === 'string' && p.featuredImage.startsWith('data:image/') && p.featuredImage.length > 4096 && slugVal)
+            ? ('/api/article-image/' + encodeURIComponent(slugVal))
+            : p.featuredImage;
+          const safeThumb = (typeof p.top10Thumbnail === 'string' && p.top10Thumbnail.startsWith('data:image/') && p.top10Thumbnail.length > 4096 && slugVal)
+            ? ('/api/article-image/' + encodeURIComponent(slugVal))
+            : p.top10Thumbnail;
+          return { ...p, featuredImage: safeImg, top10Thumbnail: safeThumb };
+        });
+        localStorage.setItem(STORAGE_KEY_POSTS, JSON.stringify(safePosts));
         localStorage.setItem(STORAGE_KEY_CATS, JSON.stringify(categories));
         localStorage.setItem(STORAGE_KEY_TAGS, JSON.stringify(tags));
         localStorage.setItem(STORAGE_KEY_MEDIA, JSON.stringify(mediaList));
@@ -10160,7 +10196,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
       if (showImg && typeof currentFeaturedImage === 'string' && currentFeaturedImage) {
         const safeImg = currentFeaturedImage.replace(/"/g, '&quot;');
-        previewHtml += `<div class="w-full my-4"><img src="${safeImg}" alt="" class="w-full aspect-[3/2] object-contain bg-gray-100 rounded-lg border border-gray-200 shadow-sm" /></div>`;
+        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalWidth&&this.naturalHeight){const r=this.naturalWidth/this.naturalHeight; const box=this.parentElement; box.style.aspectRatio=this.naturalWidth+' / '+this.naturalHeight; if(r<1.25){box.style.maxWidth=Math.round(520*r)+'px'; box.style.maxHeight='520px';}}" class="block w-full h-full object-cover" /></div></div>`;
       }
       previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
         contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'
@@ -12010,13 +12046,14 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
               <!-- WordPress Row Actions -->
               <div class="row-actions text-[11px] text-gray-500 space-x-1 mt-0.5">
                 ${p.status === 'trash' ? `
-                  <a href="#" onclick="restorePost('${p.id}'); return false;" class="text-[#2271b1] hover:underline font-medium">Restore</a> |
-                  <a href="#" onclick="deletePermanently('${p.id}'); return false;" class="text-red-600 hover:underline font-medium">Delete Permanently</a>
+                  <a href="#" onclick="restorePost(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-[#2271b1] hover:underline font-medium">Restore</a> |
+                  <a href="#" onclick="openDeletePostModal(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-red-600 hover:underline font-medium">Delete Permanently</a>
                 ` : `
-                  <a href="#" onclick="editPostById('${p.id}'); return false;" class="text-[#2271b1] hover:underline font-medium">Edit</a> |
-                  <a href="#" onclick="toggleQuickEdit('${p.id}'); return false;" class="text-[#2271b1] hover:underline font-medium">Quick Edit</a> |
-                  <a href="#" onclick="trashPost('${p.id}'); return false;" class="text-red-600 hover:underline font-medium">Trash</a> |
-                  <a href="/article/${p.slug}" target="_blank" class="text-[#2271b1] hover:underline font-medium">View</a>
+                  <a href="#" onclick="editPostById(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-[#2271b1] hover:underline font-medium">Edit</a> |
+                  <a href="#" onclick="toggleQuickEdit(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-[#2271b1] hover:underline font-medium">Quick Edit</a> |
+                  <a href="#" onclick="trashPost(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-amber-600 hover:underline font-medium">Trash</a> |
+                  <a href="#" onclick="openDeletePostModal(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-red-600 hover:underline font-semibold">Delete</a> |
+                  <a href="/news/${encodeURIComponent(String(p.slug || p.id))}" target="_blank" class="text-[#2271b1] hover:underline font-medium">View</a>
                 `}
               </div>
 
@@ -12221,40 +12258,127 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
     }
 
-    function trashPost(id) {
-      const p = posts.find(item => item.id === id);
-      if (p) {
-        p.status = 'trash';
-        saveState();
-        renderPostsTable();
-        showToast('Post Moved to Trash', 'Item moved to Trash.');
+    function findPostByIdOrSlug(idOrSlug) {
+      const target = String(idOrSlug || '');
+      return posts.find(item => String(item.id) === target || String(item.slug) === target);
+    }
+
+    async function syncPostStatusToServer(p, nextStatusLabel) {
+      if (!p) return false;
+      try {
+        const res = await fetch('/api/articles', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: p.id,
+            slug: p.slug || p.id,
+            status: nextStatusLabel
+          })
+        });
+        return res.ok;
+      } catch (e) {
+        return false;
       }
     }
 
-    function restorePost(id) {
-      const p = posts.find(item => item.id === id);
-      if (p) {
-        p.status = 'published';
-        saveState();
-        renderPostsTable();
-        showToast('Post Restored', 'Item restored to Published.');
+    let pendingDeletePostTargetId = null;
+
+    function openDeletePostModal(id) {
+      const p = findPostByIdOrSlug(id);
+      if (!p) return;
+      pendingDeletePostTargetId = String(p.id);
+      const modal = document.getElementById('modal-confirm-delete-post');
+      const titleEl = document.getElementById('confirm-delete-post-title');
+      if (titleEl) titleEl.innerText = p.title || p.slug || 'this blog post';
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        deletePermanently(p.id);
       }
     }
 
-    function deletePermanently(id) {
-      const p = posts.find(item => item.id === id);
-      if (p && p.slug) {
-        fetch('/api/articles?slug=' + encodeURIComponent(p.slug), {
-          method: 'DELETE'
-        }).catch(e => console.warn('Delete API warning:', e));
+    function closeDeletePostModal() {
+      pendingDeletePostTargetId = null;
+      const modal = document.getElementById('modal-confirm-delete-post');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    async function confirmDeleteModalPost() {
+      if (!pendingDeletePostTargetId) return;
+      const idToDelete = pendingDeletePostTargetId;
+      const btn = document.getElementById('confirm-delete-post-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Deleting...';
       }
-      posts = posts.filter(item => item.id !== id);
+      await deletePermanently(idToDelete);
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = 'Delete Permanently';
+      }
+      closeDeletePostModal();
+    }
+
+    async function trashPost(id) {
+      const p = findPostByIdOrSlug(id);
+      if (!p) return;
+      p.status = 'trash';
       saveState();
       renderPostsTable();
-      showToast('Post Deleted Permanently', 'Item removed permanently.');
+      const ok = await syncPostStatusToServer(p, 'Trash');
+      if (ok) {
+        showToast('Post Moved to Trash', 'Moved to Trash and unpublished from live site.');
+      } else {
+        showToast('Moved Locally (Sync Warning)', 'Moved to Trash locally; server sync had an issue.');
+      }
     }
 
-    function applyBulkAction(loc) {
+    async function restorePost(id) {
+      const p = findPostByIdOrSlug(id);
+      if (!p) return;
+      p.status = 'published';
+      unmarkPostKeyDeleted(p.id);
+      unmarkPostKeyDeleted(p.slug);
+      saveState();
+      renderPostsTable();
+      await syncPostStatusToServer(p, 'Published');
+      showToast('Post Restored', 'Item restored to Published.');
+    }
+
+    async function deletePermanently(id) {
+      const p = findPostByIdOrSlug(id);
+      const targetId = p ? String(p.id) : String(id || '');
+      const targetSlug = p ? String(p.slug || p.id || '') : String(id || '');
+      try {
+        const params = new URLSearchParams();
+        if (targetSlug) params.set('slug', targetSlug);
+        if (targetId) params.set('id', targetId);
+        if (p && Array.isArray(p.categories) && p.categories[0]) {
+          params.set('category', p.categories[0]);
+        }
+        const res = await fetch('/api/articles?' + params.toString(), {
+          method: 'DELETE'
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          showToast('Delete Failed', data.error || 'Could not delete post from database.');
+          return false;
+        }
+      } catch (e) {
+        showToast('Delete Error', 'Network error while deleting post from server.');
+        return false;
+      }
+
+      markPostKeysDeleted([targetId, targetSlug]);
+      posts = posts.filter(item => String(item.id) !== targetId && String(item.slug) !== targetSlug);
+      saveState();
+      renderPostsTable();
+      if (typeof renderDashboard === 'function') renderDashboard();
+      showToast('Post Deleted Permanently', 'Removed from database and live website.');
+      return true;
+    }
+
+    async function applyBulkAction(loc) {
       const select = document.getElementById('bulk-action-' + loc);
       const action = select ? select.value : '';
       if (!action) {
@@ -12263,37 +12387,33 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
 
       const checkedBoxes = document.querySelectorAll('.post-row-cb:checked');
-      const selectedIds = Array.from(checkedBoxes).map(cb => cb.value);
+      const selectedIds = Array.from(checkedBoxes).map(cb => String(cb.value));
       if (selectedIds.length === 0) {
         showToast('No Posts Selected', 'Please select at least one post.');
         return;
       }
 
       if (action === 'trash') {
-        posts.forEach(p => {
-          if (selectedIds.includes(p.id)) p.status = 'trash';
-        });
+        const targets = posts.filter(p => selectedIds.includes(String(p.id)));
+        targets.forEach(p => { p.status = 'trash'; });
         saveState();
         renderPostsTable();
+        await Promise.all(targets.map(p => syncPostStatusToServer(p, 'Trash')));
         showToast('Bulk Action Completed', `${selectedIds.length} posts moved to Trash.`);
       } else if (action === 'restore') {
-        posts.forEach(p => {
-          if (selectedIds.includes(p.id)) p.status = 'published';
-        });
+        const targets = posts.filter(p => selectedIds.includes(String(p.id)));
+        targets.forEach(p => { p.status = 'published'; });
         saveState();
         renderPostsTable();
+        await Promise.all(targets.map(p => syncPostStatusToServer(p, 'Published')));
         showToast('Bulk Action Completed', `${selectedIds.length} posts restored.`);
       } else if (action === 'delete') {
-        selectedIds.forEach(id => {
-          const p = posts.find(item => item.id === id);
-          if (p && p.slug) {
-            fetch('/api/articles?slug=' + encodeURIComponent(p.slug), { method: 'DELETE' }).catch(e => {});
-          }
-        });
-        posts = posts.filter(p => !selectedIds.includes(p.id));
-        saveState();
-        renderPostsTable();
-        showToast('Bulk Action Completed', `${selectedIds.length} posts deleted permanently.`);
+        let deletedCount = 0;
+        for (const id of selectedIds) {
+          const ok = await deletePermanently(id);
+          if (ok) deletedCount++;
+        }
+        showToast('Bulk Action Completed', `${deletedCount} of ${selectedIds.length} posts deleted permanently.`);
       } else if (action === 'edit') {
         showToast('Bulk Edit', 'Select individual Quick Edit to modify metadata.');
       }
@@ -12395,46 +12515,50 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         if (res.ok) {
           const liveArticles = await res.json();
           if (Array.isArray(liveArticles) && liveArticles.length > 0) {
+            const liveMap = new Map();
+            const syncedPosts = [];
+
             liveArticles.forEach(art => {
-              const existing = posts.find(p => p.slug === art.slug || (art.id && p.id === art.id));
-              if (existing) {
-                existing.title = art.title || existing.title;
-                if (art.category) existing.categories = Array.isArray(art.category) ? art.category : [art.category];
-                existing.homepagePlacement = art.homepagePlacement || (art.placement === 'interview' ? 'interview' : art.placement === 'top10' ? 'top10' : art.placement === 'top3' ? 'top3' : (existing.homepagePlacement || 'standard'));
-                existing.top10VisitCount = art.top10VisitCount !== undefined ? art.top10VisitCount : (art.views || existing.top10VisitCount || 0);
-                existing.views = art.viewsCount || art.views || existing.views || 0;
-                existing.excludeFromPopularPosts = art.excludeFromPopularPosts !== undefined ? art.excludeFromPopularPosts : existing.excludeFromPopularPosts;
-                existing.disablePopularPostsDisplay = art.disablePopularPostsDisplay !== undefined ? art.disablePopularPostsDisplay : existing.disablePopularPostsDisplay;
-                existing.top10Thumbnail = art.top10Thumbnail || existing.top10Thumbnail || '';
-                existing.featuredImage = art.image || art.featuredImage || existing.featuredImage || '';
-                existing.status = (art.status || 'published').toLowerCase() === 'published' ? 'published' : 'draft';
-              } else {
-                posts.push({
-                  id: art.id || `post_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
-                  title: art.title,
-                  slug: art.slug,
-                  content: art.content || '',
-                  focusKeyword: art.focusKeyword || '',
-                  seoScore: art.seoScore || 85,
-                  status: (art.status || 'published').toLowerCase() === 'published' ? 'published' : 'draft',
-                  visibility: 'Public',
-                  date: formatWpDate(art.publishedAt || art.date),
-                  rawDate: art.publishedAt || art.date,
-                  categories: Array.isArray(art.category) ? art.category : [art.category || 'Uncategorized'],
-                  tags: Array.isArray(art.tags) ? art.tags : (art.tag ? [art.tag] : []),
-                  featuredImage: art.image || art.featuredImage || '',
-                  author: art.author || 'ApexChief Editorial',
-                  views: art.viewsCount || art.views || 0,
-                  top10VisitCount: art.top10VisitCount !== undefined ? art.top10VisitCount : (art.views || 0),
-                  excludeFromPopularPosts: !!art.excludeFromPopularPosts,
-                  disablePopularPostsDisplay: !!art.disablePopularPostsDisplay,
-                  top10Thumbnail: art.top10Thumbnail || '',
-                  homepagePlacement: art.homepagePlacement || (art.placement === 'interview' ? 'interview' : art.placement === 'top10' ? 'top10' : art.placement === 'top3' ? 'top3' : 'standard'),
-                  commentsCount: 0,
-                  likes: art.likesCount || art.likes || 0
-                });
+              const rawStatus = String(art.status || 'published').trim().toLowerCase();
+              const normalizedStatus = rawStatus === 'trash' ? 'trash' : (rawStatus === 'published' ? 'published' : 'draft');
+              const existing = posts.find(p => p.slug === art.slug || (art.id && String(p.id) === String(art.id)));
+              const merged = {
+                id: art.id || (existing && existing.id) || `post_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+                title: art.title || (existing && existing.title) || 'Untitled',
+                slug: art.slug,
+                content: art.content || (existing && existing.content) || '',
+                focusKeyword: art.focusKeyword || (existing && existing.focusKeyword) || '',
+                seoScore: art.seoScore || (existing && existing.seoScore) || 85,
+                status: normalizedStatus,
+                visibility: (existing && existing.visibility) || 'Public',
+                date: formatWpDate(art.publishedAt || art.date || (existing && existing.date)),
+                rawDate: art.publishedAt || art.date || (existing && existing.rawDate),
+                categories: Array.isArray(art.category) ? art.category : [art.category || 'Uncategorized'],
+                tags: Array.isArray(art.tags) ? art.tags : (art.tag ? [art.tag] : ((existing && existing.tags) || [])),
+                featuredImage: art.image || art.featuredImage || (existing && existing.featuredImage) || '',
+                author: art.author || (existing && existing.author) || 'ApexChief Editorial',
+                views: art.viewsCount || art.views || (existing && existing.views) || 0,
+                top10VisitCount: art.top10VisitCount !== undefined ? art.top10VisitCount : (art.viewsCount || art.views || (existing && existing.top10VisitCount) || 0),
+                excludeFromPopularPosts: art.excludeFromPopularPosts !== undefined ? art.excludeFromPopularPosts : !!(existing && existing.excludeFromPopularPosts),
+                disablePopularPostsDisplay: art.disablePopularPostsDisplay !== undefined ? art.disablePopularPostsDisplay : !!(existing && existing.disablePopularPostsDisplay),
+                top10Thumbnail: art.top10Thumbnail || (existing && existing.top10Thumbnail) || '',
+                homepagePlacement: art.homepagePlacement || (art.placement === 'interview' ? 'interview' : art.placement === 'top10' ? 'top10' : art.placement === 'top3' ? 'top3' : ((existing && existing.homepagePlacement) || 'standard')),
+                commentsCount: (existing && existing.commentsCount) || 0,
+                likes: art.likesCount || art.likes || (existing && existing.likes) || 0
+              };
+              syncedPosts.push(merged);
+              if (merged.slug) liveMap.set(String(merged.slug), true);
+            });
+
+            // Reconcile stale deleted items: remove server-deleted items from local list, keeping only local-only unsynced drafts
+            const deletedKeys = new Set(getDeletedPostKeys());
+            posts.forEach(p => {
+              if (!liveMap.has(String(p.slug)) && !deletedKeys.has(String(p.slug)) && !deletedKeys.has(String(p.id)) && p.isLocalOnly) {
+                syncedPosts.push(p);
               }
             });
+
+            posts = syncedPosts;
             saveState();
             renderPostsTable();
             renderTop10Dashboard();
@@ -15118,6 +15242,33 @@ function renderAuditResults() {
             Continue Editing
           </button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL: CONFIRM PERMANENT POST DELETION -->
+  <!-- ========================================================================= -->
+  <div id="modal-confirm-delete-post" class="fixed inset-0 z-[9999999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 space-y-4 border border-gray-200">
+      <div class="flex items-start gap-3">
+        <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+          <i class="fas fa-trash-alt"></i>
+        </div>
+        <div>
+          <h3 class="text-base font-bold text-gray-900">Delete Blog Post Permanently?</h3>
+          <p class="text-xs text-gray-600 mt-1">
+            Are you sure you want to delete <strong id="confirm-delete-post-title" class="text-gray-900"></strong>? This removes it permanently from the database and live website.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-3 border-t border-gray-200">
+        <button type="button" onclick="closeDeletePostModal();" class="px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-semibold text-xs cursor-pointer">
+          Cancel
+        </button>
+        <button type="button" id="confirm-delete-post-btn" onclick="confirmDeleteModalPost();" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold text-xs cursor-pointer">
+          Delete Permanently
+        </button>
       </div>
     </div>
   </div>

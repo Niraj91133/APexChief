@@ -179,7 +179,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
+        className="min-h-screen w-full max-w-full overflow-x-clip bg-white dark:bg-[#121212] text-black dark:text-[#f8fafc] flex flex-col font-sans selection:bg-[#f7413e] selection:text-white transition-colors duration-200"
       >
         <Header initialConfig={siteConfig} />
         <MainWrapper>

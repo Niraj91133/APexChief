@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
+import ArticleHeroImage from '@/components/ArticleHeroImage';
 import {
   Settings,
   Plus,
@@ -776,6 +777,8 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [postSortBy, setPostSortBy] = useState<'views-desc' | 'views-asc' | 'date-desc' | 'date-asc' | 'title-asc'>('views-desc');
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Article | null>(null);
+  const [isDeletingPost, setIsDeletingPost] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' }>({ text: '', type: 'success' });
 
   // Post Editor State
@@ -2559,16 +2562,31 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeletePost = async (slug: string) => {
-    if (!confirm('Are you sure you want to delete this story? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeletePost = (target: Article | string) => {
+    const resolved =
+      typeof target === 'string'
+        ? articles.find((a) => a.slug === target || a.id === target) || ({ slug: target, id: target, title: target } as Article)
+        : target;
+    setDeleteTarget(resolved);
+  };
+
+  const confirmDeletePost = async () => {
+    if (!deleteTarget || isDeletingPost) return;
+    setIsDeletingPost(true);
     try {
-      const res = await fetch(`/api/articles?slug=${encodeURIComponent(slug)}`, {
+      const params = new URLSearchParams();
+      if (deleteTarget.slug) params.set('slug', deleteTarget.slug);
+      if (deleteTarget.id) params.set('id', deleteTarget.id);
+      if (deleteTarget.category) params.set('category', deleteTarget.category);
+      const res = await fetch(`/api/articles?${params.toString()}`, {
         method: 'DELETE',
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        setArticles((prev) =>
+          prev.filter((a) => a.slug !== deleteTarget.slug && (!deleteTarget.id || a.id !== deleteTarget.id))
+        );
+        setDeleteTarget(null);
         showToast('Story deleted successfully', 'success');
         fetchData();
       } else {
@@ -2576,6 +2594,8 @@ export default function AdminDashboard() {
       }
     } catch (e) {
       showToast('Error connecting to delete service', 'error');
+    } finally {
+      setIsDeletingPost(false);
     }
   };
 
@@ -3720,7 +3740,8 @@ export default function AdminDashboard() {
                                     <Edit className="w-3.5 h-3.5" />
                                   </button>
                                   <button
-                                    onClick={() => handleDeletePost(art.slug)}
+                                    type="button"
+                                    onClick={() => handleDeletePost(art)}
                                     className="p-1 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-rose-600 dark:text-rose-400 inline-block transition-colors cursor-pointer"
                                     title="Delete Story"
                                   >
@@ -6020,18 +6041,11 @@ export default function AdminDashboard() {
 
                           {/* Cover Image */}
                           {editingArticle.image && (
-                            <div className="w-full space-y-1.5 my-4">
-                              <div className="relative aspect-[3/2] w-full rounded-lg overflow-hidden shadow-sm bg-gray-100 dark:bg-black/40 border border-[#211d1d]/10 dark:border-white/10">
-                                <img
-                                  src={editingArticle.image.replace(/&amp;/g, '&')}
-                                  alt=""
-                                  className="w-full h-full object-contain"
-                                />
-                              </div>
-                              <p className="text-left text-[11px] text-gray-500 dark:text-gray-400 font-mono italic">
-                                Story Cover Photo — ApexChief Editorial
-                              </p>
-                            </div>
+                            <ArticleHeroImage
+                              src={editingArticle.image}
+                              alt={editingArticle.title || ''}
+                              caption="Story Cover Photo — ApexChief Editorial"
+                            />
                           )}
 
                           {/* Article Body Content (Rich WYSIWYG Rendering) */}
@@ -6664,6 +6678,55 @@ export default function AdminDashboard() {
           </div>
         </div>
       </div>
+
+      {/* In-App Delete Confirmation Modal (works cleanly across browsers & webviews) */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white dark:bg-[#161c2e] border border-[#211d1d]/20 dark:border-white/15 rounded-lg shadow-2xl p-6 space-y-4">
+            <div className="flex items-start space-x-3">
+              <div className="p-2.5 rounded-full bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-lg font-bold text-[#0a0a0a] dark:text-white">
+                  Delete Story Permanently?
+                </h3>
+                <p className="text-xs font-sans text-[#555555] dark:text-gray-300 leading-relaxed">
+                  Are you sure you want to delete <span className="font-bold text-[#0a0a0a] dark:text-white">&ldquo;{deleteTarget.title || deleteTarget.slug}&rdquo;</span>? This removes the blog from the database and live site immediately.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#211d1d]/10 dark:border-white/10">
+              <button
+                type="button"
+                disabled={isDeletingPost}
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 border border-[#211d1d]/20 dark:border-white/20 text-xs font-bold uppercase tracking-wider text-[#211d1d] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-white/10 rounded transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isDeletingPost}
+                onClick={confirmDeletePost}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider rounded transition-colors cursor-pointer inline-flex items-center space-x-1.5"
+              >
+                {isDeletingPost ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Delete Permanently</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
