@@ -4,8 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Metadata } from 'next';
 import { getArticles, getArticleBySlug, getSiteConfig } from '@/data/db';
-import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getCachedArticleBySlug, getCachedArticleSummaries } from '@/lib/supabaseService';
 import { getCategorySlug, CATEGORIES } from '@/data/categories';
+import AmbientImage from '@/components/AmbientImage';
 import ArticleCard from '@/components/ArticleCard';
 import NewsletterBanner from '@/components/NewsletterBanner';
 import {
@@ -23,7 +24,7 @@ import ArticleViewTracker from '@/components/ArticleViewTracker';
 import { linkifyText, linkifyHtml } from '@/lib/linkify';
 import { getBlogUrl } from '@/lib/blogUrl';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface PageProps {
   params: Promise<{
@@ -33,7 +34,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const dbArticles = await getArticlesFromDB();
+  const dbArticles = await getCachedArticleSummaries().catch(() => []);
   const articles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
   return articles.map((article) => ({
     category: getCategorySlug(article.category),
@@ -44,8 +45,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category, slug } = await params;
   const localArticle = getArticleBySlug(slug);
-  const dbArticles = await getArticlesFromDB();
-  const dbArticle = dbArticles?.find((a) => a.slug === slug || a.id === slug);
+  const dbArticle = await getCachedArticleBySlug(slug).catch(() => null);
   const article = dbArticle
     ? {
         ...dbArticle,
@@ -71,16 +71,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const expectedCatSlug = getCategorySlug(article.category);
   const articleUrl = `${baseUrl}/${expectedCatSlug}/${article.slug}`;
-  const keywords = article.keywords
-    ? article.keywords.split(',').map((k) => k.trim())
-    : [
-        article.tag,
-        article.category,
-        'editorial story',
-        'journalism',
-        siteConfig.name,
-        'news analysis',
-      ].filter(Boolean) as string[];
+  const parsedKeywords = Array.isArray(article.keywords)
+    ? (article.keywords as unknown as string[]).map((k) => String(k).trim()).filter(Boolean)
+    : typeof article.keywords === 'string'
+    ? article.keywords.split(',').map((k) => k.trim()).filter(Boolean)
+    : [];
+  const keywords =
+    parsedKeywords.length > 0
+      ? parsedKeywords
+      : [
+          article.tag,
+          article.category,
+          'editorial story',
+          'journalism',
+          siteConfig.name,
+          'news analysis',
+        ].filter(Boolean) as string[];
 
   const resolvedMetaTitle = article.metaTitle || `${article.title} | ${siteConfig.name}`;
   const resolvedMetaDesc = article.metaDescription || article.excerpt;
@@ -140,8 +146,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CategoryArticleDetailPage({ params }: PageProps) {
   const { category, slug } = await params;
-  const dbArticles = await getArticlesFromDB();
-  const article = dbArticles?.find((a) => a.slug === slug || a.id === slug) || getArticleBySlug(slug);
+  const [dbArticle, dbSummaries] = await Promise.all([
+    getCachedArticleBySlug(slug).catch(() => null),
+    getCachedArticleSummaries().catch(() => []),
+  ]);
+  const article = dbArticle || getArticleBySlug(slug);
   const siteConfig = getSiteConfig();
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
@@ -156,10 +165,15 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
     permanentRedirect(`/${expectedCatSlug}/${article.slug}`);
   }
 
-  const allArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
-  const relatedArticles = allArticles
-    .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts && (a.category.toLowerCase() === article.category.toLowerCase() || true))
-    .slice(0, 3);
+  const allArticles = dbSummaries && dbSummaries.length > 0 ? dbSummaries : getArticles();
+  const eligibleOthers = allArticles.filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts);
+  const sameCategoryArticles = eligibleOthers.filter(
+    (a) => a.category?.toLowerCase() === article.category?.toLowerCase()
+  );
+  const relatedArticles = [
+    ...sameCategoryArticles,
+    ...eligibleOthers.filter((a) => a.category?.toLowerCase() !== article.category?.toLowerCase()),
+  ].slice(0, 3);
 
   const top10RankedArticles = allArticles
     .filter((a) => a.slug !== article.slug && !a.excludeFromPopularPosts)
@@ -206,8 +220,16 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
         },
         articleSection: article.category,
         keywords: [
-          ...(article.keywords || []),
-          ...(article.targetedKeywords || []),
+          ...(Array.isArray(article.keywords)
+            ? (article.keywords as unknown as string[])
+            : typeof article.keywords === 'string'
+            ? article.keywords.split(',').map((s) => s.trim()).filter(Boolean)
+            : []),
+          ...(Array.isArray(article.targetedKeywords)
+            ? (article.targetedKeywords as unknown as string[])
+            : typeof article.targetedKeywords === 'string'
+            ? article.targetedKeywords.split(',').map((s) => s.trim()).filter(Boolean)
+            : []),
           article.tag,
           article.category,
           siteConfig.name,
@@ -347,23 +369,15 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* Hero Featured Image with Ambient Backdrop (Zero Crop + Zero Blank Space) */}
+        {/* Hero Featured Image with Smart Bounded Zoom */}
         {shouldShowFeaturedImage && (
-          <div className="max-w-5xl mx-auto my-8">
-            <div className="relative w-full aspect-[3/2] max-h-[650px] overflow-hidden rounded-xl border border-[#211d1d]/15 dark:border-white/15 shadow-sm bg-black/10 flex items-center justify-center">
-              {/* Layer 1: Ambient Blurred Backdrop (Removes any white/empty space) */}
-              <img
-                src={article.image}
-                alt=""
-                aria-hidden="true"
-                className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-50 dark:opacity-40 brightness-90 pointer-events-none select-none"
-              />
-              <div className="absolute inset-0 bg-black/15 dark:bg-black/35 backdrop-blur-[1px]" />
-              {/* Layer 2: 100% Uncropped Sharp Image */}
-              <img
+          <div className="max-w-4xl mx-auto my-6">
+            <div className="relative w-full aspect-[3/2] max-h-[520px] overflow-hidden rounded-xl border border-[#211d1d]/15 dark:border-white/15 shadow-sm">
+              <AmbientImage
                 src={article.image}
                 alt={article.title}
-                className="relative z-10 w-full h-full max-h-[600px] object-contain drop-shadow-md mx-auto block"
+                priority
+                sizes="(max-width: 768px) 100vw, 896px"
               />
             </div>
             <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">
@@ -394,26 +408,26 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
             ) : (
               <>
                 {/* Lead Paragraph with Drop Cap */}
-                {article.paragraphs[0] && (
+                {Array.isArray(article.paragraphs) && article.paragraphs[0] && (
                   <p className="drop-cap font-sans text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
                     {linkifyText(article.paragraphs[0])}
                   </p>
                 )}
 
                 {/* Subheadings and Content Sections */}
-                {article.sections && article.sections.length > 0 ? (
+                {Array.isArray(article.sections) && article.sections.length > 0 ? (
                   article.sections.map((sec, idx) => (
                     <section key={idx} className="my-8">
                       <h2 className="font-sans text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
-                        {linkifyText(sec.heading)}
+                        {linkifyText(sec.heading || '')}
                       </h2>
                       <p className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
-                        {linkifyText(sec.content)}
+                        {linkifyText(sec.content || '')}
                       </p>
                     </section>
                   ))
                 ) : (
-                  article.paragraphs.slice(1).map((p, idx) => (
+                  (Array.isArray(article.paragraphs) ? article.paragraphs.slice(1) : []).map((p, idx) => (
                     <p
                       key={idx}
                       className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
@@ -441,8 +455,9 @@ export default async function CategoryArticleDetailPage({ params }: PageProps) {
               <div className="relative w-20 h-20 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#f7413e]/30">
                 <Image
                   src={article.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300'}
-                  alt={article.author}
+                  alt={article.author || 'Author'}
                   fill
+                  unoptimized
                   className="object-cover"
                 />
               </div>

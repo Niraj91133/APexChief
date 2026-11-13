@@ -1,7 +1,120 @@
+import { cache } from 'react';
 import { supabaseAdmin, supabase } from './supabase';
 import { Article, CategoryInfo } from '@/types';
 import { siteConfig } from '@/data/siteConfig';
 import { ARTICLES } from '@/data/articles';
+import { getArticles, getCategories, getSiteConfig } from '@/data/db';
+
+const SUMMARY_COLUMNS =
+  'id, slug, title, category, subcategory, region, content_type, tag, date_text, author_name, author_role, author_avatar, image_url, read_time, excerpt, placement, homepage_priority, is_breaking, featured, trending, views_count, likes_count, status, publish_date';
+
+const CACHE_TTL_MS = 60_000;
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+  refreshing?: Promise<T> | null;
+}
+
+const _slugArticleCache = new Map<string, CacheEntry<Article>>();
+const _rawImageCache = new Map<string, { url: string; ts: number }>();
+let _summariesCache: CacheEntry<Article[]> | null = null;
+let _categoriesCache: CacheEntry<CategoryInfo[]> | null = null;
+let _configCache: CacheEntry<typeof siteConfig> | null = null;
+let _analyticsCache: CacheEntry<any> | null = null;
+
+function normalizeSlugKey(slug: string): string {
+  try {
+    return decodeURIComponent(slug || '').trim();
+  } catch {
+    return (slug || '').trim();
+  }
+}
+
+export function primeArticleCache(article: Article) {
+  const key = normalizeSlugKey(article.slug);
+  if (!key) return;
+
+  if (article.image && !article.image.startsWith('/api/article-image/')) {
+    _rawImageCache.set(key, { url: article.image, ts: Date.now() });
+  }
+
+  const sanitized: Article = {
+    ...article,
+    slug: key,
+    image: sanitizeImageForTransfer(article.image, key),
+    authorAvatar: sanitizeImageForTransfer(article.authorAvatar, ''),
+  };
+
+  _slugArticleCache.set(key, {
+    data: sanitized,
+    timestamp: Date.now(),
+    refreshing: null,
+  });
+
+  if (_summariesCache && Array.isArray(_summariesCache.data)) {
+    const summary = mapSummaryArticle(sanitized);
+    const idx = _summariesCache.data.findIndex(
+      (a) => a.slug === key || (article.id && a.id === article.id)
+    );
+    const nextList = [..._summariesCache.data];
+    if (idx !== -1) {
+      nextList[idx] = summary;
+    } else {
+      nextList.unshift(summary);
+    }
+    _summariesCache = {
+      data: nextList,
+      timestamp: Date.now(),
+      refreshing: null,
+    };
+  }
+  _analyticsCache = null;
+}
+
+export function invalidateArticlesCache(slug?: string) {
+  _summariesCache = null;
+  _analyticsCache = null;
+  if (slug) {
+    const key = normalizeSlugKey(slug);
+    _slugArticleCache.delete(key);
+    _rawImageCache.delete(key);
+  } else {
+    _slugArticleCache.clear();
+    _rawImageCache.clear();
+  }
+}
+
+export function invalidateCategoriesCache() {
+  _categoriesCache = null;
+}
+
+export function invalidateSiteConfigCache() {
+  _configCache = null;
+}
+
+export function sanitizeImageForTransfer(imageUrl: string | undefined, slug: string): string {
+  if (!imageUrl) {
+    return 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
+  }
+  if (imageUrl.startsWith('data:image/') && imageUrl.length > 8192 && slug) {
+    return `/api/article-image/${encodeURIComponent(slug)}`;
+  }
+  return imageUrl;
+}
+
+export function mapSummaryArticle(art: Article): Article {
+  const safeImage = sanitizeImageForTransfer(art.image, art.slug);
+  const safeAvatar = sanitizeImageForTransfer(art.authorAvatar, '');
+  return {
+    ...art,
+    image: safeImage,
+    authorAvatar: safeAvatar,
+    content: '',
+    paragraphs: [],
+    sections: [],
+  };
+}
 
 // Helper to convert Supabase row to Article interface
 export function mapRowToArticle(row: any): Article {
@@ -44,17 +157,54 @@ export function mapRowToArticle(row: any): Article {
   } as Article;
 }
 
-// Helper to convert Article interface to Supabase row
+export function mapRowToSummaryArticle(row: any): Article {
+  const localArt = ARTICLES.find((a) => a.slug === row.slug || a.id === row.slug || a.id === row.id);
+  return {
+    id: row.id || row.slug,
+    slug: row.slug,
+    title: row.title,
+    category: row.category,
+    subcategory: row.subcategory || undefined,
+    region: row.region || 'Global',
+    contentType: row.content_type || 'News',
+    tag: row.tag || 'General',
+    date: row.date_text || row.publish_date || 'Recent',
+    author: row.author_name || 'Admin',
+    authorRole: row.author_role || 'Editor',
+    authorAvatar: sanitizeImageForTransfer(row.author_avatar, ''),
+    image: sanitizeImageForTransfer(row.image_url, row.slug),
+    readTime: row.read_time || '4 min read',
+    excerpt: row.excerpt || '',
+    content: '',
+    placement: row.placement || 'category',
+    isBreaking: Boolean(row.is_breaking),
+    featured: Boolean(row.featured),
+    trending: Boolean(row.trending),
+    viewsCount: Number(row.views_count) || 0,
+    likesCount: Number(row.likes_count) || 0,
+    status: row.status || 'Published',
+    publishDate: row.publish_date || undefined,
+    homepagePriority: row.homepage_priority || 'Normal',
+    metaTitle: row.meta_title || localArt?.metaTitle || undefined,
+    metaDescription: row.meta_description || localArt?.metaDescription || row.excerpt || undefined,
+    keywords: row.keywords || localArt?.keywords || undefined,
+    primaryKeyword: row.primary_keyword || localArt?.primaryKeyword || undefined,
+    paragraphs: [],
+    sections: [],
+  } as Article;
+}
+
+// Helper to convert Article interface to Supabase row (strictly matching existing Postgres schema columns)
 export function mapArticleToRow(art: Article): any {
   return {
     slug: art.slug || art.id,
     title: art.title,
-    category: art.category,
+    category: art.category || 'Business',
     subcategory: art.subcategory || null,
     region: art.region || 'Global',
     content_type: art.contentType || 'News',
-    tag: art.tag || 'General',
-    date_text: art.date,
+    tag: art.tag || art.category || 'General',
+    date_text: art.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     author_name: art.author || 'Admin',
     author_role: art.authorRole || 'Editor',
     author_avatar: art.authorAvatar || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300',
@@ -71,18 +221,175 @@ export function mapArticleToRow(art: Article): any {
     publish_date: (art as any).publishDate || new Date().toISOString().split('T')[0],
     publish_time: (art as any).publishTime || '09:00',
     publish_timezone: (art as any).publishTimezone || 'GST',
-    ...(art.metaTitle ? { meta_title: art.metaTitle } : {}),
-    ...(art.metaDescription ? { meta_description: art.metaDescription } : {}),
-    ...(art.keywords ? { keywords: art.keywords } : {}),
-    ...(art.primaryKeyword ? { primary_keyword: art.primaryKeyword } : {}),
     ...(typeof art.viewsCount === 'number' ? { views_count: art.viewsCount } : {}),
     ...(typeof art.likesCount === 'number' ? { likes_count: art.likesCount } : {}),
-    paragraphs: art.paragraphs || [],
-    sections: art.sections || [],
+    paragraphs: Array.isArray(art.paragraphs) ? art.paragraphs : [],
+    sections: Array.isArray(art.sections) ? art.sections : [],
   };
 }
 
 // --- ARTICLES OPERATIONS ---
+async function fetchArticleSummariesFresh(): Promise<Article[]> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('articles')
+      .select(SUMMARY_COLUMNS)
+      .order('created_at', { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      return data.map(mapRowToSummaryArticle);
+    }
+    if (error) {
+      console.error('Supabase fetchArticleSummaries column error, falling back:', error.message);
+      const dbFull = await getArticlesFromDB();
+      if (dbFull && dbFull.length > 0) {
+        return dbFull.map(mapSummaryArticle);
+      }
+    }
+  } catch (err) {
+    console.error('Supabase fetchArticleSummaries error:', err);
+  }
+  return getArticles().map(mapSummaryArticle);
+}
+
+export const getCachedArticleSummaries = cache(async (): Promise<Article[]> => {
+  const now = Date.now();
+  if (_summariesCache) {
+    if (now - _summariesCache.timestamp < CACHE_TTL_MS) {
+      return _summariesCache.data;
+    }
+    if (!_summariesCache.refreshing) {
+      _summariesCache.refreshing = fetchArticleSummariesFresh()
+        .then((fresh) => {
+          _summariesCache = { data: fresh, timestamp: Date.now(), refreshing: null };
+          return fresh;
+        })
+        .catch(() => {
+          if (_summariesCache) _summariesCache.refreshing = null;
+          return _summariesCache?.data || [];
+        });
+    }
+    return _summariesCache.data;
+  }
+  const fresh = await fetchArticleSummariesFresh();
+  _summariesCache = { data: fresh, timestamp: Date.now(), refreshing: null };
+  return fresh;
+});
+
+async function fetchSingleArticleFresh(slug: string): Promise<Article | null> {
+  const cleanSlug = normalizeSlugKey(slug);
+  if (!cleanSlug) return null;
+  const localArt = getArticles().find((a) => a.slug === cleanSlug || a.id === cleanSlug);
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(cleanSlug);
+
+  try {
+    const queryPromise = (async () => {
+      const { data, error } = await supabaseAdmin
+        .from('articles')
+        .select('*')
+        .eq('slug', cleanSlug)
+        .maybeSingle();
+
+      let row = data;
+      if (!row && !error && isUuid) {
+        const byId = await supabaseAdmin.from('articles').select('*').eq('id', cleanSlug).maybeSingle();
+        row = byId.data;
+      }
+      return row;
+    })();
+
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3500));
+    const row = await Promise.race([queryPromise, timeoutPromise]);
+
+    if (row) {
+      const mapped = mapRowToArticle(row);
+      if (mapped.image && !mapped.image.startsWith('/api/article-image/')) {
+        _rawImageCache.set(cleanSlug, { url: mapped.image, ts: Date.now() });
+      }
+      return {
+        ...mapped,
+        image: sanitizeImageForTransfer(mapped.image, mapped.slug),
+        authorAvatar: sanitizeImageForTransfer(mapped.authorAvatar, ''),
+        metaTitle: localArt?.metaTitle || mapped.metaTitle,
+        metaDescription: localArt?.metaDescription || mapped.metaDescription,
+        keywords: localArt?.keywords || mapped.keywords,
+        primaryKeyword: localArt?.primaryKeyword || mapped.primaryKeyword,
+      };
+    }
+  } catch (err) {
+    console.error('Supabase fetchSingleArticleFresh error:', err);
+  }
+  if (!localArt) return null;
+  return {
+    ...localArt,
+    image: sanitizeImageForTransfer(localArt.image, localArt.slug),
+    authorAvatar: sanitizeImageForTransfer(localArt.authorAvatar, ''),
+  };
+}
+
+export const getCachedArticleBySlug = cache(async (slug: string): Promise<Article | null> => {
+  const key = normalizeSlugKey(slug);
+  if (!key) return null;
+  const now = Date.now();
+  const existing = _slugArticleCache.get(key);
+  if (existing) {
+    if (now - existing.timestamp < CACHE_TTL_MS) {
+      return existing.data;
+    }
+    if (!existing.refreshing) {
+      existing.refreshing = fetchSingleArticleFresh(key)
+        .then((fresh) => {
+          if (fresh) {
+            _slugArticleCache.set(key, { data: fresh, timestamp: Date.now(), refreshing: null });
+          } else {
+            const cur = _slugArticleCache.get(key);
+            if (cur) cur.refreshing = null;
+          }
+          return fresh || _slugArticleCache.get(key)?.data || existing.data;
+        })
+        .catch(() => {
+          const cur = _slugArticleCache.get(key);
+          if (cur) cur.refreshing = null;
+          return cur?.data ?? existing.data;
+        });
+    }
+    return existing.data;
+  }
+  const fresh = await fetchSingleArticleFresh(key);
+  if (fresh) {
+    _slugArticleCache.set(key, { data: fresh, timestamp: Date.now(), refreshing: null });
+  }
+  return fresh;
+});
+
+export async function getArticleRawImageFromDB(slug: string): Promise<string | null> {
+  const cleanSlug = normalizeSlugKey(slug);
+  if (!cleanSlug) return null;
+  const cached = _rawImageCache.get(cleanSlug);
+  if (cached && Date.now() - cached.ts < 300_000) {
+    return cached.url;
+  }
+  try {
+    const { data } = await supabaseAdmin
+      .from('articles')
+      .select('image_url')
+      .eq('slug', cleanSlug)
+      .maybeSingle();
+    if (data?.image_url && !data.image_url.startsWith('/api/article-image/')) {
+      _rawImageCache.set(cleanSlug, { url: data.image_url, ts: Date.now() });
+      return data.image_url;
+    }
+  } catch (err) {
+    console.error('Supabase getArticleRawImage error:', err);
+  }
+  const localArt = getArticles().find((a) => a.slug === cleanSlug || a.id === cleanSlug);
+  if (localArt?.image && !localArt.image.startsWith('/api/article-image/')) {
+    _rawImageCache.set(cleanSlug, { url: localArt.image, ts: Date.now() });
+    return localArt.image;
+  }
+  return null;
+}
+
 export async function getArticlesFromDB(): Promise<Article[] | null> {
   try {
     const { data, error } = await supabaseAdmin
@@ -116,6 +423,7 @@ export async function upsertArticleInDB(article: Article): Promise<boolean> {
       console.error('Supabase upsertArticle error:', error.message);
       return false;
     }
+    primeArticleCache(article);
     return true;
   } catch (err) {
     console.error('Supabase upsertArticle exception:', err);
@@ -138,6 +446,7 @@ export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
       console.error('Supabase deleteArticle error:', error.message);
       return false;
     }
+    invalidateArticlesCache(idOrSlug);
     return true;
   } catch (err) {
     console.error('Supabase deleteArticle exception:', err);
@@ -146,6 +455,32 @@ export async function deleteArticleFromDB(idOrSlug: string): Promise<boolean> {
 }
 
 // --- CATEGORIES OPERATIONS ---
+export const getCachedCategories = cache(async (): Promise<CategoryInfo[]> => {
+  const now = Date.now();
+  if (_categoriesCache) {
+    if (now - _categoriesCache.timestamp < CACHE_TTL_MS) {
+      return _categoriesCache.data;
+    }
+    if (!_categoriesCache.refreshing) {
+      _categoriesCache.refreshing = getCategoriesFromDB()
+        .then((dbCats) => {
+          const resolved = dbCats && dbCats.length > 0 ? dbCats : getCategories();
+          _categoriesCache = { data: resolved, timestamp: Date.now(), refreshing: null };
+          return resolved;
+        })
+        .catch(() => {
+          if (_categoriesCache) _categoriesCache.refreshing = null;
+          return _categoriesCache?.data || getCategories();
+        });
+    }
+    return _categoriesCache.data;
+  }
+  const dbCats = await getCategoriesFromDB();
+  const resolved = dbCats && dbCats.length > 0 ? dbCats : getCategories();
+  _categoriesCache = { data: resolved, timestamp: Date.now(), refreshing: null };
+  return resolved;
+});
+
 export async function getCategoriesFromDB(): Promise<CategoryInfo[] | null> {
   try {
     const { data, error } = await supabaseAdmin
@@ -196,6 +531,7 @@ export async function upsertCategoryInDB(cat: CategoryInfo): Promise<boolean> {
       console.error('Supabase upsertCategory error:', error.message);
       return false;
     }
+    invalidateCategoriesCache();
     return true;
   } catch (err) {
     console.error('Supabase upsertCategory exception:', err);
@@ -232,6 +568,7 @@ export async function bulkSaveCategoriesInDB(categories: CategoryInfo[]): Promis
       console.error('Supabase bulkSaveCategories error:', error.message);
       return false;
     }
+    invalidateCategoriesCache();
     return true;
   } catch (err) {
     console.error('Supabase bulkSaveCategories exception:', err);
@@ -240,6 +577,31 @@ export async function bulkSaveCategoriesInDB(categories: CategoryInfo[]): Promis
 }
 
 // --- SITE CONFIG OPERATIONS ---
+export const getCachedSiteConfig = cache(async (): Promise<typeof siteConfig> => {
+  const now = Date.now();
+  if (_configCache) {
+    if (now - _configCache.timestamp < CACHE_TTL_MS) {
+      return _configCache.data;
+    }
+    if (!_configCache.refreshing) {
+      _configCache.refreshing = getSiteConfigFromDB()
+        .then((dbCfg) => {
+          const resolved = dbCfg && dbCfg.name ? { ...getSiteConfig(), ...dbCfg } : getSiteConfig();
+          _configCache = { data: resolved, timestamp: Date.now(), refreshing: null };
+          return resolved;
+        })
+        .catch(() => {
+          if (_configCache) _configCache.refreshing = null;
+          return _configCache?.data || getSiteConfig();
+        });
+    }
+    return _configCache.data;
+  }
+  const dbCfg = await getSiteConfigFromDB();
+  const resolved = dbCfg && dbCfg.name ? { ...getSiteConfig(), ...dbCfg } : getSiteConfig();
+  _configCache = { data: resolved, timestamp: Date.now(), refreshing: null };
+  return resolved;
+});
 export async function getSiteConfigFromDB(): Promise<typeof siteConfig | null> {
   try {
     const { data, error } = await supabaseAdmin
@@ -332,6 +694,7 @@ export async function saveSiteConfigInDB(config: any): Promise<boolean> {
       console.error('Supabase saveSiteConfig error:', error.message);
       return false;
     }
+    invalidateSiteConfigCache();
     return true;
   } catch (err) {
     console.error('Supabase saveSiteConfig exception:', err);
@@ -494,11 +857,14 @@ export async function incrementArticleViewInDB(slug?: string, isUniqueVisitor: b
 }
 
 export async function getAnalyticsDataFromDB(): Promise<AnalyticsData> {
+  if (_analyticsCache && Date.now() - _analyticsCache.timestamp < 15_000) {
+    return _analyticsCache.data;
+  }
   try {
-    // 1. Fetch articles from DB
+    // 1. Fetch lightweight analytics metadata (exclude multi-MB base64 image_url)
     const { data: rawArticles } = await supabaseAdmin
       .from('articles')
-      .select('slug, title, category, author_name, image_url, date_text, views_count, likes_count, read_time, created_at')
+      .select('slug, title, category, author_name, date_text, views_count, likes_count, read_time, created_at')
       .order('views_count', { ascending: false });
 
     const articles = rawArticles || [];
@@ -527,7 +893,7 @@ export async function getAnalyticsDataFromDB(): Promise<AnalyticsData> {
         title: row.title,
         category: row.category || 'General',
         author: row.author_name || 'Admin',
-        image: row.image_url || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200',
+        image: `/api/article-image/${encodeURIComponent(row.slug)}`,
         viewsCount: v,
         likesCount: l,
         date: row.date_text || 'Recent',
@@ -609,7 +975,7 @@ export async function getAnalyticsDataFromDB(): Promise<AnalyticsData> {
       });
     }
 
-    return {
+    const result = {
       totalVisits,
       uniqueVisitors,
       totalViews,
@@ -632,6 +998,8 @@ export async function getAnalyticsDataFromDB(): Promise<AnalyticsData> {
         { source: 'Editorial Newsletters', percentage: 6, visits: Math.round(totalVisits * 0.06) },
       ],
     };
+    _analyticsCache = { data: result, timestamp: Date.now() };
+    return result;
   } catch (err) {
     console.error('getAnalyticsDataFromDB exception:', err);
     return {

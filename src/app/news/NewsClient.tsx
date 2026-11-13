@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { ARTICLES } from '@/data/articles';
 import { CATEGORIES } from '@/data/categories';
 import { Article, Category } from '@/types';
@@ -53,14 +53,21 @@ const resolveCategoryAndSub = (catParam: string, subParam: string | null) => {
 
 interface NewsClientProps {
   defaultCategory?: string;
+  initialArticles?: Article[];
+  initialCategories?: Category[];
 }
 
-export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
+export default function NewsClient({
+  defaultCategory,
+  initialArticles,
+  initialCategories,
+}: NewsClientProps = {}) {
   const searchParams = useSearchParams();
-  const router = useRouter();
 
   const rawCategoryParam = defaultCategory || searchParams.get('category') || 'all';
   const rawSubParam = searchParams.get('sub') || null;
+  const routeKey = `${defaultCategory || ''}|${searchParams.toString()}`;
+  const prevRouteKeyRef = useRef(routeKey);
 
   const resolved = useMemo(
     () => resolveCategoryAndSub(rawCategoryParam, rawSubParam),
@@ -73,12 +80,18 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<'newest' | 'title'>('newest');
   const [displayCount, setDisplayCount] = useState(12);
-  const [articles, setArticles] = useState<Article[]>(ARTICLES);
-  const [categories, setCategories] = useState<Category[]>(CATEGORIES);
+  const [articles, setArticles] = useState<Article[]>(
+    initialArticles && initialArticles.length > 0 ? initialArticles : ARTICLES
+  );
+  const [categories, setCategories] = useState<Category[]>(
+    initialCategories && initialCategories.length > 0 ? initialCategories : CATEGORIES
+  );
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
-  // Sync state if url param changes
+  // Sync only when Next route props genuinely change
   useEffect(() => {
+    if (prevRouteKeyRef.current === routeKey) return;
+    prevRouteKeyRef.current = routeKey;
     const res = resolveCategoryAndSub(
       defaultCategory || searchParams.get('category') || 'all',
       searchParams.get('sub') || null
@@ -86,18 +99,37 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
     setActiveCategory(res.category);
     setActiveSub(res.sub);
     setActiveRegion(res.region);
+  }, [routeKey, defaultCategory, searchParams]);
 
-    const catName = categories.find((c) => c.slug === res.category)?.name;
-    if (res.category && res.category !== 'all' && catName) {
+  // Keep browser Back/Forward instant in sync with shallow pushState URLs
+  useEffect(() => {
+    const onPopState = () => {
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const pathCat = pathParts[0] === 'category' && pathParts[1] ? pathParts[1] : null;
+      const params = new URLSearchParams(window.location.search);
+      const res = resolveCategoryAndSub(pathCat || params.get('category') || 'all', params.get('sub') || null);
+      setActiveCategory(res.category);
+      setActiveSub(res.sub);
+      setActiveRegion(res.region);
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  // Update document title smoothly when active category changes
+  useEffect(() => {
+    const catName = categories.find((c) => c.slug === activeCategory)?.name;
+    if (activeCategory && activeCategory !== 'all' && catName) {
       document.title = `${catName} Archive | ApexChief`;
     } else {
       document.title = 'Editorial News Archive | ApexChief';
     }
-  }, [searchParams, categories, defaultCategory]);
+  }, [activeCategory, categories]);
 
-  // Fetch dynamic articles
+  // Fetch dynamic articles only if not provided by server
   useEffect(() => {
-    fetch('/api/articles')
+    if (initialArticles && initialArticles.length > 0) return;
+    fetch('/api/articles?summary=1')
       .then((res) => {
         if (!res.ok) return null;
         return res.json();
@@ -106,10 +138,11 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
         if (Array.isArray(data)) setArticles(data);
       })
       .catch(() => {});
-  }, []);
+  }, [initialArticles]);
 
-  // Fetch dynamic categories
+  // Fetch dynamic categories only if not provided by server
   useEffect(() => {
+    if (initialCategories && initialCategories.length > 0) return;
     fetch('/api/categories')
       .then((res) => {
         if (!res.ok) return null;
@@ -119,7 +152,7 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
         if (Array.isArray(data)) setCategories(data.filter((c) => c.isVisible !== false));
       })
       .catch(() => {});
-  }, []);
+  }, [initialCategories]);
 
   // Prevent background scroll when drawer is open
   useEffect(() => {
@@ -149,21 +182,19 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
     setActiveSub(null);
     setActiveRegion(null);
     setDisplayCount(12);
-    if (slug === 'all') {
-      router.push('/category', { scroll: false });
-    } else {
-      router.push(`/category/${slug}`, { scroll: false });
+    if (typeof window !== 'undefined') {
+      const nextUrl = slug === 'all' ? '/category' : `/category/${slug}`;
+      window.history.pushState(null, '', nextUrl);
     }
   };
 
   const handleSubChange = (subSlug: string | null) => {
     setActiveSub(subSlug);
     setDisplayCount(12);
-    const basePath = activeCategory === 'all' ? '/category' : `/category/${activeCategory}`;
-    if (!subSlug) {
-      router.push(basePath, { scroll: false });
-    } else {
-      router.push(`${basePath}?sub=${subSlug}`, { scroll: false });
+    if (typeof window !== 'undefined') {
+      const basePath = activeCategory === 'all' ? '/category' : `/category/${activeCategory}`;
+      const nextUrl = subSlug ? `${basePath}?sub=${subSlug}` : basePath;
+      window.history.pushState(null, '', nextUrl);
     }
   };
 
@@ -174,7 +205,9 @@ export default function NewsClient({ defaultCategory }: NewsClientProps = {}) {
     setActiveSub(null);
     setActiveRegion(null);
     setDisplayCount(12);
-    router.push('/category', { scroll: false });
+    if (typeof window !== 'undefined') {
+      window.history.pushState(null, '', '/category');
+    }
   };
 
   // Find active category definition object

@@ -1,6 +1,8 @@
 import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import { CATEGORIES, getCategorySlug } from '@/data/categories';
+import { getArticles, getCategories } from '@/data/db';
+import { getCachedArticleSummaries, getCachedCategories } from '@/lib/supabaseService';
 import NewsClient from './NewsClient';
 
 interface NewsPageProps {
@@ -144,6 +146,13 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
     ],
   };
 
+  const [dbArticles, dbCategories] = await Promise.all([
+    getCachedArticleSummaries().catch(() => []),
+    getCachedCategories().catch(() => []),
+  ]);
+  const initialArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
+  const initialCategories = dbCategories && dbCategories.length > 0 ? dbCategories : getCategories();
+
   return (
     <>
       <script
@@ -162,7 +171,10 @@ export default async function NewsPage({ searchParams }: NewsPageProps) {
           </div>
         }
       >
-        <NewsClient />
+        <NewsClient
+          initialArticles={initialArticles}
+          initialCategories={initialCategories}
+        />
       </Suspense>
     </>
   );

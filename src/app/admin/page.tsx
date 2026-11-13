@@ -84,6 +84,7 @@ import {
 import { Article, ArticleSection, CategoryInfo, SubCategory } from '@/types';
 import { CATEGORIES } from '@/data/categories';
 import { AnalyticsData } from '@/lib/supabaseService';
+import { getBlogUrl } from '@/lib/blogUrl';
 
 // Default password for verification
 const DEFAULT_ADMIN_PASSWORD = 'Apexchief2026@';
@@ -1794,48 +1795,31 @@ export default function AdminDashboard() {
     return option ? option.label.split(' (')[0] : layoutVal;
   };
 
-  // Fetch data on mount
+  // Fetch data on mount (all endpoints in parallel for fast studio load)
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      try {
-        const artRes = await fetch('/api/articles');
-        if (artRes.ok) {
-          const artData = await artRes.json();
-          if (Array.isArray(artData)) {
-            setArticles(artData);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch articles', err);
-      }
-
-      try {
-        const configRes = await fetch('/api/config');
-        if (configRes.ok) {
-          const configData = await configRes.json();
-          if (configData && configData.name) {
-            setSiteConfig(configData);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch config', err);
-      }
-
-      try {
-        const catRes = await fetch('/api/categories');
-        if (catRes.ok) {
-          const catData = await catRes.json();
-          if (Array.isArray(catData) && catData.length > 0) {
-            setCategories(catData);
-          }
-        }
-      } catch (err) {
-        console.warn('Could not fetch categories', err);
-      }
-
-      // Fetch Live Deep Analytics
-      await fetchAnalytics();
+      await Promise.all([
+        fetch('/api/articles')
+          .then((res) => (res.ok ? res.json() : null))
+          .then((artData) => {
+            if (Array.isArray(artData)) setArticles(artData);
+          })
+          .catch((err) => console.warn('Could not fetch articles', err)),
+        fetch('/api/config')
+          .then((res) => (res.ok ? res.json() : null))
+          .then((configData) => {
+            if (configData && configData.name) setSiteConfig(configData);
+          })
+          .catch((err) => console.warn('Could not fetch config', err)),
+        fetch('/api/categories')
+          .then((res) => (res.ok ? res.json() : null))
+          .then((catData) => {
+            if (Array.isArray(catData) && catData.length > 0) setCategories(catData);
+          })
+          .catch((err) => console.warn('Could not fetch categories', err)),
+        fetchAnalytics(),
+      ]);
     } catch (e) {
       showToast('Failed to load data from API', 'error');
     } finally {
@@ -2050,6 +2034,7 @@ export default function AdminDashboard() {
       .replace(/[^a-z0-9\s-]/g, '')
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
       .trim();
   };
 
@@ -2577,7 +2562,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      const res = await fetch(`/api/articles?slug=${slug}`, {
+      const res = await fetch(`/api/articles?slug=${encodeURIComponent(slug)}`, {
         method: 'DELETE',
       });
       const data = await res.json();
@@ -3425,7 +3410,7 @@ export default function AdminDashboard() {
                                             )}
                                           </div>
                                           <a
-                                            href={`/news/${art.slug}`}
+                                            href={getBlogUrl({ category: art.category, slug: art.slug })}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="font-medium text-[#111111] dark:text-gray-100 hover:text-[#002b5c] dark:hover:text-sky-400 transition-colors truncate block"
@@ -3474,7 +3459,7 @@ export default function AdminDashboard() {
                                       {/* Action */}
                                       <td className="px-3 py-2.5 whitespace-nowrap text-right">
                                         <a
-                                          href={`/news/${art.slug}`}
+                                          href={getBlogUrl({ category: art.category, slug: art.slug })}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
@@ -3717,7 +3702,7 @@ export default function AdminDashboard() {
                                 </td>
                                 <td className="px-3.5 py-2.5 whitespace-nowrap text-right space-x-1.5">
                                   <a
-                                    href={`/news/${art.slug}`}
+                                    href={getBlogUrl(art)}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="p-1 hover:bg-[#faf8f2] dark:hover:bg-white/10 text-[#002b5c] dark:text-sky-400 inline-block transition-colors"
@@ -3897,11 +3882,11 @@ export default function AdminDashboard() {
                               }}
                               onChange={(e) => {
                                 const val = e.target.value;
-                                setEditingArticle({
-                                  ...editingArticle,
+                                setEditingArticle((prev) => ({
+                                  ...prev,
                                   title: val,
-                                  slug: editingArticle.slug || generateSlug(val) || 'new-post',
-                                });
+                                  slug: isEditing || isManualSlug ? prev.slug : generateSlug(val),
+                                }));
                               }}
                               placeholder="Enter story headline..."
                               style={{
@@ -3936,7 +3921,10 @@ export default function AdminDashboard() {
                                       Edit
                                     </button>
                                     <a
-                                      href={`/news/${editingArticle.slug || 'story-slug'}`}
+                                      href={getBlogUrl({
+                                        category: editingArticle.category,
+                                        slug: editingArticle.slug || generateSlug(editingArticle.title) || 'story-slug',
+                                      })}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="px-2.5 py-0.5 bg-white border border-gray-300 hover:bg-gray-100 text-[#002b5c] hover:underline text-[11px] font-mono font-bold rounded shadow-2xs transition-colors inline-flex items-center gap-1"
@@ -5954,7 +5942,13 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => {
-                                window.open(`/news/${editingArticle.slug || 'preview'}`, '_blank');
+                                window.open(
+                                  getBlogUrl({
+                                    category: editingArticle.category,
+                                    slug: editingArticle.slug || generateSlug(editingArticle.title) || 'preview',
+                                  }),
+                                  '_blank'
+                                );
                               }}
                               className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors flex items-center space-x-1 cursor-pointer"
                             >

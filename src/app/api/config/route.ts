@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getSiteConfig, saveSiteConfig } from '@/data/db';
-import { getSiteConfigFromDB, saveSiteConfigInDB } from '@/lib/supabaseService';
+import { getCachedSiteConfig, saveSiteConfigInDB, invalidateSiteConfigCache } from '@/lib/supabaseService';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   const localConfig = getSiteConfig();
   try {
-    const dbConfig = await getSiteConfigFromDB();
+    const dbConfig = await getCachedSiteConfig();
     if (dbConfig && dbConfig.name) {
       let activeLogoLight = dbConfig.logoLight || localConfig.logoLight || '/images/apexchief-logo-light.png';
       if (activeLogoLight.includes('logo-dark')) {
@@ -26,6 +27,10 @@ export async function GET() {
         logoLight: activeLogoLight,
         logoDark: activeLogoDark,
         favicon: dbConfig.favicon || localConfig.favicon || '',
+      }, {
+        headers: {
+          'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+        },
       });
     }
   } catch (e) {}
@@ -78,6 +83,9 @@ export async function PUT(request: Request) {
 
     // 2. Backup to local JSON & update static logo assets
     saveSiteConfig(newConfig);
+
+    invalidateSiteConfigCache();
+    try { revalidatePath('/', 'layout'); } catch {}
 
     return NextResponse.json(newConfig);
   } catch (e) {

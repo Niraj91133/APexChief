@@ -2,6 +2,10 @@ import React, { Suspense } from 'react';
 import { Metadata } from 'next';
 import NewsClient from '@/app/news/NewsClient';
 import { CATEGORY_SEO_DATA } from '@/data/categorySeo';
+import { getArticles, getCategories } from '@/data/db';
+import { getCachedArticleSummaries, getCachedCategories } from '@/lib/supabaseService';
+
+export const revalidate = 60;
 
 const seo = CATEGORY_SEO_DATA.all;
 
@@ -86,7 +90,14 @@ const jsonLd = {
   ],
 };
 
-export default function CategoryIndexPage() {
+export default async function CategoryIndexPage() {
+  const [dbArticles, dbCategories] = await Promise.all([
+    getCachedArticleSummaries().catch(() => []),
+    getCachedCategories().catch(() => []),
+  ]);
+  const initialArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
+  const initialCategories = dbCategories && dbCategories.length > 0 ? dbCategories : getCategories();
+
   return (
     <>
       <script
@@ -116,7 +127,11 @@ export default function CategoryIndexPage() {
             </div>
           }
         >
-          <NewsClient defaultCategory="all" />
+          <NewsClient
+            defaultCategory="all"
+            initialArticles={initialArticles}
+            initialCategories={initialCategories}
+          />
         </Suspense>
       </div>
     </>

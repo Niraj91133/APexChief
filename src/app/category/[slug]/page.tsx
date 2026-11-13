@@ -3,30 +3,27 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { CATEGORIES, getCategorySlug } from '@/data/categories';
 import { getCategorySeo } from '@/data/categorySeo';
-import { getArticles } from '@/data/db';
-import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getArticles, getCategories } from '@/data/db';
+import { getCachedArticleSummaries, getCachedCategories } from '@/lib/supabaseService';
 import { getBlogUrl } from '@/lib/blogUrl';
 import NewsClient from '@/app/news/NewsClient';
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const cats = await getCachedCategories().catch(() => []);
+  const list = cats && cats.length > 0 ? cats : CATEGORIES;
+  return list.filter((c) => c.slug !== 'home').map((c) => ({ slug: c.slug }));
+}
 
 interface CategoryPageProps {
   params: Promise<{
     slug?: string;
   }>;
-  searchParams: Promise<{
-    sub?: string;
-    region?: string;
-  }>;
 }
 
-export async function generateStaticParams() {
-  return CATEGORIES.filter((c) => c.slug !== 'home').map((cat) => ({
-    slug: cat.slug,
-  }));
-}
-
-export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const { sub } = await searchParams;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
   const rawSlug = slug?.trim();
@@ -43,9 +40,7 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
   }
 
   const seo = getCategorySeo(catSlug);
-  const canonicalUrl = sub
-    ? `${baseUrl}/category/${catSlug}?sub=${encodeURIComponent(sub)}`
-    : `${baseUrl}/category/${catSlug}`;
+  const canonicalUrl = `${baseUrl}/category/${catSlug}`;
 
   return {
     title: {
@@ -71,9 +66,8 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
   };
 }
 
-export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
+export default async function CategoryPage({ params }: CategoryPageProps) {
   const { slug } = await params;
-  const { sub } = await searchParams;
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
 
   const rawSlug = slug?.trim();
@@ -88,12 +82,14 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
 
   const catName = catObj?.name || (rawSlug ? rawSlug.charAt(0).toUpperCase() + rawSlug.slice(1) : 'News');
   const seo = getCategorySeo(catSlug);
-  const pageUrl = sub
-    ? `${baseUrl}/category/${catSlug}?sub=${encodeURIComponent(sub)}`
-    : `${baseUrl}/category/${catSlug}`;
+  const pageUrl = `${baseUrl}/category/${catSlug}`;
 
-  const dbArticles = await getArticlesFromDB();
+  const [dbArticles, dbCategories] = await Promise.all([
+    getCachedArticleSummaries().catch(() => []),
+    getCachedCategories().catch(() => []),
+  ]);
   const allArticles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
+  const allCategories = dbCategories && dbCategories.length > 0 ? dbCategories : getCategories();
   const normCat = catSlug.replace(/[-\s]/g, '').toLowerCase();
   const categoryArticles = allArticles.filter((a) => {
     const artCat = (a.category || '').replace(/[-\s]/g, '').toLowerCase();
@@ -187,7 +183,11 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
             </div>
           }
         >
-          <NewsClient defaultCategory={catSlug} />
+          <NewsClient
+            defaultCategory={catSlug}
+            initialArticles={allArticles}
+            initialCategories={allCategories}
+          />
         </Suspense>
       </div>
     </>

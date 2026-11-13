@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getCategories, saveCategories } from '@/data/db';
 import { CategoryInfo } from '@/types';
 import {
   getCategoriesFromDB,
+  getCachedCategories,
+  invalidateCategoriesCache,
   upsertCategoryInDB,
   bulkSaveCategoriesInDB,
 } from '@/lib/supabaseService';
@@ -11,12 +14,12 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
-    const dbCategories = await getCategoriesFromDB();
-    if (dbCategories && dbCategories.length > 0) {
-      return NextResponse.json(dbCategories);
-    }
-    const categories = getCategories();
-    return NextResponse.json(categories);
+    const categories = await getCachedCategories();
+    return NextResponse.json(categories, {
+      headers: {
+        'Cache-Control': 'public, s-maxage=30, stale-while-revalidate=60',
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: 'Failed to fetch categories' }, { status: 500 });
   }
@@ -30,6 +33,8 @@ export async function POST(request: Request) {
     if (Array.isArray(data)) {
       await bulkSaveCategoriesInDB(data);
       saveCategories(data);
+      invalidateCategoriesCache();
+      try { revalidatePath('/', 'layout'); } catch {}
       return NextResponse.json({ success: true, categories: data });
     }
 
@@ -54,6 +59,8 @@ export async function POST(request: Request) {
     };
 
     await upsertCategoryInDB(newCategory);
+    invalidateCategoriesCache();
+    try { revalidatePath('/', 'layout'); } catch {}
 
     return NextResponse.json(newCategory, { status: 201 });
   } catch (error: any) {
@@ -78,6 +85,8 @@ export async function PUT(request: Request) {
       categories.push(updatedCategory);
     }
     saveCategories(categories);
+    invalidateCategoriesCache();
+    try { revalidatePath('/', 'layout'); } catch {}
 
     return NextResponse.json(updatedCategory);
   } catch (error: any) {
@@ -97,6 +106,8 @@ export async function DELETE(request: Request) {
     const filtered = categories.filter((c) => c.slug.toLowerCase() !== slug.toLowerCase());
     saveCategories(filtered);
     await bulkSaveCategoriesInDB(filtered);
+    invalidateCategoriesCache();
+    try { revalidatePath('/', 'layout'); } catch {}
 
     return NextResponse.json({ success: true, message: `Category ${slug} deleted` });
   } catch (error: any) {

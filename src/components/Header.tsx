@@ -26,6 +26,7 @@ function HeaderNav({
         <nav className="flex items-center justify-center flex-wrap gap-x-0.5 lg:gap-x-1 xl:gap-x-1.5 py-0.5 text-center">
           <Link
             href="/"
+            prefetch={true}
             className={`px-1.5 xl:px-2 py-0.5 text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 rounded ${
               pathname === '/' && !currentCategory
                 ? 'text-[#f7413e] bg-white/10'
@@ -42,6 +43,7 @@ function HeaderNav({
               <div key={cat.slug} className="py-0.5 shrink-0">
                 <Link
                   href={`/category/${cat.slug}`}
+                  prefetch={true}
                   className={`inline-flex items-center px-1 lg:px-1.5 xl:px-2 py-0.5 rounded text-[10px] xl:text-[10.5px] font-bold uppercase tracking-wider transition-colors whitespace-nowrap cursor-pointer ${
                     isActive
                       ? 'text-[#f7413e] bg-white/10'
@@ -300,7 +302,7 @@ export default function Header({ initialConfig }: { initialConfig?: SiteConfig }
   // Fetch dynamic articles for breaking ticker
   const [liveArticles, setLiveArticles] = useState<Article[]>([]);
   useEffect(() => {
-    fetch('/api/articles')
+    fetch('/api/articles?ticker=1')
       .then((res) => {
         if (!res.ok) return null;
         return res.json();

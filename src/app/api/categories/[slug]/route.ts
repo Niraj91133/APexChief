@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getCategories, saveCategories, getArticles, saveArticles } from '@/data/db';
+import { invalidateCategoriesCache, invalidateArticlesCache } from '@/lib/supabaseService';
 import { CategoryInfo } from '@/types';
 
 // Helper to resolve route parameters in Next.js App Router (Next 15 expects params to be awaited if they are processed asynchronously, but we can type them appropriately or access them directly)
@@ -75,6 +77,10 @@ export async function PUT(
       }
     }
 
+    invalidateCategoriesCache();
+    invalidateArticlesCache();
+    try { revalidatePath('/', 'layout'); } catch {}
+
     return NextResponse.json(updatedCategory);
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Internal server error' }, { status: 500 });
@@ -115,6 +121,9 @@ export async function DELETE(
       return art;
     });
     saveArticles(updatedArticles);
+    invalidateCategoriesCache();
+    invalidateArticlesCache();
+    try { revalidatePath('/', 'layout'); } catch {}
 
     return NextResponse.json({ success: true, message: 'Category deleted successfully' });
   } catch (error: any) {

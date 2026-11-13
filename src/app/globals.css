@@ -355,16 +355,13 @@ img[class*="blur"],
   object-fit: cover !important;
 }
 
-/* Foreground content images stay 100% full without any cropping */
-article img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
-section img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
-[class*="group/img"] img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
-.card-img {
+/* Foreground content images inside editorial cards/heroes are managed by AmbientImage */
+.article-full-img {
   object-fit: contain !important;
   object-position: center !important;
 }
 
-/* Rich text article body images should always be full and uncropped */
+/* Rich text article body images stay uncropped and fit cleanly */
 .article-rich-content img,
 .article-full-img {
   object-fit: contain !important;

@@ -1,4 +1,5 @@
 import React from 'react';
+import ExternalLink from '@/components/ExternalLink';
 
 /**
  * URL matching regular expression supporting http://, https://, and www.
@@ -26,16 +27,13 @@ export function linkifyText(text?: string | null): React.ReactNode {
             : `https://${part}`;
 
           return (
-            <a
+            <ExternalLink
               key={idx}
               href={href}
-              target="_blank"
-              rel="noopener noreferrer"
               className="text-blue-600 dark:text-blue-400 underline font-medium hover:text-blue-800 dark:hover:text-blue-300 transition-colors break-words cursor-pointer"
-              onClick={(e) => e.stopPropagation()}
             >
               {part}
-            </a>
+            </ExternalLink>
           );
         }
         return part;
