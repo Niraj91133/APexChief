@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AmbientImage from '@/components/AmbientImage';
 import { Article } from '@/types';
 import { Clock, ArrowUpRight } from 'lucide-react';
 import { getBlogUrl } from '@/lib/blogUrl';
@@ -24,20 +25,19 @@ export default function ArticleCard({
   if (variant === 'hero') {
     return (
       <article className="group relative flex flex-col h-full bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 hover:border-black dark:hover:border-white/30 transition-all p-5 sm:p-7">
-        <Link href={articleUrl} className="block overflow-hidden relative aspect-[16/10] mb-5 bg-gray-100 dark:bg-[#222222]">
-          <Image
+        <Link href={articleUrl} className="block overflow-hidden relative aspect-[3/2] mb-5 rounded-xs">
+          <AmbientImage
             src={article.image}
             alt={article.title}
-            fill
             priority={priority}
             sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover transition-opacity duration-300"
-          />
-          <div className="absolute top-3 left-3">
-            <span className="bg-black text-white font-oswald text-xs uppercase px-2.5 py-1 tracking-widest font-bold">
-              {article.category}
-            </span>
-          </div>
+          >
+            <div className="absolute top-3 left-3">
+              <span className="bg-black text-white font-oswald text-xs uppercase px-2.5 py-1 tracking-widest font-bold">
+                {article.category}
+              </span>
+            </div>
+          </AmbientImage>
         </Link>
 
         <div className="flex items-center space-x-3 text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-2 font-mono">
@@ -81,13 +81,11 @@ export default function ArticleCard({
   if (variant === 'horizontal') {
     return (
       <article className="group flex flex-col sm:flex-row gap-4 p-4 border-b border-gray-200 dark:border-white/15 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-        <Link href={articleUrl} className="relative w-full sm:w-48 sm:h-36 aspect-[16/10] sm:aspect-auto flex-shrink-0 bg-gray-100 dark:bg-[#222222] overflow-hidden">
-          <Image
+        <Link href={articleUrl} className="relative w-full sm:w-48 sm:h-36 aspect-[3/2] sm:aspect-auto flex-shrink-0 overflow-hidden rounded-xs">
+          <AmbientImage
             src={article.image}
             alt={article.title}
-            fill
             sizes="(max-width: 640px) 100vw, 200px"
-            className="object-cover transition-opacity duration-300"
           />
         </Link>
 
@@ -171,19 +169,18 @@ export default function ArticleCard({
   if (variant === 'featured') {
     return (
       <article className="group flex flex-col h-full bg-white dark:bg-[#1c1c1c] border border-gray-200 dark:border-white/15 p-5 rounded-none hover:shadow-md transition-all">
-        <Link href={articleUrl} className="block relative aspect-[16/10] mb-4 overflow-hidden bg-gray-100 dark:bg-[#222222]">
-          <Image
+        <Link href={articleUrl} className="block relative aspect-[3/2] mb-4 overflow-hidden rounded-xs">
+          <AmbientImage
             src={article.image}
             alt={article.title}
-            fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-opacity duration-300"
-          />
-          <div className="absolute top-2.5 left-2.5">
-            <span className="bg-white dark:bg-[#111111] text-black dark:text-white font-oswald text-[10px] uppercase px-2 py-0.5 font-bold tracking-wider border border-gray-200 dark:border-white/10">
-              {article.category}
-            </span>
-          </div>
+          >
+            <div className="absolute top-2.5 left-2.5">
+              <span className="bg-white dark:bg-[#111111] text-black dark:text-white font-oswald text-[10px] uppercase px-2 py-0.5 font-bold tracking-wider border border-gray-200 dark:border-white/10">
+                {article.category}
+              </span>
+            </div>
+          </AmbientImage>
         </Link>
 
         <div className="text-[11px] font-mono text-gray-600 dark:text-gray-400 mb-1.5 flex items-center space-x-2">
@@ -219,19 +216,18 @@ export default function ArticleCard({
   // Standard Grid Card Variant (Default)
   return (
     <article className="group flex flex-col h-full bg-white dark:bg-[#181818] border border-gray-200 dark:border-white/15 p-4 hover:border-black dark:hover:border-white/30 hover:shadow-sm transition-all">
-      <Link href={articleUrl} className="block relative aspect-[16/10] mb-3.5 overflow-hidden bg-gray-100 dark:bg-[#222222]">
-        <Image
+      <Link href={articleUrl} className="block relative aspect-[3/2] mb-3.5 overflow-hidden rounded-xs">
+        <AmbientImage
           src={article.image}
           alt={article.title}
-          fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-opacity duration-300"
-        />
-        <div className="absolute top-2.5 left-2.5">
-          <span className="bg-black text-white font-oswald text-[10px] uppercase px-2 py-0.5 tracking-wider font-bold">
-            {article.category}
-          </span>
-        </div>
+        >
+          <div className="absolute top-2.5 left-2.5">
+            <span className="bg-black text-white font-oswald text-[10px] uppercase px-2 py-0.5 tracking-wider font-bold">
+              {article.category}
+            </span>
+          </div>
+        </AmbientImage>
       </Link>
 
       <div className="flex items-center space-x-2 text-[11px] text-gray-600 dark:text-gray-400 font-mono uppercase mb-1.5">

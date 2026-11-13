@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AmbientImage from '@/components/AmbientImage';
 import { Article } from '@/types';
 import { ARTICLES } from '@/data/articles';
 import {
@@ -347,29 +348,28 @@ export default function HeroSection3Grid({
             {/* Featured Image with Exact Matching Height */}
             <Link
               href={`/news/${activeTopArticle.slug}`}
-              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#eff0e0] dark:bg-[#202020] group/img"
+              className="block overflow-hidden relative w-full aspect-[3/2] mb-3 group/img rounded-xs"
             >
-              <Image
+              <AmbientImage
                 key={activeTopArticle.slug}
                 src={activeTopArticle.image}
                 alt={activeTopArticle.title}
-                fill
                 priority
-                className="object-cover transition-opacity duration-300 animate-in fade-in"
-              />
-              <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
-                <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
-                  RANK 0{activeTopIndex + 1}
-                </span>
-                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
-                  {activeTopArticle.tag || activeTopArticle.category}
-                </span>
-              </div>
-              <div className="absolute bottom-2.5 right-2.5">
-                <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono px-2 py-0.5 font-semibold shadow-md">
-                  {activeTopArticle.readTime}
-                </span>
-              </div>
+              >
+                <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
+                  <span className="bg-[#f7413e] text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
+                    RANK 0{activeTopIndex + 1}
+                  </span>
+                  <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono uppercase tracking-widest px-2.5 py-0.5 font-bold shadow-md">
+                    {activeTopArticle.tag || activeTopArticle.category}
+                  </span>
+                </div>
+                <div className="absolute bottom-2.5 right-2.5">
+                  <span className="bg-black/85 backdrop-blur-xs text-white text-xs font-mono px-2 py-0.5 font-semibold shadow-md">
+                    {activeTopArticle.readTime}
+                  </span>
+                </div>
+              </AmbientImage>
             </Link>
 
             {/* Category / Tag Dot */}
@@ -466,28 +466,25 @@ export default function HeroSection3Grid({
             {/* Featured Interviewee Portrait Image (Exact Matching Height & Full Accurate View) */}
             <Link
               href={`/news/${currentInterview.slug}`}
-              className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] md:h-[210px] mb-3 bg-[#111111] border border-black/10 dark:border-white/10 group/img"
+              className="block overflow-hidden relative w-full aspect-[3/2] mb-3 group/img rounded-xs"
             >
-              {/* Main Accurate Image Filling Box */}
-              <Image
+              <AmbientImage
                 key={currentInterview.slug}
                 src={currentInterview.image}
                 alt={currentInterview.title}
-                fill
                 priority
-                className="object-cover relative z-10 transition-opacity duration-300"
-              />
-
-              <div className="absolute top-2.5 left-2.5 z-20">
-                <span className="bg-black/85 text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-xs">
-                  {currentInterview.tag || 'Executive'}
-                </span>
-              </div>
-              <div className="absolute bottom-2.5 right-2.5 z-20">
-                <span className="bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono font-semibold px-2 py-0.5">
-                  {currentInterview.readTime}
-                </span>
-              </div>
+              >
+                <div className="absolute top-2.5 left-2.5 z-20">
+                  <span className="bg-black/85 text-white text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 font-bold shadow-xs">
+                    {currentInterview.tag || 'Executive'}
+                  </span>
+                </div>
+                <div className="absolute bottom-2.5 right-2.5 z-20">
+                  <span className="bg-black/85 backdrop-blur-xs text-white text-[10px] font-mono font-semibold px-2 py-0.5">
+                    {currentInterview.readTime}
+                  </span>
+                </div>
+              </AmbientImage>
             </Link>
 
             {/* Category / Tag Dot */}
@@ -642,12 +639,10 @@ export default function HeroSection3Grid({
                       <div className="w-8 h-8 rounded-xs bg-[#211d1d] dark:bg-white text-white dark:text-black flex items-center justify-center font-oswald text-xs font-bold shrink-0 group-hover/modal-item:bg-[#f7413e] group-hover/modal-item:text-white transition-colors">
                         0{idx + 1}
                       </div>
-                      <div className="relative w-16 h-12 rounded-xs overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0 border border-gray-200 dark:border-white/10 hidden sm:block">
-                        <Image
+                      <div className="relative w-16 h-12 rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10 hidden sm:block">
+                        <AmbientImage
                           src={art.image}
                           alt={art.title}
-                          fill
-                          className="object-cover"
                         />
                       </div>
                       <div className="min-w-0">
@@ -770,12 +765,10 @@ export default function HeroSection3Grid({
                       className="p-3.5 bg-white dark:bg-[#202020] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group/modal-item shadow-2xs rounded-xs"
                     >
                       <div className="flex items-start space-x-3.5 min-w-0">
-                        <div className="relative w-16 h-14 rounded-xs overflow-hidden bg-gray-100 dark:bg-gray-800 shrink-0 border border-gray-200 dark:border-white/10">
-                          <Image
+                        <div className="relative w-16 h-14 rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10">
+                          <AmbientImage
                             src={art.image}
                             alt={art.title}
-                            fill
-                            className="object-cover"
                           />
                         </div>
                         <div className="min-w-0">

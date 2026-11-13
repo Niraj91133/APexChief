@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import AmbientImage from '@/components/AmbientImage';
+import ArticleCard from '@/components/ArticleCard';
 import { ARTICLES } from '@/data/articles';
 import { Article } from '@/types';
 import {
@@ -168,14 +170,12 @@ export default function HomePage() {
           <div className="lg:col-span-7 group flex flex-col h-full lg:border-r lg:border-[#211d1d]/20 lg:pr-8">
             <Link
               href={`/news/${newsMain.slug}`}
-              className="block overflow-hidden relative aspect-[16/11] mb-4 bg-[#eff0e0]"
+              className="block overflow-hidden relative w-full aspect-[3/2] max-h-[340px] mb-4 rounded-xs"
             >
-              <Image
+              <AmbientImage
                 src={newsMain.image}
                 alt={newsMain.title}
-                fill
                 priority
-                className="object-cover transition-opacity duration-300"
               />
             </Link>
             <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans mb-1.5">
@@ -212,13 +212,11 @@ export default function HomePage() {
             <div className="group flex items-start space-x-6 pb-6 border-b border-[#211d1d]/20">
               <Link
                 href={`/news/${newsRightTop.slug}`}
-                className="w-[40%] aspect-square relative flex-shrink-0 bg-[#eff0e0] overflow-hidden"
+                className="w-[45%] aspect-[3/2] relative flex-shrink-0 overflow-hidden rounded-xs"
               >
-                <Image
+                <AmbientImage
                   src={newsRightTop.image}
                   alt={newsRightTop.title}
-                  fill
-                  className="object-cover transition-opacity duration-300"
                 />
               </Link>
               <div className="flex-1 flex flex-col justify-between min-h-[140px]">
@@ -255,13 +253,11 @@ export default function HomePage() {
                 <div>
                   <Link
                     href={`/news/${newsRightBottom.slug}`}
-                    className="block overflow-hidden relative aspect-[4/3] mb-3 bg-[#eff0e0]"
+                    className="block overflow-hidden relative aspect-[3/2] mb-3 rounded-xs"
                   >
-                    <Image
+                    <AmbientImage
                       src={newsRightBottom.image}
                       alt={newsRightBottom.title}
-                      fill
-                      className="object-cover transition-opacity duration-300"
                     />
                   </Link>
                   <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
@@ -290,13 +286,11 @@ export default function HomePage() {
                 <div>
                   <Link
                     href={`/news/${newsRightBottom2.slug}`}
-                    className="block overflow-hidden relative aspect-[4/3] mb-3 bg-[#eff0e0]"
+                    className="block overflow-hidden relative aspect-[3/2] mb-3 rounded-xs"
                   >
-                    <Image
+                    <AmbientImage
                       src={newsRightBottom2.image}
                       alt={newsRightBottom2.title}
-                      fill
-                      className="object-cover transition-opacity duration-300"
                     />
                   </Link>
                   <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
@@ -352,13 +346,11 @@ export default function HomePage() {
           {/* Left: Large Image (5 cols) */}
           <Link
             href={`/news/${currentBestArticle.slug}`}
-            className="lg:col-span-5 block overflow-hidden relative aspect-[4/3] bg-[#eff0e0]"
+            className="lg:col-span-5 block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] rounded-xs"
           >
-            <Image
+            <AmbientImage
               src={currentBestArticle.image}
               alt={currentBestArticle.title}
-              fill
-              className="object-cover transition-opacity duration-300"
             />
           </Link>
 
@@ -543,13 +535,11 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                 {/* Compact Thumbnail */}
                 <Link
                   href={`/news/${art.slug}`}
-                  className="w-20 sm:w-24 h-16 sm:h-18 relative shrink-0 overflow-hidden bg-[#eff0e0] dark:bg-[#222] border border-[#211d1d]/10 dark:border-white/10"
+                  className="w-20 sm:w-24 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                 >
-                  <Image
+                  <AmbientImage
                     src={art.image}
                     alt={art.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
                   />
                 </Link>
 
@@ -594,13 +584,11 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                   {/* Compact Thumbnail */}
                   <Link
                     href={`/news/${art.slug}`}
-                    className="w-20 sm:w-24 h-16 sm:h-18 relative shrink-0 overflow-hidden bg-[#eff0e0] dark:bg-[#222] border border-[#211d1d]/10 dark:border-white/10"
+                    className="w-20 sm:w-24 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                   >
-                    <Image
+                    <AmbientImage
                       src={art.image}
                       alt={art.title}
-                      fill
-                      className="object-cover transition-opacity duration-300"
                     />
                   </Link>
 
@@ -671,13 +659,11 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
               <div className="flex flex-col sm:flex-row items-start gap-4 mb-3">
                 <Link
                   href={`/news/${leadOpinion.slug}`}
-                  className="w-full sm:w-44 h-36 relative shrink-0 bg-[#eff0e0] dark:bg-[#222] overflow-hidden border border-[#211d1d]/10 dark:border-white/10"
+                  className="w-full sm:w-52 aspect-[3/2] relative shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                 >
-                  <Image
+                  <AmbientImage
                     src={leadOpinion.image}
                     alt={leadOpinion.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
                   />
                 </Link>
                 <div className="flex-1">
@@ -755,480 +741,18 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
   }
 
   // =========================================================================
-  // B. RETAIL & COMMERCE CUSTOM COMPACT SECTION
-  // =========================================================================
-  if (cat.slug === 'retail') {
-    const displayList = categoryArticles.slice(0, 3);
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-        {renderHeader()}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-          {displayList.map((art, idx) => (
-            <div
-              key={idx}
-              className="group flex flex-col justify-between p-4 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all"
-            >
-              <div>
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="block overflow-hidden relative w-full h-[160px] sm:h-[175px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-                >
-                  <Image
-                    src={art.image}
-                    alt={art.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
-                  />
-                  <div className="absolute top-2 left-2">
-                    <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold">
-                      {art.tag || 'Retail Tech'}
-                    </span>
-                  </div>
-                </Link>
-
-                <div className="flex items-center space-x-1 text-[11px] font-mono text-[#f7413e] font-bold mb-1">
-                  <span>MARKET PULSE</span>
-                </div>
-
-                <Link href={`/news/${art.slug}`}>
-                  <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
-                    {art.title}
-                  </h3>
-                </Link>
-                <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed mb-3">
-                  {art.excerpt}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px]">
-                <span className="font-serif italic text-[#575757] dark:text-gray-400">{art.date}</span>
-                <Link href={`/news/${art.slug}`} className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded transition-all shadow-xs">
-                  <span>Read Report</span>
-                  <ArrowRight className="w-2.5 h-2.5" />
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Compact Retail Sector Pulse Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-white dark:bg-[#161a24] border border-[#211d1d]/10 dark:border-white/10 text-xs text-gray-700 dark:text-gray-300">
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">🏷️ Flagship Tech:</span>
-            <span className="truncate">Luxury boutiques deploy spatial styling lounges</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">⚡ Micro-Hubs:</span>
-            <span className="truncate">Autonomous urban sub-30 min order replenishment</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">📈 DTC Ownership:</span>
-            <span className="truncate">+42% revenue shift to proprietary VIP commerce apps</span>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // =========================================================================
-  // C. HOSPITALITY & TRAVEL CUSTOM COMPACT SECTION
-  // =========================================================================
-  if (cat.slug === 'hospitality') {
-    const leadHosp = categoryArticles[0];
-    const sideHosp = categoryArticles.slice(1, 3);
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-        {renderHeader()}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mb-5">
-          {/* Left Feature Destination Card (6 cols) */}
-          <div className="lg:col-span-6 flex flex-col justify-between p-4 bg-[#faf8f2] dark:bg-[#151922] border border-[#211d1d]/15 dark:border-white/10 group">
-            <div>
-              <Link
-                href={`/news/${leadHosp.slug}`}
-                className="block overflow-hidden relative w-full h-[180px] sm:h-[195px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-              >
-                <Image
-                  src={leadHosp.image}
-                  alt={leadHosp.title}
-                  fill
-                  className="object-cover transition-opacity duration-300"
-                />
-                <div className="absolute top-2.5 left-2.5 flex items-center space-x-2">
-                  <span className="bg-[#f7413e] text-white text-[10px] font-mono uppercase px-2 py-0.5 font-bold shadow-xs">
-                    Curated Destination
-                  </span>
-                  <span className="bg-black/80 backdrop-blur-xs text-white text-[10px] font-mono px-2 py-0.5 font-semibold">
-                    ★★★★★ Ultra-Luxury
-                  </span>
-                </div>
-              </Link>
-              <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                📍 {leadHosp.tag || 'Luxury Travel'}
-              </span>
-              <Link href={`/news/${leadHosp.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
-                  {leadHosp.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed">
-                {leadHosp.excerpt}
-              </p>
-            </div>
-            <div className="flex items-center justify-between pt-3 mt-3 border-t border-[#211d1d]/10 dark:border-white/10 text-xs">
-              <span className="font-serif italic text-gray-500 dark:text-gray-400">By {leadHosp.author} • {leadHosp.date}</span>
-              <Link href={`/news/${leadHosp.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-semibold">
-                Explore Destination →
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Two Horizontal Destination Cards (6 cols) */}
-          <div className="lg:col-span-6 flex flex-col justify-between space-y-4">
-            {sideHosp.map((art, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col sm:flex-row items-stretch gap-4 p-4 bg-white dark:bg-[#161a24] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all group flex-1"
-              >
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="w-full sm:w-44 h-36 sm:h-auto relative shrink-0 bg-[#eff0e0] dark:bg-[#202020] overflow-hidden"
-                >
-                  <Image
-                    src={art.image}
-                    alt={art.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
-                  />
-                  <div className="absolute top-2 left-2">
-                    <span className="bg-black/80 backdrop-blur-xs text-white text-[9px] font-mono uppercase px-1.5 py-0.5">
-                      {art.tag || 'Hideaway'}
-                    </span>
-                  </div>
-                </Link>
-                <div className="flex-1 flex flex-col justify-between">
-                  <div>
-                    <span className="text-[10px] font-mono text-[#f7413e] font-bold uppercase">
-                      📍 Destination Report
-                    </span>
-                    <Link href={`/news/${art.slug}`}>
-                      <h4 className="font-serif text-sm sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mt-0.5 mb-1.5">
-                        {art.title}
-                      </h4>
-                    </Link>
-                    <p className="font-sans text-[11px] text-[#575757] dark:text-gray-300 line-clamp-2 leading-relaxed">
-                      {art.excerpt}
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-[#211d1d]/10 dark:border-white/10 text-[11px] mt-2">
-                    <span className="font-serif italic text-gray-500 dark:text-gray-400">{art.date}</span>
-                    <Link href={`/news/${art.slug}`} className="font-serif italic text-[#002b5c] dark:text-[#60a5fa] hover:text-[#f7413e] font-medium">
-                      View →
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Hospitality Intelligence Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-white dark:bg-[#161a24] border border-[#211d1d]/10 dark:border-white/10 text-xs text-gray-700 dark:text-gray-300">
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">✈️ Private Corridors:</span>
-            <span className="truncate">Sovereign biometric sky-lounges expand worldwide</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">🌿 Eco-Retreats:</span>
-            <span className="truncate">100% off-grid solar and geothermal desert architecture</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-[#f7413e] font-bold">🍽️ Haute Cuisine:</span>
-            <span className="truncate">Michelin-standard farm-to-table culinary residences</span>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // =========================================================================
-  // 1. World & News Layout (Hero banner on top + cards below)
-  // =========================================================================
-  if (layout === 'world-layout' || layout === 'news-layout') {
-    const featured = categoryArticles[0];
-    const subArticles = categoryArticles.slice(1, 4);
-    
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-        {renderHeader()}
-        {/* Top Wide Featured Banner with controlled height */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 border-b border-[#211d1d]/20 dark:border-white/15 mb-6 group items-center">
-          <Link
-            href={`/news/${featured.slug}`}
-            className="lg:col-span-6 block overflow-hidden relative w-full h-[200px] sm:h-[220px] bg-[#eff0e0] dark:bg-[#202020]"
-          >
-            <Image
-              src={featured.image}
-              alt={featured.title}
-              fill
-              className="object-cover transition-opacity duration-300"
-            />
-          </Link>
-          <div className="lg:col-span-6 flex flex-col justify-center">
-            <span className="text-xs font-mono uppercase font-semibold text-[#575757] dark:text-gray-400">
-              {featured.tag || featured.category}
-            </span>
-            <Link href={`/news/${featured.slug}`}>
-              <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2">
-                {featured.title}
-              </h3>
-            </Link>
-            <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 leading-relaxed mb-3 line-clamp-2">
-              {featured.excerpt}
-            </p>
-            <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
-              {featured.date}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Cards Row if more articles exist */}
-        {subArticles.length > 0 && (
-          <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, subArticles.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/25 dark:divide-white/15`}>
-            {subArticles.map((col, idx) => (
-              <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-6 md:pb-0' : idx === 1 ? 'py-6 md:py-0 md:px-6' : 'pt-6 md:pt-0 md:pl-6'}`}>
-                <Link
-                  href={`/news/${col.slug}`}
-                  className="block overflow-hidden relative w-full h-[150px] sm:h-[165px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-                >
-                  <Image
-                    src={col.image}
-                    alt={col.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
-                  />
-                </Link>
-                <div>
-                  <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                    {col.tag || col.category}
-                  </span>
-                  <Link href={`/news/${col.slug}`}>
-                    <h4 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-0.5 line-clamp-2">
-                      {col.title}
-                    </h4>
-                  </Link>
-                  <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400 mt-1.5">
-                    {col.date}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </section>
-    );
-  }
-
-  // =========================================================================
-  // 2. Tech / Innovation / Technology / Startups layout (Split list + Right lead)
-  // =========================================================================
-  if (layout === 'tech-layout') {
-    if (categoryArticles.length === 1) {
-      const art = categoryArticles[0];
-      return (
-        <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-          {renderHeader()}
-          <div className="group grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            <Link
-              href={`/news/${art.slug}`}
-              className="lg:col-span-6 block overflow-hidden relative w-full h-[180px] sm:h-[200px] bg-[#eff0e0] dark:bg-[#202020]"
-            >
-              <Image
-                src={art.image}
-                alt={art.title}
-                fill
-                className="object-cover transition-opacity duration-300"
-              />
-            </Link>
-            <div className="lg:col-span-6">
-              <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                {art.tag || art.category}
-              </span>
-              <Link href={`/news/${art.slug}`}>
-                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-2">
-                  {art.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 line-clamp-2 mb-3">
-                {art.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
-                {art.date}
-              </div>
-            </div>
-          </div>
-        </section>
-      );
-    }
-
-    const sideArticles = categoryArticles.slice(0, 2);
-    const mainLead = categoryArticles[2] || categoryArticles[0];
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-        {renderHeader()}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 divide-y lg:divide-y-0 lg:divide-x divide-[#211d1d]/20 dark:divide-white/15">
-          <div className="lg:col-span-5 space-y-3 divide-y divide-[#211d1d]/15 dark:divide-white/10 pb-4 lg:pb-0">
-            {sideArticles.map((art, idx) => (
-              <div key={idx} className={`${idx === 0 ? 'pt-0' : 'pt-3'} group flex items-start space-x-3`}>
-                <Link
-                  href={`/news/${art.slug}`}
-                  className="w-20 h-20 relative shrink-0 bg-[#eff0e0] dark:bg-[#202020] overflow-hidden"
-                >
-                  <Image
-                    src={art.image}
-                    alt={art.title}
-                    fill
-                    className="object-cover transition-opacity duration-300"
-                  />
-                </Link>
-                <div className="flex-1">
-                  <span className="text-[10px] font-mono uppercase text-[#575757] dark:text-gray-400">
-                    {art.tag || art.category}
-                  </span>
-                  <Link href={`/news/${art.slug}`}>
-                    <h4 className="font-serif text-xs sm:text-sm font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2">
-                      {art.title}
-                    </h4>
-                  </Link>
-                  <div className="text-[11px] font-serif italic text-[#575757] dark:text-gray-400 mt-0.5">
-                    {art.date}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="lg:col-span-7 lg:pl-6 group flex flex-col justify-between">
-            <Link
-              href={`/news/${mainLead.slug}`}
-              className="block overflow-hidden relative w-full h-[180px] sm:h-[200px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-            >
-              <Image
-                src={mainLead.image}
-                alt={mainLead.title}
-                fill
-                className="object-cover transition-opacity duration-300"
-              />
-            </Link>
-            <div>
-              <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                {mainLead.tag || mainLead.category}
-              </span>
-              <Link href={`/news/${mainLead.slug}`}>
-                <h3 className="font-serif text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5">
-                  {mainLead.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
-                {mainLead.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
-                {mainLead.date}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  // =========================================================================
-  // 3. Business / Real Estate / Lifestyle layout
-  // =========================================================================
-  if (layout === 'business-layout' || layout === 'lifestyle-layout') {
-    const displayList = categoryArticles.slice(0, 3);
-
-    return (
-      <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
-        {renderHeader()}
-        <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20 dark:divide-white/15`}>
-          {displayList.map((art, idx) => (
-            <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-4 md:pb-0' : idx === 1 ? 'py-4 md:py-0 md:px-6' : 'pt-4 md:pt-0 md:pl-6'}`}>
-              <Link
-                href={`/news/${art.slug}`}
-                className="block overflow-hidden relative w-full h-[160px] sm:h-[180px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-              >
-                <Image
-                  src={art.image}
-                  alt={art.title}
-                  fill
-                  className="object-cover transition-opacity duration-300"
-                />
-              </Link>
-              <div>
-                <span className="text-xs font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                  {art.tag || art.category}
-                </span>
-                <Link href={`/news/${art.slug}`}>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
-                    {art.title}
-                  </h3>
-                </Link>
-                <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
-                  {art.excerpt}
-                </p>
-                <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
-                  {art.date}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    );
-  }
-
-  // =========================================================================
-  // 4. Default / Culture / Health (Compact 3-Column Grid)
+  // Standardized Category Card Grid (Uniform 3-Column Card Layout)
+  // Ensures ALL category containers have identical dimensions (aspect-[3/2]).
+  // Single-article categories (like Health) take 1 column (~380px) instead of 100% width.
   // =========================================================================
   const displayList = categoryArticles.slice(0, 3);
 
   return (
     <section id={`${cat.slug}-section`} className="w-full pt-4 border-b border-[#211d1d]/20 dark:border-white/15 pb-8 scroll-mt-20">
       {renderHeader()}
-      <div className={`grid grid-cols-1 md:grid-cols-${Math.min(3, displayList.length)} gap-6 divide-y md:divide-y-0 md:divide-x divide-[#211d1d]/20 dark:divide-white/15`}>
-        {displayList.map((art, idx) => (
-          <div key={idx} className={`group flex flex-col justify-between ${idx === 0 ? 'pb-4 md:pb-0' : idx === 1 ? 'py-4 md:py-0 md:px-6' : 'pt-4 md:pt-0 md:pl-6'}`}>
-            <Link
-              href={`/news/${art.slug}`}
-              className="block overflow-hidden relative w-full h-[155px] sm:h-[170px] mb-3 bg-[#eff0e0] dark:bg-[#202020]"
-            >
-              <Image
-                src={art.image}
-                alt={art.title}
-                fill
-                className="object-cover transition-opacity duration-300"
-              />
-            </Link>
-            <div>
-              <span className="text-[11px] font-mono uppercase text-[#575757] dark:text-gray-400 font-semibold">
-                {art.tag || art.category}
-              </span>
-              <Link href={`/news/${art.slug}`}>
-                <h3 className="font-serif text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
-                  {art.title}
-                </h3>
-              </Link>
-              <p className="font-sans text-xs text-[#575757] dark:text-gray-300 line-clamp-2 mb-2">
-                {art.excerpt}
-              </p>
-              <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
-                {art.date}
-              </div>
-            </div>
-          </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {displayList.map((art) => (
+          <ArticleCard key={art.slug} article={art} variant="standard" />
         ))}
       </div>
     </section>

@@ -346,14 +346,34 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
 }
 
 /* ========================================================================= */
-/* Article and Card Images: Full Box Fill (object-cover) Without Whitespace   */
+/* Article and Card Images: Uncropped Display & Ambient Fill System          */
 /* ========================================================================= */
-article img,
-section img,
-[class*="group/img"] img,
-.card-img {
+/* Ambient backdrop layers must fill the entire container to eliminate blank space */
+img[aria-hidden="true"],
+img[class*="blur"],
+.ambient-bg {
   object-fit: cover !important;
+}
+
+/* Foreground content images stay 100% full without any cropping */
+article img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
+section img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
+[class*="group/img"] img:not(.rounded-full):not([aria-hidden="true"]):not([class*="blur"]),
+.card-img {
+  object-fit: contain !important;
   object-position: center !important;
+}
+
+/* Rich text article body images should always be full and uncropped */
+.article-rich-content img,
+.article-full-img {
+  object-fit: contain !important;
+  max-width: 100% !important;
+  height: auto !important;
+  max-height: 80vh !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  display: block !important;
 }
 
 /* Header logo and site logos preserve uncropped contain */

@@ -345,17 +345,23 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* Hero Featured Image (Controlled by "Show featured image on single post") */}
+        {/* Hero Featured Image (Controlled by "Show featured image on single post") with Ambient Backdrop */}
         {shouldShowFeaturedImage && (
           <div className="max-w-5xl mx-auto my-8">
-            <div className="relative aspect-[16/9] w-full bg-[#eff0e0] dark:bg-[#1a1a1a] overflow-hidden border border-[#211d1d]/20 dark:border-white/15">
-              <Image
+            <div className="relative w-full aspect-[3/2] max-h-[650px] overflow-hidden rounded-xl border border-[#211d1d]/15 dark:border-white/15 shadow-sm bg-black/10 flex items-center justify-center">
+              {/* Layer 1: Ambient Blurred Backdrop (Removes any white/empty space) */}
+              <img
+                src={article.image}
+                alt=""
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-50 dark:opacity-40 brightness-90 pointer-events-none select-none"
+              />
+              <div className="absolute inset-0 bg-black/15 dark:bg-black/35 backdrop-blur-[1px]" />
+              {/* Layer 2: 100% Uncropped Sharp Image */}
+              <img
                 src={article.image}
                 alt={article.title}
-                fill
-                priority
-                sizes="(max-width: 1200px) 100vw, 1200px"
-                className="object-cover"
+                className="relative z-10 w-full h-full max-h-[600px] object-contain drop-shadow-md mx-auto block"
               />
             </div>
             <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">

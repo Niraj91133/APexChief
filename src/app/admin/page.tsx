@@ -2699,7 +2699,7 @@ export default function AdminDashboard() {
               >
                 <div className="space-y-3">
                   {/* Image Preview of Dashboard Post Writer */}
-                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-[#f7413e]/60 transition-colors shadow-inner">
+                  <div className="w-full aspect-[3/2] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-[#f7413e]/60 transition-colors shadow-inner">
                     <img
                       src="/images/format-1.png"
                       alt="Format 1"
@@ -2738,7 +2738,7 @@ export default function AdminDashboard() {
               >
                 <div className="space-y-3">
                   {/* Image Preview of Dashboard Post Writer */}
-                  <div className="w-full aspect-[16/9] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-sky-500/60 transition-colors shadow-inner">
+                  <div className="w-full aspect-[3/2] rounded-xl overflow-hidden border border-gray-700/60 bg-gray-950 group-hover:border-sky-500/60 transition-colors shadow-inner">
                     <img
                       src="/images/format-2.png"
                       alt="Format 2"
@@ -3415,7 +3415,7 @@ export default function AdminDashboard() {
                                               <img
                                                 src={art.image.replace(/&amp;/g, '&')}
                                                 alt=""
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-contain"
                                                 onError={(e) => {
                                                   (e.currentTarget as HTMLElement).style.display = 'none';
                                                 }}
@@ -3686,7 +3686,7 @@ export default function AdminDashboard() {
                                       <img
                                         src={art.image.replace(/&amp;/g, '&')}
                                         alt=""
-                                        className="object-cover w-full h-full"
+                                        className="object-contain w-full h-full"
                                         onError={(e) => {
                                           (e.currentTarget as HTMLElement).style.display = 'none';
                                         }}
@@ -4161,11 +4161,18 @@ export default function AdminDashboard() {
                           <div className="group relative border border-dashed border-gray-300 hover:border-[#002b5c] rounded-lg p-3 bg-gray-50/50 transition-colors">
                             {editingArticle.image ? (
                               <div className="space-y-3">
-                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-100 shadow-inner group/img">
+                                <div className="relative aspect-[3/2] w-full rounded-md overflow-hidden bg-gray-900/10 shadow-inner group/img flex items-center justify-center">
+                                  <img
+                                    src={editingArticle.image.replace(/&amp;/g, '&')}
+                                    alt=""
+                                    aria-hidden="true"
+                                    className="absolute inset-0 w-full h-full object-cover scale-125 blur-xl opacity-40 select-none pointer-events-none"
+                                  />
+                                  <div className="absolute inset-0 bg-black/10" />
                                   <img
                                     src={editingArticle.image.replace(/&amp;/g, '&')}
                                     alt="Story Cover"
-                                    className="object-cover w-full h-full"
+                                    className="relative z-10 object-contain w-full h-full drop-shadow-sm"
                                   />
                                   <div className="absolute top-2 right-2 flex items-center space-x-1.5 opacity-90 group-hover/img:opacity-100 transition-opacity">
                                     <button
@@ -4753,11 +4760,18 @@ export default function AdminDashboard() {
 
                             {editingArticle.image ? (
                               <div className="space-y-2">
-                                <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 border border-gray-300 shadow-2xs group">
+                                <div className="relative aspect-[3/2] w-full rounded-md overflow-hidden bg-gray-900/10 border border-gray-300 shadow-2xs group flex items-center justify-center">
+                                  <img
+                                    src={editingArticle.image.replace(/&amp;/g, '&')}
+                                    alt=""
+                                    aria-hidden="true"
+                                    className="absolute inset-0 w-full h-full object-cover scale-125 blur-xl opacity-40 select-none pointer-events-none"
+                                  />
+                                  <div className="absolute inset-0 bg-black/10" />
                                   <img
                                     src={editingArticle.image.replace(/&amp;/g, '&')}
                                     alt="Featured Preview"
-                                    className="object-cover w-full h-full"
+                                    className="relative z-10 object-contain w-full h-full drop-shadow-sm"
                                   />
                                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5">
                                     <button
@@ -5432,6 +5446,12 @@ export default function AdminDashboard() {
                             {/* TAB 1: UPLOAD FILES */}
                             {featuredImageTab === 'upload' && (
                               <div className="space-y-4">
+                                <div className="flex items-center gap-2.5 p-3 bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-300/80 rounded-lg text-xs text-emerald-950 font-sans shadow-xs">
+                                  <span className="text-base shrink-0">🎯</span>
+                                  <div>
+                                    <span className="font-bold">Standard Image Size: 1200 × 800 px (Aspect Ratio 3:2)</span>. Pure website ke sabhi cards aur article hero pages <strong>1200×800</strong> ke liye exact calibrated hain. 1200×800 photo upload karne par bina kisi cropping ya white space ke 100% full flush fit hogi!
+                                  </div>
+                                </div>
                                 <input
                                   type="file"
                                   ref={mediaModalFileInputRef}
@@ -5540,7 +5560,7 @@ export default function AdminDashboard() {
                                                 : 'border-gray-200 hover:border-gray-400 hover:shadow-sm'
                                             }`}
                                           >
-                                            <div className="aspect-[16/10] bg-gray-100 relative">
+                                            <div className="aspect-[3/2] bg-gray-100 relative">
                                               <img
                                                 src={imgUrl.replace(/&amp;/g, '&')}
                                                 alt=""
@@ -5621,7 +5641,7 @@ export default function AdminDashboard() {
                                             : 'border-gray-200 hover:border-[#002b5c] hover:shadow-md'
                                         }`}
                                       >
-                                        <div className="aspect-[4/3] bg-gray-100 relative">
+                                        <div className="aspect-[3/2] bg-gray-100 relative">
                                           <img
                                             src={photo.url}
                                             alt={photo.label}
@@ -5690,11 +5710,11 @@ export default function AdminDashboard() {
 
                                 {testedImageUrl ? (
                                   <div className="space-y-3 p-3 bg-gray-50 border border-gray-200 rounded-lg animate-in fade-in duration-150">
-                                    <div className="relative aspect-[16/9] w-full rounded-md overflow-hidden bg-gray-200 shadow-inner">
+                                    <div className="relative aspect-[3/2] w-full rounded-md overflow-hidden bg-gray-200 shadow-inner">
                                       <img
                                         src={testedImageUrl}
                                         alt="Preview"
-                                        className="object-cover w-full h-full"
+                                        className="object-contain w-full h-full"
                                         onError={() => {
                                           showToast('Could not load image from the provided URL. Please check the link.', 'error');
                                           setTestedImageUrl(null);
@@ -5997,11 +6017,11 @@ export default function AdminDashboard() {
                           {/* Cover Image */}
                           {editingArticle.image && (
                             <div className="space-y-2">
-                              <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
+                              <div className="relative aspect-[3/2] w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
                                 <img
                                   src={editingArticle.image.replace(/&amp;/g, '&')}
                                   alt=""
-                                  className="w-full h-full object-cover"
+                                  className="w-full h-full object-contain"
                                 />
                               </div>
                               <p className="text-center text-xs text-gray-500 font-mono italic">
