@@ -9,12 +9,12 @@ export default function BreakingTicker() {
   const tickerArticles = ARTICLES.slice(0, 10);
 
   return (
-    <div className="w-full bg-[#eff0e0] border-b border-[#211d1d]/15 overflow-hidden flex items-center h-10 select-none">
+    <div className="w-full bg-[#eff0e0] dark:bg-[#181818] border-b border-[#211d1d]/15 dark:border-white/15 overflow-hidden flex items-center h-10 select-none">
       {/* Static Label Badge */}
-      <div className="flex items-center space-x-2 bg-[#0a0a0a] text-[#fefdf3] px-4 h-full z-10 flex-shrink-0">
+      <div className="flex items-center space-x-2 bg-[#0a0a0a] dark:bg-[#f7413e] text-[#fefdf3] px-4 h-full z-10 flex-shrink-0">
         <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f7413e] opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f7413e]"></span>
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f7413e] dark:bg-white opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f7413e] dark:bg-white"></span>
         </span>
         <span className="font-oswald text-xs uppercase tracking-widest font-bold">
           Breaking News
@@ -28,14 +28,14 @@ export default function BreakingTicker() {
             <div key={`${article.slug}-${idx}`} className="inline-flex items-center">
               <Link
                 href={getBlogUrl(article)}
-                className="text-xs font-medium text-[#211d1d] hover:text-[#f7413e] transition-colors mx-4 hover:underline underline-offset-2 flex items-center space-x-2"
+                className="text-xs font-medium text-[#211d1d] dark:text-gray-200 hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors mx-4 hover:underline underline-offset-2 flex items-center space-x-2"
               >
-                <span className="font-mono text-[10px] bg-[#211d1d]/10 text-[#211d1d] px-1.5 py-0.5 rounded font-semibold uppercase">
+                <span className="font-mono text-[10px] bg-[#211d1d]/10 dark:bg-white/10 text-[#211d1d] dark:text-gray-200 px-1.5 py-0.5 rounded font-semibold uppercase">
                   {article.category}
                 </span>
                 <span>{article.title}</span>
               </Link>
-              <span className="text-[#211d1d]/30 mx-2 text-xs font-serif">✦</span>
+              <span className="text-[#211d1d]/30 dark:text-white/30 mx-2 text-xs font-serif">✦</span>
             </div>
           ))}
         </div>

@@ -85,6 +85,7 @@ import { Article, ArticleSection, CategoryInfo, SubCategory } from '@/types';
 import { CATEGORIES } from '@/data/categories';
 import { AnalyticsData } from '@/lib/supabaseService';
 import { getBlogUrl } from '@/lib/blogUrl';
+import { buildSafeHtmlExcerpt, renderRichInline } from '@/lib/linkify';
 
 // Default password for verification
 const DEFAULT_ADMIN_PASSWORD = 'Apexchief2026@';
@@ -2475,8 +2476,9 @@ export default function AdminDashboard() {
     const validParagraphs = (editingArticle.paragraphs || []).filter((p) => p && p.trim().length > 0);
     const finalParagraphs = validParagraphs.length > 0 ? validParagraphs : [editingArticle.title];
 
-    // Auto-generate excerpt if missing
-    const finalExcerpt = editingArticle.excerpt?.trim() || (finalParagraphs[0] ? finalParagraphs[0].slice(0, 180) + '...' : editingArticle.title);
+    // Auto-generate excerpt safely without slicing HTML tags mid-attribute
+    const rawContentSource = editorRef.current?.innerHTML || editingArticle.content || finalParagraphs[0] || '';
+    const finalExcerpt = editingArticle.excerpt?.trim() || buildSafeHtmlExcerpt(rawContentSource, 180) || editingArticle.title;
 
     // Selected image or curated category fallback
     const finalImage = editingArticle.image?.trim() || 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200';
@@ -3770,7 +3772,10 @@ export default function AdminDashboard() {
                         {/* Live Preview Button */}
                         <button
                           type="button"
-                          onClick={() => setShowPreviewModal(true)}
+                          onClick={() => {
+                            syncEditorToState();
+                            setShowPreviewModal(true);
+                          }}
                           className="px-3.5 py-1.5 border border-[#211d1d]/20 dark:border-white/20 text-xs font-bold uppercase tracking-wider hover:bg-[#211d1d]/5 dark:hover:bg-white/10 text-[#211d1d] dark:text-gray-200 transition-colors bg-[#faf8f2] dark:bg-[#1c202d] cursor-pointer rounded inline-flex items-center space-x-1 shadow-xs"
                         >
                           <Eye className="w-3.5 h-3.5 text-[#002b5c] dark:text-sky-400" />
@@ -5923,10 +5928,12 @@ export default function AdminDashboard() {
                     )}
 
                     {/* FULL-SCREEN LIVE STORY PREVIEW MODAL */}
-                    {showPreviewModal && (
-                      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-8">
+                    {showPreviewModal && (() => {
+                      const livePreviewHtml = editorRef.current?.innerHTML || editingArticle.content || '';
+                      return (
+                      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-8">
                         {/* Modal Floating Navigation Bar */}
-                        <div className="sticky top-2 z-60 bg-[#1f1f1f] text-white px-5 py-3 rounded-full shadow-2xl border border-white/20 flex items-center justify-between gap-4 max-w-4xl w-full mb-6">
+                        <div className="sticky top-2 z-[10000] bg-[#1f1f1f] text-white px-5 py-3 rounded-full shadow-2xl border border-white/20 flex items-center justify-between gap-4 max-w-5xl w-full mb-6">
                           <div className="flex items-center space-x-2">
                             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
                             <span className="text-xs font-bold font-mono uppercase tracking-wider text-emerald-400">
@@ -5966,7 +5973,7 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Rendered Live Article Document */}
-                        <div className="bg-[#faf8f2] text-[#211d1d] rounded-2xl shadow-2xl max-w-4xl w-full p-6 sm:p-12 space-y-6 border border-[#211d1d]/10 mb-12">
+                        <div className="bg-[#faf8f2] dark:bg-[#14171f] text-[#211d1d] dark:text-gray-100 rounded-2xl shadow-2xl max-w-5xl w-full p-6 sm:p-10 space-y-4 border border-[#211d1d]/10 dark:border-white/10 mb-12 text-left">
                           
                           {/* Breadcrumb, Category Badge, Read Time & Published Date */}
                           <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider">
@@ -5977,66 +5984,69 @@ export default function AdminDashboard() {
                               {editingArticle.subcategory && (
                                 <>
                                   <span className="text-gray-400">›</span>
-                                  <span className="text-[#f7413e] bg-gray-100 px-2.5 py-1 rounded">
+                                  <span className="text-[#f7413e] bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded">
                                     {editingArticle.subcategory}
                                   </span>
                                 </>
                               )}
                               <span className="text-gray-400">•</span>
-                              <span className="text-gray-500 font-mono text-[11px]">
+                              <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
                                 {editingArticle.readTime || '4 min read'}
                               </span>
                               <span className="text-gray-400">•</span>
-                              <span className="text-gray-500 font-mono text-[11px]">
+                              <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
                                 {editingArticle.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                               </span>
                             </div>
-                            <span className="text-emerald-700 font-bold text-[11px] bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                            <span className="text-emerald-700 dark:text-emerald-300 font-bold text-[11px] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
                               {cmsMetadata.status || 'Published'}
                             </span>
                           </div>
 
                           {/* Article Title */}
-                          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#0a0a0a] leading-tight">
-                            {editingArticle.title || 'Untitled Story Headline'}
+                          <h1 className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-white leading-snug text-left">
+                            {renderRichInline(editingArticle.title || 'Untitled Story Headline')}
                           </h1>
 
                           {/* Excerpt Lead */}
-                          {editingArticle.excerpt && (
-                            <p className="font-serif italic text-lg sm:text-xl text-gray-700 leading-relaxed border-l-4 border-[#002b5c] pl-4">
-                              {editingArticle.excerpt}
+                          {(editingArticle.excerpt || livePreviewHtml) && (
+                            <p className="font-serif italic text-sm sm:text-[15px] text-gray-700 dark:text-gray-300 leading-[1.45] border-l-4 border-[#002b5c] pl-4 text-left">
+                              {renderRichInline(
+                                editingArticle.excerpt,
+                                livePreviewHtml || (Array.isArray(editingArticle.paragraphs) ? editingArticle.paragraphs[0] : '')
+                              )}
                             </p>
                           )}
 
                           {/* Cover Image */}
                           {editingArticle.image && (
-                            <div className="space-y-2">
-                              <div className="relative aspect-[3/2] w-full rounded-xl overflow-hidden shadow-md bg-gray-100">
+                            <div className="w-full space-y-1.5 my-4">
+                              <div className="relative aspect-[3/2] w-full rounded-lg overflow-hidden shadow-sm bg-gray-100 dark:bg-black/40 border border-[#211d1d]/10 dark:border-white/10">
                                 <img
                                   src={editingArticle.image.replace(/&amp;/g, '&')}
                                   alt=""
                                   className="w-full h-full object-contain"
                                 />
                               </div>
-                              <p className="text-center text-xs text-gray-500 font-mono italic">
+                              <p className="text-left text-[11px] text-gray-500 dark:text-gray-400 font-mono italic">
                                 Story Cover Photo — ApexChief Editorial
                               </p>
                             </div>
                           )}
 
                           {/* Article Body Content (Rich WYSIWYG Rendering) */}
-                          {editingArticle.content ? (
+                          {livePreviewHtml ? (
                             <div
-                              dangerouslySetInnerHTML={{ __html: editingArticle.content }}
-                              className="article-rich-content text-base sm:text-lg leading-relaxed text-gray-900 font-serif space-y-4"
+                              dangerouslySetInnerHTML={{ __html: livePreviewHtml }}
+                              className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans space-y-3 text-left"
                             />
                           ) : (
-                            <div className="space-y-6 text-base sm:text-lg leading-relaxed text-gray-900 font-serif">
+                            <div className="space-y-3 text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans text-left">
                               {(editingArticle.paragraphs && editingArticle.paragraphs.length > 0
                                 ? editingArticle.paragraphs
                                 : ['(No content written yet)']).map((para, i) => (
-                                <p key={i} className="first-letter:text-3xl first-letter:font-bold first-letter:float-left first-letter:mr-2 first-letter:leading-none">
-                                  {para}
+                                <p key={i} className="leading-[1.48]">
+                                  {renderRichInline(para)}
                                 </p>
                               ))}
                             </div>
@@ -6044,14 +6054,14 @@ export default function AdminDashboard() {
 
                           {/* Subsections & Chapters */}
                           {editingArticle.sections && editingArticle.sections.length > 0 && (
-                            <div className="space-y-8 pt-6 border-t border-[#211d1d]/10">
+                            <div className="space-y-4 pt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-left">
                               {editingArticle.sections.map((sec, i) => (
-                                <div key={i} className="space-y-3">
-                                  <h3 className="font-serif text-2xl font-bold text-[#002b5c] border-b border-[#002b5c]/20 pb-1.5">
-                                    {sec.heading}
+                                <div key={i} className="space-y-2">
+                                  <h3 className="font-sans text-lg font-bold text-[#002b5c] dark:text-sky-400 border-b border-[#002b5c]/20 dark:border-sky-400/20 pb-1">
+                                    {renderRichInline(sec.heading || '')}
                                   </h3>
-                                  <p className="font-serif text-base sm:text-lg leading-relaxed text-gray-800">
-                                    {sec.content}
+                                  <p className="font-sans text-[15px] sm:text-base leading-[1.48] text-gray-800 dark:text-gray-200">
+                                    {renderRichInline(sec.content || '')}
                                   </p>
                                 </div>
                               ))}
@@ -6060,10 +6070,10 @@ export default function AdminDashboard() {
 
                           {/* Tags Footer */}
                           {cmsMetadata.tags && cmsMetadata.tags.length > 0 && (
-                            <div className="pt-6 border-t border-[#211d1d]/10 flex flex-wrap items-center gap-2">
-                              <span className="text-xs font-mono font-bold text-gray-500 uppercase">Tags:</span>
+                            <div className="pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex flex-wrap items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400 uppercase">Tags:</span>
                               {cmsMetadata.tags.map((tg: string) => (
-                                <span key={tg} className="px-2.5 py-1 bg-white border border-gray-200 text-xs font-bold text-gray-700 rounded-full font-mono">
+                                <span key={tg} className="px-2.5 py-1 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-200 rounded-full font-mono">
                                   #{tg}
                                 </span>
                               ))}
@@ -6072,7 +6082,8 @@ export default function AdminDashboard() {
 
                         </div>
                       </div>
-                    )}
+                      );
+                    })()}
 
                   </form>
                 )}

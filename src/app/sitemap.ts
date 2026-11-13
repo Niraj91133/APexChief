@@ -1,13 +1,13 @@
 import { MetadataRoute } from 'next';
 import { getArticles, getCategories } from '@/data/db';
-import { getArticlesFromDB } from '@/lib/supabaseService';
+import { getCachedArticleSummaries } from '@/lib/supabaseService';
 import { getBlogUrl } from '@/lib/blogUrl';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.apexchief.com';
   
-  // Prefer fresh DB articles if available, fallback to local articles.json
-  const dbArticles = await getArticlesFromDB().catch(() => null);
+  // Prefer lightweight DB article summaries if available, fallback to local articles.json
+  const dbArticles = await getCachedArticleSummaries().catch(() => null);
   const articles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
   const categories = getCategories();
 

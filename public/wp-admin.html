@@ -5181,13 +5181,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         </div>
         <button onclick="closePagePreviewModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
       </div>
-      <div class="flex-1 p-8 overflow-y-auto bg-white">
-        <div class="max-w-2xl mx-auto space-y-6">
-          <div class="border-b pb-4">
+      <div class="flex-1 p-6 sm:p-8 overflow-y-auto bg-white text-left">
+        <div class="w-full max-w-4xl mx-auto space-y-4 text-left">
+          <div class="border-b pb-3 text-left">
             <span id="page-preview-template-badge" class="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">About / Editorial Desk</span>
-            <h1 id="page-preview-title" class="font-serif text-3xl md:text-4xl font-bold text-gray-900 mt-2 leading-tight">About ApexChief</h1>
+            <h1 id="page-preview-title" class="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-gray-900 mt-1.5 leading-snug text-left">About ApexChief</h1>
           </div>
-          <div id="page-preview-body" class="prose prose-slate max-w-none text-gray-800 leading-relaxed font-serif text-base space-y-4"></div>
+          <div id="page-preview-body" class="article-rich-content max-w-none text-gray-800 leading-[1.48] font-sans text-[15px] space-y-3 text-left"></div>
         </div>
       </div>
     </div>
@@ -10070,6 +10070,106 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (modal) modal.classList.add('hidden');
     }
 
+    function buildSafeExcerptHtml(htmlStr, maxChars = 180) {
+      if (!htmlStr) return '';
+      const container = document.createElement('div');
+      container.innerHTML = htmlStr;
+      let out = '';
+      let visibleLen = 0;
+      let truncated = false;
+
+      const walk = (node) => {
+        if (truncated || visibleLen >= maxChars) {
+          truncated = true;
+          return;
+        }
+        if (node.nodeType === Node.TEXT_NODE) {
+          const text = (node.textContent || '').replace(/\s+/g, ' ');
+          if (!text) return;
+          const remaining = maxChars - visibleLen;
+          if (text.length <= remaining) {
+            out += text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            visibleLen += text.length;
+          } else {
+            out += text.slice(0, remaining).trimEnd().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            truncated = true;
+          }
+          return;
+        }
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          const tag = node.tagName.toLowerCase();
+          if (tag === 'a') {
+            const label = (node.textContent || '').replace(/\s+/g, ' ').trim();
+            const href = node.getAttribute('href') || '#';
+            if (label && label.length <= (maxChars - visibleLen + 40)) {
+              const safeHref = href.replace(/"/g, '&quot;');
+              const safeLabel = label.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+              out += `<a href="${safeHref}" target="_blank" rel="noopener noreferrer" class="text-[#2271b1] underline font-medium">${safeLabel}</a>`;
+              visibleLen += label.length;
+            } else {
+              truncated = true;
+            }
+            return;
+          }
+          if (tag === 'br' || tag === 'p' || tag === 'div' || tag === 'li') {
+            if (out && !out.endsWith(' ')) out += ' ';
+          }
+          for (const child of Array.from(node.childNodes)) {
+            walk(child);
+            if (truncated) break;
+          }
+        }
+      };
+
+      for (const child of Array.from(container.childNodes)) {
+        walk(child);
+        if (truncated) break;
+      }
+      out = out.trim();
+      return truncated && out ? `${out}...` : out;
+    }
+
+    function previewArticleInReader() {
+      const title = document.getElementById('post-title')?.value?.trim() || 'Untitled Story Headline';
+      const rawContent = document.getElementById('editor-content')?.innerHTML || '';
+      const category = document.getElementById('placement-category-select')?.value || 'Business';
+      const subCat = document.getElementById('placement-subcategory-select')?.value || '';
+      const snippetDesc = document.getElementById('snippet-description')?.value?.replace('%excerpt%', '').trim() || '';
+      const showImg = (document.getElementById('post-show-featured-image')?.value || 'Yes') === 'Yes';
+
+      const contentWithLinks = autoLinkifyHtmlContent(rawContent);
+      const excerptHtml = snippetDesc
+        ? snippetDesc.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        : buildSafeExcerptHtml(contentWithLinks, 180);
+
+      const modal = document.getElementById('modal-page-preview');
+      const badgeEl = document.getElementById('page-preview-template-badge');
+      const titleEl = document.getElementById('page-preview-title');
+      const bodyEl = document.getElementById('page-preview-body');
+      if (!modal || !badgeEl || !titleEl || !bodyEl) {
+        showToast('Preview Unavailable', 'Preview modal container was not found.');
+        return;
+      }
+
+      badgeEl.innerText = `Live Story Preview • ${category}${subCat ? ' › ' + subCat : ''}`;
+      titleEl.innerText = title;
+
+      let previewHtml = '';
+      if (excerptHtml) {
+        previewHtml += `<p class="font-serif italic text-sm sm:text-base text-gray-600 leading-[1.45] border-l-4 border-[#002b5c] pl-3 mb-4 text-left">${excerptHtml}</p>`;
+      }
+      if (showImg && typeof currentFeaturedImage === 'string' && currentFeaturedImage) {
+        const safeImg = currentFeaturedImage.replace(/"/g, '&quot;');
+        previewHtml += `<div class="w-full my-4"><img src="${safeImg}" alt="" class="w-full aspect-[3/2] object-contain bg-gray-100 rounded-lg border border-gray-200 shadow-sm" /></div>`;
+      }
+      previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
+        contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'
+      }</div>`;
+
+      bodyEl.innerHTML = previewHtml;
+      modal.classList.remove('hidden');
+    }
+
     function savePost(status = 'draft') {
       const rawTitle = document.getElementById('post-title').value.trim() || 'Untitled Post';
       const title = autoLinkifyString(rawTitle);
@@ -10159,7 +10259,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         }
 
         const snippetDesc = document.getElementById('snippet-description')?.value || '';
-        const cleanExcerpt = snippetDesc.replace('%excerpt%', '').trim() || (extractedParagraphs[0] ? extractedParagraphs[0].slice(0, 160) + '...' : 'Latest analytical coverage from ApexChief editorial desk.');
+        const cleanExcerpt = snippetDesc.replace('%excerpt%', '').trim() || buildSafeExcerptHtml(content, 180) || 'Latest analytical coverage from ApexChief editorial desk.';
 
         let placementVal = 'category';
         if (homepagePlacement === 'top3') placementVal = 'top3';

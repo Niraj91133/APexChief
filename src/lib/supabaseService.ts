@@ -6,7 +6,10 @@ import { ARTICLES } from '@/data/articles';
 import { getArticles, getCategories, getSiteConfig } from '@/data/db';
 
 const SUMMARY_COLUMNS =
-  'id, slug, title, category, subcategory, region, content_type, tag, date_text, author_name, author_role, author_avatar, image_url, read_time, excerpt, placement, homepage_priority, is_breaking, featured, trending, views_count, likes_count, status, publish_date';
+  'id, slug, title, category, subcategory, region, content_type, tag, date_text, author_name, author_role, author_avatar, read_time, excerpt, placement, homepage_priority, is_breaking, featured, trending, views_count, likes_count, status, publish_date';
+
+const DETAIL_COLUMNS =
+  'id, slug, title, category, subcategory, region, content_type, tag, date_text, author_name, author_role, author_avatar, read_time, excerpt, content, placement, homepage_priority, is_breaking, featured, trending, status, publish_date, publish_time, publish_timezone, views_count, likes_count, paragraphs, sections';
 
 const CACHE_TTL_MS = 60_000;
 
@@ -231,23 +234,48 @@ export function mapArticleToRow(art: Article): any {
 // --- ARTICLES OPERATIONS ---
 async function fetchArticleSummariesFresh(): Promise<Article[]> {
   try {
-    const { data, error } = await supabaseAdmin
-      .from('articles')
-      .select(SUMMARY_COLUMNS)
-      .order('created_at', { ascending: false });
+    const [summaryRes, imageRes] = await Promise.all([
+      supabaseAdmin
+        .from('articles')
+        .select(SUMMARY_COLUMNS)
+        .order('created_at', { ascending: false }),
+      supabaseAdmin
+        .from('articles')
+        .select('slug, image_url')
+        .not('image_url', 'like', 'data:%'),
+    ]);
 
-    if (!error && data && data.length > 0) {
-      return data.map(mapRowToSummaryArticle);
-    }
-    if (error) {
-      console.error('Supabase fetchArticleSummaries column error, falling back:', error.message);
-      const dbFull = await getArticlesFromDB();
-      if (dbFull && dbFull.length > 0) {
-        return dbFull.map(mapSummaryArticle);
+    if (!summaryRes.error && summaryRes.data && summaryRes.data.length > 0) {
+      const imageMap = new Map<string, string>();
+      if (!imageRes.error && Array.isArray(imageRes.data)) {
+        for (const item of imageRes.data) {
+          if (item?.slug && item?.image_url) {
+            imageMap.set(item.slug, item.image_url);
+          }
+        }
       }
+
+      return summaryRes.data.map((row: any) => {
+        const cachedImg = _rawImageCache.get(normalizeSlugKey(row.slug))?.url;
+        const externalImg = imageMap.get(row.slug);
+        const resolvedImageUrl =
+          externalImg ||
+          (cachedImg && !cachedImg.startsWith('data:image/') ? cachedImg : undefined) ||
+          (row.slug ? `/api/article-image/${encodeURIComponent(row.slug)}` : undefined);
+        return mapRowToSummaryArticle({
+          ...row,
+          image_url: resolvedImageUrl,
+        });
+      });
+    }
+    if (summaryRes.error) {
+      console.error('Supabase fetchArticleSummaries error:', String(summaryRes.error.message || '').slice(0, 300));
     }
   } catch (err) {
-    console.error('Supabase fetchArticleSummaries error:', err);
+    console.error(
+      'Supabase fetchArticleSummaries exception:',
+      err instanceof Error ? err.message : String(err).slice(0, 300)
+    );
   }
   return getArticles().map(mapSummaryArticle);
 }
@@ -284,21 +312,63 @@ async function fetchSingleArticleFresh(slug: string): Promise<Article | null> {
 
   try {
     const queryPromise = (async () => {
-      const { data, error } = await supabaseAdmin
-        .from('articles')
-        .select('*')
-        .eq('slug', cleanSlug)
-        .maybeSingle();
+      const [{ data, error }, imgRes] = await Promise.all([
+        supabaseAdmin
+          .from('articles')
+          .select(DETAIL_COLUMNS)
+          .eq('slug', cleanSlug)
+          .maybeSingle(),
+        supabaseAdmin
+          .from('articles')
+          .select('image_url')
+          .eq('slug', cleanSlug)
+          .not('image_url', 'like', 'data:%')
+          .maybeSingle(),
+      ]);
 
-      let row = data;
-      if (!row && !error && isUuid) {
-        const byId = await supabaseAdmin.from('articles').select('*').eq('id', cleanSlug).maybeSingle();
+      let row: any = data;
+      let resolvedUrl: string | undefined = imgRes?.data?.image_url || undefined;
+
+      if (!row && !error) {
+        const byIlike = await supabaseAdmin
+          .from('articles')
+          .select(DETAIL_COLUMNS)
+          .ilike('slug', cleanSlug)
+          .maybeSingle();
+        row = byIlike.data;
+        if (row?.slug && !resolvedUrl) {
+          const byIlikeImg = await supabaseAdmin
+            .from('articles')
+            .select('image_url')
+            .eq('slug', row.slug)
+            .not('image_url', 'like', 'data:%')
+            .maybeSingle();
+          resolvedUrl = byIlikeImg?.data?.image_url || undefined;
+        }
+      }
+
+      if (!row && isUuid) {
+        const byId = await supabaseAdmin
+          .from('articles')
+          .select(DETAIL_COLUMNS)
+          .eq('id', cleanSlug)
+          .maybeSingle();
         row = byId.data;
+      }
+
+      if (row) {
+        const actualSlug = row.slug || cleanSlug;
+        row = {
+          ...row,
+          image_url:
+            resolvedUrl ||
+            (actualSlug ? `/api/article-image/${encodeURIComponent(actualSlug)}` : undefined),
+        };
       }
       return row;
     })();
 
-    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 3500));
+    const timeoutPromise = new Promise<null>((resolve) => setTimeout(() => resolve(null), 9000));
     const row = await Promise.race([queryPromise, timeoutPromise]);
 
     if (row) {

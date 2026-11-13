@@ -21,10 +21,11 @@ import {
 } from 'lucide-react';
 import ShareButtons from './ShareButtons';
 import ArticleViewTracker from '@/components/ArticleViewTracker';
-import { linkifyText, linkifyHtml } from '@/lib/linkify';
+import { linkifyHtml, renderRichInline, getCleanPlainExcerpt } from '@/lib/linkify';
 import { getBlogUrl } from '@/lib/blogUrl';
 
 export const revalidate = 60;
+export const dynamicParams = true;
 
 interface PageProps {
   params: Promise<{
@@ -33,9 +34,9 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const dbArticles = await getCachedArticleSummaries().catch(() => []);
-  const articles = dbArticles && dbArticles.length > 0 ? dbArticles : getArticles();
-  return articles.map((article) => ({
+  // Pre-render local baseline routes at build time; Supabase-authored stories render via on-demand ISR
+  // so build concurrency never hits Postgres timeouts and bakes false 404s.
+  return getArticles().map((article) => ({
     slug: article.slug,
   }));
 }
@@ -87,7 +88,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         ].filter(Boolean) as string[];
 
   const resolvedMetaTitle = article.metaTitle || `${article.title} | ${siteConfig.name}`;
-  const resolvedMetaDesc = article.metaDescription || article.excerpt;
+  const resolvedMetaDesc = getCleanPlainExcerpt(
+    article.metaDescription,
+    article.excerpt,
+    article.content || (Array.isArray(article.paragraphs) ? article.paragraphs[0] : '')
+  );
 
   return {
     title: {
@@ -204,7 +209,11 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           url: baseUrl,
         },
         headline: article.metaTitle || article.title,
-        description: article.metaDescription || article.excerpt,
+        description: getCleanPlainExcerpt(
+          article.metaDescription,
+          article.excerpt,
+          article.content || (Array.isArray(article.paragraphs) ? article.paragraphs[0] : '')
+        ),
         image: [
           article.image?.startsWith('http') ? article.image : `${baseUrl}${article.image || '/images/apexchief-logo-light.png'}`
         ],
@@ -321,24 +330,27 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           </div>
         </nav>
 
-        {/* Article Header & Headline */}
-        <header className="max-w-4xl mx-auto text-center mt-3 mb-6 sm:mb-8">
+        {/* Article Header & Headline: Left-aligned, full width, compact editorial scale */}
+        <header className="w-full text-left mt-2 mb-5">
           <h1
             itemProp="headline"
-            className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#0a0a0a] dark:text-[#ffffff] leading-tight tracking-tight mb-4 sm:mb-5"
+            className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-[#ffffff] leading-snug tracking-tight mb-2.5"
           >
-            {linkifyText(article.title)}
+            {renderRichInline(article.title)}
           </h1>
 
           <p
             itemProp="description"
-            className="font-serif italic text-base sm:text-lg text-[#575757] dark:text-[#c4c4c4] leading-relaxed max-w-2xl mx-auto mb-5"
+            className="font-serif italic text-sm sm:text-[15px] text-[#575757] dark:text-[#c4c4c4] leading-[1.45] w-full text-left mb-3.5"
           >
-            {linkifyText(article.excerpt)}
+            {renderRichInline(
+              article.excerpt,
+              article.content || (Array.isArray(article.paragraphs) ? article.paragraphs[0] : '')
+            )}
           </p>
 
           {/* Meta Info Bar (Date, Read Time, Tag) */}
-          <div className="py-4 border-t border-b border-[#211d1d]/15 dark:border-white/15 flex flex-wrap items-center justify-center gap-6 text-xs text-[#575757] dark:text-[#a3a3a3] font-mono uppercase">
+          <div className="py-2.5 border-t border-b border-[#211d1d]/15 dark:border-white/15 flex flex-wrap items-center justify-start gap-4 sm:gap-5 text-[11px] text-[#575757] dark:text-[#a3a3a3] font-mono uppercase">
             <div className="flex items-center space-x-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#f7413e]" />
               <time dateTime={article.date} itemProp="datePublished">
@@ -346,7 +358,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
               </time>
             </div>
 
-            <div className="hidden sm:inline-block text-[#575757]/30">•</div>
+            <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
 
             <div className="flex items-center space-x-1.5">
               <Clock className="w-3.5 h-3.5 text-[#002b5c] dark:text-[#60a5fa]" />
@@ -355,7 +367,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
 
             {article.tag && (
               <>
-                <div className="hidden sm:inline-block text-[#575757]/30">•</div>
+                <div className="hidden sm:inline-block text-[#575757]/40 dark:text-white/30">•</div>
                 <div className="flex items-center space-x-1">
                   <Tag className="w-3 h-3 text-[#575757] dark:text-[#a3a3a3]" />
                   <span className="text-[#575757] dark:text-[#a3a3a3]">{article.tag}</span>
@@ -365,33 +377,33 @@ export default async function ArticleDetailPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* Hero Featured Image (Controlled by "Show featured image on single post") with Smart Bounded Zoom */}
+        {/* Hero Featured Image (Controlled by "Show featured image on single post"): Full width 3:2 (1200x800 uncropped) */}
         {shouldShowFeaturedImage && (
-          <div className="max-w-4xl mx-auto my-6">
-            <div className="relative w-full aspect-[3/2] max-h-[520px] overflow-hidden rounded-xl border border-[#211d1d]/15 dark:border-white/15 shadow-sm">
+          <div className="w-full my-5">
+            <div className="relative w-full aspect-[3/2] overflow-hidden rounded-lg border border-[#211d1d]/15 dark:border-white/15 shadow-sm">
               <AmbientImage
                 src={article.image}
                 alt={article.title}
                 priority
-                sizes="(max-width: 768px) 100vw, 896px"
+                sizes="(max-width: 768px) 100vw, 1200px"
               />
             </div>
-            <div className="text-right text-[11px] font-mono text-[#575757] dark:text-[#888888] mt-2 italic">
+            <div className="text-left text-[11px] font-mono text-[#575757] dark:text-[#a3a3a3] mt-1.5 italic">
               Photography & Editorial Archive — {siteConfig.name} Special Report
             </div>
           </div>
         )}
 
-        {/* Main Content Layout with Dynamic Sidebar Position */}
-        <div className={`max-w-5xl mx-auto my-10 ${
+        {/* Main Content Layout: Full container width left-to-right */}
+        <div className={`w-full my-6 ${
           sidebarPos === 'right'
             ? 'flex flex-col lg:flex-row gap-8 items-start'
             : sidebarPos === 'left'
             ? 'flex flex-col lg:flex-row-reverse gap-8 items-start'
-            : 'max-w-3xl mx-auto'
+            : ''
         }`}>
           {/* Article Body Content */}
-          <div className={sidebarPos !== 'none' ? 'w-full lg:w-2/3' : 'w-full'} itemProp="articleBody">
+          <div className={sidebarPos !== 'none' ? 'w-full lg:w-2/3 text-left' : 'w-full text-left'} itemProp="articleBody">
             {/* Social Share Bar */}
             <ShareButtons title={article.title} />
 
@@ -399,26 +411,26 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             {article.content ? (
               <div
                 dangerouslySetInnerHTML={{ __html: linkifyHtml(article.content) }}
-                className="article-rich-content text-base sm:text-lg leading-relaxed text-[#211d1d]/90 dark:text-[#e0ded6] space-y-6 my-6 font-sans"
+                className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-[#211d1d]/90 dark:text-[#e5e7eb] space-y-3 my-4 font-sans text-left"
               />
             ) : (
               <>
                 {/* Lead Paragraph with Drop Cap */}
                 {Array.isArray(article.paragraphs) && article.paragraphs[0] && (
-                  <p className="drop-cap font-sans text-lg sm:text-xl text-[#211d1d] dark:text-[#f5f4ef] leading-relaxed mb-8">
-                    {linkifyText(article.paragraphs[0])}
+                  <p className="drop-cap font-sans text-base sm:text-[17px] text-[#211d1d] dark:text-[#f5f4ef] leading-[1.48] mb-4 text-left">
+                    {renderRichInline(article.paragraphs[0])}
                   </p>
                 )}
 
                 {/* Subheadings and Content Sections */}
                 {Array.isArray(article.sections) && article.sections.length > 0 ? (
                   article.sections.map((sec, idx) => (
-                    <section key={idx} className="my-8">
-                      <h2 className="font-sans text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-8 mb-4 border-b border-[#211d1d]/10 dark:border-white/10 pb-2">
-                        {linkifyText(sec.heading || '')}
+                    <section key={idx} className="my-4 text-left">
+                      <h2 className="font-sans text-lg sm:text-xl font-bold text-[#0a0a0a] dark:text-[#ffffff] mt-5 mb-2 border-b border-[#211d1d]/10 dark:border-white/10 pb-1.5">
+                        {renderRichInline(sec.heading || '')}
                       </h2>
-                      <p className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed">
-                        {linkifyText(sec.content || '')}
+                      <p className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48]">
+                        {renderRichInline(sec.content || '')}
                       </p>
                     </section>
                   ))
@@ -426,9 +438,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                   (Array.isArray(article.paragraphs) ? article.paragraphs.slice(1) : []).map((p, idx) => (
                     <p
                       key={idx}
-                      className="font-sans text-base sm:text-lg text-[#211d1d]/90 dark:text-[#e0ded6] leading-relaxed my-6"
+                      className="font-sans text-[15px] sm:text-base text-[#211d1d]/90 dark:text-[#e5e7eb] leading-[1.48] my-3 text-left"
                     >
-                      {linkifyText(p)}
+                      {renderRichInline(p)}
                     </p>
                   ))
                 )}
@@ -436,9 +448,9 @@ export default async function ArticleDetailPage({ params }: PageProps) {
             )}
 
             {/* Editorial Pull Quote */}
-            <div className="my-10 p-6 sm:p-8 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
-              <Quote className="w-8 h-8 text-[#f7413e]/20 absolute top-4 right-4" />
-              <blockquote className="font-sans italic text-lg sm:text-xl text-[#0a0a0a] dark:text-[#ffffff] leading-relaxed mb-3">
+            <div className="my-6 p-4 sm:p-5 bg-[#eff0e0] dark:bg-[#1c1c1c] border-l-4 border-[#f7413e] relative">
+              <Quote className="w-7 h-7 text-[#f7413e]/20 absolute top-3 right-3" />
+              <blockquote className="font-sans italic text-base sm:text-lg text-[#0a0a0a] dark:text-[#ffffff] leading-[1.48] mb-2">
                 &ldquo;Modern reporting requires not just speed, but the depth to analyze how rapid technological and cultural shifts reshape community resilience.&rdquo;
               </blockquote>
               <cite className="text-xs font-mono uppercase font-bold text-[#575757] dark:text-[#a3a3a3] not-italic block">
@@ -473,7 +485,7 @@ export default async function ArticleDetailPage({ params }: PageProps) {
                           <h4 className="text-xs font-bold font-serif line-clamp-2 text-black dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug">
                             {pop.title}
                           </h4>
-                          <span className="text-[10px] text-gray-500 font-mono mt-0.5 block">
+                          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-mono mt-0.5 block">
                             {pop.category}
                           </span>
                         </div>

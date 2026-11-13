@@ -7,6 +7,7 @@ import AmbientImage from '@/components/AmbientImage';
 import ArticleCard from '@/components/ArticleCard';
 import { ARTICLES } from '@/data/articles';
 import { getBlogUrl } from '@/lib/blogUrl';
+import { getCleanPlainExcerpt } from '@/lib/linkify';
 import { Article, CategoryInfo } from '@/types';
 import {
   ChevronLeft,
@@ -22,6 +23,13 @@ interface HomeClientProps {
   initialArticles?: Article[];
   initialCategories?: CategoryInfo[];
 }
+
+const getPlainExcerpt = (art: Article): string =>
+  getCleanPlainExcerpt(
+    null,
+    art.excerpt,
+    art.content || (Array.isArray(art.paragraphs) ? art.paragraphs[0] : '')
+  ) || art.title;
 
 export default function HomeClient({ initialArticles, initialCategories }: HomeClientProps = {}) {
   const [articles, setArticles] = useState<Article[]>(
@@ -183,170 +191,195 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
       {/* ========================================================================= */}
       {/* 1. LATEST NEWS                                                            */}
       {/* ========================================================================= */}
-      <section id="latest-news" className="w-full border-b border-[#211d1d]/20 pb-8">
-        <div className="flex items-end justify-between pb-2 border-b border-gray-200 dark:border-white/20 mb-6">
-          <h2 className="font-bebas text-5xl sm:text-6xl lg:text-7xl font-normal uppercase tracking-wider text-black dark:text-white leading-none">
-            LATEST NEWS
-          </h2>
+      <section id="latest-news" className="w-full border-b border-[#211d1d]/15 dark:border-white/15 pb-7">
+        <div className="flex items-center justify-between pb-2.5 border-b border-[#211d1d]/15 dark:border-white/15 mb-4">
+          <div className="flex items-center space-x-2.5">
+            <span className="w-1.5 h-7 bg-[#f7413e] rounded-xs inline-block" />
+            <h2 className="font-bebas text-3xl sm:text-4xl lg:text-[42px] font-normal uppercase tracking-wider text-[#0a0a0a] dark:text-white leading-none">
+              LATEST NEWS
+            </h2>
+            <span className="hidden md:inline-block text-[10px] font-mono uppercase tracking-widest text-[#575757] dark:text-gray-400 border-l border-[#211d1d]/20 dark:border-white/20 pl-2.5">
+              Fresh Dispatches
+            </span>
+          </div>
           <Link
             href="/news"
-            className="inline-flex items-center space-x-1 text-xs sm:text-sm font-oswald uppercase text-[#f7413e] hover:underline font-bold tracking-wider"
+            className="inline-flex items-center space-x-1.5 text-xs font-oswald uppercase text-[#f7413e] hover:text-black dark:hover:text-white font-bold tracking-wider transition-colors"
           >
             <span>Full Editorial Archive</span>
-            <span className="text-base leading-none">→</span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-          {/* Left Column: Big Lead Story (7 cols) */}
-          <div className="lg:col-span-7 group flex flex-col justify-between h-full lg:border-r lg:border-[#211d1d]/20 lg:pr-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
+          {/* Left Column: Balanced Featured Lead Dispatch (6 cols) */}
+          <article className="lg:col-span-6 group flex flex-col justify-between bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3.5 shadow-2xs">
             <div className="flex-1 flex flex-col">
               <Link
                 href={getBlogUrl(newsMain)}
-                className="block overflow-hidden relative w-full aspect-[3/2] max-h-[340px] mb-4 rounded-xs"
+                className="block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] mb-3 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
               >
                 <AmbientImage
                   src={newsMain.image}
                   alt={newsMain.title}
                   priority
-                />
+                  sizes="(max-width: 1024px) 100vw, 560px"
+                >
+                  <div className="absolute top-2 left-2 z-20 flex items-center space-x-1 pointer-events-none">
+                    <span className="bg-[#f7413e] text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
+                      Lead News
+                    </span>
+                    <span className="bg-black/85 text-white text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs shadow-xs">
+                      {newsMain.tag || newsMain.category}
+                    </span>
+                  </div>
+                  {newsMain.readTime && (
+                    <span className="absolute bottom-2 right-2 z-20 bg-black/80 text-white text-[9.5px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                      {newsMain.readTime}
+                    </span>
+                  )}
+                </AmbientImage>
               </Link>
-              <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans mb-1.5">
-                <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
-                <span className="font-serif italic text-[13px] text-[#575757]">
+
+              <div className="flex items-center space-x-1.5 text-[11px] font-mono text-[#575757] dark:text-gray-400 mb-1.5">
+                <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
+                <span className="font-semibold uppercase tracking-wide">
                   {newsMain.tag || newsMain.category}
                 </span>
               </div>
+
               <Link href={getBlogUrl(newsMain)}>
-                <h3 className="font-oswald text-2xl sm:text-3xl lg:text-4xl font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mb-3">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug line-clamp-2 mb-2">
                   {newsMain.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-4 line-clamp-3">
-                {newsMain.excerpt}
+
+              <p className="font-sans text-xs sm:text-[13px] text-[#575757] dark:text-gray-300 leading-relaxed mb-3 line-clamp-3">
+                {getPlainExcerpt(newsMain)}
               </p>
             </div>
-            <div className="mt-auto flex items-center justify-between pt-3 border-t border-[#211d1d]/10">
-              <div className="text-[11px] font-serif text-[#575757]">
-                {newsMain.date}
-              </div>
+
+            <div className="mt-auto flex items-center justify-between gap-2 pt-2.5 border-t border-[#211d1d]/10 dark:border-white/10">
+              <span className="text-[11px] font-mono text-[#575757] dark:text-gray-400 truncate">
+                By {newsMain.author} • {newsMain.date}
+              </span>
               <Link
                 href={getBlogUrl(newsMain)}
-                className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs"
+                className="shrink-0 inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10.5px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-xs transition-all shadow-2xs"
               >
                 <span>Read Story</span>
                 <ArrowRight className="w-3 h-3" />
               </Link>
             </div>
-          </div>
+          </article>
 
-          {/* Right Column: Top Horizontal + Bottom 2-Col Grid (5 cols) */}
-          <div className="lg:col-span-5 flex flex-col justify-between h-full gap-6">
+          {/* Right Column: Compact Horizontal Feature + Balanced 2-Card Row (6 cols) */}
+          <div className="lg:col-span-6 flex flex-col justify-between gap-4">
             {/* Top: Horizontal Card */}
-            <div className="group flex items-start space-x-5 pb-5 border-b border-[#211d1d]/20">
+            <article className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col sm:flex-row gap-3.5 items-stretch">
               <Link
                 href={getBlogUrl(newsRightTop)}
-                className="w-[42%] aspect-[3/2] relative flex-shrink-0 overflow-hidden rounded-xs"
+                className="w-full sm:w-[42%] aspect-[3/2] relative flex-shrink-0 overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10"
               >
                 <AmbientImage
                   src={newsRightTop.image}
                   alt={newsRightTop.title}
-                />
+                  sizes="(max-width: 640px) 100vw, 240px"
+                >
+                  {newsRightTop.readTime && (
+                    <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                      {newsRightTop.readTime}
+                    </span>
+                  )}
+                </AmbientImage>
               </Link>
-              <div className="flex-1 flex flex-col justify-between min-h-[130px]">
+
+              <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div>
-                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
-                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
-                    <span className="font-serif italic text-[13px] text-[#575757]">
+                  <div className="flex items-center space-x-1.5 text-[10.5px] font-mono text-[#575757] dark:text-gray-400">
+                    <span className="text-[#f7413e] font-bold text-sm leading-none">•</span>
+                    <span className="uppercase font-semibold tracking-wide">
                       {newsRightTop.tag || newsRightTop.category}
                     </span>
                   </div>
                   <Link href={getBlogUrl(newsRightTop)}>
-                    <h4 className="font-oswald text-[18px] sm:text-[20px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2 line-clamp-3">
+                    <h4 className="font-serif text-base sm:text-[17px] font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mt-1 mb-1.5 line-clamp-2">
                       {newsRightTop.title}
                     </h4>
                   </Link>
-                  <div className="text-[12px] font-serif italic text-[#575757] mt-1">
+                  <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2">
+                    {getPlainExcerpt(newsRightTop)}
+                  </p>
+                </div>
+
+                <div className="mt-auto pt-2 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
+                  <span className="text-[10.5px] font-mono text-[#575757] dark:text-gray-400 truncate">
                     {newsRightTop.date}
-                  </div>
-                </div>
-                <Link
-                  href={getBlogUrl(newsRightTop)}
-                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs mt-3 w-fit"
-                >
-                  <span>Read more</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Bottom Grid: 2 Distinct Cards with Perfect Alignment */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 flex-1">
-              {/* Bottom Left Card */}
-              <div className="group flex flex-col justify-between border-b sm:border-b-0 sm:border-r border-[#211d1d]/20 pb-5 sm:pb-0 sm:pr-5 h-full">
-                <div className="flex-1 flex flex-col">
+                  </span>
                   <Link
-                    href={getBlogUrl(newsRightBottom)}
-                    className="block overflow-hidden relative aspect-[3/2] mb-2.5 rounded-xs"
+                    href={getBlogUrl(newsRightTop)}
+                    className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-all shadow-2xs"
                   >
-                    <AmbientImage
-                      src={newsRightBottom.image}
-                      alt={newsRightBottom.title}
-                    />
-                  </Link>
-                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
-                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
-                    <span className="font-serif italic text-[13px] text-[#575757]">
-                      {newsRightBottom.tag || newsRightBottom.category}
-                    </span>
-                  </div>
-                  <Link href={getBlogUrl(newsRightBottom)}>
-                    <h4 className="font-oswald text-[15px] sm:text-[17px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2 line-clamp-2">
-                      {newsRightBottom.title}
-                    </h4>
+                    <span>Read more</span>
+                    <ArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
-                <Link
-                  href={getBlogUrl(newsRightBottom)}
-                  className="mt-auto inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs w-fit"
-                >
-                  <span>Read more</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
               </div>
+            </article>
 
-              {/* Bottom Right Card */}
-              <div className="group flex flex-col justify-between h-full">
-                <div className="flex-1 flex flex-col">
-                  <Link
-                    href={getBlogUrl(newsRightBottom2)}
-                    className="block overflow-hidden relative aspect-[3/2] mb-2.5 rounded-xs"
-                  >
-                    <AmbientImage
-                      src={newsRightBottom2.image}
-                      alt={newsRightBottom2.title}
-                    />
-                  </Link>
-                  <div className="flex items-center space-x-1.5 text-xs text-[#575757] font-sans">
-                    <span className="text-[#002b5c] font-bold text-sm leading-none">•</span>
-                    <span className="font-serif italic text-[13px] text-[#575757]">
-                      {newsRightBottom2.tag || newsRightBottom2.category}
-                    </span>
-                  </div>
-                  <Link href={getBlogUrl(newsRightBottom2)}>
-                    <h4 className="font-oswald text-[15px] sm:text-[17px] font-medium tracking-wide text-[#0a0a0a] group-hover:text-[#f7413e] transition-colors leading-tight mt-1 mb-2 line-clamp-2">
-                      {newsRightBottom2.title}
-                    </h4>
-                  </Link>
-                </div>
-                <Link
-                  href={getBlogUrl(newsRightBottom2)}
-                  className="mt-auto inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3 py-1.5 rounded transition-all shadow-xs w-fit"
+            {/* Bottom Grid: 2 Matched Framed Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1">
+              {[newsRightBottom, newsRightBottom2].map((art, cardIdx) => (
+                <article
+                  key={`${art.slug}-${cardIdx}`}
+                  className="group bg-white dark:bg-[#1a1a1a] border border-[#211d1d]/15 dark:border-white/15 rounded-xs p-3 shadow-2xs flex flex-col justify-between h-full"
                 >
-                  <span>Read more</span>
-                  <ArrowRight className="w-3 h-3" />
-                </Link>
-              </div>
+                  <div className="flex-1 flex flex-col">
+                    <Link
+                      href={getBlogUrl(art)}
+                      className="block overflow-hidden relative aspect-[3/2] mb-2.5 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                    >
+                      <AmbientImage
+                        src={art.image}
+                        alt={art.title}
+                        sizes="(max-width: 640px) 100vw, 260px"
+                      >
+                        <span className="absolute top-1.5 left-1.5 z-20 bg-black/80 text-white text-[9px] font-mono font-bold uppercase px-1.5 py-0.5 rounded-xs pointer-events-none">
+                          {art.tag || art.category}
+                        </span>
+                        {art.readTime && (
+                          <span className="absolute bottom-1.5 right-1.5 z-20 bg-black/80 text-white text-[9px] font-mono px-1.5 py-0.5 rounded-xs pointer-events-none">
+                            {art.readTime}
+                          </span>
+                        )}
+                      </AmbientImage>
+                    </Link>
+
+                    <Link href={getBlogUrl(art)}>
+                      <h4 className="font-serif text-[15px] sm:text-base font-bold text-[#0a0a0a] dark:text-white group-hover:text-[#f7413e] transition-colors leading-snug mb-1.5 line-clamp-2">
+                        {art.title}
+                      </h4>
+                    </Link>
+
+                    <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-2 mb-2.5">
+                      {getPlainExcerpt(art)}
+                    </p>
+                  </div>
+
+                  <div className="mt-auto pt-2 border-t border-[#211d1d]/10 dark:border-white/10 flex items-center justify-between gap-2">
+                    <span className="text-[10.5px] font-mono text-[#575757] dark:text-gray-400 truncate">
+                      {art.date}
+                    </span>
+                    <Link
+                      href={getBlogUrl(art)}
+                      className="shrink-0 inline-flex items-center space-x-1 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-all shadow-2xs"
+                    >
+                      <span>Read more</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
@@ -376,7 +409,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#fefdf3] border border-[#211d1d]/20 p-6 sm:p-8 relative">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-[#fefdf3] dark:bg-[#181818] border border-[#211d1d]/20 dark:border-white/15 p-6 sm:p-8 relative">
           {/* Left: Large Image (5 cols) */}
           <Link
             href={getBlogUrl(currentBestArticle)}
@@ -395,20 +428,20 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
                 {currentBestArticle.tag}
               </span>
               <Link href={getBlogUrl(currentBestArticle)}>
-                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] hover:text-[#f7413e] transition-colors leading-tight mt-2 mb-3">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-white hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors leading-tight mt-2 mb-3">
                   {currentBestArticle.title}
                 </h3>
               </Link>
-              <p className="font-sans text-xs sm:text-sm text-[#575757] leading-relaxed mb-6 max-w-xl">
-                {currentBestArticle.excerpt}
+              <p className="font-sans text-xs sm:text-sm text-[#575757] dark:text-gray-300 leading-relaxed mb-6 max-w-xl">
+                {getPlainExcerpt(currentBestArticle)}
               </p>
               <div className="flex items-center justify-between mt-4">
-                <div className="text-xs font-serif italic text-[#575757]">
+                <div className="text-xs font-serif italic text-[#575757] dark:text-gray-400">
                   {currentBestArticle.date}
                 </div>
                 <Link
                   href={getBlogUrl(currentBestArticle)}
-                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-black dark:text-white dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
+                  className="inline-flex items-center space-x-1.5 bg-black text-white dark:bg-white dark:text-black dark:border dark:border-white/20 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] dark:hover:text-white text-[11px] font-bold uppercase tracking-wider px-3.5 py-1.5 rounded transition-all shadow-xs"
                 >
                   <span>Read Story</span>
                   <ArrowRight className="w-3 h-3" />
@@ -417,14 +450,14 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
             </div>
 
             {/* Navigation Arrows */}
-            <div className="flex items-center justify-end space-x-2 mt-6 pt-4 border-t border-[#211d1d]/10">
+            <div className="flex items-center justify-end space-x-2 mt-6 pt-4 border-t border-[#211d1d]/10 dark:border-white/10">
               <button
                 onClick={() =>
                   setCarouselIndex((prev) =>
                     prev === 0 ? bestThisMonthArticles.length - 1 : prev - 1
                   )
                 }
-                className="w-8 h-8 bg-[#211d1d] hover:bg-[#f7413e] text-[#fefdf3] flex items-center justify-center rounded-none transition-colors"
+                className="w-8 h-8 bg-[#211d1d] dark:bg-white/10 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[#fefdf3] dark:text-white flex items-center justify-center rounded-none transition-colors"
                 aria-label="Previous article"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -435,7 +468,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
                     prev === bestThisMonthArticles.length - 1 ? 0 : prev + 1
                   )
                 }
-                className="w-8 h-8 bg-[#211d1d] hover:bg-[#f7413e] text-[#fefdf3] flex items-center justify-center rounded-none transition-colors"
+                className="w-8 h-8 bg-[#211d1d] dark:bg-white/10 hover:bg-[#f7413e] dark:hover:bg-[#f7413e] text-[#fefdf3] dark:text-white flex items-center justify-center rounded-none transition-colors"
                 aria-label="Next article"
               >
                 <ChevronRight className="w-4 h-4" />
@@ -594,7 +627,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     </h4>
                   </Link>
                   <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
-                    {art.excerpt}
+                    {getPlainExcerpt(art)}
                   </p>
                 </div>
               </div>
@@ -643,7 +676,7 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                       </h4>
                     </Link>
                     <p className="font-sans text-[11px] sm:text-xs text-[#575757] dark:text-gray-300 line-clamp-1">
-                      {art.excerpt}
+                      {getPlainExcerpt(art)}
                     </p>
                   </div>
                 </div>
@@ -707,14 +740,14 @@ function CategorySection({ cat, articles }: { cat: any; articles: Article[] }) {
                     </h3>
                   </Link>
                   <p className="font-sans text-xs text-[#575757] dark:text-gray-300 leading-relaxed line-clamp-3">
-                    {leadOpinion.excerpt}
+                    {getPlainExcerpt(leadOpinion)}
                   </p>
                 </div>
               </div>
 
               {/* Author & Pullquote Card */}
               <div className="bg-white dark:bg-[#1c2230] border-l-2 border-[#f7413e] p-3 mt-3 text-xs italic font-serif text-[#211d1d] dark:text-gray-200">
-                “{leadOpinion.excerpt ? leadOpinion.excerpt.slice(0, 140) + '...' : 'Thought leadership and strategic analysis from leaders shaping global enterprise.'}”
+                “{getPlainExcerpt(leadOpinion).slice(0, 140) ? getPlainExcerpt(leadOpinion).slice(0, 140) + '...' : 'Thought leadership and strategic analysis from leaders shaping global enterprise.'}”
               </div>
             </div>
 

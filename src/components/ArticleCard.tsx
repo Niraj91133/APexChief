@@ -5,6 +5,7 @@ import AmbientImage from '@/components/AmbientImage';
 import { Article } from '@/types';
 import { Clock, ArrowUpRight } from 'lucide-react';
 import { getBlogUrl } from '@/lib/blogUrl';
+import { getCleanPlainExcerpt } from '@/lib/linkify';
 
 interface ArticleCardProps {
   article: Article;
@@ -57,7 +58,7 @@ export default function ArticleCard({
 
         {showExcerpt && (
           <p className="font-sans text-gray-700 dark:text-gray-300 text-sm sm:text-base leading-relaxed line-clamp-3 mb-4">
-            {article.excerpt}
+            {getCleanPlainExcerpt(null, article.excerpt, article.content || article.paragraphs?.[0])}
           </p>
         )}
 
@@ -105,7 +106,7 @@ export default function ArticleCard({
 
             {showExcerpt && (
               <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 mt-1.5 line-clamp-2">
-                {article.excerpt}
+                {getCleanPlainExcerpt(null, article.excerpt, article.content || article.paragraphs?.[0])}
               </p>
             )}
           </div>
@@ -195,7 +196,7 @@ export default function ArticleCard({
 
         {showExcerpt && (
           <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-2 mb-4">
-            {article.excerpt}
+            {getCleanPlainExcerpt(null, article.excerpt, article.content || article.paragraphs?.[0])}
           </p>
         )}
 
@@ -242,7 +243,7 @@ export default function ArticleCard({
 
       {showExcerpt && (
         <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed line-clamp-2 mb-3">
-          {article.excerpt}
+          {getCleanPlainExcerpt(null, article.excerpt, article.content || article.paragraphs?.[0])}
         </p>
       )}
 

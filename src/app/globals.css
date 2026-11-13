@@ -118,6 +118,20 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
   color: #ffffff !important;
 }
 
+/* Preserve readable dark headings inside intentional light cards (e.g. CMS admin panels) */
+.dark .bg-white:not([class*="dark:bg-"]) h1,
+.dark .bg-white:not([class*="dark:bg-"]) h2,
+.dark .bg-white:not([class*="dark:bg-"]) h3,
+.dark .bg-white:not([class*="dark:bg-"]) h4,
+.dark .bg-white:not([class*="dark:bg-"]) h5,
+.dark .bg-white:not([class*="dark:bg-"]) h6,
+.dark .bg-gray-50:not([class*="dark:bg-"]) h1,
+.dark .bg-gray-50:not([class*="dark:bg-"]) h2,
+.dark .bg-gray-50:not([class*="dark:bg-"]) h3,
+.dark .bg-gray-50:not([class*="dark:bg-"]) h4 {
+  color: #111827 !important;
+}
+
 .dark [class*="bg-[#faf8f2]"],
 .dark [class*="bg-[#fefdf3]"] {
   background-color: #1a1a1a !important;
@@ -128,6 +142,24 @@ html:not(.dark) [class*="divide-[#211d1d]"] > :not([hidden]) ~ :not([hidden]) {
 .dark [class*="bg-[#eff0e0]"]\/40,
 .dark [class*="bg-[#eff0e0]"]\/60 {
   background-color: #242424 !important;
+}
+
+.dark [class*="text-[#211d1d]"]:not([class*="dark:text-"]),
+.dark [class*="text-[#0a0a0a]"]:not([class*="dark:text-"]) {
+  color: #f3f4f6 !important;
+}
+
+.dark [class*="text-[#575757]"]:not([class*="dark:text-"]) {
+  color: #cbd5e1 !important;
+}
+
+.dark .bg-white:not([class*="dark:bg-"]) [class*="text-[#211d1d]"]:not([class*="dark:text-"]),
+.dark .bg-white:not([class*="dark:bg-"]) [class*="text-[#0a0a0a]"]:not([class*="dark:text-"]) {
+  color: #111827 !important;
+}
+
+.dark .bg-white:not([class*="dark:bg-"]) [class*="text-[#575757]"]:not([class*="dark:text-"]) {
+  color: #4b5563 !important;
 }
 
 .dark [class*="border-[#211d1d]"] {
@@ -401,40 +433,48 @@ img.rounded-full,
 /* ========================================================================= */
 .article-rich-content {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  line-height: 1.48 !important;
+  text-align: left !important;
 }
 
 .article-rich-content p {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  margin-bottom: 1.5rem !important;
-  line-height: 1.85 !important;
-  font-size: 1.0625rem !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.7rem !important;
+  line-height: 1.48 !important;
+  font-size: 0.985rem !important;
+  text-align: left !important;
 }
 
 .article-rich-content h2 {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-weight: 700 !important;
-  font-size: 1.65rem !important;
-  margin-top: 2.25rem !important;
-  margin-bottom: 1rem !important;
-  letter-spacing: -0.02em !important;
-  line-height: 1.3 !important;
+  font-size: 1.35rem !important;
+  margin-top: 1.3rem !important;
+  margin-bottom: 0.5rem !important;
+  letter-spacing: -0.015em !important;
+  line-height: 1.25 !important;
+  text-align: left !important;
 }
 
 .article-rich-content h3 {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   font-weight: 700 !important;
-  font-size: 1.35rem !important;
-  margin-top: 1.75rem !important;
-  margin-bottom: 0.75rem !important;
-  letter-spacing: -0.015em !important;
-  line-height: 1.35 !important;
+  font-size: 1.15rem !important;
+  margin-top: 1.05rem !important;
+  margin-bottom: 0.4rem !important;
+  letter-spacing: -0.01em !important;
+  line-height: 1.3 !important;
+  text-align: left !important;
 }
 
 .article-rich-content ul,
 .article-rich-content ol {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  margin-bottom: 1.5rem !important;
-  padding-left: 1.75rem !important;
+  margin-top: 0.25rem !important;
+  margin-bottom: 0.75rem !important;
+  padding-left: 1.5rem !important;
+  text-align: left !important;
 }
 
 .article-rich-content ul {
@@ -447,14 +487,14 @@ img.rounded-full,
 
 .article-rich-content li {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  margin-bottom: 0.5rem !important;
-  line-height: 1.75 !important;
+  margin-bottom: 0.28rem !important;
+  line-height: 1.45 !important;
 }
 
 .article-rich-content table {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   width: 100% !important;
-  margin: 1.75rem 0 !important;
+  margin: 1rem 0 !important;
   border-collapse: collapse !important;
   font-size: 0.9375rem !important;
 }
@@ -462,8 +502,9 @@ img.rounded-full,
 .article-rich-content th,
 .article-rich-content td {
   border: 1px solid rgba(0, 0, 0, 0.12) !important;
-  padding: 0.75rem 1rem !important;
+  padding: 0.55rem 0.75rem !important;
   text-align: left !important;
+  line-height: 1.4 !important;
 }
 
 .dark .article-rich-content th,
@@ -474,9 +515,10 @@ img.rounded-full,
 .article-rich-content blockquote {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   border-left: 3px solid #f7413e !important;
-  padding-left: 1.25rem !important;
-  margin: 1.5rem 0 !important;
+  padding-left: 1rem !important;
+  margin: 0.85rem 0 !important;
   font-style: italic !important;
+  line-height: 1.48 !important;
 }
 
 [itemprop="articleBody"],
@@ -487,6 +529,82 @@ img.rounded-full,
 [itemprop="articleBody"] span,
 [itemprop="articleBody"] .drop-cap {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+}
+
+[itemprop="articleBody"] p,
+[itemprop="articleBody"] li {
+  line-height: 1.48 !important;
+}
+
+.article-rich-content p span,
+.article-rich-content li span {
+  line-height: inherit !important;
+}
+
+.dark .article-rich-content,
+.dark [itemprop="articleBody"],
+.dark .article-rich-content p,
+.dark .article-rich-content li,
+.dark .article-rich-content td,
+.dark .article-rich-content blockquote,
+.dark .article-rich-content div:not([class*="bg-"]),
+.dark .article-rich-content span:not(a span),
+.dark .article-rich-content font,
+.dark [itemprop="articleBody"] p,
+.dark [itemprop="articleBody"] li,
+.dark [itemprop="articleBody"] span:not(a span) {
+  color: #e5e7eb !important;
+}
+
+.dark .article-rich-content mark,
+.dark .article-rich-content span[style*="background-color: rgb(254"],
+.dark .article-rich-content span[style*="background-color: rgb(255, 255"],
+.dark .article-rich-content span[style*="background-color: #ff"],
+.dark .article-rich-content span[style*="background-color:#ff"] {
+  color: #111827 !important;
+}
+
+.dark .article-rich-content h1,
+.dark .article-rich-content h2,
+.dark .article-rich-content h3,
+.dark .article-rich-content h4,
+.dark .article-rich-content h5,
+.dark .article-rich-content h6,
+.dark .article-rich-content strong,
+.dark .article-rich-content b,
+.dark .article-rich-content th {
+  color: #ffffff !important;
+}
+
+.dark .article-rich-content a,
+.dark .article-rich-content a span,
+.dark [itemprop="articleBody"] a,
+.dark [itemprop="articleBody"] a span {
+  color: #60a5fa !important;
+}
+
+.dark .article-rich-content #toc,
+.dark .article-rich-content [style*="background-color: #fff"],
+.dark .article-rich-content [style*="background-color:#fff"],
+.dark .article-rich-content [style*="background-color: rgb(255, 255, 255)"],
+.dark .article-rich-content [style*="background-color:rgb(255,255,255)"],
+.dark .article-rich-content [style*="background-color: white"] {
+  background-color: #18181b !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: #e5e7eb !important;
+}
+
+.dark .article-rich-content #toc p,
+.dark .article-rich-content #toc li,
+.dark .article-rich-content #toc span,
+.dark .article-rich-content #toc strong,
+.dark .article-rich-content #toc h2,
+.dark .article-rich-content #toc h3 {
+  color: #f3f4f6 !important;
+}
+
+.dark .article-rich-content #toc a {
+  color: #93c5fd !important;
 }
 
 header h1[itemprop="headline"],

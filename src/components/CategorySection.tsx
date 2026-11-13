@@ -24,21 +24,21 @@ export default function CategorySection({
   if (!articles || articles.length === 0) return null;
 
   return (
-    <section className="w-full my-12 pt-8 border-t-2 border-[#211d1d]">
+    <section className="w-full my-12 pt-8 border-t-2 border-[#211d1d] dark:border-white/30">
       {/* Section Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-[#211d1d]/20 gap-2">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-[#211d1d]/20 dark:border-white/15 gap-2">
         <div>
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 bg-[#f7413e]"></span>
-            <span className="text-[11px] font-mono uppercase tracking-widest text-[#575757]">
+            <span className="text-[11px] font-mono uppercase tracking-widest text-[#575757] dark:text-gray-400">
               Section Report
             </span>
           </div>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] tracking-tight mt-0.5">
+          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#0a0a0a] dark:text-white tracking-tight mt-0.5">
             {title}
           </h2>
           {description && (
-            <p className="text-xs sm:text-sm text-[#575757] mt-1 max-w-xl font-sans">
+            <p className="text-xs sm:text-sm text-[#575757] dark:text-gray-300 mt-1 max-w-xl font-sans">
               {description}
             </p>
           )}
@@ -46,7 +46,7 @@ export default function CategorySection({
 
         <Link
           href={`/category/${categorySlug}`}
-          className="inline-flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-[#211d1d] hover:text-[#f7413e] transition-colors py-1 group flex-shrink-0"
+          className="inline-flex items-center space-x-1.5 text-xs font-bold uppercase tracking-wider text-[#211d1d] dark:text-gray-200 hover:text-[#f7413e] dark:hover:text-[#f7413e] transition-colors py-1 group flex-shrink-0"
         >
           <span>See All {categoryName}</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
@@ -85,8 +85,8 @@ export default function CategorySection({
               <ArticleCard key={art.slug} article={art} variant="standard" />
             ))}
           </div>
-          <div className="lg:col-span-4 bg-[#eff0e0] border border-[#211d1d]/15 p-4 divide-y divide-[#211d1d]/10">
-            <h3 className="font-oswald text-xs font-bold uppercase tracking-widest text-[#0a0a0a] pb-2">
+          <div className="lg:col-span-4 bg-[#eff0e0] dark:bg-[#181818] border border-[#211d1d]/15 dark:border-white/15 p-4 divide-y divide-[#211d1d]/10 dark:divide-white/10">
+            <h3 className="font-oswald text-xs font-bold uppercase tracking-widest text-[#0a0a0a] dark:text-white pb-2">
               In Brief
             </h3>
             {articles.slice(2, 6).map((art) => (
