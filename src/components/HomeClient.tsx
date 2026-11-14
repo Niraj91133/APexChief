@@ -229,7 +229,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
               <div className="flex-1 flex flex-col">
                 <Link
                   href={getBlogUrl(newsMain)}
-                  className="block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] mb-3 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
+                  className="block overflow-hidden relative w-full aspect-[3/2] mb-3 rounded-xs border border-[#211d1d]/10 dark:border-white/10"
                 >
                   <AmbientImage
                     src={newsMain.image}
@@ -437,7 +437,7 @@ export default function HomeClient({ initialArticles, initialCategories }: HomeC
           {/* Left: Large Image (5 cols) */}
           <Link
             href={getBlogUrl(currentBestArticle)}
-            className="lg:col-span-5 block overflow-hidden relative w-full aspect-[3/2] max-h-[300px] rounded-xs"
+            className="lg:col-span-5 block overflow-hidden relative w-full aspect-[3/2] rounded-xs"
           >
             <AmbientImage
               src={currentBestArticle.image}

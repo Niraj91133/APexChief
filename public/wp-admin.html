@@ -9239,7 +9239,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         container.innerHTML = `
           <div class="relative group text-left">
             <div class="w-full aspect-[3/2] overflow-hidden rounded shadow mb-2 border border-gray-200 bg-gray-100">
-              <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-full object-cover" />
+              <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-full object-contain" />
             </div>
             <div class="text-[11px] text-gray-500 truncate mb-1">
               <strong>Alt:</strong> <span class="italic">${altText}</span>
@@ -10852,6 +10852,12 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       return html;
     }
 
+    function buildPreviewFeaturedHeroHtml(imgUrl) {
+      const safeImg = String(imgUrl || '').replace(/"/g, '&quot;');
+      const onLoadScript = "var w=this.naturalWidth,h=this.naturalHeight;if(w&&h){var r=w/h;if(r>=1.25&&Math.abs(r-1.5)>0.06){this.parentElement.style.aspectRatio=w+' / '+h;}else if(r<1.25){this.classList.remove('object-cover');this.classList.add('object-contain');}}";
+      return `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-gray-100" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="${onLoadScript}" class="block w-full h-full object-cover" /></div></div>`;
+    }
+
     function previewPostById(id) {
       const p = posts.find(item => item.id === id || item.slug === id);
       if (!p) return;
@@ -10874,8 +10880,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         previewHtml += `<p class="font-serif italic text-sm sm:text-base text-gray-600 leading-[1.45] border-l-4 border-[#002b5c] pl-3 mb-4 text-left">${excerptHtml}</p>`;
       }
       if (p.featuredImage && p.showFeaturedImage !== 'No' && p.showFeaturedImage !== false) {
-        const safeImg = String(p.featuredImage).replace(/"/g, '&quot;');
-        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-gray-100" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
+        previewHtml += buildPreviewFeaturedHeroHtml(p.featuredImage);
       }
       previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
         contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'
@@ -10917,8 +10922,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         previewHtml += `<p class="font-serif italic text-sm sm:text-base text-gray-600 leading-[1.45] border-l-4 border-[#002b5c] pl-3 mb-4 text-left">${excerptHtml}</p>`;
       }
       if (showImg && typeof currentFeaturedImage === 'string' && currentFeaturedImage) {
-        const safeImg = currentFeaturedImage.replace(/"/g, '&quot;');
-        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-gray-100" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
+        previewHtml += buildPreviewFeaturedHeroHtml(currentFeaturedImage);
       }
       previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
         contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'

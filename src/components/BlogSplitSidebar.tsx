@@ -91,7 +91,7 @@ export default function BlogSplitSidebar({
               href={getBlogUrl(item)}
               className="group flex items-start gap-3 py-3.5 transition-colors"
             >
-              <div className="w-[86px] h-[62px] shrink-0 relative overflow-hidden rounded-[2px] border border-[#211d1d]/10 dark:border-white/10 bg-[#f1f5f9] dark:bg-[#222]">
+              <div className="w-[90px] aspect-[3/2] shrink-0 relative overflow-hidden rounded-[2px] border border-[#211d1d]/10 dark:border-white/10 bg-[#f1f5f9] dark:bg-[#222]">
                 <AmbientImage
                   src={cleanImg}
                   alt={item.title}

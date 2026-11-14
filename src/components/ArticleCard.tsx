@@ -81,7 +81,7 @@ export default function ArticleCard({
   if (variant === 'horizontal') {
     return (
       <article className="group flex flex-col sm:flex-row gap-4 p-4 border-b border-gray-200 dark:border-white/15 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-        <Link href={articleUrl} className="relative w-full sm:w-48 sm:h-36 aspect-[3/2] sm:aspect-auto flex-shrink-0 overflow-hidden rounded-xs">
+        <Link href={articleUrl} className="relative w-full sm:w-48 aspect-[3/2] flex-shrink-0 overflow-hidden rounded-xs">
           <AmbientImage
             src={article.image}
             alt={article.title}

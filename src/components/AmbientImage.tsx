@@ -74,21 +74,21 @@ export default function AmbientImage({
   const hasExplicitPosition = /\bobject-(top|bottom|left|right|center|\[)/.test(className);
   const defaultFocusClass = !hasExplicitPosition && isPortrait ? 'object-[center_18%]' : 'object-center';
 
-  // Compute smart bounded frame dimensions when aspect or pixel resolution differs strongly
+  // Render full-uncut contain + ambient backdrop whenever image aspect differs meaningfully from container (>8%)
+  // so 3:2 (1200x800) images fill 100% edge-to-edge while 16:9 / 4:3 / portrait banners never get text or faces sliced.
   let innerStyle: React.CSSProperties | null = null;
   let useBackdrop = false;
+  let useFullContain = fit === 'contain';
 
-  if (
-    fit === 'contain'
-  ) {
+  if (fit === 'contain') {
     useBackdrop = true;
   } else if (
     fit === 'smart' &&
     naturalSize &&
     naturalSize.w > 0 &&
     naturalSize.h > 0 &&
-    boxSize.w > 120 &&
-    boxSize.h > 80
+    boxSize.w > 48 &&
+    boxSize.h > 32
   ) {
     const bRatio = boxSize.w / boxSize.h;
     const nRatio = naturalSize.w / naturalSize.h;
@@ -100,7 +100,6 @@ export default function AmbientImage({
     const isTinyHeight = naturalSize.h * maxPixelUpscale < boxSize.h * 0.92;
 
     if (isTinyWidth && isTinyHeight) {
-      // Zoom small upload nicely toward empty space, capped so it never turns blurry
       const cappedW = Math.min(boxSize.w, Math.round(naturalSize.w * maxPixelUpscale));
       const cappedH = Math.min(boxSize.h, Math.round(naturalSize.h * maxPixelUpscale));
       innerStyle = {
@@ -110,28 +109,9 @@ export default function AmbientImage({
         maxHeight: '100%',
       };
       useBackdrop = true;
-    } else if (aspectDiff > maxZoomRatio) {
-      // Bound zoom factor so portraits in landscape boxes expand meaningfully without chopping faces
-      const zoomBoost = Math.min(maxZoomRatio, 1.52);
-      if (nRatio < bRatio) {
-        const pct = Math.min(100, (nRatio / bRatio) * 100 * zoomBoost);
-        if (pct < 94) {
-          innerStyle = {
-            width: `${pct.toFixed(2)}%`,
-            height: '100%',
-          };
-          useBackdrop = true;
-        }
-      } else {
-        const pct = Math.min(100, (bRatio / nRatio) * 100 * zoomBoost);
-        if (pct < 94) {
-          innerStyle = {
-            width: '100%',
-            height: `${pct.toFixed(2)}%`,
-          };
-          useBackdrop = true;
-        }
-      }
+    } else if (aspectDiff > 1.08) {
+      useFullContain = true;
+      useBackdrop = true;
     }
   }
 
@@ -148,14 +128,13 @@ export default function AmbientImage({
             src={displaySrc}
             alt=""
             aria-hidden="true"
-            className="ambient-bg absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-80 dark:opacity-60 saturate-110 pointer-events-none select-none"
+            className="ambient-bg absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-85 dark:opacity-65 saturate-110 pointer-events-none select-none"
           />
-          <div className="absolute inset-0 bg-black/15 dark:bg-black/40 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/10 dark:bg-black/30 pointer-events-none" />
         </>
       )}
 
-      {fit === 'contain' ? (
+      {useFullContain ? (
         <div className="relative z-10 w-full h-full">
           <Image
             src={displaySrc}
@@ -171,7 +150,7 @@ export default function AmbientImage({
               }
             }}
             onError={() => setHasError(true)}
-            className={`object-contain ${defaultFocusClass} drop-shadow-[0_12px_30px_rgba(0,0,0,0.3)] ${className}`}
+            className={`object-contain ${defaultFocusClass} ${className}`}
           />
         </div>
       ) : innerStyle ? (

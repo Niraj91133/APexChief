@@ -664,7 +664,7 @@ export default function HeroSection3Grid({
                       <div className="w-8 h-8 rounded-xs bg-[#211d1d] dark:bg-white text-white dark:text-black flex items-center justify-center font-oswald text-xs font-bold shrink-0 group-hover/modal-item:bg-[#f7413e] group-hover/modal-item:text-white transition-colors">
                         {String(idx + 1).padStart(2, '0')}
                       </div>
-                      <div className="relative w-16 h-12 rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10 hidden sm:block">
+                      <div className="relative w-20 aspect-[3/2] rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10 hidden sm:block">
                         <AmbientImage src={art.image} alt={art.title} sizes="80px" />
                       </div>
                       <div className="min-w-0">
@@ -786,7 +786,7 @@ export default function HeroSection3Grid({
                       className="p-3.5 bg-white dark:bg-[#202020] border border-[#211d1d]/15 dark:border-white/10 hover:border-[#f7413e] transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group/modal-item shadow-2xs rounded-xs"
                     >
                       <div className="flex items-start space-x-3.5 min-w-0">
-                        <div className="relative w-16 h-14 rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10">
+                        <div className="relative w-20 aspect-[3/2] rounded-xs overflow-hidden shrink-0 border border-gray-200 dark:border-white/10">
                           <AmbientImage src={art.image} alt={art.title} sizes="80px" />
                         </div>
                         <div className="min-w-0">
