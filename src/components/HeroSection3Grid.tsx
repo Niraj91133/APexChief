@@ -491,7 +491,7 @@ export default function HeroSection3Grid({
               {/* Full-Width Top Image Box */}
               <Link
                 href={getBlogUrl(activeInterview)}
-                className="relative block w-full aspect-[16/10] overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10 group/img mb-2.5"
+                className="relative block w-full aspect-[3/2] overflow-hidden rounded-xs border border-[#211d1d]/10 dark:border-white/10 group/img mb-2.5"
               >
                 <AmbientImage
                   src={activeInterview.image}

@@ -451,7 +451,7 @@ const calculateLiveSeoAudit = (
   });
 
   const totalScore = Math.min(100, Math.round(items.reduce((acc, curr) => acc + curr.score, 0)));
-  
+
   let label: 'EXCELLENT' | 'GOOD' | 'NEEDS WORK' | 'POOR' = 'POOR';
   let color = 'text-rose-600 bg-rose-50 border-rose-200';
   if (totalScore >= 85) {
@@ -658,6 +658,9 @@ export default function AdminDashboard() {
   const [testedImageUrl, setTestedImageUrl] = useState<string | null>(null);
   const mediaModalFileInputRef = useRef<HTMLInputElement>(null);
   const [uploadDragActive, setUploadDragActive] = useState(false);
+  const [uploadAspectPreset, setUploadAspectPreset] = useState<
+    '1200x800' | '1200x675' | '1200x900' | '1080x1080' | '800x1200' | 'original'
+  >('1200x800');
   const [uploadedMediaHistory, setUploadedMediaHistory] = useState<string[]>([]);
 
   // Gemini AI SEO Assistant State
@@ -741,7 +744,7 @@ export default function AdminDashboard() {
     const snapContent = customContent !== undefined ? customContent : (editorRef.current?.innerHTML || editingArticle.content || '');
     const snapTitle = customTitle !== undefined ? customTitle : (editingArticle.title || 'Untitled Draft');
     const snapExcerpt = customExcerpt !== undefined ? customExcerpt : (editingArticle.excerpt || '');
-    
+
     const timeStr = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     const words = snapContent.replace(/<[^>]*>?/gm, ' ').trim().split(/\s+/).filter(Boolean).length;
 
@@ -760,7 +763,7 @@ export default function AdminDashboard() {
 
   const restoreVersion = (version: StoryVersion) => {
     recordHistorySnapshot(`Backup before restoring ${version.label}`);
-    
+
     setEditingArticle((prev) => ({
       ...prev,
       title: version.title,
@@ -815,10 +818,10 @@ export default function AdminDashboard() {
           summary: action === 'generate-draft'
             ? 'AI generated a comprehensive editorial story draft.'
             : action === 'continue-writing'
-            ? 'AI generated the next continuous paragraphs.'
-            : action === 'key-takeaways'
-            ? 'AI generated a Key Takeaways highlight box.'
-            : 'AI polished the prose to Financial Times standard.',
+              ? 'AI generated the next continuous paragraphs.'
+              : action === 'key-takeaways'
+                ? 'AI generated a Key Takeaways highlight box.'
+                : 'AI polished the prose to Financial Times standard.',
         });
         showToast('AI suggestion ready for review! Click Accept to apply or Discard to cancel.', 'success');
       } else {
@@ -833,7 +836,7 @@ export default function AdminDashboard() {
 
   const acceptAiSuggestion = (mode: 'replace' | 'append' = 'replace') => {
     if (!aiSuggestion || !editorRef.current) return;
-    
+
     // Save history snapshot before applying AI change!
     recordHistorySnapshot(`Before AI ${aiSuggestion.action}`);
 
@@ -851,7 +854,7 @@ export default function AdminDashboard() {
 
     syncEditorToState();
     recordHistorySnapshot(`After AI ${aiSuggestion.action}`);
-    
+
     setAiSuggestion(null);
     showToast('✨ AI suggestion applied to Story Canvas!', 'success');
   };
@@ -861,14 +864,26 @@ export default function AdminDashboard() {
     showToast('AI suggestion discarded. Original content preserved.', 'info');
   };
 
-  // Helper to compress/optimize image client-side to prevent 413 Payload Too Large
-  const compressImageForUpload = async (file: File): Promise<{ blob: Blob; base64: string; fileName: string }> => {
+  // Helper to resize/crop and optimize image client-side according to selected ratio preset (default 1200x800)
+  const compressImageForUpload = async (
+    file: File,
+    preset: '1200x800' | '1200x675' | '1200x900' | '1080x1080' | '800x1200' | 'original' = uploadAspectPreset
+  ): Promise<{ blob: Blob; base64: string; fileName: string }> => {
+    const presetMap: Record<string, [number, number]> = {
+      '1200x800': [1200, 800],
+      '1200x675': [1200, 675],
+      '1200x900': [1200, 900],
+      '1080x1080': [1080, 1080],
+      '800x1200': [800, 1200],
+    };
+    const targetDims = preset !== 'original' ? presetMap[preset] : null;
+
     return new Promise((resolve, reject) => {
       const cleanName = (file.name || `image-${Date.now()}.jpg`)
         .toLowerCase()
         .replace(/[^a-z0-9.-]/g, '-');
 
-      if (file.type === 'image/svg+xml' || file.size < 400 * 1024) {
+      if (file.type === 'image/svg+xml' || (!targetDims && file.size < 400 * 1024)) {
         const reader = new FileReader();
         reader.onload = () => {
           resolve({
@@ -889,9 +904,29 @@ export default function AdminDashboard() {
         URL.revokeObjectURL(objectUrl);
         let width = img.width;
         let height = img.height;
-        const maxDimension = 1920;
+        const maxDimension = 1200;
 
-        if (width > maxDimension || height > maxDimension) {
+        let sx = 0;
+        let sy = 0;
+        let sWidth = img.width;
+        let sHeight = img.height;
+
+        if (targetDims) {
+          const [tw, th] = targetDims;
+          const targetRatio = tw / th;
+          const srcRatio = img.width / img.height;
+          if (srcRatio > targetRatio) {
+            sHeight = img.height;
+            sWidth = Math.round(img.height * targetRatio);
+            sx = Math.round((img.width - sWidth) / 2);
+          } else {
+            sWidth = img.width;
+            sHeight = Math.round(img.width / targetRatio);
+            sy = Math.round((img.height - sHeight) / 2);
+          }
+          width = tw;
+          height = th;
+        } else if (width > maxDimension || height > maxDimension) {
           if (width > height) {
             height = Math.round((height * maxDimension) / width);
             width = maxDimension;
@@ -913,7 +948,7 @@ export default function AdminDashboard() {
           return;
         }
 
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, width, height);
         const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
         const quality = 0.88;
         const base64 = canvas.toDataURL(mimeType, quality);
@@ -976,7 +1011,7 @@ export default function AdminDashboard() {
     showToast(`Uploading ${mode === 'dark' ? 'Dark Mode' : 'Light Mode'} brand logo to ImageKit CDN...`, 'info');
 
     try {
-      const { blob, base64, fileName } = await compressImageForUpload(file);
+      const { blob, base64, fileName } = await compressImageForUpload(file, 'original');
       let uploadedUrl = '';
 
       // Direct ImageKit upload via auth
@@ -1049,13 +1084,13 @@ export default function AdminDashboard() {
             try {
               const bc = new BroadcastChannel('apexchief_config_channel');
               bc.postMessage({ type: 'LOGO_UPDATED', logoDark: uploadedUrl });
-            } catch (e) {}
+            } catch (e) { }
             fetch('/api/config', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...siteConfig, logoDark: uploadedUrl }),
             }).catch((e) => console.error('Failed to auto-sync dark logo:', e));
-          } catch (e) {}
+          } catch (e) { }
           showToast('✓ Dark Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
         } else {
           setSiteConfig((prev: any) => ({
@@ -1069,13 +1104,13 @@ export default function AdminDashboard() {
             try {
               const bc = new BroadcastChannel('apexchief_config_channel');
               bc.postMessage({ type: 'LOGO_UPDATED', logo: uploadedUrl, logoLight: uploadedUrl });
-            } catch (e) {}
+            } catch (e) { }
             fetch('/api/config', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ ...siteConfig, logo: uploadedUrl, logoLight: uploadedUrl }),
             }).catch((e) => console.error('Failed to auto-sync light logo:', e));
-          } catch (e) {}
+          } catch (e) { }
           showToast('✓ Light Mode Brand Logo uploaded & live! Click Save Settings to persist.', 'success');
         }
       } else {
@@ -1286,7 +1321,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Save current text selection inside editorRef
+  // Save & restore current text selection inside editorRef
   const saveSelection = () => {
     if (typeof window === 'undefined') return;
     const sel = window.getSelection();
@@ -1296,7 +1331,16 @@ export default function AdminDashboard() {
         if (editorRef.current.contains(r.commonAncestorContainer) || editorRef.current === r.commonAncestorContainer) {
           savedRangeRef.current = r.cloneRange();
         }
-      } catch (e) {}
+      } catch (e) { }
+    }
+  };
+
+  const restoreSelection = () => {
+    if (typeof window === 'undefined' || !savedRangeRef.current) return;
+    const sel = window.getSelection();
+    if (sel) {
+      sel.removeAllRanges();
+      sel.addRange(savedRangeRef.current);
     }
   };
 
@@ -1776,8 +1820,8 @@ export default function AdminDashboard() {
       avgScore,
       avgColor,
       status: avgScore >= 70 ? 'Optimal' : (avgScore >= 40 ? 'Moderate' : 'Low'),
-      advice: rawTags.length > 8 
-        ? `Anti-Spam Alert: Using ${rawTags.length} tags (>8 limit) dilutes SEO.` 
+      advice: rawTags.length > 8
+        ? `Anti-Spam Alert: Using ${rawTags.length} tags (>8 limit) dilutes SEO.`
         : (evaluated.some((e: any) => e.score < 40) ? 'Tags with red sticks are not found in article body.' : 'Anti-Spam Shield Active: Optimal density.')
     };
   }, [editingArticle.tag, editingArticle.title, editingArticle.content, editingArticle.focusKeyword]);
@@ -2103,7 +2147,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (res.ok) {
         showToast(isEditing ? 'Story updated successfully!' : 'Story published successfully!', 'success');
-        
+
         if (finalImage) {
           setUploadedMediaHistory((prev) => Array.from(new Set([finalImage, ...prev])));
         }
@@ -2213,7 +2257,7 @@ export default function AdminDashboard() {
             logoDark: siteConfig.logoDark,
             favicon: siteConfig.favicon,
           });
-        } catch (e) {}
+        } catch (e) { }
         showToast('Site settings updated successfully', 'success');
         fetchData();
       } else {
@@ -2345,21 +2389,19 @@ export default function AdminDashboard() {
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span>Change Format</span>
               </button>
-              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                activeLoginModal === 'format1'
+              <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${activeLoginModal === 'format1'
                   ? 'bg-[#f7413e]/20 text-[#f7413e] border border-[#f7413e]/40'
                   : 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
-              }`}>
+                }`}>
                 {activeLoginModal === 'format1' ? 'Format 1' : 'Format 2'}
               </span>
             </div>
 
             <div className="text-center space-y-1">
-              <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-2 border ${
-                activeLoginModal === 'format1'
+              <div className={`w-12 h-12 mx-auto rounded-xl flex items-center justify-center text-xl mb-2 border ${activeLoginModal === 'format1'
                   ? 'bg-[#f7413e]/10 text-[#f7413e] border-[#f7413e]/30'
                   : 'bg-sky-500/10 text-sky-400 border-sky-500/30'
-              }`}>
+                }`}>
                 <Lock className="w-5 h-5" />
               </div>
               <h2 className="text-xl font-bold text-white font-serif">
@@ -2428,11 +2470,10 @@ export default function AdminDashboard() {
               <button
                 type="submit"
                 disabled={isVerifyingAuth}
-                className={`w-full py-3 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center space-x-2 mt-2 ${
-                  activeLoginModal === 'format1'
+                className={`w-full py-3 text-white font-bold uppercase tracking-wider text-xs rounded-xl transition-all shadow-lg cursor-pointer flex items-center justify-center space-x-2 mt-2 ${activeLoginModal === 'format1'
                     ? 'bg-[#f7413e] hover:bg-[#d63431]'
                     : 'bg-sky-600 hover:bg-sky-500'
-                }`}
+                  }`}
               >
                 {isVerifyingAuth ? (
                   <>
@@ -2458,11 +2499,10 @@ export default function AdminDashboard() {
       {/* Toast Alert */}
       {toastMessage.text && (
         <div
-          className={`fixed top-4 right-4 z-[100] px-4 py-3 shadow-2xl text-xs font-mono uppercase font-bold border flex items-center space-x-2 animate-in slide-in-from-top duration-300 ${
-            toastMessage.type === 'success'
+          className={`fixed top-4 right-4 z-[100] px-4 py-3 shadow-2xl text-xs font-mono uppercase font-bold border flex items-center space-x-2 animate-in slide-in-from-top duration-300 ${toastMessage.type === 'success'
               ? 'bg-[#eff0e0] dark:bg-[#161c2e] border-[#211d1d]/30 dark:border-white/20 text-[#002b5c] dark:text-sky-400'
               : 'bg-[#faf8f2] dark:bg-[#161c2e] border-[#f7413e] text-[#f7413e]'
-          }`}
+            }`}
         >
           {toastMessage.type === 'success' && <Check className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />}
           {toastMessage.type === 'error' && <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />}
@@ -2536,7 +2576,7 @@ export default function AdminDashboard() {
       {/* Main Container */}
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          
+
           {/* Left Sidebar Menu */}
           {activeTab !== 'edit-post' && (
             <div className="lg:col-span-3 bg-[#f3f1e6] dark:bg-[#111625] border border-[#211d1d]/15 dark:border-white/10 p-4 flex lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 whitespace-nowrap scrollbar-none rounded-xs">
@@ -2546,11 +2586,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('overview')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
-                  activeTab === 'overview'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${activeTab === 'overview'
                     ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
                     : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
-                }`}
+                  }`}
               >
                 <Layout className="w-4 h-4" />
                 <span>Dashboard Overview</span>
@@ -2558,11 +2597,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('posts')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
-                  activeTab === 'posts'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${activeTab === 'posts'
                     ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
                     : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
-                }`}
+                  }`}
               >
                 <FileText className="w-4 h-4" />
                 <span>All Stories</span>
@@ -2578,11 +2616,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('sections')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
-                  activeTab === 'sections'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${activeTab === 'sections'
                     ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
                     : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
-                }`}
+                  }`}
               >
                 <Layers className="w-4 h-4" />
                 <span>Categories Manager</span>
@@ -2590,11 +2627,10 @@ export default function AdminDashboard() {
 
               <button
                 onClick={() => setActiveTab('settings')}
-                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${
-                  activeTab === 'settings'
+                className={`flex-shrink-0 w-auto lg:w-full text-left px-3 py-2 text-xs font-bold uppercase tracking-wider transition-colors flex items-center space-x-2 cursor-pointer rounded-xs ${activeTab === 'settings'
                     ? 'bg-[#211d1d] text-[#faf8f2] dark:bg-[#002b5c] dark:text-white'
                     : 'text-[#211d1d] dark:text-gray-300 hover:bg-[#211d1d]/5 dark:hover:bg-white/5'
-                }`}
+                  }`}
               >
                 <Settings className="w-4 h-4" />
                 <span>Website Settings</span>
@@ -3063,8 +3099,8 @@ export default function AdminDashboard() {
                           {(analyticsData?.categoryBreakdown && analyticsData.categoryBreakdown.length > 0
                             ? analyticsData.categoryBreakdown
                             : [
-                                { category: 'Business', views: 0, percentage: 0, color: '#002b5c' },
-                              ]
+                              { category: 'Business', views: 0, percentage: 0, color: '#002b5c' },
+                            ]
                           ).map((cat) => (
                             <div key={cat.category} className="space-y-1">
                               <div className="flex items-center justify-between text-xs">
@@ -3379,9 +3415,10 @@ export default function AdminDashboard() {
 
                     {/* 2-COLUMN STUDIO LAYOUT: LEFT = WRITING CANVAS, RIGHT = PUBLISH & PLACEMENT SETTINGS */}
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                      
+
                       {/* Scoped CSS for Story Canvas ensuring strict 14px size and internal scroll */}
-                      <style dangerouslySetInnerHTML={{ __html: `
+                      <style dangerouslySetInnerHTML={{
+                        __html: `
                         .admin-story-canvas {
                           font-size: 14px !important;
                           line-height: 1.65 !important;
@@ -3421,13 +3458,33 @@ export default function AdminDashboard() {
                           border-radius: 0 4px 4px 0;
                         }
                         .admin-story-canvas ul, .admin-story-canvas ol {
-                          padding-left: 1.25rem !important;
+                          padding-left: 1.65rem !important;
                           margin-bottom: 0.6rem !important;
                         }
+                        .admin-story-canvas ul {
+                          list-style-type: disc !important;
+                        }
+                        .admin-story-canvas ol {
+                          list-style-type: decimal !important;
+                        }
                         .admin-story-canvas li {
+                          display: list-item !important;
                           font-size: 14px !important;
                           line-height: 1.5 !important;
                           margin-bottom: 0.2rem !important;
+                        }
+                        .admin-story-canvas img[data-align="left"] {
+                          float: left !important;
+                          margin: 0.3rem 1rem 0.6rem 0 !important;
+                        }
+                        .admin-story-canvas img[data-align="right"] {
+                          float: right !important;
+                          margin: 0.3rem 0 0.6rem 1rem !important;
+                        }
+                        .admin-story-canvas img[data-align="center"] {
+                          display: block !important;
+                          margin: 0.7rem auto !important;
+                          float: none !important;
                         }
                       `}} />
 
@@ -3436,7 +3493,7 @@ export default function AdminDashboard() {
 
                         {/* THE EXPANSIVE WHITE WRITING PAPER CANVAS */}
                         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 sm:p-7 space-y-5 font-sans">
-                          
+
                           {/* Story Headline Title Input */}
                           <div>
                             <input
@@ -3464,7 +3521,7 @@ export default function AdminDashboard() {
                             {/* WordPress-Identical Editable Permalink Bar Under Title */}
                             <div className="flex items-center flex-wrap gap-2 text-xs font-mono text-gray-500 mt-2.5 p-2 bg-gray-50/90 border border-gray-200 rounded-md">
                               <span className="font-bold text-gray-800 text-[11px] font-sans">Permalink:</span>
-                              
+
                               {!isEditingSlug ? (
                                 <div className="flex items-center flex-wrap gap-2">
                                   <span className="text-gray-500 text-xs flex items-center gap-0.5">
@@ -3557,13 +3614,12 @@ export default function AdminDashboard() {
 
                                   {seoData && (
                                     <div className="flex items-center space-x-1.5 text-xs font-mono">
-                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                        seoData.overallScore >= 80 
-                                          ? 'bg-emerald-100 text-emerald-800' 
-                                          : seoData.overallScore >= 60 
-                                          ? 'bg-amber-100 text-amber-800' 
-                                          : 'bg-rose-100 text-rose-800'
-                                      }`}>
+                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${seoData.overallScore >= 80
+                                          ? 'bg-emerald-100 text-emerald-800'
+                                          : seoData.overallScore >= 60
+                                            ? 'bg-amber-100 text-amber-800'
+                                            : 'bg-rose-100 text-rose-800'
+                                        }`}>
                                         SEO Score: {seoData.overallScore}/100
                                       </span>
                                       <span className="text-gray-400 hidden sm:inline">•</span>
@@ -3586,7 +3642,7 @@ export default function AdminDashboard() {
                               {/* EXPANDABLE MINIMALIST GEMINI AI SEO CARD */}
                               {showSeoPanel && seoData && (
                                 <div className="mt-3 p-4 bg-gray-50/80 border border-gray-200 rounded-xl space-y-4 animate-in fade-in duration-200 text-xs">
-                                  
+
                                   {/* 1. Title Suggestions */}
                                   <div>
                                     <div className="flex items-center justify-between mb-2">
@@ -3952,7 +4008,7 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {/* Preview container */}
-                                <div 
+                                <div
                                   className="p-3.5 bg-white border border-blue-100 rounded-lg max-h-56 overflow-y-auto font-serif leading-relaxed text-gray-800 text-sm shadow-inner"
                                   dangerouslySetInnerHTML={{ __html: aiSuggestion.content }}
                                 />
@@ -4007,11 +4063,97 @@ export default function AdminDashboard() {
                               </div>
                             )}
 
+                            {/* Story Body Formatting, Bullets & Image Align/Resize Bar */}
+                            <div className="flex flex-wrap items-center justify-between gap-2 px-2.5 py-1.5 bg-[#f8fafc] border border-gray-200 rounded-lg text-[11px] font-sans">
+                              <div className="flex flex-wrap items-center gap-1">
+                                {[
+                                  { label: 'B', cmd: 'bold', title: 'Bold', extra: 'font-bold' },
+                                  { label: 'I', cmd: 'italic', title: 'Italic', extra: 'italic font-serif' },
+                                  { label: 'U', cmd: 'underline', title: 'Underline', extra: 'underline' },
+                                  { label: '• Bullets', cmd: 'insertUnorderedList', title: 'Bullet List', extra: 'font-semibold' },
+                                  { label: '1. Numbering', cmd: 'insertOrderedList', title: 'Numbered List', extra: 'font-semibold' },
+                                ].map((tool) => (
+                                  <button
+                                    key={tool.cmd}
+                                    type="button"
+                                    title={tool.title}
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      const ed = editorRef.current;
+                                      if (!ed) return;
+                                      ed.focus();
+                                      restoreSelection();
+                                      document.execCommand(tool.cmd, false);
+                                      saveSelection();
+                                      syncEditorToState();
+                                    }}
+                                    className={`px-2 py-1 rounded border border-gray-200 bg-white hover:bg-blue-50 hover:border-[#002b5c]/40 text-gray-800 cursor-pointer transition-colors ${tool.extra}`}
+                                  >
+                                    {tool.label}
+                                  </button>
+                                ))}
+                              </div>
+                              <div className="flex flex-wrap items-center gap-1">
+                                <span className="text-[10px] font-mono uppercase text-gray-400 mr-1">Image:</span>
+                                {(['left', 'center', 'right', 'full'] as const).map((al) => (
+                                  <button
+                                    key={al}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      const img = editorRef.current?.querySelector('img[data-selected="true"]') as HTMLImageElement | null;
+                                      if (!img) {
+                                        showToast('Click an image inside Story Canvas first to align/resize it', 'info');
+                                        return;
+                                      }
+                                      img.setAttribute('data-align', al);
+                                      if (al === 'full') img.style.width = '100%';
+                                      syncEditorToState();
+                                    }}
+                                    className="px-2 py-0.5 rounded border border-gray-200 bg-white hover:bg-blue-50 text-gray-700 capitalize cursor-pointer text-[10px] font-semibold"
+                                  >
+                                    {al}
+                                  </button>
+                                ))}
+                                {(['25%', '50%', '75%', '100%'] as const).map((w) => (
+                                  <button
+                                    key={w}
+                                    type="button"
+                                    onMouseDown={(e) => {
+                                      e.preventDefault();
+                                      const img = editorRef.current?.querySelector('img[data-selected="true"]') as HTMLImageElement | null;
+                                      if (!img) {
+                                        showToast('Click an image inside Story Canvas first to resize it', 'info');
+                                        return;
+                                      }
+                                      img.style.width = w;
+                                      img.style.height = 'auto';
+                                      syncEditorToState();
+                                    }}
+                                    className="px-1.5 py-0.5 rounded border border-blue-200 bg-blue-50/70 hover:bg-blue-100 text-[#002b5c] font-mono cursor-pointer text-[10px] font-bold"
+                                  >
+                                    {w}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
                             <div
                               ref={editorRef}
                               contentEditable={true}
                               suppressContentEditableWarning={true}
                               data-placeholder="Write your story here or use AI Tools to generate content..."
+                              onClick={(e) => {
+                                const targetImg = (e.target as HTMLElement)?.closest('img') as HTMLImageElement | null;
+                                editorRef.current?.querySelectorAll('img[data-selected="true"]').forEach((el) => {
+                                  el.removeAttribute('data-selected');
+                                  (el as HTMLElement).style.outline = '';
+                                });
+                                if (targetImg && editorRef.current?.contains(targetImg)) {
+                                  targetImg.setAttribute('data-selected', 'true');
+                                  targetImg.style.outline = '2.5px solid #002b5c';
+                                }
+                              }}
                               onInput={syncEditorToState}
                               onBlur={() => {
                                 saveSelection();
@@ -4229,7 +4371,7 @@ export default function AdminDashboard() {
                       {/* RIGHT COLUMN: PUBLISH & PLACEMENT SETTINGS */}
                       <div className="lg:col-span-4 sticky top-[108px] space-y-4">
                         <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-5 space-y-4 font-sans text-xs">
-                          
+
                           {/* Clean Header */}
                           <div className="flex items-center justify-between pb-2.5 border-b border-gray-100">
                             <div className="flex items-center">
@@ -4244,13 +4386,12 @@ export default function AdminDashboard() {
                           </div>
 
                           {/* 1. Breaking News Ticker Toggle */}
-                          <div 
+                          <div
                             onClick={() => setEditingArticle({ ...editingArticle, isBreaking: !editingArticle.isBreaking })}
-                            className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center justify-between select-none ${
-                              editingArticle.isBreaking
+                            className={`p-3 rounded-lg border cursor-pointer transition-all flex items-center justify-between select-none ${editingArticle.isBreaking
                                 ? 'bg-rose-50 border-[#f7413e] text-[#f7413e] ring-1 ring-[#f7413e]'
                                 : 'bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100'
-                            }`}
+                              }`}
                           >
                             <div>
                               <div className="text-xs font-bold leading-none flex items-center space-x-1.5">
@@ -4561,7 +4702,7 @@ export default function AdminDashboard() {
 
                           {/* 5. Date & Time + Read Time */}
                           <div className="space-y-3 pt-2 border-t border-gray-100">
-                            
+
                             {/* Date & Time Pickers */}
                             <div className="grid grid-cols-2 gap-2.5">
                               <div>
@@ -4687,15 +4828,14 @@ export default function AdminDashboard() {
                           <div className="space-y-1">
                             <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                               <div
-                                className={`h-full transition-all duration-500 rounded-full ${
-                                  liveSeoReport.score >= 85
+                                className={`h-full transition-all duration-500 rounded-full ${liveSeoReport.score >= 85
                                     ? 'bg-emerald-500'
                                     : liveSeoReport.score >= 70
-                                    ? 'bg-sky-500'
-                                    : liveSeoReport.score >= 45
-                                    ? 'bg-amber-500'
-                                    : 'bg-rose-500'
-                                }`}
+                                      ? 'bg-sky-500'
+                                      : liveSeoReport.score >= 45
+                                        ? 'bg-amber-500'
+                                        : 'bg-rose-500'
+                                  }`}
                                 style={{ width: `${Math.max(4, liveSeoReport.score)}%` }}
                               />
                             </div>
@@ -4759,9 +4899,8 @@ export default function AdminDashboard() {
                                 {liveSeoReport.items.map((item) => (
                                   <div
                                     key={item.id}
-                                    className={`p-2 rounded border flex items-start justify-between gap-1.5 ${
-                                      item.passed ? 'bg-emerald-50/50 border-emerald-100 text-gray-800' : 'bg-rose-50/50 border-rose-100 text-gray-700'
-                                    }`}
+                                    className={`p-2 rounded border flex items-start justify-between gap-1.5 ${item.passed ? 'bg-emerald-50/50 border-emerald-100 text-gray-800' : 'bg-rose-50/50 border-rose-100 text-gray-700'
+                                      }`}
                                   >
                                     <div className="space-y-0.5">
                                       <div className="flex items-center space-x-1.5 font-bold text-[10px]">
@@ -4892,7 +5031,7 @@ export default function AdminDashboard() {
                     {showFeaturedImageModal && (
                       <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150">
                         <div className="bg-white rounded-xl shadow-2xl max-w-3xl w-full border border-gray-200 overflow-hidden flex flex-col max-h-[90vh]">
-                          
+
                           {/* Modal Header */}
                           <div className="px-5 py-3.5 border-b border-gray-100 flex items-center justify-between bg-gray-50/70">
                             <div className="flex items-center space-x-2">
@@ -4920,11 +5059,10 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setFeaturedImageTab('upload')}
-                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
-                                featuredImageTab === 'upload'
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${featuredImageTab === 'upload'
                                   ? 'border-[#002b5c] text-[#002b5c] font-black'
                                   : 'border-transparent text-gray-500 hover:text-gray-800'
-                              }`}
+                                }`}
                             >
                               <Upload className="w-3.5 h-3.5" />
                               <span>Upload Files</span>
@@ -4933,11 +5071,10 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setFeaturedImageTab('library')}
-                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
-                                featuredImageTab === 'library'
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${featuredImageTab === 'library'
                                   ? 'border-[#002b5c] text-[#002b5c] font-black'
                                   : 'border-transparent text-gray-500 hover:text-gray-800'
-                              }`}
+                                }`}
                             >
                               <ImageIcon className="w-3.5 h-3.5" />
                               <span>Media Library ({Array.from(new Set([...uploadedMediaHistory, ...articles.map(a => a.image).filter(Boolean)])).length})</span>
@@ -4946,11 +5083,10 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setFeaturedImageTab('stock')}
-                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
-                                featuredImageTab === 'stock'
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${featuredImageTab === 'stock'
                                   ? 'border-[#002b5c] text-[#002b5c] font-black'
                                   : 'border-transparent text-gray-500 hover:text-gray-800'
-                              }`}
+                                }`}
                             >
                               <Camera className="w-3.5 h-3.5" />
                               <span>Stock Photos ({CURATED_STOCK_PHOTOS.length})</span>
@@ -4959,11 +5095,10 @@ export default function AdminDashboard() {
                             <button
                               type="button"
                               onClick={() => setFeaturedImageTab('url')}
-                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${
-                                featuredImageTab === 'url'
+                              className={`py-3 px-3.5 border-b-2 transition-all cursor-pointer inline-flex items-center space-x-1.5 ${featuredImageTab === 'url'
                                   ? 'border-[#002b5c] text-[#002b5c] font-black'
                                   : 'border-transparent text-gray-500 hover:text-gray-800'
-                              }`}
+                                }`}
                             >
                               <LinkIcon className="w-3.5 h-3.5" />
                               <span>Web Image URL</span>
@@ -4972,14 +5107,37 @@ export default function AdminDashboard() {
 
                           {/* Modal Body / Tab Content */}
                           <div className="p-5 flex-1 overflow-y-auto min-h-[340px]">
-                            
+
                             {/* TAB 1: UPLOAD FILES */}
                             {featuredImageTab === 'upload' && (
                               <div className="space-y-4">
-                                <div className="flex items-center gap-2.5 p-3 bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-300/80 rounded-lg text-xs text-emerald-950 font-sans shadow-xs">
-                                  <span className="text-base shrink-0">🎯</span>
-                                  <div>
-                                    <span className="font-bold">Standard Image Size: 1200 × 800 px (Aspect Ratio 3:2)</span>. Pure website ke sabhi cards aur article hero pages <strong>1200×800</strong> ke liye exact calibrated hain. 1200×800 photo upload karne par bina kisi cropping ya white space ke 100% full flush fit hogi!
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-300/80 rounded-lg text-xs text-emerald-950 font-sans shadow-xs">
+                                  <div className="flex items-center gap-2.5">
+                                    <span className="text-base shrink-0">🎯</span>
+                                    <div>
+                                      <span className="font-bold">Standard Image Size: 1200 × 800 px (Aspect Ratio 3:2)</span>. Pure website ke sabhi containers <strong>1200×800</strong> ke liye calibrated hain.
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center gap-2 shrink-0">
+                                    <label className="text-[11px] font-mono font-bold uppercase text-[#002b5c] whitespace-nowrap">
+                                      Size / Ratio:
+                                    </label>
+                                    <select
+                                      value={uploadAspectPreset}
+                                      onChange={(e) =>
+                                        setUploadAspectPreset(
+                                          e.target.value as '1200x800' | '1200x675' | '1200x900' | '1080x1080' | '800x1200' | 'original'
+                                        )
+                                      }
+                                      className="bg-white border border-[#002b5c]/30 rounded px-2 py-1 text-xs font-semibold text-gray-800 outline-none focus:border-[#002b5c] cursor-pointer"
+                                    >
+                                      <option value="1200x800">1200 × 800 (3:2 Default)</option>
+                                      <option value="1200x675">1200 × 675 (16:9 Wide)</option>
+                                      <option value="1200x900">1200 × 900 (4:3 Classic)</option>
+                                      <option value="1080x1080">1080 × 1080 (1:1 Square)</option>
+                                      <option value="800x1200">800 × 1200 (2:3 Portrait)</option>
+                                      <option value="original">Original Ratio (Max 1200px)</option>
+                                    </select>
                                   </div>
                                 </div>
                                 <input
@@ -5004,11 +5162,10 @@ export default function AdminDashboard() {
                                     }
                                   }}
                                   onClick={() => mediaModalFileInputRef.current?.click()}
-                                  className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all space-y-3 ${
-                                    uploadDragActive
+                                  className={`border-2 border-dashed rounded-xl p-8 sm:p-12 text-center cursor-pointer transition-all space-y-3 ${uploadDragActive
                                       ? 'border-[#002b5c] bg-blue-50/50 scale-[0.99]'
                                       : 'border-gray-300 hover:border-[#002b5c] hover:bg-gray-50/80 bg-gray-50/30'
-                                  }`}
+                                    }`}
                                 >
                                   <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto text-[#002b5c]">
                                     {isUploadingImage ? (
@@ -5084,11 +5241,10 @@ export default function AdminDashboard() {
                                           <div
                                             key={idx}
                                             onClick={() => handleSelectMediaImage(imgUrl)}
-                                            className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
-                                              isSelected
+                                            className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${isSelected
                                                 ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
                                                 : 'border-gray-200 hover:border-gray-400 hover:shadow-sm'
-                                            }`}
+                                              }`}
                                           >
                                             <div className="aspect-[3/2] bg-gray-100 relative">
                                               <img
@@ -5129,11 +5285,10 @@ export default function AdminDashboard() {
                                         key={cat}
                                         type="button"
                                         onClick={() => setStockCategoryFilter(cat)}
-                                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-colors cursor-pointer ${
-                                          stockCategoryFilter === cat
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-mono font-bold transition-colors cursor-pointer ${stockCategoryFilter === cat
                                             ? 'bg-[#002b5c] text-white'
                                             : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                                        }`}
+                                          }`}
                                       >
                                         {cat}
                                       </button>
@@ -5165,11 +5320,10 @@ export default function AdminDashboard() {
                                       <div
                                         key={i}
                                         onClick={() => handleSelectMediaImage(photo.url, photo.label)}
-                                        className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${
-                                          isSelected
+                                        className={`group relative rounded-lg overflow-hidden border-2 cursor-pointer transition-all ${isSelected
                                             ? 'border-[#002b5c] ring-2 ring-[#002b5c]/30 shadow-md'
                                             : 'border-gray-200 hover:border-[#002b5c] hover:shadow-md'
-                                        }`}
+                                          }`}
                                       >
                                         <div className="aspect-[3/2] bg-gray-100 relative">
                                           <img
@@ -5468,150 +5622,150 @@ export default function AdminDashboard() {
                     {showPreviewModal && (() => {
                       const livePreviewHtml = editorRef.current?.innerHTML || editingArticle.content || '';
                       return (
-                      <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-8">
-                        {/* Modal Floating Navigation Bar */}
-                        <div className="sticky top-2 z-[10000] bg-[#1f1f1f] text-white px-5 py-3 rounded-full shadow-2xl border border-white/20 flex items-center justify-between gap-4 max-w-5xl w-full mb-6">
-                          <div className="flex items-center space-x-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-xs font-bold font-mono uppercase tracking-wider text-emerald-400">
-                              Live Story Preview (Draft Mode)
-                            </span>
-                            <span className="text-gray-500 text-xs">•</span>
-                            <span className="text-xs text-gray-300 font-sans hidden sm:inline">
-                              {editingArticle.category} {editingArticle.subcategory ? `› ${editingArticle.subcategory}` : ''}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center space-x-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                window.open(
-                                  getBlogUrl({
-                                    category: editingArticle.category,
-                                    slug: editingArticle.slug || generateSlug(editingArticle.title) || 'preview',
-                                  }),
-                                  '_blank'
-                                );
-                              }}
-                              className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors flex items-center space-x-1 cursor-pointer"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                              <span>Open Live URL</span>
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setShowPreviewModal(false)}
-                              className="px-3 py-1 bg-[#f7413e] hover:bg-[#d9302c] text-white text-[11px] font-bold rounded-full transition-colors cursor-pointer"
-                            >
-                              ✕ Close Preview
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Rendered Live Article Document */}
-                        <div className="bg-[#faf8f2] dark:bg-[#14171f] text-[#211d1d] dark:text-gray-100 rounded-2xl shadow-2xl max-w-5xl w-full p-6 sm:p-10 space-y-4 border border-[#211d1d]/10 dark:border-white/10 mb-12 text-left">
-                          
-                          {/* Breadcrumb, Category Badge, Read Time & Published Date */}
-                          <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="bg-[#002b5c] text-white px-2.5 py-1 rounded">
-                                {editingArticle.category || 'Business'}
+                        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[9999] flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-8">
+                          {/* Modal Floating Navigation Bar */}
+                          <div className="sticky top-2 z-[10000] bg-[#1f1f1f] text-white px-5 py-3 rounded-full shadow-2xl border border-white/20 flex items-center justify-between gap-4 max-w-5xl w-full mb-6">
+                            <div className="flex items-center space-x-2">
+                              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                              <span className="text-xs font-bold font-mono uppercase tracking-wider text-emerald-400">
+                                Live Story Preview (Draft Mode)
                               </span>
-                              {editingArticle.subcategory && (
-                                <>
-                                  <span className="text-gray-400">›</span>
-                                  <span className="text-[#f7413e] bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded">
-                                    {editingArticle.subcategory}
-                                  </span>
-                                </>
-                              )}
-                              <span className="text-gray-400">•</span>
-                              <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
-                                {editingArticle.readTime || '4 min read'}
-                              </span>
-                              <span className="text-gray-400">•</span>
-                              <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
-                                {editingArticle.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              <span className="text-gray-500 text-xs">•</span>
+                              <span className="text-xs text-gray-300 font-sans hidden sm:inline">
+                                {editingArticle.category} {editingArticle.subcategory ? `› ${editingArticle.subcategory}` : ''}
                               </span>
                             </div>
-                            <span className="text-emerald-700 dark:text-emerald-300 font-bold text-[11px] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
-                              {cmsMetadata.status || 'Published'}
-                            </span>
+
+                            <div className="flex items-center space-x-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  window.open(
+                                    getBlogUrl({
+                                      category: editingArticle.category,
+                                      slug: editingArticle.slug || generateSlug(editingArticle.title) || 'preview',
+                                    }),
+                                    '_blank'
+                                  );
+                                }}
+                                className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[11px] font-bold rounded-full transition-colors flex items-center space-x-1 cursor-pointer"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                <span>Open Live URL</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setShowPreviewModal(false)}
+                                className="px-3 py-1 bg-[#f7413e] hover:bg-[#d9302c] text-white text-[11px] font-bold rounded-full transition-colors cursor-pointer"
+                              >
+                                ✕ Close Preview
+                              </button>
+                            </div>
                           </div>
 
-                          {/* Article Title */}
-                          <h1 className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-white leading-snug text-left">
-                            {renderRichInline(editingArticle.title || 'Untitled Story Headline')}
-                          </h1>
+                          {/* Rendered Live Article Document */}
+                          <div className="bg-[#faf8f2] dark:bg-[#14171f] text-[#211d1d] dark:text-gray-100 rounded-2xl shadow-2xl max-w-5xl w-full p-6 sm:p-10 space-y-4 border border-[#211d1d]/10 dark:border-white/10 mb-12 text-left">
 
-                          {/* Excerpt Lead */}
-                          {(editingArticle.excerpt || livePreviewHtml) && (
-                            <p className="font-serif italic text-sm sm:text-[15px] text-gray-700 dark:text-gray-300 leading-[1.45] border-l-4 border-[#002b5c] pl-4 text-left">
-                              {renderRichInline(
-                                editingArticle.excerpt,
-                                livePreviewHtml || (Array.isArray(editingArticle.paragraphs) ? editingArticle.paragraphs[0] : '')
-                              )}
-                            </p>
-                          )}
-
-                          {/* Cover Image */}
-                          {editingArticle.image && (
-                            <ArticleHeroImage
-                              src={editingArticle.image}
-                              alt={editingArticle.title || ''}
-                              caption="Story Cover Photo — ApexChief Editorial"
-                            />
-                          )}
-
-                          {/* Article Body Content (Rich WYSIWYG Rendering) */}
-                          {livePreviewHtml ? (
-                            <div
-                              dangerouslySetInnerHTML={{ __html: livePreviewHtml }}
-                              className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans space-y-3 text-left"
-                            />
-                          ) : (
-                            <div className="space-y-3 text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans text-left">
-                              {(editingArticle.paragraphs && editingArticle.paragraphs.length > 0
-                                ? editingArticle.paragraphs
-                                : ['(No content written yet)']).map((para, i) => (
-                                <p key={i} className="leading-[1.48]">
-                                  {renderRichInline(para)}
-                                </p>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Subsections & Chapters */}
-                          {editingArticle.sections && editingArticle.sections.length > 0 && (
-                            <div className="space-y-4 pt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-left">
-                              {editingArticle.sections.map((sec, i) => (
-                                <div key={i} className="space-y-2">
-                                  <h3 className="font-sans text-lg font-bold text-[#002b5c] dark:text-sky-400 border-b border-[#002b5c]/20 dark:border-sky-400/20 pb-1">
-                                    {renderRichInline(sec.heading || '')}
-                                  </h3>
-                                  <p className="font-sans text-[15px] sm:text-base leading-[1.48] text-gray-800 dark:text-gray-200">
-                                    {renderRichInline(sec.content || '')}
-                                  </p>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-
-                          {/* Tags Footer */}
-                          {cmsMetadata.tags && cmsMetadata.tags.length > 0 && (
-                            <div className="pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex flex-wrap items-center gap-2">
-                              <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400 uppercase">Tags:</span>
-                              {cmsMetadata.tags.map((tg: string) => (
-                                <span key={tg} className="px-2.5 py-1 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-200 rounded-full font-mono">
-                                  #{tg}
+                            {/* Breadcrumb, Category Badge, Read Time & Published Date */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono font-bold uppercase tracking-wider">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="bg-[#002b5c] text-white px-2.5 py-1 rounded">
+                                  {editingArticle.category || 'Business'}
                                 </span>
-                              ))}
+                                {editingArticle.subcategory && (
+                                  <>
+                                    <span className="text-gray-400">›</span>
+                                    <span className="text-[#f7413e] bg-gray-100 dark:bg-white/10 px-2.5 py-1 rounded">
+                                      {editingArticle.subcategory}
+                                    </span>
+                                  </>
+                                )}
+                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                                  {editingArticle.readTime || '4 min read'}
+                                </span>
+                                <span className="text-gray-400">•</span>
+                                <span className="text-gray-500 dark:text-gray-400 font-mono text-[11px]">
+                                  {editingArticle.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </span>
+                              </div>
+                              <span className="text-emerald-700 dark:text-emerald-300 font-bold text-[11px] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded">
+                                {cmsMetadata.status || 'Published'}
+                              </span>
                             </div>
-                          )}
 
+                            {/* Article Title */}
+                            <h1 className="font-serif text-xl sm:text-2xl lg:text-[28px] font-bold text-[#0a0a0a] dark:text-white leading-snug text-left">
+                              {renderRichInline(editingArticle.title || 'Untitled Story Headline')}
+                            </h1>
+
+                            {/* Excerpt Lead */}
+                            {(editingArticle.excerpt || livePreviewHtml) && (
+                              <p className="font-serif italic text-sm sm:text-[15px] text-gray-700 dark:text-gray-300 leading-[1.45] border-l-4 border-[#002b5c] pl-4 text-left">
+                                {renderRichInline(
+                                  editingArticle.excerpt,
+                                  livePreviewHtml || (Array.isArray(editingArticle.paragraphs) ? editingArticle.paragraphs[0] : '')
+                                )}
+                              </p>
+                            )}
+
+                            {/* Cover Image */}
+                            {editingArticle.image && (
+                              <ArticleHeroImage
+                                src={editingArticle.image}
+                                alt={editingArticle.title || ''}
+                                caption="Story Cover Photo — ApexChief Editorial"
+                              />
+                            )}
+
+                            {/* Article Body Content (Rich WYSIWYG Rendering) */}
+                            {livePreviewHtml ? (
+                              <div
+                                dangerouslySetInnerHTML={{ __html: livePreviewHtml }}
+                                className="article-rich-content text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans space-y-3 text-left"
+                              />
+                            ) : (
+                              <div className="space-y-3 text-[15px] sm:text-base leading-[1.48] text-gray-900 dark:text-gray-100 font-sans text-left">
+                                {(editingArticle.paragraphs && editingArticle.paragraphs.length > 0
+                                  ? editingArticle.paragraphs
+                                  : ['(No content written yet)']).map((para, i) => (
+                                    <p key={i} className="leading-[1.48]">
+                                      {renderRichInline(para)}
+                                    </p>
+                                  ))}
+                              </div>
+                            )}
+
+                            {/* Subsections & Chapters */}
+                            {editingArticle.sections && editingArticle.sections.length > 0 && (
+                              <div className="space-y-4 pt-4 border-t border-[#211d1d]/10 dark:border-white/10 text-left">
+                                {editingArticle.sections.map((sec, i) => (
+                                  <div key={i} className="space-y-2">
+                                    <h3 className="font-sans text-lg font-bold text-[#002b5c] dark:text-sky-400 border-b border-[#002b5c]/20 dark:border-sky-400/20 pb-1">
+                                      {renderRichInline(sec.heading || '')}
+                                    </h3>
+                                    <p className="font-sans text-[15px] sm:text-base leading-[1.48] text-gray-800 dark:text-gray-200">
+                                      {renderRichInline(sec.content || '')}
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {/* Tags Footer */}
+                            {cmsMetadata.tags && cmsMetadata.tags.length > 0 && (
+                              <div className="pt-4 border-t border-[#211d1d]/10 dark:border-white/10 flex flex-wrap items-center gap-2">
+                                <span className="text-xs font-mono font-bold text-gray-500 dark:text-gray-400 uppercase">Tags:</span>
+                                {cmsMetadata.tags.map((tg: string) => (
+                                  <span key={tg} className="px-2.5 py-1 bg-white dark:bg-white/10 border border-gray-200 dark:border-white/15 text-xs font-bold text-gray-700 dark:text-gray-200 rounded-full font-mono">
+                                    #{tg}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+
+                          </div>
                         </div>
-                      </div>
                       );
                     })()}
 
@@ -5803,7 +5957,7 @@ export default function AdminDashboard() {
                         <h4 className="font-mono text-xs uppercase tracking-widest text-[#0a0a0a] dark:text-white font-bold pb-2 border-b border-[#211d1d]/10 dark:border-white/10 sm:col-span-2">
                           Website Identity & Branding
                         </h4>
-                        
+
                         <div>
                           <label className="block text-xs font-mono font-bold text-[#575757] dark:text-gray-300 uppercase tracking-wider mb-2">
                             Website Brand Title (e.g. ApexChief)

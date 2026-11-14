@@ -6,18 +6,20 @@ interface ArticleHeroImageProps {
   src: string;
   alt: string;
   caption?: string;
+  aspectRatio?: string;
 }
 
 const DEFAULT_FALLBACK = '/images/apexchief-logo-light.png';
 
 /**
- * ArticleHeroImage renders every blog cover photo in a uniform 16:9 full-width frame
- * matching the standard 1200x675 editorial hero size across all blog posts.
+ * ArticleHeroImage renders every blog cover photo in a uniform 3:2 full-width frame
+ * matching the standard 1200x800 editorial hero size across all blog posts.
  */
 export default function ArticleHeroImage({
   src,
   alt,
   caption,
+  aspectRatio = '3 / 2',
 }: ArticleHeroImageProps) {
   const safeSrc = src && src.trim() ? src.replace(/&amp;/g, '&') : DEFAULT_FALLBACK;
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -39,7 +41,7 @@ export default function ArticleHeroImage({
   return (
     <figure className="w-full my-5">
       <div
-        style={{ width: '100%', aspectRatio: '16 / 9' }}
+        style={{ width: '100%', aspectRatio }}
         className="relative overflow-hidden rounded-lg border border-[#211d1d]/15 dark:border-white/15 shadow-sm"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}

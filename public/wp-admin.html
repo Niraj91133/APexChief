@@ -217,12 +217,78 @@
     .progress-green { background-color: #0e9f6e; }
 
     /* Classic Editor Content Area Typography */
-    #editor-content h1 { font-size: 1.85rem; font-weight: 700; margin: 0.8rem 0 0.4rem 0; line-height: 1.2; color: #111827; }
-    #editor-content h2 { font-size: 1.45rem; font-weight: 700; margin: 0.7rem 0 0.35rem 0; line-height: 1.3; color: #1f2937; }
-    #editor-content h3 { font-size: 1.2rem; font-weight: 600; margin: 0.6rem 0 0.3rem 0; line-height: 1.35; color: #374151; }
-    #editor-content h4 { font-size: 1.05rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0; color: #4b5563; }
-    #editor-content p { margin: 0.5rem 0; line-height: 1.6; }
-    #editor-content blockquote { border-left: 3px solid #f7413e; padding-left: 12px; margin: 8px 0; color: #4b5563; font-style: italic; }
+    #editor-content h1, #page-content-editor h1, #page-preview-body h1, .article-rich-content h1 { font-size: 1.85rem; font-weight: 700; margin: 0.8rem 0 0.4rem 0; line-height: 1.2; color: #111827; }
+    #editor-content h2, #page-content-editor h2, #page-preview-body h2, .article-rich-content h2 { font-size: 1.45rem; font-weight: 700; margin: 0.7rem 0 0.35rem 0; line-height: 1.3; color: #1f2937; }
+    #editor-content h3, #page-content-editor h3, #page-preview-body h3, .article-rich-content h3 { font-size: 1.2rem; font-weight: 600; margin: 0.6rem 0 0.3rem 0; line-height: 1.35; color: #374151; }
+    #editor-content h4, #page-content-editor h4, #page-preview-body h4, .article-rich-content h4 { font-size: 1.05rem; font-weight: 600; margin: 0.5rem 0 0.25rem 0; color: #4b5563; }
+    #editor-content p, #page-content-editor p, #page-preview-body p, .article-rich-content p { margin: 0.5rem 0; line-height: 1.6; }
+    #editor-content ul, #page-content-editor ul, #page-preview-body ul, .article-rich-content ul {
+      list-style-type: disc !important;
+      padding-left: 1.75rem !important;
+      margin: 0.5rem 0 !important;
+    }
+    #editor-content ul ul, #page-content-editor ul ul, #page-preview-body ul ul, .article-rich-content ul ul {
+      list-style-type: circle !important;
+    }
+    #editor-content ol, #page-content-editor ol, #page-preview-body ol, .article-rich-content ol {
+      list-style-type: decimal !important;
+      padding-left: 1.75rem !important;
+      margin: 0.5rem 0 !important;
+    }
+    #editor-content ol ol, #page-content-editor ol ol, #page-preview-body ol ol, .article-rich-content ol ol {
+      list-style-type: lower-alpha !important;
+    }
+    #editor-content li, #page-content-editor li, #page-preview-body li, .article-rich-content li {
+      display: list-item !important;
+      margin: 0.22rem 0 !important;
+      line-height: 1.55 !important;
+    }
+    #editor-content blockquote, #page-content-editor blockquote, #page-preview-body blockquote, .article-rich-content blockquote { border-left: 3px solid #f7413e; padding-left: 12px; margin: 8px 0; color: #4b5563; font-style: italic; }
+    #editor-content::after, #page-preview-body::after, .article-rich-content::after { content: ""; display: table; clear: both; }
+    #editor-content img, #page-preview-body img, .article-rich-content img {
+      max-width: 100% !important;
+      height: auto !important;
+      cursor: pointer;
+    }
+    #editor-content img.editor-img-selected {
+      outline: 2.5px solid #2271b1 !important;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(34, 113, 177, 0.2);
+    }
+    #editor-content img[data-align="left"], #editor-content figure[data-align="left"],
+    #page-preview-body img[data-align="left"], #page-preview-body figure[data-align="left"],
+    .article-rich-content img[data-align="left"], .article-rich-content figure[data-align="left"] {
+      display: block !important;
+      float: left !important;
+      margin: 0.35rem 1.25rem 0.75rem 0 !important;
+      clear: left;
+    }
+    #editor-content img[data-align="right"], #editor-content figure[data-align="right"],
+    #page-preview-body img[data-align="right"], #page-preview-body figure[data-align="right"],
+    .article-rich-content img[data-align="right"], .article-rich-content figure[data-align="right"] {
+      display: block !important;
+      float: right !important;
+      margin: 0.35rem 0 0.75rem 1.25rem !important;
+      clear: right;
+    }
+    #editor-content img[data-align="center"], #editor-content figure[data-align="center"],
+    #page-preview-body img[data-align="center"], #page-preview-body figure[data-align="center"],
+    .article-rich-content img[data-align="center"], .article-rich-content figure[data-align="center"] {
+      display: block !important;
+      float: none !important;
+      margin: 0.9rem auto !important;
+      clear: both !important;
+    }
+    #editor-content img[data-align="full"], #editor-content figure[data-align="full"],
+    #page-preview-body img[data-align="full"], #page-preview-body figure[data-align="full"],
+    .article-rich-content img[data-align="full"], .article-rich-content figure[data-align="full"] {
+      display: block !important;
+      float: none !important;
+      width: 100% !important;
+      margin: 1rem auto !important;
+      clear: both !important;
+    }
+    #editor-content figure[data-align] img, #page-preview-body figure[data-align] img { width: 100% !important; margin: 0 !important; }
     #editor-content a, .prose a, .editor-prose a {
       color: #2271b1 !important;
       text-decoration: underline !important;
@@ -423,7 +489,7 @@
         <!-- OPTION 1: Format 1 (Classic WordPress) -->
         <div onclick="selectGatewayWorkspace('classic')" class="bg-[#161f30] hover:bg-[#1c273d] border-2 border-gray-700/80 hover:border-[#f7413e] rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-[#f7413e]/20 group cursor-pointer">
           <div class="space-y-3">
-            <div class="w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-[#f7413e]/50 transition-colors shadow-inner">
+            <div class="w-full aspect-[3/2] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-[#f7413e]/50 transition-colors shadow-inner">
               <img src="/images/format-1.png" alt="Format 1" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
             </div>
 
@@ -443,7 +509,7 @@
         <!-- OPTION 2: Format 2 (Modern Next.js) -->
         <div onclick="window.location.href='/admin'" class="bg-[#161f30] hover:bg-[#1c273d] border-2 border-gray-700/80 hover:border-blue-500 rounded-xl p-4 sm:p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/20 group cursor-pointer">
           <div class="space-y-3">
-            <div class="w-full aspect-[16/9] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-blue-500/50 transition-colors shadow-inner">
+            <div class="w-full aspect-[3/2] rounded-lg overflow-hidden border border-gray-700/60 bg-gray-900 group-hover:border-blue-500/50 transition-colors shadow-inner">
               <img src="/images/format-2.png" alt="Format 2" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300">
             </div>
 
@@ -819,7 +885,7 @@
                 <button type="button" id="btn-edit-slug" onclick="editPermalinkSlug()" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 hover:border-gray-400 text-[#2c3338] px-2.5 py-0.5 rounded text-xs font-semibold cursor-pointer shadow-2xs transition-colors">
                   Edit
                 </button>
-                <a id="btn-view-post-permalink" href="/news/new-post" target="_blank" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 hover:border-gray-400 text-[#2271b1] hover:underline px-2.5 py-0.5 rounded text-xs font-semibold inline-flex items-center gap-1 shadow-2xs transition-colors">
+                <a id="btn-view-post-permalink" href="/news/new-post" onclick="return handleViewPostPermalink(event)" target="_blank" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 hover:border-gray-400 text-[#2271b1] hover:underline px-2.5 py-0.5 rounded text-xs font-semibold inline-flex items-center gap-1 shadow-2xs transition-colors">
                   <span>View Post</span>
                   <i class="fas fa-external-link-alt text-[9px]"></i>
                 </a>
@@ -1691,8 +1757,8 @@
               </div>
               <div id="content-publish-body" class="p-3 space-y-3 text-xs">
                 <div class="flex justify-between items-center">
-                  <button onclick="savePost('draft')" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 px-2.5 py-1 rounded text-xs text-[#2271b1] font-semibold">Save Draft</button>
-                  <button onclick="previewArticleInReader()" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 px-2.5 py-1 rounded text-xs text-[#2271b1] font-semibold">Preview</button>
+                  <button type="button" onclick="savePost('draft')" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 px-2.5 py-1 rounded text-xs text-[#2271b1] font-semibold cursor-pointer">Save Draft</button>
+                  <button type="button" onclick="previewArticleInReader()" class="bg-white border border-[#c3c4c7] hover:bg-gray-50 px-2.5 py-1 rounded text-xs text-[#2271b1] font-semibold cursor-pointer">Preview</button>
                 </div>
 
                 <div class="space-y-2 text-gray-600 border-t border-b border-gray-200 py-2">
@@ -4709,18 +4775,29 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           ondragover="handleDragOver(event)" 
           ondragleave="handleDragLeave(event)" 
           ondrop="handleFileDrop(event)"
-          class="hidden w-full h-full p-10 text-center flex flex-col items-center justify-center space-y-3 bg-gray-50/70"
+          class="hidden w-full h-full p-8 text-center flex flex-col items-center justify-center space-y-3 bg-gray-50/70"
         >
           <div class="w-16 h-16 rounded-full bg-blue-50 text-[#2271b1] flex items-center justify-center text-3xl mb-1 shadow-xs border border-blue-100">
             <i class="fas fa-cloud-upload-alt"></i>
           </div>
           <h4 class="font-bold text-gray-800 text-base">Drop files anywhere to upload</h4>
+          <div class="flex items-center justify-center gap-2 bg-white border border-gray-300 rounded-lg px-3 py-2 text-xs shadow-2xs">
+            <label for="media-upload-size-preset" class="font-bold text-gray-700">Size / Ratio:</label>
+            <select id="media-upload-size-preset" class="border border-gray-300 rounded px-2 py-1 text-xs font-semibold text-gray-800 bg-white focus:border-[#2271b1] outline-none cursor-pointer">
+              <option value="1200x800" selected>1200 &times; 800 px (3:2 Default)</option>
+              <option value="1200x675">1200 &times; 675 px (16:9 Wide)</option>
+              <option value="1200x900">1200 &times; 900 px (4:3 Classic)</option>
+              <option value="1080x1080">1080 &times; 1080 px (1:1 Square)</option>
+              <option value="800x1200">800 &times; 1200 px (2:3 Portrait)</option>
+              <option value="original">Original Ratio (Max 1200px)</option>
+            </select>
+          </div>
           <p class="text-xs text-gray-500">or</p>
-          <button onclick="triggerDeviceFileDialog()" class="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded font-semibold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors">
+          <button type="button" onclick="triggerDeviceFileDialog()" class="bg-[#2271b1] hover:bg-[#135e96] text-white px-5 py-2 rounded font-semibold text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors">
             <i class="fas fa-folder-open"></i>
             <span>Select Files</span>
           </button>
-          <p class="text-[11px] text-gray-400 pt-2">Maximum upload file size: 64 MB. Supports JPG, PNG, WEBP, GIF, SVG</p>
+          <p class="text-[11px] text-gray-400 pt-1">Default target: 1200 &times; 800 px (3:2 container standard). Supports JPG, PNG, WEBP, GIF, SVG.</p>
         </div>
 
         <!-- Library Container (Grid + Sidebar) -->
@@ -4906,22 +4983,41 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   </div>
 
   <!-- ========================================================================= -->
-  <!-- MODAL: QUICK IMAGE EDITOR (CROP / ROTATE / FLIP / FILTER) -->
+  <!-- MODAL: QUICK IMAGE EDITOR (CROP / RESIZE RATIO / ROTATE / FLIP / FILTER) -->
   <!-- ========================================================================= -->
-  <div id="modal-image-editor" class="fixed inset-0 z-[9999999] bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+  <div id="modal-image-editor" class="fixed inset-0 z-[9999999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden border border-gray-300 flex flex-col animate-in fade-in zoom-in-95 duration-150 text-xs">
       <div class="px-5 py-3 border-b border-gray-200 flex items-center justify-between bg-gray-50">
         <h3 class="text-sm font-bold text-gray-800 flex items-center gap-1.5">
           <i class="fas fa-crop-alt text-[#2271b1]"></i>
-          <span>Edit Image &bull; Image Tools</span>
+          <span>Edit Image &bull; Size, Ratio &amp; Tools</span>
         </h3>
-        <button onclick="closeQuickImageEditor()" class="text-gray-400 hover:text-black text-lg p-1">&times;</button>
+        <button type="button" onclick="closeQuickImageEditor()" class="text-gray-400 hover:text-black text-lg p-1 cursor-pointer">&times;</button>
       </div>
       
       <div class="p-5 space-y-4">
         <!-- Canvas/Preview -->
-        <div class="bg-gray-900 rounded-lg p-4 flex items-center justify-center min-h-[260px] max-h-[380px] overflow-hidden">
-          <img id="image-editor-preview" src="" class="max-h-[340px] max-w-full rounded shadow object-contain transition-transform duration-200">
+        <div class="bg-gray-900 rounded-lg p-4 flex flex-col items-center justify-center min-h-[260px] max-h-[380px] overflow-hidden gap-2">
+          <div id="image-editor-preview-frame" class="flex items-center justify-center overflow-hidden rounded border border-white/15 bg-black/40 max-h-[320px] max-w-full">
+            <img id="image-editor-preview" src="" class="max-h-[320px] max-w-full object-cover transition-transform duration-200">
+          </div>
+          <span id="image-editor-dim-badge" class="text-[11px] font-mono text-gray-300">Current Ratio</span>
+        </div>
+
+        <!-- Size / Aspect Ratio Presets Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-2 bg-blue-50/70 border border-blue-200 rounded-lg px-3 py-2">
+          <div class="flex items-center gap-2">
+            <label for="image-editor-ratio-select" class="font-bold text-[#002b5c] text-[11px] uppercase tracking-wider">Size / Aspect Ratio:</label>
+            <select id="image-editor-ratio-select" onchange="setImageEditorRatio(this.value)" class="border border-blue-300 rounded px-2 py-1 text-xs font-semibold text-gray-800 bg-white focus:border-[#2271b1] outline-none cursor-pointer">
+              <option value="keep">Keep Current Size</option>
+              <option value="1200x800">1200 &times; 800 px (3:2 Standard)</option>
+              <option value="1200x675">1200 &times; 675 px (16:9 Wide)</option>
+              <option value="1200x900">1200 &times; 900 px (4:3 Classic)</option>
+              <option value="1080x1080">1080 &times; 1080 px (1:1 Square)</option>
+              <option value="800x1200">800 &times; 1200 px (2:3 Portrait)</option>
+            </select>
+          </div>
+          <span class="text-[11px] text-blue-900 font-medium">Auto center-crop to exact target pixels</span>
         </div>
 
         <!-- Controls Toolbar -->
@@ -4954,8 +5050,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       </div>
 
       <div class="px-5 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-end space-x-2">
-        <button onclick="closeQuickImageEditor()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded font-semibold cursor-pointer">Cancel</button>
-        <button onclick="saveQuickImageEditorChanges()" class="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded font-bold shadow-xs cursor-pointer">Save Image</button>
+        <button type="button" onclick="closeQuickImageEditor()" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded font-semibold cursor-pointer">Cancel</button>
+        <button type="button" onclick="saveQuickImageEditorChanges()" class="bg-[#2271b1] hover:bg-[#135e96] text-white px-4 py-1.5 rounded font-bold shadow-xs cursor-pointer">Save Image</button>
       </div>
     </div>
   </div>
@@ -4965,7 +5061,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   <!-- ========================================================================= -->
   <!-- MODAL: FRONTEND APEXCHIEF READER PREVIEW -->
   <!-- ========================================================================= -->
-  <div id="modal-frontend-reader" class="fixed inset-0 z-[9999999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+  <div id="modal-frontend-reader" class="fixed inset-0 z-[9999999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[90vh] flex flex-col overflow-hidden">
       <!-- Top Browser bar -->
       <div class="bg-black text-white px-6 py-3.5 flex items-center justify-between border-b border-white/10">
@@ -5132,7 +5228,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           </div>
           <div class="space-y-1 text-gray-500 text-[11px]">
             <p><strong>File name:</strong> <span id="inspect-media-name" class="text-gray-800 font-mono"></span></p>
-            <p><strong>File type:</strong> image/jpeg &bull; <strong>Dimensions:</strong> <span id="inspect-media-dim" class="text-gray-800">1920 &times; 1080</span></p>
+            <p><strong>File type:</strong> image/jpeg &bull; <strong>Dimensions:</strong> <span id="inspect-media-dim" class="text-gray-800">1200 &times; 800</span></p>
             <p><strong>Uploaded on:</strong> <span id="inspect-media-date" class="text-gray-800">Sep 6, 2026</span></p>
           </div>
         </div>
@@ -5172,16 +5268,16 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   <!-- ========================================================================= -->
   <!-- MODAL: STATIC PAGE READER PREVIEW -->
   <!-- ========================================================================= -->
-  <div id="modal-page-preview" class="fixed inset-0 z-[9999999] bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+  <div id="modal-page-preview" onclick="if(event.target===this) closePagePreviewModal()" class="fixed inset-0 z-[9999999] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[88vh] flex flex-col overflow-hidden">
       <div class="bg-black text-white px-6 py-3.5 flex items-center justify-between border-b border-white/10">
         <div class="flex items-center space-x-3">
           <span class="font-bebas text-2xl tracking-widest text-white uppercase leading-none">APEXCHIEF</span>
-          <span class="bg-gray-700 text-gray-200 text-[10px] uppercase font-bold px-2 py-0.5 rounded">Page Live Preview</span>
+          <span class="bg-gray-700 text-gray-200 text-[10px] uppercase font-bold px-2 py-0.5 rounded">Live Story Preview</span>
         </div>
-        <button onclick="closePagePreviewModal()" class="text-gray-400 hover:text-white text-lg">&times;</button>
+        <button type="button" onclick="closePagePreviewModal()" class="bg-[#f7413e] hover:bg-[#d62f2c] text-white text-xs font-bold px-3 py-1 rounded-full cursor-pointer transition-colors">&times; Close Preview</button>
       </div>
-      <div class="flex-1 p-6 sm:p-8 overflow-y-auto bg-white text-left">
+      <div id="page-preview-scroll-area" class="flex-1 p-6 sm:p-8 overflow-y-auto bg-white text-left">
         <div class="w-full max-w-4xl mx-auto space-y-4 text-left">
           <div class="border-b pb-3 text-left">
             <span id="page-preview-template-badge" class="text-xs font-mono uppercase tracking-widest text-[#f7413e] font-bold">About / Editorial Desk</span>
@@ -5597,7 +5693,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
   <!-- ========================================================================= -->
   <!-- FLOATING INLINE LINK POPOVER (GUTENBERG / TINYMCE STYLE ON CLICK) -->
   <!-- ========================================================================= -->
-  <div id="inline-link-popover" class="fixed z-[99999] hidden bg-white border border-gray-300 rounded-lg shadow-xl px-3 py-1.5 flex items-center space-x-2 text-xs font-sans animate-in fade-in zoom-in-95 duration-100">
+  <div id="inline-link-popover" class="fixed z-[9999999] hidden bg-white border border-gray-300 rounded-lg shadow-xl px-3 py-1.5 flex items-center space-x-2 text-xs font-sans animate-in fade-in zoom-in-95 duration-100">
     <div class="flex items-center space-x-1.5 max-w-[240px] truncate text-gray-700">
       <i class="fas fa-link text-[#2271b1] text-xs"></i>
       <a id="inline-popover-url" href="#" target="_blank" class="text-[#2271b1] hover:underline truncate font-medium text-xs"></a>
@@ -5611,6 +5707,39 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     <button type="button" onclick="unlinkCurrentInlineLink()" class="p-1 px-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded transition-colors flex items-center gap-1" title="Remove Link">
       <i class="fas fa-unlink text-xs"></i>
       <span class="text-[11px] font-medium">Unlink</span>
+    </button>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- FLOATING INLINE IMAGE ALIGN & RESIZE TOOLBAR (ON CLICK INSIDE EDITOR)     -->
+  <!-- ========================================================================= -->
+  <div id="inline-image-toolbar" onmousedown="if(event.target.tagName!=='INPUT'){event.preventDefault();}" class="fixed z-[9999999] hidden bg-white border border-gray-300 rounded-lg shadow-2xl px-2.5 py-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-sans">
+    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 px-1">Align:</span>
+    <button type="button" id="img-align-left" onclick="alignActiveEditorImage('left')" class="px-2 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-700 font-semibold cursor-pointer inline-flex items-center gap-1" title="Align Left (Text wraps right)">
+      <i class="fas fa-align-left text-[10px]"></i><span>Left</span>
+    </button>
+    <button type="button" id="img-align-center" onclick="alignActiveEditorImage('center')" class="px-2 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-700 font-semibold cursor-pointer inline-flex items-center gap-1" title="Align Center">
+      <i class="fas fa-align-center text-[10px]"></i><span>Center</span>
+    </button>
+    <button type="button" id="img-align-right" onclick="alignActiveEditorImage('right')" class="px-2 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-700 font-semibold cursor-pointer inline-flex items-center gap-1" title="Align Right (Text wraps left)">
+      <i class="fas fa-align-right text-[10px]"></i><span>Right</span>
+    </button>
+    <button type="button" id="img-align-full" onclick="alignActiveEditorImage('full')" class="px-2 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-700 font-semibold cursor-pointer" title="Full Width">
+      Full
+    </button>
+    <div class="h-4 w-px bg-gray-300 mx-0.5"></div>
+    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-500 px-0.5">Size:</span>
+    <button type="button" id="img-size-25" onclick="resizeActiveEditorImage(25)" class="px-1.5 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-800 font-mono font-bold cursor-pointer">25%</button>
+    <button type="button" id="img-size-50" onclick="resizeActiveEditorImage(50)" class="px-1.5 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-800 font-mono font-bold cursor-pointer">50%</button>
+    <button type="button" id="img-size-75" onclick="resizeActiveEditorImage(75)" class="px-1.5 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-800 font-mono font-bold cursor-pointer">75%</button>
+    <button type="button" id="img-size-100" onclick="resizeActiveEditorImage(100)" class="px-1.5 py-1 rounded border border-gray-200 hover:bg-blue-50 text-gray-800 font-mono font-bold cursor-pointer">100%</button>
+    <button type="button" onclick="stepActiveEditorImageWidth(-10)" class="w-6 h-6 rounded border border-gray-200 hover:bg-gray-100 font-bold text-gray-700 cursor-pointer" title="Decrease Size (-10%)">-</button>
+    <input type="range" id="inline-img-width-range" min="15" max="100" value="100" oninput="resizeActiveEditorImage(this.value)" class="w-16 accent-[#2271b1] cursor-pointer" title="Resize Image Width">
+    <span id="inline-img-width-label" class="font-mono font-bold text-[#2271b1] min-w-[34px] text-center">100%</span>
+    <button type="button" onclick="stepActiveEditorImageWidth(10)" class="w-6 h-6 rounded border border-gray-200 hover:bg-gray-100 font-bold text-gray-700 cursor-pointer" title="Increase Size (+10%)">+</button>
+    <div class="h-4 w-px bg-gray-300 mx-0.5"></div>
+    <button type="button" onclick="removeActiveEditorImage()" class="px-2 py-1 rounded border border-red-200 bg-red-50 hover:bg-red-100 text-red-600 font-semibold cursor-pointer" title="Remove Image">
+      <i class="fas fa-trash-alt text-[10px]"></i>
     </button>
   </div>
 
@@ -6989,8 +7118,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     function restoreEditorSelection() {
-      if (savedSelectionRange) {
-        const sel = window.getSelection();
+      const editor = document.getElementById('editor-content');
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && editor && editor.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+        savedSelectionRange = sel.getRangeAt(0).cloneRange();
+        return;
+      }
+      if (savedSelectionRange && editor && editor.contains(savedSelectionRange.commonAncestorContainer)) {
         sel.removeAllRanges();
         sel.addRange(savedSelectionRange);
       }
@@ -7198,29 +7332,163 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       showToast('Heading Applied', `Converted block to <${targetTag.toUpperCase()}>`);
     }
 
+    let activeEditorImage = null;
+
+    function splitBlockByBrForList(blockEl) {
+      if (!blockEl || !['P', 'DIV'].includes(blockEl.tagName)) return [];
+      const brs = Array.from(blockEl.querySelectorAll('br'));
+      if (!brs.length) return [blockEl];
+      const tag = 'p';
+      const chunks = [];
+      let current = document.createElement(tag);
+      Array.from(blockEl.childNodes).forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE && node.tagName === 'BR') {
+          if (current.textContent.trim() || current.querySelector('img,a,b,strong,em,i,u,span')) {
+            chunks.push(current);
+          }
+          current = document.createElement(tag);
+        } else {
+          // Check nested inline BR inside child element (e.g. span/div)
+          if (node.nodeType === Node.ELEMENT_NODE && node.querySelector && node.querySelector('br')) {
+            const innerHtmlParts = node.outerHTML.split(/<br\s*\/?>/i);
+            innerHtmlParts.forEach((partHtml, idx) => {
+              if (idx > 0) {
+                if (current.textContent.trim() || current.innerHTML.trim()) chunks.push(current);
+                current = document.createElement(tag);
+              }
+              const tmp = document.createElement('span');
+              tmp.innerHTML = partHtml;
+              while (tmp.firstChild) current.appendChild(tmp.firstChild);
+            });
+          } else {
+            current.appendChild(node.cloneNode(true));
+          }
+        }
+      });
+      if (current.textContent.trim() || current.querySelector('img,a')) {
+        chunks.push(current);
+      }
+      if (chunks.length <= 1) return [blockEl];
+      chunks.forEach(c => blockEl.parentNode.insertBefore(c, blockEl));
+      blockEl.remove();
+      return chunks;
+    }
+
+    function prepareSelectionForList(editor) {
+      const sel = window.getSelection();
+      if (!sel || sel.rangeCount === 0) return;
+      const range = sel.getRangeAt(0);
+      const blocks = Array.from(editor.querySelectorAll('p, div')).filter(el => {
+        if (!el.querySelector('br')) return false;
+        try { return range.intersectsNode(el); } catch (e) { return false; }
+      });
+      if (!blocks.length) return;
+      let created = [];
+      blocks.forEach(b => {
+        const res = splitBlockByBrForList(b);
+        created = created.concat(res);
+      });
+      if (created.length > 0) {
+        const nr = document.createRange();
+        nr.setStartBefore(created[0]);
+        nr.setEndAfter(created[created.length - 1]);
+        sel.removeAllRanges();
+        sel.addRange(nr);
+        savedSelectionRange = nr.cloneRange();
+      }
+    }
+
+    function unwrapNestedLists(editor) {
+      editor.querySelectorAll('p > ul, p > ol').forEach(list => {
+        const p = list.parentElement;
+        if (p && p.parentNode) {
+          p.parentNode.insertBefore(list, p);
+          if (!p.textContent.trim() && !p.querySelector('img')) p.remove();
+        }
+      });
+    }
+
     function formatDoc(cmd, val = null) {
       const editor = document.getElementById('editor-content');
+      if (!editor) return;
+
+      // Redirect top-bar Alignment buttons to the active/selected inline image when clicked on an image
+      if (['justifyLeft', 'justifyCenter', 'justifyRight'].includes(cmd)) {
+        let targetImg = (activeEditorImage && editor.contains(activeEditorImage)) ? activeEditorImage : null;
+        if (!targetImg) {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const c = sel.getRangeAt(0).commonAncestorContainer;
+            const el = c.nodeType === 1 ? c : c.parentElement;
+            const maybeImg = el?.querySelector?.('img') || el?.closest?.('figure')?.querySelector('img');
+            if (maybeImg && editor.contains(maybeImg)) targetImg = maybeImg;
+          }
+        }
+        if (targetImg) {
+          activeEditorImage = targetImg;
+          const map = { justifyLeft: 'left', justifyCenter: 'center', justifyRight: 'right' };
+          alignActiveEditorImage(map[cmd]);
+          return;
+        }
+      }
+
       editor.focus();
       restoreEditorSelection();
+
+      if (cmd === 'insertUnorderedList' || cmd === 'insertOrderedList') {
+        prepareSelectionForList(editor);
+      }
+
       document.execCommand(cmd, false, val);
+
+      if (cmd === 'insertUnorderedList' || cmd === 'insertOrderedList') {
+        unwrapNestedLists(editor);
+      }
+
       saveEditorSelection();
+      updateToolbarActiveStates();
       handleContentChange();
     }
 
     // =========================================================================
     // PERMALINK SLUG MANAGEMENT UNDER TITLE
     // =========================================================================
+    function getCategorySlugForUrl(catName) {
+      return String(catName || 'News')
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'news';
+    }
+
     function updatePermalinkDisplay(slug) {
       const cleanSlug = slug || 'new-post';
+      const primaryCat = document.getElementById('placement-category-select')?.value || 'News';
+      const catSlug = getCategorySlugForUrl(primaryCat);
       const nameSpan = document.getElementById('editable-post-name');
+      const prefixSpan = document.getElementById('permalink-prefix');
       const viewBtn = document.getElementById('btn-view-post-permalink');
       const snippetSlug = document.getElementById('snippet-permalink');
       const serpSlug = document.getElementById('serp-preview-slug');
       
+      if (prefixSpan) prefixSpan.innerText = `https://apexchief.com/${catSlug}/`;
       if (nameSpan) nameSpan.innerText = cleanSlug;
-      if (viewBtn) viewBtn.href = `/news/${cleanSlug}`;
+      if (viewBtn) viewBtn.href = `/${catSlug}/${cleanSlug}`;
       if (snippetSlug) snippetSlug.value = cleanSlug;
       if (serpSlug) serpSlug.innerText = cleanSlug;
+    }
+
+    function handleViewPostPermalink(event) {
+      const statusText = (document.getElementById('post-status-label')?.innerText || '').trim().toUpperCase();
+      const slug = document.getElementById('snippet-permalink')?.value?.trim();
+      const existsInPosts = slug && posts.some(p => p.slug === slug && p.status === 'published');
+      if (statusText !== 'PUBLISHED' || !existsInPosts) {
+        if (event) event.preventDefault();
+        previewArticleInReader();
+        showToast('Draft Story Preview', 'Showing live preview (click Publish to go live at this URL).');
+        return false;
+      }
+      return true;
     }
 
     function editPermalinkSlug() {
@@ -7425,11 +7693,217 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       });
     }
 
+    function getSelectedImageContainer(imgEl) {
+      if (!imgEl) return null;
+      const fig = imgEl.closest('figure');
+      return fig || imgEl;
+    }
+
+    function clearSelectedEditorImage() {
+      const editor = document.getElementById('editor-content');
+      if (editor) {
+        editor.querySelectorAll('img.editor-img-selected').forEach(im => im.classList.remove('editor-img-selected'));
+      }
+      activeEditorImage = null;
+      const tb = document.getElementById('inline-image-toolbar');
+      if (tb) tb.classList.add('hidden');
+    }
+
+    function updateInlineImageToolbarUI() {
+      const tb = document.getElementById('inline-image-toolbar');
+      if (!tb || !activeEditorImage) return;
+      const targetBox = getSelectedImageContainer(activeEditorImage);
+      const currentAlign = targetBox.getAttribute('data-align') || activeEditorImage.getAttribute('data-align') || 'center';
+
+      ['left', 'center', 'right', 'full'].forEach(al => {
+        const btn = document.getElementById(`img-align-${al}`);
+        if (!btn) return;
+        if (currentAlign === al) {
+          btn.classList.add('bg-blue-100', 'text-[#2271b1]', 'border-blue-400');
+        } else {
+          btn.classList.remove('bg-blue-100', 'text-[#2271b1]', 'border-blue-400');
+        }
+      });
+
+      const editor = document.getElementById('editor-content');
+      const edWidth = editor ? Math.max(1, editor.clientWidth - 32) : 650;
+      const styleW = (targetBox.style.width || activeEditorImage.style.width || '').trim();
+      let pct = 100;
+      if (styleW.endsWith('%')) {
+        pct = Math.round(parseFloat(styleW)) || 100;
+      } else if (styleW.endsWith('px')) {
+        pct = Math.round(((parseFloat(styleW) || edWidth) / edWidth) * 100);
+      } else if (activeEditorImage.getBoundingClientRect().width > 0) {
+        pct = Math.round((activeEditorImage.getBoundingClientRect().width / edWidth) * 100);
+      }
+      pct = Math.max(15, Math.min(100, pct));
+
+      const rangeEl = document.getElementById('inline-img-width-range');
+      const labelEl = document.getElementById('inline-img-width-label');
+      if (rangeEl) rangeEl.value = String(pct);
+      if (labelEl) labelEl.innerText = `${pct}%`;
+
+      [25, 50, 75, 100].forEach(sz => {
+        const btn = document.getElementById(`img-size-${sz}`);
+        if (!btn) return;
+        if (Math.abs(pct - sz) <= 3) {
+          btn.classList.add('bg-blue-100', 'text-[#2271b1]', 'border-blue-400');
+        } else {
+          btn.classList.remove('bg-blue-100', 'text-[#2271b1]', 'border-blue-400');
+        }
+      });
+    }
+
+    function positionInlineImageToolbar(imgEl) {
+      const tb = document.getElementById('inline-image-toolbar');
+      if (!tb || !imgEl) return;
+      tb.classList.remove('hidden');
+      updateInlineImageToolbarUI();
+
+      const rect = imgEl.getBoundingClientRect();
+      const tbRect = tb.getBoundingClientRect();
+      let top = rect.top - tbRect.height - 8;
+      if (top < 10) top = rect.bottom + 8;
+      if (top + tbRect.height > window.innerHeight - 10) {
+        top = Math.max(12, window.innerHeight - tbRect.height - 12);
+      }
+      let left = rect.left + (rect.width / 2) - (tbRect.width / 2);
+      if (left + tbRect.width > window.innerWidth - 10) left = window.innerWidth - tbRect.width - 10;
+      if (left < 10) left = 10;
+
+      tb.style.top = `${top}px`;
+      tb.style.left = `${left}px`;
+    }
+
+    function selectEditorImage(imgEl) {
+      const editor = document.getElementById('editor-content');
+      if (!editor || !imgEl || !editor.contains(imgEl)) return;
+      clearSelectedEditorImage();
+      activeEditorImage = imgEl;
+      imgEl.classList.add('editor-img-selected');
+      positionInlineImageToolbar(imgEl);
+      try {
+        setButtonActiveState('btn-format-align-left', (getSelectedImageContainer(imgEl).getAttribute('data-align') || 'center') === 'left');
+        setButtonActiveState('btn-format-align-center', (getSelectedImageContainer(imgEl).getAttribute('data-align') || 'center') === 'center');
+        setButtonActiveState('btn-format-align-right', (getSelectedImageContainer(imgEl).getAttribute('data-align') || 'center') === 'right');
+      } catch (e) {}
+    }
+
+    function alignActiveEditorImage(align) {
+      if (!activeEditorImage) return;
+      const box = getSelectedImageContainer(activeEditorImage);
+      const isFig = box !== activeEditorImage;
+      box.setAttribute('data-align', align);
+      activeEditorImage.setAttribute('data-align', align);
+      box.classList.remove('alignleft', 'aligncenter', 'alignright', 'alignfull', 'mx-auto', 'text-center');
+      activeEditorImage.classList.remove('alignleft', 'aligncenter', 'alignright', 'alignfull', 'mx-auto');
+
+      if (align === 'left') {
+        box.style.float = 'left';
+        box.style.display = 'block';
+        box.style.margin = '0.35rem 1.25rem 0.75rem 0';
+        box.style.clear = 'left';
+        if (!box.style.width || box.style.width === '100%') {
+          box.style.width = '50%';
+        }
+        box.classList.add('alignleft');
+      } else if (align === 'right') {
+        box.style.float = 'right';
+        box.style.display = 'block';
+        box.style.margin = '0.35rem 0 0.75rem 1.25rem';
+        box.style.clear = 'right';
+        if (!box.style.width || box.style.width === '100%') {
+          box.style.width = '50%';
+        }
+        box.classList.add('alignright');
+      } else if (align === 'full') {
+        box.style.float = 'none';
+        box.style.display = 'block';
+        box.style.width = '100%';
+        box.style.margin = '1rem auto';
+        box.style.clear = 'both';
+        box.classList.add('alignfull');
+      } else {
+        box.style.float = 'none';
+        box.style.display = 'block';
+        box.style.margin = '0.9rem auto';
+        box.style.clear = 'both';
+        if (!box.style.width) box.style.width = '100%';
+        box.classList.add('aligncenter');
+      }
+
+      if (isFig) {
+        activeEditorImage.style.width = '100%';
+        activeEditorImage.style.height = 'auto';
+      } else {
+        activeEditorImage.style.height = 'auto';
+      }
+
+      positionInlineImageToolbar(activeEditorImage);
+      handleContentChange();
+    }
+
+    function resizeActiveEditorImage(percentVal) {
+      if (!activeEditorImage) return;
+      const pct = Math.max(15, Math.min(100, Math.round(Number(percentVal) || 100)));
+      const box = getSelectedImageContainer(activeEditorImage);
+      const isFig = box !== activeEditorImage;
+      box.style.width = `${pct}%`;
+      box.style.maxWidth = '100%';
+      if (isFig) {
+        activeEditorImage.style.width = '100%';
+        activeEditorImage.style.height = 'auto';
+      } else {
+        activeEditorImage.style.width = `${pct}%`;
+        activeEditorImage.style.height = 'auto';
+      }
+      if (!box.getAttribute('data-align')) {
+        box.setAttribute('data-align', pct === 100 ? 'full' : 'center');
+      }
+      positionInlineImageToolbar(activeEditorImage);
+      handleContentChange();
+    }
+
+    function stepActiveEditorImageWidth(delta) {
+      if (!activeEditorImage) return;
+      const rangeEl = document.getElementById('inline-img-width-range');
+      const cur = rangeEl ? parseInt(rangeEl.value, 10) || 100 : 100;
+      resizeActiveEditorImage(cur + delta);
+    }
+
+    function removeActiveEditorImage() {
+      if (!activeEditorImage) return;
+      const box = getSelectedImageContainer(activeEditorImage);
+      box.remove();
+      clearSelectedEditorImage();
+      handleContentChange();
+      showToast('Image Removed', 'Removed image from article content.');
+    }
+
+    document.addEventListener('click', (e) => {
+      const tb = document.getElementById('inline-image-toolbar');
+      const ed = document.getElementById('editor-content');
+      const alignBtns = e.target.closest?.('#btn-format-align-left, #btn-format-align-center, #btn-format-align-right');
+      if (alignBtns) return;
+      if (tb && !tb.contains(e.target) && ed && !ed.contains(e.target)) {
+        clearSelectedEditorImage();
+      }
+    });
+
     function handleEditorClick(event) {
-      const target = event.target.closest('a');
       const editor = document.getElementById('editor-content');
       const popover = document.getElementById('inline-link-popover');
-      
+      const clickedImg = event.target.closest('img');
+
+      if (clickedImg && editor && editor.contains(clickedImg)) {
+        hideInlineLinkPopover();
+        selectEditorImage(clickedImg);
+        return;
+      }
+
+      clearSelectedEditorImage();
+
+      const target = event.target.closest('a');
       if (target && editor && editor.contains(target)) {
         // If user Ctrl-clicks or Cmd-clicks, directly open link in new tab
         if (event.ctrlKey || event.metaKey) {
@@ -8065,6 +8539,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         if (findModal && !findModal.classList.contains('hidden')) closeFindReplaceModal();
         const linkModal = document.getElementById('modal-insert-link');
         if (linkModal && !linkModal.classList.contains('hidden')) closeLinkDialog();
+        const pagePrevModal = document.getElementById('modal-page-preview');
+        if (pagePrevModal && !pagePrevModal.classList.contains('hidden')) closePagePreviewModal();
+        const readerModal = document.getElementById('modal-frontend-reader');
+        if (readerModal && !readerModal.classList.contains('hidden')) closeFrontendPortal();
+        const imgEdModal = document.getElementById('modal-image-editor');
+        if (imgEdModal && !imgEdModal.classList.contains('hidden')) closeQuickImageEditor();
+        clearSelectedEditorImage();
       }
     });
 
@@ -8134,6 +8615,86 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
     }
 
+    const IMAGE_SIZE_PRESETS = {
+      '1200x800': [1200, 800],
+      '1200x675': [1200, 675],
+      '1200x900': [1200, 900],
+      '1080x1080': [1080, 1080],
+      '800x1200': [800, 1200]
+    };
+
+    function formatDataUrlByteSize(dataUrl) {
+      try {
+        const b64 = (dataUrl.split(',')[1] || '');
+        const bytes = Math.round((b64.length * 3) / 4);
+        if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+        return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+      } catch (e) {
+        return '120 KB';
+      }
+    }
+
+    function processImageWithPreset(file, preset = '1200x800', quality = 0.88) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const img = new Image();
+          img.onload = () => {
+            const targetDims = IMAGE_SIZE_PRESETS[preset];
+            let sx = 0, sy = 0, sWidth = img.width, sHeight = img.height;
+            let w = img.width, h = img.height;
+
+            if (targetDims) {
+              const [tw, th] = targetDims;
+              const targetRatio = tw / th;
+              const srcRatio = img.width / img.height;
+              if (srcRatio > targetRatio) {
+                sHeight = img.height;
+                sWidth = Math.round(img.height * targetRatio);
+                sx = Math.round((img.width - sWidth) / 2);
+              } else {
+                sWidth = img.width;
+                sHeight = Math.round(img.width / targetRatio);
+                sy = Math.round((img.height - sHeight) / 2);
+              }
+              w = tw;
+              h = th;
+            } else if (w > 1200 || h > 1200) {
+              if (w > h) {
+                h = Math.round((h * 1200) / w);
+                w = 1200;
+              } else {
+                w = Math.round((w * 1200) / h);
+                h = 1200;
+              }
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, w, h);
+            const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+            const dataUrl = canvas.toDataURL(mimeType, quality);
+            resolve({
+              dataUrl,
+              width: w,
+              height: h,
+              size: formatDataUrlByteSize(dataUrl)
+            });
+          };
+          img.onerror = () => resolve({
+            dataUrl: e.target.result,
+            width: 1200,
+            height: 800,
+            size: '120 KB'
+          });
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
     // Compresses large device images on client before storing to eliminate lag/quota limits
     function compressImageFile(file, maxWidth = 1200, maxHeight = 1200, quality = 0.85) {
       return new Promise((resolve) => {
@@ -8169,7 +8730,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     }
 
     async function processUploadedFiles(files) {
-      showToast('Processing Upload...', 'Optimizing device image for web publication.');
+      const preset = document.getElementById('media-upload-size-preset')?.value || '1200x800';
+      showToast('Processing Upload...', `Formatting image (${preset === 'original' ? 'Original Ratio' : preset.replace('x', ' × ')}) for publication.`);
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         if (!file.type.startsWith('image/')) {
@@ -8178,13 +8740,16 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         }
 
         try {
-          const dataUrl = await compressImageFile(file);
+          const processed = await processImageWithPreset(file, preset, 0.88);
           const cleanName = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
           const newMedia = {
             id: 'm_' + Date.now() + '_' + i,
-            url: dataUrl,
+            url: processed.dataUrl,
             name: file.name,
-            alt: cleanName || 'Uploaded Media'
+            alt: cleanName || 'Uploaded Media',
+            dim: `${processed.width} × ${processed.height}`,
+            size: processed.size,
+            aspectPreset: preset
           };
           mediaList.unshift(newMedia);
           saveState();
@@ -8194,7 +8759,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           renderMediaGrid();
           selectMediaById(newMedia.id);
 
-          showToast('Uploaded from Device! 📷', `"${file.name}" is selected in Media Library.`);
+          showToast('Uploaded from Device! 📷', `"${file.name}" saved at ${processed.width} × ${processed.height}.`);
         } catch (err) {
           console.error('File process error:', err);
           showToast('Upload Error', 'Could not process selected image file.');
@@ -8386,7 +8951,18 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const sz = document.getElementById('sidebar-meta-size');
       if (sz) sz.innerText = item.size || '43 KB';
       const dm = document.getElementById('sidebar-meta-dim');
-      if (dm) dm.innerText = item.dim || '1920 by 1080 pixels';
+      if (dm) dm.innerText = item.dim || '1200 by 800 pixels';
+      if (thumb && !item.dim) {
+        thumb.onload = function() {
+          if (this.naturalWidth && this.naturalHeight) {
+            const realDim = `${this.naturalWidth} × ${this.naturalHeight}`;
+            item.dim = realDim;
+            if (dm) dm.innerText = `${realDim} pixels`;
+          }
+        };
+      } else if (thumb) {
+        thumb.onload = null;
+      }
 
       // Update Form Inputs
       const altInput = document.getElementById('sidebar-input-alt');
@@ -8461,6 +9037,26 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
     let imageEditorFlipH = 1;
     let imageEditorFlipV = 1;
     let imageEditorCurrentFilter = 'none';
+    let imageEditorTargetPreset = 'keep';
+
+    function setImageEditorRatio(presetVal) {
+      imageEditorTargetPreset = presetVal || 'keep';
+      const frame = document.getElementById('image-editor-preview-frame');
+      const badge = document.getElementById('image-editor-dim-badge');
+      const dims = IMAGE_SIZE_PRESETS[imageEditorTargetPreset];
+      if (frame) {
+        if (dims) {
+          frame.style.aspectRatio = `${dims[0]} / ${dims[1]}`;
+          frame.style.width = dims[0] >= dims[1] ? '420px' : '240px';
+        } else {
+          frame.style.aspectRatio = '';
+          frame.style.width = '';
+        }
+      }
+      if (badge) {
+        badge.innerText = dims ? `Target Output: ${dims[0]} × ${dims[1]} px` : 'Current Image Dimensions';
+      }
+    }
 
     function openQuickImageEditor() {
       if (!selectedMediaForInsert) return;
@@ -8468,13 +9064,18 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       imageEditorFlipH = 1;
       imageEditorFlipV = 1;
       imageEditorCurrentFilter = 'none';
-      
+      imageEditorTargetPreset = '1200x800';
+
+      const sel = document.getElementById('image-editor-ratio-select');
+      if (sel) sel.value = '1200x800';
+
       const preview = document.getElementById('image-editor-preview');
       if (preview) {
+        preview.crossOrigin = 'anonymous';
         preview.src = selectedMediaForInsert.url;
         applyImageEditorTransform();
       }
-      
+      setImageEditorRatio('1200x800');
       document.getElementById('modal-image-editor').classList.remove('hidden');
     }
 
@@ -8510,42 +9111,86 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (!selectedMediaForInsert) return;
 
       const img = document.getElementById('image-editor-preview');
+      const srcW = img.naturalWidth || 1200;
+      const srcH = img.naturalHeight || 800;
+      const isRotated90or270 = Math.abs(imageEditorCurrentRotation) === 90 || Math.abs(imageEditorCurrentRotation) === 270;
+      const rotW = isRotated90or270 ? srcH : srcW;
+      const rotH = isRotated90or270 ? srcW : srcH;
+
+      // First render rotated/flipped/filtered image to intermediate canvas
+      const tmpCanvas = document.createElement('canvas');
+      tmpCanvas.width = rotW;
+      tmpCanvas.height = rotH;
+      const tCtx = tmpCanvas.getContext('2d');
+      tCtx.save();
+      tCtx.translate(rotW / 2, rotH / 2);
+      tCtx.rotate((imageEditorCurrentRotation * Math.PI) / 180);
+      tCtx.scale(imageEditorFlipH, imageEditorFlipV);
+      tCtx.filter = imageEditorCurrentFilter;
+      tCtx.drawImage(img, -srcW / 2, -srcH / 2, srcW, srcH);
+      tCtx.restore();
+
+      // Apply target aspect/size preset crop if chosen
+      const targetDims = IMAGE_SIZE_PRESETS[imageEditorTargetPreset];
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
+      let finalW = rotW;
+      let finalH = rotH;
+      let sx = 0, sy = 0, sWidth = rotW, sHeight = rotH;
 
-      const naturalWidth = img.naturalWidth || 800;
-      const naturalHeight = img.naturalHeight || 600;
+      if (targetDims) {
+        const [tw, th] = targetDims;
+        const targetRatio = tw / th;
+        const curRatio = rotW / rotH;
+        if (curRatio > targetRatio) {
+          sHeight = rotH;
+          sWidth = Math.round(rotH * targetRatio);
+          sx = Math.round((rotW - sWidth) / 2);
+        } else {
+          sWidth = rotW;
+          sHeight = Math.round(rotW / targetRatio);
+          sy = Math.round((rotH - sHeight) / 2);
+        }
+        finalW = tw;
+        finalH = th;
+      }
 
-      const isRotated90or270 = Math.abs(imageEditorCurrentRotation) === 90 || Math.abs(imageEditorCurrentRotation) === 270;
-      canvas.width = isRotated90or270 ? naturalHeight : naturalWidth;
-      canvas.height = isRotated90or270 ? naturalWidth : naturalHeight;
+      canvas.width = finalW;
+      canvas.height = finalH;
+      ctx.drawImage(tmpCanvas, sx, sy, sWidth, sHeight, 0, 0, finalW, finalH);
 
-      ctx.save();
-      ctx.translate(canvas.width / 2, canvas.height / 2);
-      ctx.rotate((imageEditorCurrentRotation * Math.PI) / 180);
-      ctx.scale(imageEditorFlipH, imageEditorFlipV);
-      ctx.filter = imageEditorCurrentFilter;
-      ctx.drawImage(img, -naturalWidth / 2, -naturalHeight / 2, naturalWidth, naturalHeight);
-      ctx.restore();
+      let newUrl = selectedMediaForInsert.url;
+      try {
+        newUrl = canvas.toDataURL('image/jpeg', 0.9);
+      } catch (e) {
+        showToast('External Image Protected', 'Upload local image to crop/resize pixels directly.');
+        closeQuickImageEditor();
+        return;
+      }
 
-      const newUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const prevUrl = selectedMediaForInsert.url;
       selectedMediaForInsert.url = newUrl;
+      selectedMediaForInsert.dim = `${finalW} × ${finalH}`;
+      selectedMediaForInsert.size = formatDataUrlByteSize(newUrl);
 
       const idx = mediaList.findIndex(m => m.id === selectedMediaForInsert.id);
       if (idx >= 0) {
         mediaList[idx].url = newUrl;
+        mediaList[idx].dim = selectedMediaForInsert.dim;
+        mediaList[idx].size = selectedMediaForInsert.size;
       }
 
       saveState();
 
-      if (currentFeaturedImage === selectedMediaForInsert.url) {
+      if (currentFeaturedImage === prevUrl) {
         currentFeaturedImage = newUrl;
         renderFeaturedImageUI();
       }
 
       closeQuickImageEditor();
+      updateSidebarDetails(selectedMediaForInsert);
       renderMediaGrid();
-      showToast('Image Saved ✨', 'Edits applied to media asset.');
+      showToast('Image Saved ✨', `Updated to ${finalW} × ${finalH} px.`);
     }
 
     function confirmMediaSelection() {
@@ -8567,14 +9212,19 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
           restoreEditorSelection();
         }
 
-        let imgTag = `<img src="${selectedMediaForInsert.url}" alt="${altText}" title="${titleText}" class="my-3 rounded shadow max-w-full h-auto" />`;
+        const uniqueMarker = `img_${Date.now()}`;
+        let imgTag = `<img data-editor-id="${uniqueMarker}" data-align="center" style="width: 100%; height: auto;" src="${selectedMediaForInsert.url}" alt="${altText}" title="${titleText}" class="my-3 rounded shadow max-w-full h-auto" />`;
         if (captionText) {
-          imgTag = `<figure class="my-4 text-center">${imgTag}<figcaption class="text-xs text-gray-500 italic mt-1">${captionText}</figcaption></figure>`;
+          imgTag = `<figure data-align="center" style="width: 100%;" class="my-4 aligncenter">${imgTag}<figcaption class="text-xs text-gray-500 italic mt-1 text-center">${captionText}</figcaption></figure>`;
         }
 
         formatDoc('insertHTML', imgTag);
         handleContentChange();
-        showToast('Media Inserted 🖼️', `Placed into article content with Alt: "${altText}".`);
+        setTimeout(() => {
+          const inserted = editor?.querySelector(`img[data-editor-id="${uniqueMarker}"]`);
+          if (inserted) selectEditorImage(inserted);
+        }, 30);
+        showToast('Media Inserted 🖼️', `Inserted! Click the image anytime to Align or Resize.`);
       }
       closeMediaModal();
     }
@@ -8585,15 +9235,19 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (currentFeaturedImage) {
         const mediaObj = mediaList.find(m => m.url === currentFeaturedImage);
         const altText = mediaObj?.alt || 'Featured Image';
+        const dimLabel = mediaObj?.dim || '1200 × 800 (3:2)';
         container.innerHTML = `
-          <div class="relative group">
-            <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-36 object-contain rounded shadow mb-2 border border-gray-200 bg-gray-50" />
-            <div class="text-[11px] text-gray-500 truncate mb-1.5">
+          <div class="relative group text-left">
+            <div class="w-full aspect-[3/2] overflow-hidden rounded shadow mb-2 border border-gray-200 bg-gray-100">
+              <img src="${currentFeaturedImage}" alt="${altText}" class="w-full h-full object-cover" />
+            </div>
+            <div class="text-[11px] text-gray-500 truncate mb-1">
               <strong>Alt:</strong> <span class="italic">${altText}</span>
             </div>
+            <div class="text-[10px] font-mono text-gray-400 mb-1.5">Size / Ratio: ${dimLabel}</div>
             <div class="flex justify-between text-xs pt-1 border-t border-gray-100">
-              <button onclick="openFeaturedImageModal()" class="text-[#2271b1] hover:underline font-semibold cursor-pointer">Replace image</button>
-              <button onclick="removeFeaturedImage()" class="text-red-500 hover:underline font-semibold cursor-pointer">Remove image</button>
+              <button type="button" onclick="openFeaturedImageModal(); event.stopPropagation();" class="text-[#2271b1] hover:underline font-semibold cursor-pointer">Replace / Ratio</button>
+              <button type="button" onclick="removeFeaturedImage(); event.stopPropagation();" class="text-red-500 hover:underline font-semibold cursor-pointer">Remove image</button>
             </div>
           </div>
         `;
@@ -8601,8 +9255,9 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
         container.innerHTML = `
           <i class="fas fa-image text-3xl text-gray-300 mb-2"></i>
           <div>
-            <a href="#" onclick="openFeaturedImageModal(); return false;" class="text-[#2271b1] underline font-semibold">Set featured image</a>
+            <a href="#" onclick="openFeaturedImageModal(); event.stopPropagation(); return false;" class="text-[#2271b1] underline font-semibold">Set featured image</a>
           </div>
+          <p class="text-[10px] text-gray-400 mt-1 font-mono">1200 &times; 800 recommended (Aspect 3:2)</p>
         `;
       }
     }
@@ -8864,7 +9519,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
               </div>
               <div class="mt-1.5 px-0.5">
                 <p class="text-[11px] font-semibold text-gray-800 truncate" title="${m.name}">${m.name}</p>
-                <span class="text-[10px] text-gray-400 block">${m.dim || '1920 × 1080'} &bull; ${m.size || '250 KB'}</span>
+                <span class="text-[10px] text-gray-400 block">${m.dim || '1200 × 800'} &bull; ${m.size || '250 KB'}</span>
               </div>
               ${isSelected ? `
                 <div class="absolute top-2 right-2 bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] shadow">
@@ -8889,7 +9544,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
               <span class="text-[10px] text-gray-400 block font-normal">${m.alt || 'ApexChief Editorial Asset'}</span>
             </td>
             <td class="p-2.5 text-gray-600">${m.author || 'ApexChief Editorial'}</td>
-            <td class="p-2.5 text-gray-500 font-mono text-[11px]">${m.dim || '1920 × 1080'}</td>
+            <td class="p-2.5 text-gray-500 font-mono text-[11px]">${m.dim || '1200 × 800'}</td>
             <td class="p-2.5 text-gray-500">${m.date || 'Sep 6, 2026'}</td>
             <td class="p-2.5 space-x-2 text-[11px]">
               <button onclick="inspectMedia('${m.id}')" class="text-[#2271b1] hover:underline">Edit</button>
@@ -8905,9 +9560,20 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       if (!item) return;
       inspectedMediaItem = item;
 
-      document.getElementById('inspect-media-img').src = item.url;
+      const inspectImg = document.getElementById('inspect-media-img');
+      inspectImg.src = item.url;
       document.getElementById('inspect-media-name').innerText = item.name;
-      document.getElementById('inspect-media-dim').innerText = item.dim || '1920 × 1080';
+      document.getElementById('inspect-media-dim').innerText = item.dim || '1200 × 800';
+      if (!item.dim) {
+        inspectImg.onload = function() {
+          if (this.naturalWidth && this.naturalHeight) {
+            item.dim = `${this.naturalWidth} × ${this.naturalHeight}`;
+            document.getElementById('inspect-media-dim').innerText = item.dim;
+          }
+        };
+      } else {
+        inspectImg.onload = null;
+      }
       document.getElementById('inspect-media-date').innerText = item.date || 'Sep 6, 2026';
       document.getElementById('inspect-media-alt').value = item.alt || '';
       document.getElementById('inspect-media-title').value = item.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
@@ -9915,6 +10581,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       checklist.forEach(cb => {
         cb.checked = (cb.value.toLowerCase() === selectedCat.toLowerCase());
       });
+      const currentSlugVal = document.getElementById('snippet-permalink')?.value || document.getElementById('editable-post-name')?.innerText;
+      if (currentSlugVal) updatePermalinkDisplay(currentSlugVal);
     }
 
     function syncPlacementCardTagFromSub() {
@@ -10094,9 +10762,11 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const modal = document.getElementById('modal-publish-success');
       const titleEl = document.getElementById('publish-success-title');
       const linkEl = document.getElementById('publish-success-link');
+      const primaryCategory = document.getElementById('placement-category-select')?.value || 'News';
+      const catSlug = getCategorySlugForUrl(primaryCategory);
       if (titleEl) titleEl.innerText = `"${title}"`;
       if (linkEl) {
-        linkEl.href = `/news/${slug}`;
+        linkEl.href = `/${catSlug}/${slug}`;
       }
       if (modal) modal.classList.remove('hidden');
     }
@@ -10165,9 +10835,60 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       return truncated && out ? `${out}...` : out;
     }
 
+    function getCleanEditorHtml() {
+      const editorEl = document.getElementById('editor-content');
+      const rawCode = document.getElementById('editor-raw-code');
+      let html = '';
+      if (rawCode && !rawCode.classList.contains('hidden')) {
+        html = rawCode.value || '';
+      } else if (editorEl) {
+        const clone = editorEl.cloneNode(true);
+        clone.querySelectorAll('img.editor-img-selected').forEach(im => {
+          im.classList.remove('editor-img-selected');
+          if (!im.getAttribute('class')?.trim()) im.removeAttribute('class');
+        });
+        html = clone.innerHTML || '';
+      }
+      return html;
+    }
+
+    function previewPostById(id) {
+      const p = posts.find(item => item.id === id || item.slug === id);
+      if (!p) return;
+      const modal = document.getElementById('modal-page-preview');
+      const badgeEl = document.getElementById('page-preview-template-badge');
+      const titleEl = document.getElementById('page-preview-title');
+      const bodyEl = document.getElementById('page-preview-body');
+      const scrollEl = document.getElementById('page-preview-scroll-area');
+      if (!modal || !badgeEl || !titleEl || !bodyEl) return;
+
+      const cat = (p.categories && p.categories[0]) || 'Business';
+      const subCat = p.subCategory || '';
+      badgeEl.innerText = `Live Story Preview • ${cat}${subCat ? ' › ' + subCat : ''}`;
+      titleEl.innerText = p.title || 'Untitled Story Headline';
+
+      const contentWithLinks = autoLinkifyHtmlContent(p.content || '');
+      const excerptHtml = buildSafeExcerptHtml(contentWithLinks, 180);
+      let previewHtml = '';
+      if (excerptHtml) {
+        previewHtml += `<p class="font-serif italic text-sm sm:text-base text-gray-600 leading-[1.45] border-l-4 border-[#002b5c] pl-3 mb-4 text-left">${excerptHtml}</p>`;
+      }
+      if (p.featuredImage && p.showFeaturedImage !== 'No' && p.showFeaturedImage !== false) {
+        const safeImg = String(p.featuredImage).replace(/"/g, '&quot;');
+        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-gray-100" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
+      }
+      previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
+        contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'
+      }</div>`;
+
+      bodyEl.innerHTML = previewHtml;
+      if (scrollEl) scrollEl.scrollTop = 0;
+      modal.classList.remove('hidden');
+    }
+
     function previewArticleInReader() {
       const title = document.getElementById('post-title')?.value?.trim() || 'Untitled Story Headline';
-      const rawContent = document.getElementById('editor-content')?.innerHTML || '';
+      const rawContent = getCleanEditorHtml();
       const category = document.getElementById('placement-category-select')?.value || 'Business';
       const subCat = document.getElementById('placement-subcategory-select')?.value || '';
       const snippetDesc = document.getElementById('snippet-description')?.value?.replace('%excerpt%', '').trim() || '';
@@ -10182,6 +10903,7 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       const badgeEl = document.getElementById('page-preview-template-badge');
       const titleEl = document.getElementById('page-preview-title');
       const bodyEl = document.getElementById('page-preview-body');
+      const scrollEl = document.getElementById('page-preview-scroll-area');
       if (!modal || !badgeEl || !titleEl || !bodyEl) {
         showToast('Preview Unavailable', 'Preview modal container was not found.');
         return;
@@ -10196,20 +10918,21 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
       }
       if (showImg && typeof currentFeaturedImage === 'string' && currentFeaturedImage) {
         const safeImg = currentFeaturedImage.replace(/"/g, '&quot;');
-        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm" style="aspect-ratio:16/9;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
+        previewHtml += `<div class="w-full my-4"><div class="relative w-full overflow-hidden rounded-lg border border-gray-200 shadow-sm bg-gray-100" style="aspect-ratio:3/2;"><img src="${safeImg}" alt="" onload="if(this.naturalHeight>this.naturalWidth){this.style.objectPosition='center 20%';}" class="block w-full h-full object-cover" /></div></div>`;
       }
       previewHtml += `<div class="article-rich-content text-[15px] leading-[1.48] text-gray-900 space-y-3 text-left">${
         contentWithLinks.trim() ? contentWithLinks : '<p class="text-gray-400 italic">(No article content written yet.)</p>'
       }</div>`;
 
       bodyEl.innerHTML = previewHtml;
+      if (scrollEl) scrollEl.scrollTop = 0;
       modal.classList.remove('hidden');
     }
 
     function savePost(status = 'draft') {
       const rawTitle = document.getElementById('post-title').value.trim() || 'Untitled Post';
       const title = autoLinkifyString(rawTitle);
-      const rawContent = document.getElementById('editor-content').innerHTML;
+      const rawContent = getCleanEditorHtml();
       const content = autoLinkifyHtmlContent(rawContent);
       const slug = document.getElementById('snippet-permalink').value.trim() || generateSlug(rawTitle);
       const focusKw = document.getElementById('focus-keyword').value.trim();
@@ -11436,11 +12159,13 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
 
     function openFrontendPortal() {
       document.getElementById('reader-title').innerText = document.getElementById('post-title').value || 'ApexChief Headline';
-      document.getElementById('reader-body-content').innerHTML = document.getElementById('editor-content').innerHTML;
+      const readerBody = document.getElementById('reader-body-content');
+      readerBody.classList.add('article-rich-content');
+      readerBody.innerHTML = getCleanEditorHtml();
       
       const featBox = document.getElementById('reader-featured-img-box');
       if (currentFeaturedImage) {
-        featBox.innerHTML = `<img src="${currentFeaturedImage}" class="w-full h-80 object-cover rounded-lg mb-4" />`;
+        featBox.innerHTML = `<div class="w-full overflow-hidden rounded-lg mb-4 bg-gray-100" style="aspect-ratio:3/2;"><img src="${currentFeaturedImage}" class="w-full h-full object-cover" /></div>`;
       } else {
         featBox.innerHTML = '';
       }
@@ -12053,7 +12778,8 @@ http://localhost:3007/the-modi-doctrine-redefining-indias-global-economic-power<
                   <a href="#" onclick="toggleQuickEdit(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-[#2271b1] hover:underline font-medium">Quick Edit</a> |
                   <a href="#" onclick="trashPost(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-amber-600 hover:underline font-medium">Trash</a> |
                   <a href="#" onclick="openDeletePostModal(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-red-600 hover:underline font-semibold">Delete</a> |
-                  <a href="/news/${encodeURIComponent(String(p.slug || p.id))}" target="_blank" class="text-[#2271b1] hover:underline font-medium">View</a>
+                  <a href="#" onclick="previewPostById(decodeURIComponent('${encodeURIComponent(String(p.id))}')); return false;" class="text-emerald-700 hover:underline font-semibold">Preview</a> |
+                  <a href="/${getCategorySlugForUrl((p.categories && p.categories[0]) || 'News')}/${encodeURIComponent(String(p.slug || p.id))}" target="_blank" class="text-[#2271b1] hover:underline font-medium">View</a>
                 `}
               </div>
 
@@ -13935,7 +14661,7 @@ let siteSettings = { ...DEFAULT_SETTINGS };
                   return `
                     <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:border-[#f7413e] shadow-2xs hover:shadow-lg transition-all duration-300 flex flex-col justify-between group">
                       <div>
-                        <div class="relative aspect-[16/10] overflow-hidden bg-gray-100">
+                        <div class="relative aspect-[3/2] overflow-hidden bg-gray-100">
                           <img src="${img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.title}">
                           <div class="absolute top-3 left-3">
                             <span class="bg-black/70 backdrop-blur-xs text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border border-white/10">${primaryCat}</span>
